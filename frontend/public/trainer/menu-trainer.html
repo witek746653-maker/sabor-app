@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#f9f8f2">
+  <title>Меню-тренажёр · интервальное повторение</title>
+  <style>
+  /* ===== Тёплая светлая тема (совпадает с menu-trainer.html) ===== */
+  :root {
+    --bg: #f9f8f2;
+    --panel: #fff9ef;
+    --card: #f6efe3;
+    --border: #eadbc8;
+    --text: #3b2b1f;
+    --muted: #7a6a58;
+    --accent: #ff8a1f;
+    --accent-2: #ffb347;
+    --accent-3: #8c5a3c;
+    --ok:#2e7d32; --warn:#b26a00; --bad:#b71c1c;
+    --radius: 14px;
+    --shadow-md: 0 6px 18px rgba(140, 90, 60, .12), 0 1px 3px rgba(60,40,20,.08);
+    --shadow-lg: 0 14px 34px rgba(140, 90, 60, .18), 0 4px 10px rgba(60,40,20,.10);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg:#1a120b; --panel:#22160f; --card:#2b190f; --border:#3a2316;
+      --text:#fff9ef; --muted:#c9bca8; --accent:#ff8a1f; --accent-2:#ffd166; --accent-3:#8c5a3c;
+      --shadow-md: 0 6px 18px rgba(0,0,0,.25);
+      --shadow-lg: 0 12px 28px rgba(0,0,0,.35);
+    }
+  }
+
+  * { box-sizing: border-box }
+  html, body {
+    margin: 0; height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font: 16px/1.55 Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+  }
+  a { color: var(--accent); text-decoration: none }
+  a:hover { text-decoration: underline }
+
+  .wrap { width: 100%; margin: 0 auto; padding: 18px 20px 40px; max-width: 1180px }
+  header { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; margin-bottom: 16px }
+  h1 { margin: 0; font-size: 26px; letter-spacing: .2px; color: var(--accent-3) }
+  .muted { color: var(--muted); font-size: 14px }
+
+  .view-toggle-row { display: flex; justify-content: flex-end; margin-bottom: 10px; gap: 8px }
+  .ghost-btn { background: transparent; border: 1px dashed var(--border); box-shadow: none; color: var(--muted); font-weight: 600; }
+  .ghost-btn:hover { background: var(--panel); color: var(--text); }
+
+  .toolbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 14px }
+  .toolbar > * { background: var(--panel); border: 1px solid var(--border); padding: 9px 12px; border-radius: 12px; box-shadow: var(--shadow-md); color: var(--text); }
+
+  button { cursor: pointer; border: 1px solid var(--border); background: var(--panel); color: var(--text); border-radius: 12px; padding: 10px 14px; font-weight: 700; transition: transform .12s ease, box-shadow .2s ease, background .2s ease }
+  button.primary { background: linear-gradient(180deg, #ffd79a, #ffb347); border-color: #f0c78d; color: #5a3a1e; box-shadow: var(--shadow-md) }
+  button:hover { transform: translateY(-1px) }
+  button:active { transform: translateY(0) }
+  button:disabled { opacity: .55; cursor: not-allowed }
+
+  select, input[type="search"] { border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; background: var(--panel); color: var(--text); box-shadow: var(--shadow-md) }
+  label { font-weight: 700; font-size: 14px; color: var(--accent-3) }
+
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow-lg); overflow: hidden; }
+  .card header { padding: 14px 16px; background: linear-gradient(90deg, rgba(255,179,71,.12), transparent); border-bottom: 1px solid var(--border) }
+  .card-title { font-size: 20px; font-weight: 800; letter-spacing: .2px; color: #5a3a1e; margin: 0 }
+  .card-sub { margin: 2px 0 0 0; color: var(--muted); font-size: 14px }
+  .card-body { padding: 16px; display: grid; gap: 12px }
+  .card-side { display: grid; gap: 12px }
+  .card-body[data-side="back"] .card-front { display: none }
+  .card-body[data-side="front"] .card-back { display: none }
+  .card-image { border-radius: 12px; overflow: hidden; border: 1px solid var(--border); background: var(--panel); box-shadow: var(--shadow-md); max-height: 380px }
+  .card-image img { width: 100%; display: block; object-fit: cover; height: 100% }
+  .hint { color: var(--muted); font-size: 14px }
+  .card-actions { display: flex; justify-content: flex-end }
+  .pill { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 999px; background: var(--panel); border: 1px solid var(--border); font-size: 13px; margin-right: 6px; margin-bottom: 6px }
+  .answer-block { padding: 14px; border-radius: 12px; border: 1px solid var(--border); background: var(--panel); box-shadow: inset 0 1px 0 rgba(255,255,255,.4); display: grid; gap: 12px }
+  .grid-two { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); align-items: start }
+  .rich-text { line-height: 1.6; white-space: normal; }
+  .rich-text ol, .rich-text ul { margin: 0 0 0.75em 1.2em; padding-left: 1.2em; }
+  .rich-text li { margin-bottom: 0.35em; }
+  .rich-text strong { color: var(--accent-3); }
+
+  .answer-meta { padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--card); box-shadow: var(--shadow-md) }
+  .answer-meta strong { color: var(--accent-3); display: block; margin-bottom: 4px }
+
+  .stats { display: flex; gap: 12px; flex-wrap: wrap }
+  .stat { padding: 10px 12px; border-radius: 12px; background: var(--panel); border: 1px solid var(--border); box-shadow: var(--shadow-md); min-width: 140px }
+  .stat strong { display: block; font-size: 18px; margin-bottom: 2px }
+
+  .spacer { flex: 1 1 auto }
+
+  .rating { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; align-items: stretch }
+  .rating button { width: 100% }
+  .rating .again { background: #ffe7e4; border-color: #f7c2ba; color: #7a2e1e }
+  .rating .hard { background: #fff1dd; border-color: #f0d19a; color: #8c5a3c }
+  .rating .good { background: linear-gradient(180deg, #d9f5d2, #8bd17d); border-color: #a4d6a0; color: #0c2f16 }
+  .rating .easy { background: linear-gradient(180deg, #cce9ff, #8fc7ff); border-color: #a7d5ff; color: #0d3758 }
+
+  .tags { display: flex; flex-wrap: wrap; gap: 6px }
+  .badges { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px }
+
+  .no-data { padding: 14px; border: 1px dashed var(--border); border-radius: 12px; background: var(--panel); color: var(--muted) }
+
+  body.compact-mode .app-header,
+  body.compact-mode .app-toolbar,
+  body.compact-mode .app-stats,
+  body.compact-mode .app-note { display: none !important; }
+
+  body.compact-mode .wrap { max-width: 680px; padding-top: 16px; padding-bottom: 26px; }
+  body.compact-mode #cardContainer { margin-top: 0; }
+  body.compact-mode .ghost-btn { color: var(--text); border-style: solid; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="view-toggle-row">
+      <button id="viewToggle" class="ghost-btn" aria-label="Переключить режим просмотра">Режим карточки</button>
+    </div>
+    <header class="app-header">
+      <div>
+        <h1>Меню-тренажёр (интервальное повторение)</h1>
+        <div class="muted">Учите блюда в интерактивной форме.</div>
+      </div>
+      <button id="resetProgress" aria-label="Сбросить прогресс">Сбросить прогресс</button>
+    </header>
+
+    <div class="toolbar app-toolbar">
+      <label for="menuFilter">Меню</label>
+      <select id="menuFilter"></select>
+
+      <label for="sectionFilter">Раздел</label>
+      <select id="sectionFilter"></select>
+
+      <label for="searchInput">Поиск</label>
+      <input id="searchInput" type="search" placeholder="Название или тег" />
+
+      <div class="spacer"></div>
+      <button id="shuffleBtn" class="primary">Перемешать</button>
+    </div>
+
+    <div class="stats app-stats" aria-live="polite">
+      <div class="stat"><strong id="statDue">0</strong>Карточек к повторению</div>
+      <div class="stat"><strong id="statNew">0</strong>Новых карточек</div>
+      <div class="stat"><strong id="statLearned">0</strong>Закреплено</div>
+    </div>
+
+    <div id="cardContainer" class="card" aria-live="polite" aria-atomic="true" style="margin-top:16px">
+      <header>
+        <p class="card-title" id="cardTitle">Загрузка...</p>
+        <p class="card-sub" id="cardSubtitle" hidden></p>
+      </header>
+      <div class="card-body" data-side="front">
+        <div id="imageWrapper" class="card-image" hidden>
+          <img id="cardImage" src="" alt="Фото блюда" loading="lazy" />
+        </div>
+
+        <div class="card-side card-front">
+          <div class="card-actions">
+            <button id="revealBtn" class="primary">Показать ответ</button>
+          </div>
+        </div>
+
+        <div class="card-side card-back" hidden>
+          <div id="answerBlock" class="answer-block" hidden>
+            <div id="answerTitle" class="card-title" style="font-size:18px; margin:0 0 6px 0"></div>
+            <div id="answerText"></div>
+            <div id="allergensBlock" class="answer-meta" hidden></div>
+            <div id="extraDetails" class="grid-two" style="margin-top:10px"></div>
+            <div id="tagsRow" class="badges"></div>
+          </div>
+
+          <div class="rating">
+            <button class="again" data-score="1">Ещё раз</button>
+            <button class="hard" data-score="3">Сложно</button>
+            <button class="good" data-score="4">Хорошо</button>
+            <button class="easy" data-score="5">Легко</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="muted app-note" style="margin-top:10px">Прогресс сохраняется локально (localStorage). Алгоритм — упрощённый SM-2.</div>
+  </div>
+
+  <script>
+    const MENU_DATA_URL = '../data/menu-database.json';
+    const COMMUNICATION_URL = '../data/communication-cards.json';
+    const EN_DICT_URL = '../i18n/en.json';
+    const STORAGE_KEY = 'menu-srs-progress-v2';
+    const VIEW_MODE_KEY = 'menu-srs-view-mode';
+
+    const MENU_OPTIONS = [
+      { value: 'all', label: 'Все меню', menus: null },
+      { value: 'main', label: 'Основное меню', menus: ['Основное меню (Sabor de la Vida)'] },
+      { value: 'breakfast', label: 'Авторские завтраки', menus: ['Авторские завтраки'] },
+      { value: 'kids', label: 'Детское меню', menus: ['Детское меню'] },
+      { value: 'winter', label: 'Зимнее меню', menus: ['Зимнее меню'] },
+      { value: 'summer', label: 'Летнее меню', menus: ['Летнее меню'] },
+      { value: 'special', label: 'Специальное меню', menus: ['Постное меню', 'Специальное меню'] },
+      { value: 'wine', label: 'Вино', menus: ['Вино'] },
+      { value: 'english', label: 'English menu', menus: ['English menu'] },
+      { value: 'communication', label: 'Коммуникация и сервис', menus: ['Коммуникация и сервис'] }
+    ];
+
+    const MENU_SECTION_FILTERS = new Set(['main', 'breakfast', 'winter', 'summer', 'special', 'kids', 'english']);
+    const ENGLISH_SECTIONS = [
+      'Основное меню',
+      'Авторские завтраки',
+      'Зимнее меню',
+      'Летнее меню',
+      'Специальное меню',
+      'Детское меню'
+    ];
+    const GUESS_MENUS = new Set(['main', 'breakfast', 'winter', 'summer', 'special', 'kids', 'english']);
+    const GUESS_MODES = new Set(['desc', 'contains', 'feat']);
+    const COMMUNICATION_SECTIONS = [
+      'Общие вопросы',
+      'Рекомендации блюд',
+      'Стандарты сервиса и этикет',
+      'Сценарии общения на английском'
+    ];
+
+    const profile = { trainingType: 'desc' };
+
+    const state = {
+      cards: [],
+      queue: [],
+      currentIndex: 0,
+      deckSize: 0,
+      filterMenu: 'all',
+      filterSection: 'all-menu',
+      search: ''
+    };
+
+    const ui = {
+      menuFilter: document.getElementById('menuFilter'),
+      sectionFilter: document.getElementById('sectionFilter'),
+      searchInput: document.getElementById('searchInput'),
+      shuffleBtn: document.getElementById('shuffleBtn'),
+      resetBtn: document.getElementById('resetProgress'),
+      viewToggle: document.getElementById('viewToggle'),
+      statDue: document.getElementById('statDue'),
+      statNew: document.getElementById('statNew'),
+      statLearned: document.getElementById('statLearned'),
+      cardTitle: document.getElementById('cardTitle'),
+      cardSubtitle: document.getElementById('cardSubtitle'),
+      cardBody: document.querySelector('.card-body'),
+      cardFront: document.querySelector('.card-front'),
+      cardBack: document.querySelector('.card-back'),
+      imageWrapper: document.getElementById('imageWrapper'),
+      cardImage: document.getElementById('cardImage'),
+      answerBlock: document.getElementById('answerBlock'),
+      answerTitle: document.getElementById('answerTitle'),
+      answerText: document.getElementById('answerText'),
+      allergensBlock: document.getElementById('allergensBlock'),
+      extra: document.getElementById('extraDetails'),
+      tagsRow: document.getElementById('tagsRow'),
+      ratingButtons: [...document.querySelectorAll('.rating button[data-score]')],
+      revealBtn: document.getElementById('revealBtn'),
+      cardContainer: document.getElementById('cardContainer')
+    };
+
+    function loadProgress() {
+      try {
+        return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+      } catch (e) { return {}; }
+    }
+
+    function loadViewMode() {
+      return localStorage.getItem(VIEW_MODE_KEY) === 'compact';
+    }
+
+    function applyViewMode(isCompact) {
+      document.body.classList.toggle('compact-mode', isCompact);
+      ui.viewToggle.textContent = isCompact ? 'Полный режим' : 'Режим карточки';
+      ui.viewToggle.setAttribute('aria-pressed', isCompact);
+      localStorage.setItem(VIEW_MODE_KEY, isCompact ? 'compact' : 'full');
+    }
+
+    function saveProgress(progress) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+    }
+
+    function shuffleArray(items) {
+      const copy = [...items];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function escapeHTML(value = '') {
+      return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function sanitizeRichHTML(html = '') {
+      const template = document.createElement('template');
+      template.innerHTML = html;
+
+      const ALLOWED_TAGS = new Set(['OL', 'UL', 'LI', 'STRONG', 'EM', 'B', 'I', 'BR', 'P', 'SPAN']);
+      const ALLOWED_ATTRS = new Map([
+        ['OL', new Set(['start'])],
+        ['LI', new Set(['value'])]
+      ]);
+
+      const cleanse = node => {
+        [...node.childNodes].forEach(child => {
+          if (child.nodeType === Node.ELEMENT_NODE) {
+            if (!ALLOWED_TAGS.has(child.tagName)) {
+              const fragment = document.createDocumentFragment();
+              while (child.firstChild) fragment.appendChild(child.firstChild);
+              child.replaceWith(fragment);
+              cleanse(fragment);
+              return;
+            }
+            const allowedForTag = ALLOWED_ATTRS.get(child.tagName) || new Set();
+            [...child.attributes].forEach(attr => {
+              if (!allowedForTag.has(attr.name.toLowerCase())) {
+                child.removeAttribute(attr.name);
+              }
+            });
+            cleanse(child);
+          } else if (child.nodeType === Node.COMMENT_NODE) {
+            child.remove();
+          }
+        });
+      };
+
+      cleanse(template.content);
+      return template.innerHTML;
+    }
+
+    function renderRichText(content = '') {
+      if (!content?.trim()) return '';
+      const hasMarkup = /<\/?(ol|ul|li|p|br|strong|em|b|i|span)[\s>]/i.test(content);
+      const prepared = hasMarkup ? sanitizeRichHTML(content) : escapeHTML(content).replace(/\n/g, '<br>');
+      return `<div class="rich-text">${prepared}</div>`;
+    }
+
+    function slugify(value = '') {
+      const map = {
+        'а':'a','б':'b','в':'v','г':'g','д':'d','е':'e','ё':'e','ж':'zh','з':'z','и':'i','й':'y','к':'k','л':'l','м':'m','н':'n','о':'o','п':'p','р':'r','с':'s','т':'t','у':'u','ф':'f','х':'h','ц':'ts','ч':'ch','ш':'sh','щ':'sch','ы':'y','э':'e','ю':'yu','я':'ya'
+      };
+      return String(value)
+        .toLowerCase()
+        .replace(/[ъь]/g, '')
+        .replace(/[а-яё]/g, ch => map[ch] ?? ch)
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/-+/g, '-')
+        .replace(/^-|-$/g, '');
+    }
+
+    function getEnglishSectionLabel(menuName = '') {
+      const normalized = menuName.toLowerCase();
+      if (normalized.includes('завтрак')) return 'Авторские завтраки';
+      if (normalized.includes('детск')) return 'Детское меню';
+      if (normalized.includes('зимн')) return 'Зимнее меню';
+      if (normalized.includes('летн')) return 'Летнее меню';
+      if (normalized.includes('пост') || normalized.includes('специаль')) return 'Специальное меню';
+      return 'Основное меню';
+    }
+
+    function getTitlePreview(title) {
+      const words = title.trim().split(/\s+/);
+      const preview = words.slice(0, 3).join(' ');
+      return `${preview}…`;
+    }
+
+    function getCardIcon(card) {
+      if (card.type === 'service') return '🗣️';
+      if (card.type === 'wine') return '🍷';
+      if (card.type === 'drink') return '🥂';
+      return '🍽️';
+    }
+
+    function getCardSubtitle(card) {
+      const icon = getCardIcon(card);
+      const parts = [card.section, card.menu, card.id].filter(Boolean);
+      return `${icon} ${parts.join(' · ')}`;
+    }
+
+    function normalizeCards(raw, defaults = {}, options = {}) {
+      const { locale, idSuffix = '', tagExtra = [], menuOverride } = options;
+      return raw
+        .filter(item => {
+          if (!item || !item.id || !item.title) return false;
+          return (item.status || '').toLowerCase() !== 'в архиве';
+        })
+        .map(item => {
+          const localized = locale ? item?.i18n?.[locale] : null;
+          return {
+            id: `${item.id}${idSuffix}`,
+            title: (localized?.title || item.title || '').trim(),
+            description: localized?.description || item.description || '',
+            contains: localized?.contains || item.contains || '',
+            allergens: item.allergens || [],
+            tags: [
+              ...(item.tags || []),
+              ...(localized?.tags || []),
+              ...tagExtra
+            ].filter(Boolean),
+            section: item.section || defaults.section || 'Без раздела',
+            menu: menuOverride || item.menu || defaults.menu || 'Без меню',
+            type: item.type || defaults.type || 'dish',
+            image_url: item.image_url || item.image?.src || item.image?.url || item.image?.path,
+            image_alt: item.image?.alt || item.image_alt
+          };
+        });
+    }
+
+    function menuMatches(card, menuValue) {
+      const option = MENU_OPTIONS.find(m => m.value === menuValue);
+      if (!option || !option.menus) return true;
+      return option.menus.includes(card.menu);
+    }
+
+    function buildMenus(cards) {
+      const withCounts = MENU_OPTIONS.map(opt => {
+        const count = cards.filter(c => {
+          if (!c.type || c.type === 'dish') return menuMatches(c, opt.value);
+          if (opt.value === 'communication') return c.menu === 'Коммуникация и сервис';
+          if (opt.value === 'english') return c.menu === 'English menu';
+          return false;
+        }).length;
+        return { ...opt, count };
+      });
+      ui.menuFilter.innerHTML = withCounts
+        .map(opt => `<option value="${opt.value}">${opt.label}${opt.count ? ` (${opt.count})` : ''}</option>`)
+        .join('');
+      ui.menuFilter.value = state.filterMenu;
+    }
+
+    function buildSections(cards) {
+      let sections = [];
+      const isCommunication = state.filterMenu === 'communication';
+      const isWine = state.filterMenu === 'wine';
+      const isEnglishMenu = state.filterMenu === 'english';
+
+      if (isCommunication) {
+        sections = COMMUNICATION_SECTIONS;
+      } else if (isEnglishMenu) {
+        sections = ENGLISH_SECTIONS;
+      } else {
+        const scopeCards = cards.filter((card) => {
+          if (isWine) return menuMatches(card, 'wine');
+          if (MENU_SECTION_FILTERS.has(state.filterMenu)) return menuMatches(card, state.filterMenu);
+          return menuMatches(card, state.filterMenu);
+        });
+        sections = Array.from(new Set(scopeCards.map((c) => c.section))).sort();
+      }
+
+      const menuLabel = MENU_OPTIONS.find((m) => m.value === state.filterMenu)?.label || 'выбранного меню';
+      ui.sectionFilter.innerHTML = `
+        <option value="all-menu">Все разделы (${menuLabel.toLowerCase()})</option>
+        ${sections.map((s) => `<option value="${s}">${s}</option>`).join('')}
+      `;
+      if (![...ui.sectionFilter.options].some(o => o.value === state.filterSection)) {
+        state.filterSection = 'all-menu';
+      }
+      ui.sectionFilter.value = state.filterSection;
+    }
+
+    function filterCards() {
+      const search = state.search.toLowerCase();
+      const filtered = state.cards.filter(card => {
+        const mode = profile.trainingType;
+        const isCommunicationMenu = state.filterMenu === 'communication';
+        const modeTypes = {
+          desc: ['dish'],
+          contains: ['dish'],
+          feat: ['dish'],
+          general: ['service', 'question'],
+          service: ['service'],
+          situation: ['scenario'],
+          recommend: ['scenario'],
+          scenario_en: ['scenario']
+        };
+
+        const allowedTypes = isCommunicationMenu ? ['service', 'question', 'scenario'] : modeTypes[mode] || ['dish'];
+        if (!allowedTypes.includes(card.type || 'dish')) return false;
+
+        if (mode === 'scenario_en' && !card.tags.some(t => t.toLowerCase().includes('english'))) return false;
+
+        const sectionIsAll = state.filterSection === 'all-menu';
+        const englishSection = state.filterMenu === 'english'
+          ? (card.englishCategory || getEnglishSectionLabel(card.menu))
+          : null;
+        const matchesSection = sectionIsAll
+          || (state.filterMenu === 'english' ? englishSection === state.filterSection : card.section === state.filterSection);
+        if (!matchesSection) return false;
+
+        const matchesMenu = menuMatches(card, state.filterMenu);
+        if (!matchesMenu) return false;
+
+        const matchesSearch = !search || card.title.toLowerCase().includes(search) || card.tags.some(t => t.toLowerCase().includes(search));
+        return matchesSection && matchesSearch;
+      });
+      return filtered;
+    }
+
+    function buildQueue() {
+      const progress = loadProgress();
+      const cards = filterCards();
+      const activeCards = cards.filter((card) => !progress[card.id]?.mastered);
+      state.queue = shuffleArray(activeCards);
+      state.deckSize = activeCards.length;
+      state.currentIndex = 0;
+      updateStats();
+      showCard();
+    }
+
+    function randomInRange(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function getDeferredOffset(min, max) {
+      const deckSize = state.deckSize || 0;
+      if (deckSize <= 1) return 0;
+      const effectiveMax = Math.min(max, Math.max(1, deckSize - 1));
+      const effectiveMin = Math.min(min, effectiveMax);
+      return randomInRange(effectiveMin, effectiveMax);
+    }
+
+    function updateStats() {
+      const progress = loadProgress();
+      const cards = filterCards();
+      const mastered = cards.filter(card => progress[card.id]?.mastered).length;
+      const activeCards = cards.length - mastered;
+      const seenActive = cards.filter(card => progress[card.id]?.seen && !progress[card.id]?.mastered).length;
+      const fresh = Math.max(0, activeCards - seenActive);
+
+      ui.statDue.textContent = activeCards;
+      ui.statNew.textContent = fresh;
+      ui.statLearned.textContent = mastered;
+    }
+
+    function renderTags(tags) {
+      ui.tagsRow.innerHTML = tags.map(tag => `<span class="pill">${tag}</span>`).join('');
+      ui.tagsRow.hidden = true;
+    }
+
+    function setCardSide(side) {
+      ui.cardBody.dataset.side = side;
+      ui.cardFront.hidden = side === 'back';
+      ui.cardBack.hidden = side === 'front';
+    }
+
+    function showCard() {
+      const card = state.queue[state.currentIndex];
+      if (!card) {
+        ui.cardTitle.textContent = 'Карточки не найдены';
+        ui.cardSubtitle.textContent = '';
+        ui.cardSubtitle.hidden = true;
+        ui.imageWrapper.hidden = true;
+        ui.cardImage.removeAttribute('src');
+        ui.answerTitle.textContent = '';
+        ui.answerBlock.hidden = true;
+        ui.ratingButtons.forEach(btn => btn.disabled = true);
+        ui.revealBtn.disabled = true;
+        setCardSide('front');
+        return;
+      }
+
+      const previewTitle = getTitlePreview(card.title);
+      ui.cardTitle.textContent = previewTitle;
+      ui.cardSubtitle.textContent = getCardSubtitle(card);
+      ui.cardSubtitle.hidden = false;
+      ui.answerBlock.hidden = true;
+      ui.answerTitle.textContent = card.title;
+      ui.revealBtn.disabled = false;
+      ui.ratingButtons.forEach(btn => btn.disabled = true);
+      const isCommunicationMenu = state.filterMenu === 'communication';
+      setCardSide('front');
+
+      const shouldShowImage = Boolean(card.image_url);
+      ui.imageWrapper.hidden = !shouldShowImage;
+      if (shouldShowImage) {
+        ui.cardImage.src = card.image_url;
+        ui.cardImage.alt = card.title;
+      } else {
+        ui.cardImage.removeAttribute('src');
+      }
+
+      renderTags(card.tags || []);
+      ui.allergensBlock.hidden = true;
+      ui.allergensBlock.innerHTML = '';
+
+      switch(isCommunicationMenu ? 'communication' : profile.trainingType) {
+        case 'contains':
+          ui.answerText.innerHTML = card.contains ? renderRichText(card.contains) : 'Нет состава';
+          break;
+        case 'feat':
+          if (card.featuresRaw) {
+            ui.answerText.innerHTML = renderRichText(card.featuresRaw.trim());
+          } else {
+            ui.answerText.innerHTML = card.features?.length
+              ? renderRichText(`<ul>${card.features.map(f => `<li>${f}</li>`).join('')}</ul>`)
+              : 'Особенности не указаны';
+          }
+          break;
+        case 'general':
+        case 'service':
+        case 'situation':
+        case 'recommend':
+        case 'scenario_en':
+        case 'communication':
+          ui.answerText.innerHTML = renderRichText(card.description) || 'Ответ отсутствует';
+          break;
+        default:
+          ui.answerText.innerHTML = renderRichText(card.description) || 'Описание отсутствует';
+      }
+
+      if (isCommunicationMenu || ['general', 'service', 'situation', 'recommend', 'scenario_en'].includes(profile.trainingType)) {
+        ui.extra.innerHTML = `
+          <div>
+            <strong style="color:var(--accent-3)">Тип карточки</strong>
+            <div class="hint">${card.type || 'service'}</div>
+          </div>
+          <div>
+            <strong style="color:var(--accent-3)">Теги</strong>
+            <div class="hint">${card.tags?.length ? card.tags.join(', ') : 'Не указаны'}</div>
+          </div>
+        `;
+        ui.allergensBlock.hidden = true;
+      } else {
+        const containsHtml = card.contains ? renderRichText(card.contains) : 'Нет данных';
+        ui.extra.innerHTML = `
+          <div>
+            <strong style="color:var(--accent-3)">Состав/подача</strong>
+            <div class="hint">${containsHtml}</div>
+          </div>
+        `;
+        ui.allergensBlock.innerHTML = `
+          <strong>Аллергены</strong>
+          <div class="hint">${card.allergens?.length ? card.allergens.join(', ') : 'Не указаны'}</div>
+        `;
+        ui.allergensBlock.hidden = false;
+      }
+    }
+
+    function nextCard() {
+      if (state.queue.length === 0) {
+        state.currentIndex = 0;
+        showCard();
+        return;
+      }
+      if (state.currentIndex >= state.queue.length) {
+        state.currentIndex = 0;
+      }
+      showCard();
+    }
+
+    async function init() {
+      applyViewMode(loadViewMode());
+      const [menuRes, serviceRes, enDictRes] = await Promise.all([
+        fetch(MENU_DATA_URL),
+        fetch(COMMUNICATION_URL),
+        fetch(EN_DICT_URL)
+      ]);
+      const [menuRaw, serviceRaw, enDictRaw] = await Promise.all([
+        menuRes.json(),
+        serviceRes.json(),
+        enDictRes.json().catch(() => ({}))
+      ]);
+
+      const englishDictionary = enDictRaw || {};
+      const menuCards = normalizeCards(menuRaw, { type: 'dish' });
+      const cardBySlug = new Map();
+      menuCards.forEach(card => {
+        const slug = slugify(card.title);
+        if (slug) cardBySlug.set(slug, card);
+      });
+
+      const englishCards = Object.entries(englishDictionary)
+        .map(([slug, entry]) => {
+          const baseCard = cardBySlug.get(slug);
+          if (!baseCard) return null;
+
+          const [normalized] = normalizeCards([
+            {
+              ...baseCard,
+              title: entry?.name || baseCard.title,
+              description: entry?.description || baseCard.description,
+              contains: entry?.ingredients || baseCard.contains
+            }
+          ], { type: baseCard.type || 'dish' }, {
+            idSuffix: '-en',
+            tagExtra: ['english'],
+            menuOverride: 'English menu'
+          });
+
+          if (!normalized) return null;
+
+          const featuresRaw = entry?.features || '';
+          const features = (featuresRaw || '')
+            .split(/\n+/)
+            .map(line => line.trim())
+            .filter(Boolean);
+
+          return {
+            ...normalized,
+            features,
+            featuresRaw,
+            englishCategory: getEnglishSectionLabel(baseCard.menu)
+          };
+        })
+        .filter(Boolean);
+
+      const communicationCards = normalizeCards(serviceRaw, { type: 'service', menu: 'Коммуникация и сервис' });
+      state.cards = [...menuCards, ...englishCards, ...communicationCards];
+      buildMenus(state.cards);
+      buildSections(state.cards);
+      buildQueue();
+    }
+    ui.menuFilter.addEventListener('change', e => { state.filterMenu = e.target.value; state.filterSection = 'all-menu'; buildSections(state.cards); buildQueue(); });
+    ui.sectionFilter.addEventListener('change', e => { state.filterSection = e.target.value; buildQueue(); });
+    ui.searchInput.addEventListener('input', e => { state.search = e.target.value; buildQueue(); });
+    ui.shuffleBtn.addEventListener('click', () => { state.queue = shuffleArray(state.queue); state.currentIndex = 0; showCard(); });
+    ui.resetBtn.addEventListener('click', () => { if (confirm('Сбросить локальный прогресс?')) { localStorage.removeItem(STORAGE_KEY); buildQueue(); } });
+    ui.viewToggle.addEventListener('click', () => { applyViewMode(!document.body.classList.contains('compact-mode')); });
+
+    ui.revealBtn.addEventListener('click', () => {
+      setCardSide('back');
+      ui.answerBlock.hidden = false;
+      ui.tagsRow.hidden = ui.tagsRow.childElementCount === 0;
+      ui.ratingButtons.forEach(btn => btn.disabled = false);
+    });
+
+    ui.ratingButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const card = state.queue[state.currentIndex];
+        if (!card) return;
+        const score = Number(btn.dataset.score);
+        const progress = loadProgress();
+        const entry = progress[card.id] || {};
+        entry.seen = true;
+
+        state.queue.splice(state.currentIndex, 1);
+
+        if (score === 5) {
+          entry.mastered = true;
+          state.deckSize = Math.max(0, state.deckSize - 1);
+        } else {
+          const offset = score === 1
+            ? 0
+            : score === 3
+              ? getDeferredOffset(5, 10)
+              : getDeferredOffset(10, 15);
+          const targetIndex = Math.min(state.currentIndex + offset, state.queue.length);
+          state.queue.splice(targetIndex, 0, card);
+        }
+
+        progress[card.id] = entry;
+        saveProgress(progress);
+        updateStats();
+        nextCard();
+      });
+    });
+
+    init();
+  </script>
+</body>
+</html>

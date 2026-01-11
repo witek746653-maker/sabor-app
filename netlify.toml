@@ -1,0 +1,13 @@
+# Netlify конфигурация для деплоя фронтенда
+[build]
+  base = "frontend"
+  command = "npm ci && npm run build"
+  publish = "build"
+
+# Правила редиректов для client-side routing
+# React Router использует BrowserRouter, поэтому все запросы должны идти на index.html
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+

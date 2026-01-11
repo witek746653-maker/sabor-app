@@ -1,0 +1,156 @@
+/* Стили для страницы вина в стиле журнальной статьи */
+
+.wine-item-page {
+  font-family: 'Lato', sans-serif;
+}
+
+.wine-card {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Типографика */
+.wine-item-page h1,
+.wine-item-page h2,
+.wine-item-page h3,
+.wine-item-page .font-serif {
+  font-family: 'Playfair Display', serif;
+}
+
+.wine-item-page body,
+.wine-item-page p,
+.wine-item-page span,
+.wine-item-page div,
+.wine-item-page a {
+  font-family: 'Lato', sans-serif;
+}
+
+/* Адаптивность для мобильных */
+@media (max-width: 768px) {
+  .wine-item-page {
+    padding: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  
+  .wine-item-page > div {
+    padding: 0.5rem !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  
+  .wine-item-page main {
+    margin: 0 !important;
+    border-radius: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  
+  .wine-item-page header {
+    padding: 1rem !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  
+  .wine-item-page header nav ul {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  
+  .wine-item-page section {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}
+
+/* Обеспечиваем прокрутку и адаптивность */
+.wine-item-page {
+  width: 100% !important;
+  max-width: 100% !important;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.wine-item-page > div {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box;
+}
+
+.wine-item-page main {
+  overflow: visible !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box;
+}
+
+/* Убираем все ограничения по высоте */
+.wine-item-page section {
+  overflow: visible !important;
+}
+
+.wine-item-page * {
+  box-sizing: border-box;
+}
+
+/* Убираем overflow hidden везде */
+.wine-item-page .grid {
+  overflow: visible !important;
+}
+
+.wine-item-page article {
+  overflow: visible !important;
+  max-width: 100% !important;
+}
+
+
+@media (min-width: 640px) {
+  .wine-image-container::before {
+    width: 300px;
+    height: 300px;
+  }
+}
+
+@media (min-width: 768px) {
+  .wine-image-container::before {
+    width: 350px;
+    height: 350px;
+  }
+}
+
+/* Стили для кнопки аудио на мобильных устройствах */
+/* На мобильных устройствах кнопка находится между бутылкой и следующим элементом */
+@media (max-width: 767px) {
+  .audio-button-section {
+    /* Показываем секцию с кнопкой */
+    display: block !important;
+    /* Отрицательный margin-top поднимает секцию выше, чтобы кнопка была ближе к бутылке */
+    margin-top: -4rem !important;
+    margin-bottom: 1rem !important;
+    /* Убираем лишние отступы */
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+  
+  .audio-button {
+    /* Дополнительная тень для лучшей видимости */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3) !important;
+    /* Увеличенный размер для удобства нажатия */
+    width: 3.5rem !important;
+    height: 3.5rem !important;
+    min-width: 3.5rem !important;
+    min-height: 3.5rem !important;
+  }
+}
+
+/* На широких экранах показываем кнопку в отдельной секции справа */
+@media (min-width: 768px) {
+  .audio-button-section {
+    display: block !important;
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+  }
+}

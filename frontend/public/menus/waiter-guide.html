@@ -1,0 +1,937 @@
+﻿<html><head><meta content="text/html; charset=utf-8" http-equiv="Content-Type"/><title>Справочник официанта</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+  html {
+    scroll-behavior: smooth;
+  }
+
+#searchContainer {
+    margin: 24px 0 16px;
+    position: relative;
+  }
+
+  #searchContainer .search-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 20px;
+    border-radius: 32px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(246, 248, 255, 0.95));
+    box-shadow: 0 12px 30px rgba(15, 20, 35, 0.12);
+    border: 1px solid rgba(99, 110, 146, 0.15);
+    transition: box-shadow 200ms ease, transform 200ms ease;
+  }
+
+  #searchContainer .search-box::before {
+    content: "";
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cline x1='16.65' y1='16.65' x2='21' y2='21'/%3E%3C/svg%3E") center/contain;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cline x1='16.65' y1='16.65' x2='21' y2='21'/%3E%3C/svg%3E") center/contain;
+    background-color: rgba(55, 65, 81, 0.75);
+    opacity: 0.8;
+    transition: opacity 200ms ease;
+  }
+
+  #searchContainer .search-box:focus-within {
+    box-shadow: 0 18px 36px rgba(15, 20, 35, 0.16);
+    transform: translateY(-1px);
+  }
+
+  #searchContainer .search-box:focus-within::before {
+    opacity: 1;
+    background-color: rgba(37, 99, 235, 0.9);
+  }
+
+  #searchInput {
+    width: 100%;
+    border: none;
+    background: transparent;
+    font-size: 1rem;
+    color: rgba(17, 24, 39, 0.9);
+    outline: none;
+    padding: 0;
+  }
+
+  #searchInput::placeholder {
+    color: rgba(99, 110, 146, 0.7);
+  }
+
+  @media (max-width: 600px) {
+    #searchContainer .search-box {
+      padding: 18px 22px;
+      gap: 16px;
+    }
+
+    #searchContainer .search-box::before {
+      width: 24px;
+      height: 24px;
+    }
+
+    #searchInput {
+      font-size: 1.2rem;
+      min-height: 2.75rem;
+    }
+
+    #searchInput::placeholder {
+      font-size: 1.2rem;
+    }
+  }
+
+
+  #searchResults {
+    list-style: none;
+    padding-left: 0;
+    margin: 12px 0 0;
+    border-radius: 20px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: 0 18px 34px rgba(15, 23, 42, 0.12);
+    border: 1px solid rgba(99, 110, 146, 0.12);
+    display: none;
+  }
+
+  #searchResults li + li {
+    border-top: 1px solid rgba(229, 231, 235, 0.8);
+  }
+
+  #searchResults li a {
+    text-decoration: none;
+	color: rgba(31, 41, 55, 0.92);
+    display: block;
+	padding: 12px 20px;
+    transition: background-color 160ms ease, padding-left 160ms ease;
+  }
+
+  #searchResults li a:hover {
+    background-color: rgba(59, 130, 246, 0.08);
+    padding-left: 24px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #searchContainer .search-box,
+    #searchResults li a {
+      transition: none;
+    }
+  }
+</style>
+<script src="../scripts/fuse.min.js" defer></script>
+<script src="../scripts/indexData.js" defer></script>
+<script src="../scripts/search.js" defer></script>
+
+</head><body><article class="page sans" id="28233974-4d17-80e3-916a-d3b7ec190c70"><header><img class="page-cover-image" src="../images/spravochnik/spravochnik-head.webpjpg style="object-position:center 50%"/><div class="page-header-icon page-header-icon-with-cover"><img class="icon" src="../icons/sabor-icon-small.png"/></div><h1 class="page-title">Справочник официанта</h1><p class="page-description"></p></header><div class="page-body">
+<div id="searchContainer">
+<div class="search-box">
+<input id="searchInput" placeholder="Поиск по справочнику..." type="search"/>
+</div>
+<ul id="searchResults"></ul>
+</div>
+<nav class="block-color-gray table_of_contents" id="28233974-4d17-81ec-aedd-e36f72a2f020"><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#28333974-4d17-8068-8581-fc12e1f4d6db">Устрицы: дикая страсть и фермерское искусство</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#28333974-4d17-8050-988e-deff7ee0c40c">Икра, ради которой ныряют</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#28333974-4d17-8088-8a2c-cfbdbb83ef9a">Брускетта - от крестьянского костра до аперитива</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#28333974-4d17-8074-9202-cf2fb309f095">Тартар - от степей к ресторану: история дикого блюда</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#28333974-4d17-803d-8bef-eca1d4acfbb0">Мясные деликатесы - от римских солдат до тапас-бара</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#29933974-4d17-802e-ac14-d8cf6e35a400">Оливки и маслины — один плод, два названия</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#29933974-4d17-806e-84ee-d06e167209ad">Без огня: перуанское искусство севиче</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#29933974-4d17-8063-bfb4-ea8d98a21e32">Камамбер — символ вкуса и культуры Франции</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#29933974-4d17-80da-811f-d1abc42f17d7">Фуа-гра — деликатес с историей, вкусом и противоречиями  </a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#29933974-4d17-80b7-a21f-f077e464c742">Запечённые устрицы — американская классика с французскими корнями</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#29933974-4d17-80cc-b50b-ff619ab9225d">Как улитка покорила французский ресторан</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#29933974-4d17-8043-9a2d-fe220a9a752f">Морская аристократия: всё о креветках</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#29933974-4d17-8096-bdb9-d73b73c42a90">Кардини — человек, подаривший миру салат Цезарь   </a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#29933974-4d17-8076-b80a-e8db4d489b25">Огонь на тарелке: история фламбирования</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#29933974-4d17-808a-85f3-c9469e7a78a3">Осьминог — вкус моря и мудрость глубин</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#29933974-4d17-80a7-8bf4-d9f97d479dad">Буррата: свежесть, созданная вручную</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#29933974-4d17-80f6-ab2e-d5934c932537">Французский луковый суп: вкус, рожденный из скромности</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#29933974-4d17-8090-8374-cd8534b451a1">Минестроне — итальянский суп без правил</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#29933974-4d17-8004-91bd-e6bc471867b1">Суп из каштанов — забытая классика Европы</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#29933974-4d17-8060-9759-ff52c23a06b9">Уха со сливками: русская классика с изюминкой</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#29933974-4d17-805d-824f-e54db92ecf04">Том Ям — искусство баланса кислого и острого</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#29933974-4d17-80e9-a79e-c89413416982">Ризотто - блюдо, рожденное из ошибки</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#29933974-4d17-801f-ab30-ecec2e7041e3">Чёрная треска — деликатес глубин</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#29933974-4d17-808e-a010-f9f3cedd092e">Стейки — анатомия идеального куска мяса</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#29933974-4d17-8073-9098-fee295ad8e61">Что такое вызревание мяса: Dry Aged и Wet Aged</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#29933974-4d17-80c3-9002-f63fccd1bc83">Хоспер — жар, вкус и аромат угля</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#29933974-4d17-80b2-9cf2-cd6f4d9fe5b2">Шоколадный Фондан — сладкая случайность, ставшая легендой</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#29933974-4d17-806c-90cb-e6d7abee0312">Макарон и Макарун — сладкие тёзки с разным характером</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#29933974-4d17-80d8-98cb-e2e202f136db">Медовик — любимый десерт императорского двора</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#29933974-4d17-80aa-a194-e99979d1bdcc">Тирамису — сладкое «подними меня» из Италии</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#29933974-4d17-802e-a69f-f6a079e9dcd2">Баскский чизкейк: нежность внутри, огонь снаружи</a></div></nav><h3 class="block-color-brown_background" id="28333974-4d17-8068-8581-fc12e1f4d6db">Устрицы: дикая страсть и фермерское искусство</h3><div class="column-list" id="28333974-4d17-80f4-9c25-d4a21f7c0383"><div class="column" id="28333974-4d17-8027-ae5b-d9bcaeef9234" style="width:50%"><p class="" id="28333974-4d17-8025-a9c9-ecfb6024477a"><strong>Все виды устриц делятся диких и культивируемых.</strong></p><p class="" id="28333974-4d17-80eb-8aa7-cc70281f950e"><strong>Диких</strong> двустворчатых моллюсков вылавливают в морях и океанах водолазным методом и поставляют к столу «как есть», без облагораживания. Поэтому их мякоть обычно более жесткая, соленая, с ярко выраженной йодистостью и изменчивым вкусом. Все это — последствия роста в глубоких водах в неконтролируемых условиях.За эту резкость и природную вариативность вкуса дикие устрицы и ценятся гурманами. Особенно ценны моллюски с плоской раковиной. Они требовательны к среде обитания, поэтому их выращивание на фермах — сложная задача. </p><p class="" id="28333974-4d17-8077-920c-e0b7535e6077">Почти все <strong>культивируемые</strong> виды устриц для еды — моллюски с глубокими раковинами чашеобразной формы. На устричных фермах их растят в два этапа. Сначала устричных мальков (спат) помещают в специальные клети и погружают в воды заливов. В этих клетях, защищенные от хищников и других стрессов, они растут 2-4 года. На втором этапе моллюсков вылавливают и перевозят в другое место обитания — пресноводный водоем. Там они проводят от одной недели до года. Этот процесс называется <strong>аффинированием. </strong>Его можно сравнить с декантированием вина: аффинаж проявляет тонкие нотки вкуса, убирает лишнюю соль, делает мясо моллюска более нежным, придает сладость. Кроме того, все виды устриц для еды после аффинажа обладают более предсказуемым вкусом и безопаснее с точки зрения употребления в пищу сырыми. Поэтому шеф-повара ресторанов чаще выбирают для своих кулинарных шедевров именно аффинированных моллюсков. Хороши они и для первых дегустаций этого морепродукта.</p><figure class="image" id="28333974-4d17-801d-a5b8-e5dcee3927f4"><a href="spravochnik-oficianta_growing_oysters.jpg"><img src="../images/spravochnik/spravochnik-oficianta-growing-oysters.webpjpg style="width:541.1328125px"/></a><figcaption>Ферма по выращиванию устриц</figcaption></figure></div><div class="column" id="28333974-4d17-8090-9c52-cb95d59949bd" style="width:50%"><figure class="image" id="28333974-4d17-80e8-9d81-e15df2611fa1"><a href="spravochnik-oficianta_growing_oysters_sadki.jpg"><img src="../images/spravochnik/spravochnik-oficianta-growing-oysters-sadki.webpjpg style="width:878.9921875px"/></a><figcaption>Садки для выращивания устриц</figcaption></figure><p class="" id="28333974-4d17-80f3-861f-c1337858f8c0"><strong>Императорская</strong><br/>Изящный крупный моллюск из залива Петра Великого с изменчивым вкусом, который колеблется от сладковатого до сильно соленого. Из-за мясистости и размеров Императорская устрица может использоваться для приготовления горячих блюд.<br/></p><p class="" id="28333974-4d17-8075-a2f1-fca1fa49c223"><strong>Специаль Касабланка</strong><br/>Один из самых популярных устричных видов. У моллюска мясистая мякоть, насыщенный йодисто-сладкий вкус и молочные, иногда ореховые аккорды в послевкусии. Их выращиваются в двух известных устричных районах Марокко — Дахла и Уалидия в специальных садах-клерах с морской водой и специальными водорослями, именно они и придают зеленоватый оттенок раковине моллюска<br/></p><p class="" id="2a333974-4d17-8096-b47d-d9da290ec909">
+</p></div></div><div class="column-list" id="2a333974-4d17-8086-a02e-d05a5ad28587"><div class="column" id="2a333974-4d17-80fd-ae07-ec47052d2bc2" style="width:50%"><figure class="block-color-teal_background callout" id="28333974-4d17-80e1-a71e-d51a13081f3b" style="white-space:pre-wrap;display:flex"><div style="font-size:1.5em"><span class="icon">💡</span></div><div style="width:100%"><p class="block-color-teal_background" id="28333974-4d17-807d-ab1c-f60af53e3914">Многие ошибочно считают, что лимон к устрицам подается для проверки их  свежести. Якобы при попадании нескольких капель лимонного сока тело моллюска отреагирует сокращением, значит устрица жива. На самом деле эта традиция возникла вовсе не из-за необходимости тестировать устрицы. Преследовалась другая, не менее практическая, цель. </p><p class="" id="28333974-4d17-8053-8fc8-d84014117b2c">В те времена, когда транспортировка и хранение морепродуктов были задачей не из лёгких, устрицы часто портились в пути и становились действительно опасным для здоровья продуктом. Чтобы предотвратить неприятные последствия употребления возможно испортившихся устриц, люди стали использовать натуральные антисептики: сок лимона, молотый черный перец, уксус. А потом заметили, что это еще и вкусно.</p></div></figure><p class="" id="2a333974-4d17-80f6-a484-cd2b363e079f">
+</p></div><div class="column" id="2a333974-4d17-809e-9b9f-c56784e61f42" style="width:50%"><figure class="image" id="28333974-4d17-8046-b17b-fa403fbad5fa"><a href="spravochnik-oficianta_oysters_lemon.jpg"><img src="../images/spravochnik/spravochnik-oficianta-oysters-lemon.webpjpg style="width:432px"/></a><figcaption>Классический способ — сбрызнуть устрицу лимонным соком перед дегустацией</figcaption></figure></div></div><p class="" id="28333974-4d17-8008-8218-cf3f4a95473d"><strong>Средиземноморская сервировка </strong>устриц включает подачу открытых устриц на ледяной крошке с дольками лимона и соусом «Миньонет» (мелко нарезанный лук-шалот, винный уксус и специи). Важно сохранить жидкость в раковине, использовать ее как ложку и аккуратно съесть устрицу, немного разжевав, чтобы ощутить вкус. Также подают хлеб с маслом и рекомендует съедать кусочек хлеба с маслом в начале трапезы, а также после каждой устрицы. </p><p class="" id="28333974-4d17-80e2-b63b-cfc15fd6b8ac">Одни говорят, что в такой трапезе хлеб с маслом обязателен, чтобы устрицы (и соусы) не причинили вреда желудку. Другие скажут, что хлеб с маслом нейтрализует послевкусие и способствует «обновлению» рецепторов, чтобы от очередной устрицы получить максимальное удовольствие, как от самой первой устрицы. </p><p class="" id="28333974-4d17-80e4-9aef-dfda25e92d0e">Истинные гурманы же объясняют эту традицию тем, что сливочное масло меняет вкус самой устрицы из соленой в сливочно-сладкую.</p><p class="" id="28333974-4d17-8041-9a2a-c811837bcbc2"><strong>Правда ли, что устриц надо есть в те месяцы, в названиях которых есть буква «Р»?</strong><br/>Так было раньше. Дело в том, что с мая по июнь устрицы обычно нерестятся. Они теряют свою наполненность полезными элементами, мясо начинает немного горчить, уходит вес.  Кроме того, летом из-за жары всегда была выше опасность отравлений. Сейчас проблема решена. Мы выращиваем устриц четырех сезонов. Они не участвуют в нересте, очень быстро растут и даже немного слаще по вкусу.</p><figure class="image" id="28333974-4d17-80de-ad56-c326042bd047"><a href="spravochnik-oficianta_oysters.jpg"><img src="../images/spravochnik/spravochnik-oficianta-oysters.webpjpg style="width:879px"/></a><figcaption>Средиземноморская сервировка устриц </figcaption></figure><h3 class="block-color-brown_background" id="28333974-4d17-8050-988e-deff7ee0c40c">Икра, ради которой ныряют</h3><div class="column-list" id="2a333974-4d17-80b6-9359-db83994ed4b4"><div class="column" id="2a333974-4d17-8075-ba92-c7d269b38f2e" style="width:50%"><p class="" id="2a333974-4d17-801b-bfe5-ebbc1da6c8f9">Морской ёж — скромный обитатель морского дна и один из самых ценных гастрономических даров океана. Под колючей оболочкой скрывается <strong>икра (уни)</strong> — янтарно-золотые доли с насыщенным вкусом моря, сладостью и кремовой текстурой. В Японии её называют «едой богов», и свежесть икры проверяют по блеску и плотности.</p><p class="" id="2a333974-4d17-805b-9e83-f3334eaf7760"><strong>Как подают:</strong> чаще всего сырую, на льду, с долькой лайма или немного соевого соуса. Иногда подают на рисе — это основа популярного суши <em>уни-нигири</em>.</p><p class="" id="2a333974-4d17-8088-bb92-ceb68988cfe7"><strong>Полезные свойства:</strong> богата йодом, витаминами A, B, E, жирными кислотами Омега-3. Поддерживает сердце, обмен веществ и иммунитет. Учёные подтверждают, что экстракты икры ускоряют восстановление тканей — за это морской ёж вошёл даже в рацион космонавтов.</p><figure class="block-color-teal_background callout" id="28333974-4d17-808b-9a5b-e3677d619850" style="white-space:pre-wrap;display:flex"><div style="font-size:1.5em"><span class="icon">💡</span></div><div style="width:100%"><p class="block-color-teal_background" id="28333974-4d17-8026-9df4-c147c550e6b3">Добыча морских ежей по-прежнему остаётся ремеслом: их собирают вручную профессиональные дайверы, поскольку ежи обитают на морском дне, где механизированный лов невозможен. Выращивание ежей в искусственных условиях проводится лишь в экспериментальных масштабах — процесс крайне чувствителен к качеству воды, температуре и питанию.</p></div></figure><p class="" id="2a333974-4d17-804a-9bbd-d54ae65b1a41">
+</p></div><div class="column" id="2a333974-4d17-80f9-b7fa-f8c9e1023319" style="width:50%"><figure class="image" id="28333974-4d17-80f6-ba35-cbcdb317d08a"><a href="spravochnik-oficianta_sea_urchins.jpg"><img src="../images/spravochnik/spravochnik-oficianta-sea-urchins.webpjpg style="width:576.8125px"/></a><figcaption>Подача свежих морских ежей на льду</figcaption></figure></div></div><h3 class="block-color-brown_background" id="28333974-4d17-8088-8a2c-cfbdbb83ef9a">Брускетта - от крестьянского костра до аперитива</h3><div class="column-list" id="2a333974-4d17-80df-b0fd-f5d1fc7810f2"><div class="column" id="2a333974-4d17-8013-9446-fe52256e13a3" style="width:50%"><figure class="image" id="28333974-4d17-809c-b625-d435af5ede92"><a href="spravochnik-oficianta_brusketts.jpg"><img src="../images/spravochnik/spravochnik-oficianta-brusketts.webpjpg style="width:912px"/></a><figcaption>Хрустящая брускетта с томатами и свежим базиликом</figcaption></figure></div><div class="column" id="2a333974-4d17-8008-8322-e7ae9028ccca" style="width:50%"><p class="" id="2a333974-4d17-80d0-b799-e5a46de83bb0">Брускетта — простая и гениальная итальянская закуска, выросшая из крестьянской традиции. Когда-то пастухи и фермеры поджаривали вчерашний хлеб на углях, натирали чесноком и поливали свежим оливковым маслом — так рождалось блюдо, которое теперь украшают лучшие рестораны.</p><p class="" id="2a333974-4d17-8020-b85d-ccc0756bc9fb"><strong>Базовая формула:</strong> хрустящий хлеб + чеснок + оливковое масло. Всё остальное — вариации. Самые популярные — с помидорами и базиликом, прошутто и сыром, оливками, артишоками или анчоусами.</p><p class="" id="2a333974-4d17-800a-9e53-d7348ea2ef5d">Брускетта стала символом итальянского аперитива — лёгкая, ароматная, с текстурой, которую невозможно забыть.</p><p class="" id="2a333974-4d17-8082-afe8-c0d6a1e1236b"><strong>Интересный факт:</strong> в Италии брускетта — способ дегустации нового урожая оливкового масла. Осенью фермеры жарят хлеб прямо на костре и пробуют масло свежего отжима.</p></div></div><p class="" id="2a333974-4d17-802f-a49f-e0b09571ce31">
+</p><h3 class="block-color-brown_background" id="28333974-4d17-8074-9202-cf2fb309f095">Тартар - от степей к ресторану: история дикого блюда</h3><div class="column-list" id="2a333974-4d17-8027-8786-f9bbcf6d1b4d"><div class="column" id="2a333974-4d17-80e9-80f6-c750131655a6" style="width:50%"><figure class="image" id="28333974-4d17-80cd-b056-e9d0ab612e3e"><a href="spravochnik-oficianta_beef_tartar.jpg"><img src="../images/spravochnik/spravochnik-oficianta-beef-tartar.webpjpg style="width:576px"/></a><figcaption>Классический тартар из говядины с каперсами, желтком, луком шалот и горчицей</figcaption></figure></div><div class="column" id="2a333974-4d17-8008-b717-cce83dfc41dc" style="width:50%"><p class="" id="2a333974-4d17-801c-9f5c-c8382b77bda1">Тартар из говядины — одно из самых узнаваемых блюд французской кухни. Его подают сырым, приправленным специями, луком, каперсами и сырым желтком сверху. Никакой термообработки — только свежайшее мясо и точность повара.</p><p class="" id="2a333974-4d17-80c0-aec4-d2d0931cbbcc"><strong>Кратко об истории:</strong></p><p class="" id="2a333974-4d17-80b6-a2c8-e93f652d0acb">Название «тартар» восходит к легенде о татарах, которые якобы ели сырое мясо. Французы позаимствовали идею, добавили соус и приправы — так появился <em>steak tartare</em>. С конца XIX века блюдо прочно вошло в европейские меню и стало символом смелого вкуса.</p><p class="" id="2a333974-4d17-80a0-9e87-efef8dbc249e"><strong>Как готовят:</strong></p><p class="" id="2a333974-4d17-8020-9892-d9119edae07f">Берут охлаждённую вырезку говядины, нарезают вручную или рубят ножом. Добавляют лук, каперсы, горчицу, вустерширский соус и перец. В центре выкладывают желток — финальный штрих, который делает вкус насыщенным и шелковистым.</p><p class="" id="2a333974-4d17-803a-9627-fe10efcb8925"><strong>Современные вариации:</strong></p><p class="" id="2a333974-4d17-80d3-9880-f886dc415c3e">Тартар готовят не только из говядины, но и из тунца, лосося, гребешков. В ресторанах подают с авокадо, лаймом или сметаной. Главное — свежесть и баланс вкуса.</p><p class="" id="2a333974-4d17-80f8-9d2a-d7c89f032418"><strong>Интересный факт:</strong></p><p class="" id="2a333974-4d17-8088-be39-dbad16af7745">В классических французских бистро тартар часто смешивает официант прямо при госте — на глазах превращая простое мясо в гастрономический ритуал.</p></div></div><figure class="block-color-teal_background callout" id="28333974-4d17-8087-9742-dfaa6e1917e9" style="white-space:pre-wrap;display:flex"><div style="font-size:1.5em"><span class="icon">💡</span></div><div style="width:100%"><p class="block-color-teal_background" id="28333974-4d17-80ad-82c8-c38aa60758d7">Сегодня тартар имеет множество модификаций, начиная от традиционного тартара из сырого мяса, заканчивая блюдом из фруктов. Сейчас это древнее французское блюдо не имеет ничего общего с кочевниками-татарами, так его готовка предполагает больше не наличие сырого мяса, а нарезки определенного продукта кусочками.</p></div></figure><div class="column-list" id="2a333974-4d17-8048-bef9-dab3f0261884"><div class="column" id="2a333974-4d17-800d-abe3-c11f8fbe8093" style="width:50%"><h3 class="block-color-brown_background" id="28333974-4d17-803d-8bef-eca1d4acfbb0">Мясные деликатесы - от римских солдат до тапас-бара</h3><p class="" id="2a333974-4d17-800f-933c-f7fb1cf455a9">Испанцы называют это просто — <em>tapas de embutidos</em>, набор мясных деликатесов, где каждая нарезка имеет свой характер. В центре — <strong>хамон</strong>, символ Испании. Его готовят из задней ноги свиньи, солят, подвешивают и сушат в горных ветрах месяцами, иногда годами.</p><p class="" id="2a333974-4d17-8087-809b-dafeb66c3d31"><strong>Виды хамона:</strong></p><ul class="bulleted-list" id="2a333974-4d17-8088-8038-dcbd31f11048"><li style="list-style-type:disc"><strong>Хамон серрано</strong> — из белых свиней, выдерживается 9–12 месяцев. Имеет яркий вкус, но доступную цену.</li></ul><ul class="bulleted-list" id="2a333974-4d17-800f-a645-fe56f7c6af7f"><li style="list-style-type:disc"><strong>Хамон иберико (pata negra)</strong> — из особой иберийской породы чёрных свиней, питающихся желудями. Его аромат глубокий, ореховый, а текстура — маслянистая.<figure class="image" id="28333974-4d17-8012-896e-eb5e1a86257a"><a href="spravochnik-oficianta_hamon.jpg"><img src="../images/spravochnik/spravochnik-oficianta-hamon.webpjpg style="width:768px"/></a><figcaption>Хамонера (cuchillo jamonero) - специальный нож для резки хамона </figcaption></figure><p class="" id="2a333974-4d17-807e-aa7b-dc2141d82d45"><strong>Чоризо</strong> — ещё один обязательный элемент мясной тарелки. Это копчёная свиная колбаса с ярким вкусом и насыщенным красным цветом, который придаёт паприка. В Испании существует множество видов чоризо — от мягких и сочных, которые едят сырыми, до плотных и острых, идеально подходящих для жарки. Его добавляют в паэлью, омлеты, супы и тапас, где чоризо раскрывает свой пряный, слегка дымный аромат.</p><p class="" id="2a333974-4d17-80ff-89ea-e2e6c0759a94"><strong>Подача:</strong></p><p class="" id="2a333974-4d17-80c8-aa16-c7f3e29383c3">Ассорти мясных деликатесов обычно включает хамон, чоризо, лонганису, сальчичон, кусочки сыра манчего и хлебные гренки. Идеально под бокал сухого хереса или молодого красного вина.</p></li></ul></div><div class="column" id="2a333974-4d17-8089-b6c5-f9d915ada85a" style="width:50%"><h3 class="block-color-brown_background" id="29933974-4d17-802e-ac14-d8cf6e35a400">Оливки и маслины — один плод, два названия</h3><p class="" id="2a333974-4d17-80d7-bd4d-c7e8c982b17d">На самом деле <strong>оливки и маслины — это одно и то же дерево и один и тот же плод</strong>. Разница только в степени зрелости: зелёные — недозрелые, чёрные — зрелые. В Европе их всех называют <em>olives</em>, а слово «маслины» придумали только в России.</p><p class="" id="2a333974-4d17-80df-bc42-c3de84886af1"><strong>Как растут:</strong></p><p class="" id="2a333974-4d17-8039-a02b-f412467c8b52">Оливки собирают в разное время. Зелёные снимают раньше — они плотнее, с лёгкой горчинкой. Чёрные оставляют дозреть на ветке, и их вкус становится мягче, маслянистее и чуть сладковатым.</p><p class="" id="2a333974-4d17-80f7-91f1-ff6ebaaba96b"><strong>Обработка:</strong></p><p class="" id="2a333974-4d17-80d3-8874-dc56d0b19e8f">Свежие оливки несъедобны — слишком горькие. Их вымачивают в рассоле или щёлочном растворе, а потом маринуют с травами, лимоном, чесноком или перцем.</p><p class="" id="2a333974-4d17-8084-9168-de2d772444f7"><strong>Интересный факт:</strong></p><p class="" id="2a333974-4d17-8022-a766-ec2f96728d6b">Не все «чёрные» оливки — спелые. Иногда зелёные плоды просто окрашивают при обработке (так делают дешёвые консервированные варианты). Настоящие зрелые оливки имеют мягкий, неровный цвет — от коричнево-фиолетового до тёмно-бордового.</p><p class="" id="2a333974-4d17-8024-aab3-cf60b22c7413">
+</p><figure class="image" id="29933974-4d17-8014-8a87-cd12ba5b838e"><a href="spravochnik-oficianta_olives.jpg"><img src="../images/spravochnik/spravochnik-oficianta-olives.webpjpg style="width:846px"/></a><figcaption>Черные и зеленые оливки</figcaption></figure></div></div><h3 class="block-color-brown_background" id="29933974-4d17-806e-84ee-d06e167209ad">Без огня: перуанское искусство севиче</h3><div class="column-list" id="29933974-4d17-8011-af26-e7b74981acb1"><div class="column" id="29933974-4d17-8029-a9e1-cd911a93e345" style="width:56.25%"><figure class="image" id="29933974-4d17-8092-86db-d74b51c306f1"><a href="spravochnik-oficianta_seviche.jpg"><img src="../images/spravochnik/spravochnik-oficianta-seviche.webpjpg style="width:1080px"/></a><figcaption>Севиче из сибаса</figcaption></figure><p class="" id="2a333974-4d17-807f-b7fc-c0309186d535">
+</p></div><div class="column" id="29933974-4d17-806b-ae7d-dd41125c5945" style="width:43.75%"><p class="" id="2a333974-4d17-8087-a690-e34b7363ca1d">Севиче — визитная карточка Перу, блюдо, в котором свежесть моря встречается с огнём чили и кислинкой цитрусов. Это <strong>сырая рыба, «приготовленная» без огня</strong>, всего лишь под действием сока лайма или лимона.</p><p class="" id="2a333974-4d17-8090-aaca-e5147de7e167"><strong>Как это работает:</strong> кислота цитрусов «денатурирует» белок рыбы — структура мяса меняется, оно белеет и становится плотным, будто прошло тепловую обработку.</p><p class="" id="2a333974-4d17-802c-9521-e2bcca09a12c"><strong>История:</strong> происхождение севиче спорно. Одни считают, что его придумали древние перуанцы, мариновавшие рыбу в кислых соках местных фруктов. Другие приписывают заслугу испанцам, привезшим лимоны и лаймы. Как бы то ни было, севиче стало сердцем перуанской кухни и гордостью страны — в Лиме даже стоит <strong>памятник севиче</strong>, выполненный в виде гигантских ингредиентов блюда.</p><p class="" id="2a333974-4d17-804b-9bb1-e99945cb414d"><strong>Классический состав:</strong> свежая морская рыба (сибас, дорадо, тунец), лайм, лук, чили, кинза, соль. Иногда добавляют авокадо, кукурузу или батат — для контраста текстур и вкусов.</p><p class="" id="2a333974-4d17-80cd-ab5b-fbb03b1ea653"><strong>Leche de tigre — «молоко тигра»</strong> — белесый соус, в котором маринуется рыба. Его пьют отдельно, считая мощным афродизиаком и лекарством от похмелья.</p><p class="" id="2a333974-4d17-80ce-bcab-e97667955d76"><strong>Интересный факт:</strong> перуанцы говорят, что хорошее севиче «живет» не дольше 15 минут — потом оно теряет свежесть и характер.</p></div></div><h3 class="block-color-brown_background" id="29933974-4d17-8063-bfb4-ea8d98a21e32">Камамбер — символ вкуса и культуры Франции</h3><div class="column-list" id="2a333974-4d17-807d-a7ab-d0ed6bd1c36d"><div class="column" id="2a333974-4d17-804b-b3fa-f8afe35cf047" style="width:50%"><figure class="image" id="29933974-4d17-80a0-b4ee-d62c6ab9ed66"><a href="spravochnik-oficianta_camambert.jpg"><img src="../images/spravochnik/spravochnik-oficianta-camambert.webpjpg style="width:1080px"/></a><figcaption>Камамбер с тянущейся мягкой сердцевиной</figcaption></figure></div><div class="column" id="2a333974-4d17-806a-aa52-cac38cc40157" style="width:50%"><p class="" id="2a333974-4d17-8041-a9f7-c158a640cbbf"><strong>Камамбер</strong> — мягкий сливочный сыр из коровьего молока с белой съедобной корочкой из плесени <em>Penicillium camemberti</em>. Его история началась в 1791 году, когда нормандская крестьянка <strong>Мари Арель</strong> укрыла монаха из Бри, спасавшегося от гильотины. В благодарность он раскрыл ей секрет приготовления сыра бри. Но из-за особенностей нормандского климата и почв результат оказался иным — появился новый сорт, позже названный <strong>камамбером</strong>.</p><p class="" id="2a333974-4d17-80ed-a527-eb3f8bfb191f">Сначала его называли «нормандским сыром». Семья Арель десятилетиями совершенствовала рецепт, пока продукт не стал неотъемлемой частью французской кухни. В 1863 году <strong>Наполеон III</strong> попробовал камамбер и оценил его вкус, что принесло сыру всенародную славу. Благодаря железным дорогам его начали доставлять в Париж, а в 1890 году изобретатель <strong>Эжен Ридель</strong> создал деревянные коробочки, сделав возможным экспорт по всему миру. Так появился узнаваемый образ камамбера с фирменной круглой упаковкой.</p><p class="" id="2a333974-4d17-807f-a50a-c49a97e9a995">Раньше сыр покрывала серо-коричневая плесень, но в начале XX века микробиологи вывели штамм <em>Penicillium camemberti</em>, придающий корочке характерный белоснежный цвет. Этот гриб не только улучшил внешний вид, но и оказался полезен для пищеварения.</p><p class="" id="2a333974-4d17-8020-98fa-da2a40afa1f3">Камамбер стал частью французской культуры: его аромат вдохновлял <strong>Эмиля Золя</strong> и <strong>Марселя Пруста</strong>, а <strong>Сальвадор Дали</strong> создал свои «текучие часы» под впечатлением от плавящегося на солнце сыра. Во времена Первой мировой он входил в армейский паёк французских солдат, а в 1928 году в деревне Камамбер установили памятник Мари Арель. В 1983 году сыр получил знак <strong>AOC</strong>, подтверждающий его подлинное происхождение.</p><p class="" id="2a333974-4d17-802d-9124-dbe4e02b966b">Сегодня камамбер — символ Франции, олицетворение вкуса, традиций и искусства, рожденных из простой попытки повторить рецепт сыра бри.</p><p class="" id="2a333974-4d17-80f8-8ef6-c5e759696fbd">
+</p></div></div><h3 class="block-color-brown_background" id="29933974-4d17-80da-811f-d1abc42f17d7">Фуа-гра — деликатес с историей, вкусом и противоречиями  </h3><div class="column-list" id="2a333974-4d17-8053-ad7b-df9f0802884c"><div class="column" id="2a333974-4d17-8000-847e-cfe99dca9c11" style="width:50%"><p class="" id="2a333974-4d17-8020-bff2-d95c005edefc">Фуа-гра (<em>foie gras</em>, «жирная печень») — символ французской гастрономии и один из самых спорных деликатесов в мире. Её делают из печени уток или гусей, откормленных особым образом, чтобы орган стал крупным, нежным и насыщенным вкусом.</p><p class="" id="2a333974-4d17-80f3-b060-fcde1cd833ab"><strong>Истоки</strong></p><p class="" id="2a333974-4d17-80be-9242-f1094cd29734">Первое фуа-гра появилось вовсе не во Франции. Ещё древние египтяне заметили, что перелётные гуси, объевшиеся инжиром, имеют необычайно мягкую и вкусную печень. На стенах пирамид сохранились рисунки, где люди кормят птиц через воронки — древняя версия современного откорма. Через века традиция перешла к евреям, римлянам, а затем к французам, сделавшим фуа-гра частью высокой кухни.</p><p class="" id="2a333974-4d17-80c8-9cc8-d4a10436a711"><strong>Виды</strong></p><p class="" id="2a333974-4d17-80c2-88e8-ea40a5f1726f">Во Франции различают несколько форм деликатеса:</p><ul class="bulleted-list" id="2a333974-4d17-80bb-b218-d890ab2e4ba9"><li style="list-style-type:disc"><strong>Foie Gras Cru</strong> — сырая печень, продукт для профессиональных шефов.</li></ul><ul class="bulleted-list" id="2a333974-4d17-80e6-ac90-dc3a3b4e9acb"><li style="list-style-type:disc"><strong>Mi-Cuit / Frais</strong> — слегка термически обработанная, сохраняющая сливочную текстуру.</li></ul><ul class="bulleted-list" id="2a333974-4d17-80b6-b8e8-dc1ea0cfdbb4"><li style="list-style-type:disc"><strong>Entier</strong> — цельная печень, приправленная солью и перцем.</li></ul><ul class="bulleted-list" id="2a333974-4d17-80fe-a1ec-edb4440f63ae"><li style="list-style-type:disc"><strong>Bloc de Foie Gras</strong> — паштет из перемолотой печени, иногда с добавлением жира.</li></ul><ul class="bulleted-list" id="2a333974-4d17-80d8-bc04-e2f39bcccee6"><li style="list-style-type:disc"><strong>Foie Gras Truffé</strong> — вариант с трюфелем, вершина гурманства.</li></ul><p class="" id="2a333974-4d17-80a9-ac2f-cb930ae63a7a"><strong>Вкус и польза</strong></p><p class="" id="2a333974-4d17-80b7-a7e5-c4ae178d3bf8">Фуа-гра — это кремовая текстура, орехово-сладкий вкус и лёгкий аромат сливочного жира. Продукт богат витаминами группы B, железом, селеном и жирными кислотами, которые улучшают кровообращение и работу мозга. Не зря французы шутят: <em>«Мы стареем медленнее, потому что едим фуа-гра».</em></p><p class="" id="2a333974-4d17-80c9-bc14-eb17a632a7da">
+</p></div><div class="column" id="2a333974-4d17-80db-9586-f8dca34a9be8" style="width:50%"><figure class="image" id="29933974-4d17-801d-874e-f27b970aad67"><a href="spravochnik-oficianta_foie-gras.jpg"><img src="../images/spravochnik/spravochnik-oficianta-foie-gras.webpjpg style="width:1080px"/></a><figcaption>Подача фуагра с тостами и конфитюром</figcaption></figure><figure class="block-color-teal_background callout" id="29933974-4d17-8003-8e48-f9e6d1282ee5" style="white-space:pre-wrap;display:flex"><div style="font-size:1.5em"><span class="icon">💡</span></div><div style="width:100%"><p class="" id="2a333974-4d17-8025-9cfb-d12f32c8f0af">Во Франции без фуа-гра не обходится ни одно Рождество. Его подают с тостами, инжирным конфитюром или карамелизированным луком. В Эльзасе ежегодно проводят фестиваль <em>Fête du Foie Gras</em>, где повара соревнуются в изысканных интерпретациях блюда.</p></div></figure></div></div><p class="" id="2a333974-4d17-80aa-b982-f49a549e182c"><strong>Этическая сторона</strong></p><p class="" id="2a333974-4d17-80d3-b21b-e24942a75c42">Процесс откорма — <strong>гаваж</strong> — остаётся главным источником споров. Птицам вводят корм через трубку, что вызывает дискомфорт. В ряде стран (США, Индия, Аргентина, Австралия) производство фуа-гра запрещено. Венгрия и Франция разрабатывают более щадящие методы, позволяя птицам переедать добровольно.</p><h3 class="block-color-brown_background" id="29933974-4d17-80b7-a21f-f077e464c742">Запечённые устрицы — американская классика с французскими корнями</h3><p class="" id="2a333974-4d17-805f-8b67-dbde56ba1a4a">Запечённые устрицы — одно из самых знаменитых блюд американской кухни, родом из Нового Орлеана. История началась в 1899 году, когда Жюль Альчиатор, сын основателя ресторана <em>Antoine’s</em>, решил заменить французских улиток в меню на местные устрицы, запекая их в том же соусе.</p><p class="" id="2a333974-4d17-809a-a45a-f6f598f1cee0">Первый дегустатор якобы воскликнул: <strong>«Вкус богат как Рокфеллер!»</strong>, и так блюдо получило своё имя — <em>Oysters Rockefeller</em>. По другой версии, вдохновением стал зелёный цвет соуса, напомнивший о цвете долларовых купюр.</p><p class="" id="2a333974-4d17-8063-92b0-f30c236be2bf"><strong>Состав классического рецепта: </strong>стрицы, сливочное масло, зелень (петрушка, шпинат), шалот, анис, хлебные крошки и немного соуса Табаско. Соус выкладывают поверх устриц, затем запекают до золотистой корочки.</p><p class="" id="2a333974-4d17-8083-8b44-c1e4beda1673"><strong>Вкус:</strong> насыщенный, сливочно-травяной, с морской солёностью и лёгким острым послевкусием. Блюдо подают горячим, прямо в створках раковины.</p><figure class="block-color-teal_background callout" id="29933974-4d17-805c-b381-f77b49f3650a" style="white-space:pre-wrap;display:flex"><div style="font-size:1.5em"><span class="icon">💡</span></div><div style="width:100%"><p class="" id="2a333974-4d17-804b-b073-febbc5699f4e">Оригинальный рецепт <em>Oysters Rockefeller</em> хранится в секрете уже более 120 лет. Его точный состав известен только шеф-повару ресторана <em>Antoine’s</em> в Новом Орлеане.</p></div></figure><h3 class="block-color-brown_background" id="29933974-4d17-80cc-b50b-ff619ab9225d">Как улитка покорила французский ресторан</h3><div class="column-list" id="2a333974-4d17-8070-930d-e003256c60f9"><div class="column" id="2a333974-4d17-8001-b89a-ca659daff705" style="width:62.5%"><p class="" id="2a333974-4d17-8061-9b16-c7dde6b64c8a">Бургундская улитка (<em>escargot de Bourgogne</em>) — символ французской гастрономии и один из старейших деликатесов Европы. Родом из самой Бургундии, этот крупный моллюск живёт на известняковых почвах, в садах и лугах, выходит из раковины только после дождя и веками вдохновлял поваров своим тонким вкусом.</p><p class="" id="2a333974-4d17-8008-9ca6-e22ced01b010"><strong>История блюда</strong></p><p class="" id="2a333974-4d17-80c2-92fb-fb6622a86090">Улиток ели ещё древние римляне — известный гурман Апиций запекал их с мёдом и вином. Со временем моллюски стали постным блюдом монахов, а позже — пищей простолюдинов. Но в XIX веке всё изменилось: в 1814 году легендарный шеф Антонин Карем, готовя ужин для министра Талейрана и царя Александра I, изобрёл рецепт, вошедший в историю. Из чеснока, петрушки и сливочного масла он создал начинку, запек в ней улиток — и родилось блюдо <em>«Эскарго де Бургонь»</em>.</p><p class="" id="2a333974-4d17-8030-806a-e08ae707e06d"><strong>Классика рецепта</strong></p><p class="" id="2a333974-4d17-8002-8032-d43b68e6f1b6">Улиток вынимают из раковин, очищают и фаршируют чесночным маслом с петрушкой и шалотом. Затем запекают 5–7 минут, пока масло не зашипит. Подают прямо в раковинах — со специальными щипцами и миниатюрными вилочками. Вкус — нежный, сливочный, с травянистой ноткой.</p><p class="" id="2a333974-4d17-80c1-9845-c658adbf63e4"><strong>Современность</strong></p><p class="" id="2a333974-4d17-8081-b0e9-eaf79a2b77c5">Во Франции ежегодно съедают около <strong>35 тысяч тонн улиток</strong>, но лишь 3% выращивают внутри страны. Остальные поставляют Польша, Болгария и Азия. Из-за сокращения популяции сбор моллюсков в дикой природе строго регулируется.</p></div><div class="column" id="2a333974-4d17-807f-8f80-da1f1232d8d5" style="width:37.5%"><figure class="image" id="2a333974-4d17-80b6-8000-de96f94f79b5"><a href="spravochnik-oficianta_escargo.jpg"><img src="../images/spravochnik/spravochnik-oficianta-escargo.webpjpg style="width:349.140625px"/></a><figcaption>Улитки по-бургундски</figcaption></figure></div></div><div class="column-list" id="29933974-4d17-8060-87bd-de022680d23e"><div class="column" id="29933974-4d17-8088-963e-e017efb29d9e" style="width:57.14285714285715%"><figure class="image" id="29933974-4d17-8093-bae3-c25b4b9f8ad9"><a href="spravochnik-oficianta_cutlery_for_escargo.jpg"><img src="../images/spravochnik/spravochnik-oficianta-cutlery-for-escargo.webpjpg style="width:1080px"/></a><figcaption>Процесс извлечения улитки перед дегустацией</figcaption></figure></div><div class="column" id="29933974-4d17-808a-9888-c4d22a72454d" style="width:42.85714285714286%"><p class="" id="2a333974-4d17-807b-b625-d2fa47925055"><strong>Пищевая ценность</strong></p><p class="" id="2a333974-4d17-8090-af7b-fd29d3240c0c">Мясо улитки богато белком (около 15%) и почти не содержит жира. В нём много кальция, магния, фосфора, селена и витаминов группы B. Поэтому <em>эскарго</em> — продукт не только деликатесный, но и диетический.</p><p class="" id="2a333974-4d17-80f5-85c5-e9c91f4e57b2">Французские гурманы употребляют даже <strong>икру улиток</strong>, называя её «белой жемчужиной Бургундии». Этот продукт редок и стоит до 1000 евро за килограмм.</p><p class="" id="29933974-4d17-8016-b22e-de64757c7a14">
+</p><figure class="block-color-teal_background callout" id="29933974-4d17-807e-887a-d01c18a30398" style="white-space:pre-wrap;display:flex"><div style="font-size:1.5em"><span class="icon">💡</span></div><div style="width:100%"><p class="block-color-teal_background" id="29933974-4d17-80b9-88f9-ccac8ed339f6">Есть улиток — целая церемония. Французы придумали специальные щипцы, чтобы удерживать горячую раковину, и миниатюрную вилочку с двумя зубцами, чтобы достать нежное мясо. Настоящие гурманы никогда не оставляют в раковине ароматное чесночное масло — кусочек свежего багета обязательно вымакивают до последней капли. Именно этот момент французы называют <em>le meilleur du plat</em> — «лучшее в блюде».</p></div></figure></div></div><h3 class="block-color-brown_background" id="29933974-4d17-8043-9a2d-fe220a9a752f">Морская аристократия: всё о креветках</h3><div class="column-list" id="29933974-4d17-802f-bc77-cdeaa4503730"><div class="column" id="29933974-4d17-8052-b36b-df596bb2b424" style="width:57.14285714285715%"><figure class="image" id="29933974-4d17-8088-9b27-ca3d45481c90"><a href="spravochnik-oficianta_shrimps.jpg"><img src="../images/spravochnik/spravochnik-oficianta-shrimps.webpjpg style="width:1080px"/></a><figcaption>Тигровые креветки</figcaption></figure></div><div class="column" id="29933974-4d17-80b9-bc51-c351ae99da64" style="width:42.85714285714286%"><p class="" id="2a333974-4d17-80f2-9d69-ec070f332f0c"><strong>Тигровые креветки</strong> — настоящие гиганты среди ракообразных. Их легко узнать по тёмным полосам на панцире, за что они и получили своё «тигриное» имя. Родом из тёплых вод Тихого и Индийского океанов, они достигают до 36 см в длину и могут весить более полкилограмма. Их мясо плотное, сочное и сладковатое на вкус — один из самых ценных морепродуктов в мировой кухне.</p><p class="" id="2a333974-4d17-8033-b19c-fa9f2bfa0d90"><strong>Королевские креветки</strong> — не отдельный биологический вид, а скорее маркетинговое название для крупных представителей семейства. Они выращиваются в основном на фермах и реже встречаются в дикой природе. Отличаются массивной головой и коротким хвостом, а после варки приобретают красный оттенок и нежный крабовый привкус.</p><p class="" id="2a333974-4d17-8021-87c7-ef3c514289ae"><strong>Главные отличия:</strong></p><ul class="bulleted-list" id="2a333974-4d17-808e-96d3-de248fbb44eb"><li style="list-style-type:disc">Тигровые — вид, признанный учёными, королевские — торговое название.</li></ul><ul class="bulleted-list" id="2a333974-4d17-805b-a9ef-e89d32b3b10e"><li style="list-style-type:disc">У тигровых полосатый панцирь и сбалансированные пропорции, у королевских — большая голова и светлый панцирь.</li></ul><ul class="bulleted-list" id="2a333974-4d17-80bd-9f46-fc39bfc1194b"><li style="list-style-type:disc">Тигровые крупнее и богаче белком, их мясо более плотное и яркое по вкусу.</li></ul><p class="" id="2a333974-4d17-80ef-830d-e300e78ba429"><strong>Совет шефа:</strong> тигровые креветки варят не более трёх минут, чтобы сохранить сочность; королевским нужно чуть дольше — около семи минут.</p></div></div><h3 class="block-color-brown_background" id="29933974-4d17-8096-bdb9-d73b73c42a90">Кардини — человек, подаривший миру салат Цезарь   </h3><div class="column-list" id="29933974-4d17-80af-ae71-f6b0dd9ead70"><div class="column" id="29933974-4d17-808a-8f32-fca5c383a6d7" style="width:56.25%"><figure class="image" id="29933974-4d17-805d-9a6b-d0e54a4931d1"><a href="spravochnik-oficianta_kardini.jpg"><img src="../images/spravochnik/spravochnik-oficianta-kardini.webpjpg style="width:1080px"/></a><figcaption>Ингридиенты для салата “Цезарь”</figcaption></figure><figure class="block-color-teal_background callout" id="2a333974-4d17-8008-98e2-e2fafd4e380e" style="white-space:pre-wrap;display:flex"><div style="font-size:1.5em"><span class="icon">💡</span></div><div style="width:100%"><p class="" id="2a333974-4d17-808e-90e1-e4f99cc7e0d0"><strong>Без Цезаря, но с Кардини.</strong> Название салата никак не связано с римским полководцем — оно произошло от имени создателя, <em>Чезаре Кардини</em>. Изначально он называл блюдо просто <em>Caesar’s Salad</em>, в честь своего ресторана.</p></div></figure><p class="" id="2a333974-4d17-807d-870c-d3f420ced1d8">Салат готовили при гостях — прямо у стола, в большой деревянной миске, а листья ели руками, поднимая за стебель — так хотел Чезаре, считавший, что «нож портит вкус зелени». Голливудская элита, включая Кларка Гейбла, специально приезжала в Тихуану, чтобы увидеть шоу и попробовать оригинал.</p><p class="" id="2a333974-4d17-8074-b883-c768af0ffe02">Сегодня ресторан <em>Caesar’s</em> по-прежнему существует, а потомки Кардини сохраняют традицию. В меню всё тот же «живой» рецепт: латук, яйцо, лайм, пармезан, вустерский соус и никакого бекона или курицы.</p></div><div class="column" id="29933974-4d17-80d0-8211-ea6a7fe661f3" style="width:43.75%"><p class="" id="2a333974-4d17-8088-bf17-fa0ad7a78b67">Салат «Цезарь» — одно из самых знаменитых блюд XX века, и его история окутана легендами. В центре этой истории стоит <strong>Чезаре Кардини</strong>, итальянец, который в 1920-х открыл ресторан <em>Caesar’s</em> в мексиканской Тихуане — прямо у границы с США. Во времена «сухого закона» американцы стекались туда за вином и вкусной едой, и однажды, 4 июля 1924 года, Кардини из остатков продуктов собрал импровизированный салат: листья латука, яйцо, вустерский соус, оливковое масло, сыр пармезан и хрустящие гренки. Он подал его гостям — и началась гастрономическая легенда.</p><p class="" id="2a333974-4d17-8040-b7be-cecf71a87e31">Позже брат Чезаре, <strong>Алекс Кардини</strong>, добавил в рецепт анчоусы и назвал версию «салатом авиатора». Одни считают, что именно он сделал вкус полноценным, другие — что анчоусы испортили простоту оригинала. Так блюдо стало предметом семейного спора, а затем — всемирной сенсацией.</p><figure class="image" id="2a333974-4d17-80d4-a103-efbf0f91e542"><a href="spravochnik-oficianta_sous_cardinis.jpg"><img src="../images/spravochnik/spravochnik-oficianta-sous-cardinis.webpjpg style="width:343.6796875px"/></a><figcaption>Соус Cardini’s</figcaption></figure><figure class="block-color-teal_background callout" id="29933974-4d17-80aa-9169-c6684ed8fe78" style="white-space:pre-wrap;display:flex"><div style="font-size:1.5em"><span class="icon">💡</span></div><div style="width:100%"><p class="" id="2a333974-4d17-8014-8661-cc496740b400">В 1948 году Чезаре Кардини запатентовал оригинальную заправку для салата. Под брендом <em>Cardini’s</em> она до сих пор производится в Калифорнии — с той самой пропорцией вкусов, что когда-то покорила Голливуд.</p></div></figure></div></div><h3 class="block-color-brown_background" id="29933974-4d17-8076-b80a-e8db4d489b25">Огонь на тарелке: история фламбирования</h3><div class="column-list" id="29933974-4d17-805a-be84-ce398224ab61"><div class="column" id="29933974-4d17-80a6-a63d-dbe904da68c8" style="width:57.14285714285715%"><figure class="image" id="29933974-4d17-80c5-8311-e67094819f2c"><a href="spravochnik-oficianta_flombiren.jpg"><img src="../images/spravochnik/spravochnik-oficianta-flombiren.webpjpg style="width:1080px"/></a><figcaption>Процесс фламбирования — поджигание блюда с алкоголем</figcaption></figure></div><div class="column" id="29933974-4d17-80d1-a11c-d43e8ad6f7e4" style="width:42.85714285714286%"><p class="" id="2a333974-4d17-8000-989e-d063e5d87ddd">Фламбирование (от франц. <em>flamber</em> — «воспламенять») — эффектный кулинарный приём, при котором блюдо на короткое время поджигают алкоголем. Огонь обжигает пары спирта, оставляя лишь тонкий аромат напитка и лёгкий карамельный привкус.</p><p class="" id="2a333974-4d17-8078-b244-f213353aac49">Эта техника родилась случайно в <strong>1895 году в Монте-Карло</strong>, в легендарном <em>Café de Paris</em>. Великий шеф <strong>Огюст Эскофье</strong>, готовя блины для будущего короля Англии Эдуарда VII, случайно пролил ликёр на сковороду — и пламя вспыхнуло прямо перед гостем. Эскофье не растерялся: подал горящие блины и объявил, что это новый десерт, созданный специально для дамы по имени <strong>Сюзетта</strong>. Так родились знаменитые <strong>Crêpes Suzette</strong> и целая кулинарная традиция.</p><p class="" id="2a333974-4d17-805c-8578-d6790b0453d0">Сегодня фламбируют не только десерты, но и мясо, морепродукты, даже фрукты. Для поджига используют ром, коньяк, бренди или ликёры с содержанием алкоголя не менее 40%. Главное — безопасность и точность: слишком много спирта испортит вкус, слишком мало — не загорит.</p><p class="" id="2a333974-4d17-80f6-a434-dbd7f2844b21">Эффект фламбирования усиливает аромат блюда, так как огонь «взрывает» эфирные масла ингредиентов. Поэтому фламбе любят не только за зрелищность, но и за насыщенность вкуса.</p></div></div><h3 class="block-color-brown_background" id="29933974-4d17-808a-85f3-c9469e7a78a3">Осьминог — вкус моря и мудрость глубин</h3><div class="column-list" id="29933974-4d17-8021-9ccd-f3b210983bc6"><div class="column" id="29933974-4d17-80fb-91b3-d901deb67f51" style="width:56.25%"><figure class="image" id="29933974-4d17-80d1-83cc-f89ce85a17cc"><a href="spravochnik-oficianta_pulpo_a_la_gallega.jpg"><img src="../images/spravochnik/spravochnik-oficianta-pulpo-a-la-gallega.webpjpg style="width:1080px"/></a><figcaption>Классический Pulpo a la Gallega — осьминог по-галисийски</figcaption></figure><p class="" id="2a333974-4d17-805e-b973-c435c0810461">
+</p></div><div class="column" id="29933974-4d17-80eb-ae31-c51a84dbe540" style="width:43.75%"><p class="" id="2a333974-4d17-8011-884c-d5664c833945">Осьминог — один из самых необычных обитателей моря и один из самых древних деликатесов в мировой кухне. Его мясо нежное, плотное и с лёгким вкусом моря, а возможности приготовления поражают разнообразием.</p><p class="" id="2a333974-4d17-80c7-bce2-cca38cd1ab08"><strong>Где и как готовят</strong></p><p class="" id="2a333974-4d17-8061-be2f-e16851eb42f7">В Средиземноморье осьминога подают почти в каждом прибрежном ресторане. В <strong>Испании</strong> его варят, нарезают кружками и подают с оливковым маслом, морской солью и паприкой — это легендарное блюдо <em>Pulpo a la Gallega</em> (осьминог по-галисийски). В <strong>Португалии</strong> предпочитают медленное томление в оливковом масле — осьминог получается мягкий, сочный, будто приготовленный <em>конфи</em>. В <strong>Италии</strong> его тушат в вине, добавляют в ризотто и салаты с каперсами и сельдереем. А в <strong>Греции</strong> — подвяливают прямо на солнце и жарят на углях, подавая с лимоном и орегано.</p><p class="" id="2a333974-4d17-8050-842d-e65f8fa0f0ea"><strong>Как правильно готовить</strong></p><p class="" id="2a333974-4d17-8005-a035-c654460d9d53">Главное правило — не переварить. Секрет мягкости в чередовании температур: сначала осьминога часто «пугают» — несколько раз опускают в кипящую воду и вытаскивают, чтобы мышцы не стали резиновыми. Затем варят 40–60 минут или дольше, в зависимости от размера. Опытные повара советуют бросить в кастрюлю пробку от вина — танин в дереве якобы помогает смягчить мясо.</p><p class="" id="2a333974-4d17-8093-897b-ee5d493f3cec"><strong>Классическое сочетание</strong></p><p class="" id="2a333974-4d17-8088-af37-d19045be86b5">Самое популярное и простое — <strong>осьминог с картофелем</strong>. Варёный молодой картофель, оливковое масло первого отжима, щепоть морской соли и кусочки тёплого осьминога создают идеальный баланс текстур: нежность, плотность и лёгкая солёность моря.</p><p class="" id="2a333974-4d17-80bd-8c9c-d771f4907676">
+</p></div></div><h3 class="block-color-brown_background" id="29933974-4d17-80a7-8bf4-d9f97d479dad">Буррата: свежесть, созданная вручную</h3><div class="column-list" id="2a333974-4d17-80c1-b27d-f3275dc2e943"><div class="column" id="2a333974-4d17-805d-86f7-f439e6099113" style="width:50%"><p class="" id="2a333974-4d17-80a0-86fc-dbe0e640c3f1">Буррата (<em>Burrata</em>) — один из самых чувственных и изысканных сыров Италии. Её родина — солнечная <strong>Апулия</strong>, городок Андрия, где в 1920-х годах местный сыровар <strong>Лоренцо Бьянчино Чиеппа</strong> впервые создал этот шедевр из остатков моцареллы и сливок. С тех пор буррата стала символом итальянского мастерства, простоты и вкуса, который невозможно спутать ни с чем.</p><p class="" id="2a333974-4d17-80be-abe5-e870c7aba8ed"><strong>Что это такое</strong></p><p class="" id="2a333974-4d17-80d1-b676-cd34ec022e31">Снаружи буррата похожа на свежую моцареллу — гладкая, блестящая, белоснежная. Но стоит её надрезать, и изнутри вытекает мягкая, сливочная начинка из <strong>страччателлы</strong> — тонких волокон тёплого сыра, смешанных со свежими сливками. Само название <em>burrata</em> переводится как «намазанная маслом» — идеальное описание её текстуры и ощущения во рту.</p><p class="" id="2a333974-4d17-80b8-92c9-e8cefbaa6ede"><strong>Как делают</strong></p><p class="" id="2a333974-4d17-8052-8e7c-dc818d3df9cb">Производство бурраты — ручное искусство. Молоко (чаще коровье, реже буйволиное) нагревают и сворачивают, пока не образуется творожная масса. Затем мастера вручную растягивают сыр, превращая его в эластичное «тесто» — основу, из которой формируют шар. Внутрь добавляют начинку из сливок и кусочков страччателлы, после чего шар завязывают, словно маленький мешочек. Процесс требует точности и опыта — чуть ошибись в температуре или времени, и структура сыра потеряет нежность.</p><p class="" id="2a333974-4d17-80cb-af43-df67335a8bff">Буррата — <strong>сыр живой</strong>: её нужно подавать свежей, максимум через 2–3 дня после приготовления. Позже она теряет влажность и превращается просто в мягкий сыр, теряя свою уникальную сливочную «душу».</p><figure class="image" id="2a333974-4d17-804f-923a-d5934a932541"><a href="spravochnik-oficianta_burrata_producing.jpg"><img src="../images/spravochnik/spravochnik-oficianta-burrata-producing.webpjpg style="width:574.3396226415093px"/></a><figcaption>Ручное формирование бурратты на сыроварне</figcaption></figure><p class="" id="2a333974-4d17-8072-b432-e806ca9c08a3"><strong>Как едят буррату</strong></p><p class="" id="2a333974-4d17-80d0-b371-f264cc2e6777">Лучше всего буррата раскрывается в простых сочетаниях. Её подают с помидорами, базиликом и оливковым маслом — классика в духе <em>caprese</em>. В ресторанах подают с прошутто, инжиром, трюфельным маслом или просто с тёплым хлебом и солью. Итальянцы говорят: <em>«Буррату нельзя готовить, её нужно слушать»</em> — настолько она самодостаточна по вкусу.</p></div><div class="column" id="2a333974-4d17-806e-92f1-e158a66fd9fb" style="width:50%"><figure class="image" id="2a333974-4d17-8011-9f61-f231af12122b"><a href="spravochnik-oficianta_burrata.jpg"><img src="../images/spravochnik/spravochnik-oficianta-burrata.webpjpg style="width:658.9921875px"/></a><figcaption>Мягкая сливочная сердцевина бурраты</figcaption></figure><p class="" id="2a333974-4d17-80d2-a3dd-e15797fac247"><strong>История и распространение</strong></p><p class="" id="2a333974-4d17-80ab-bfb8-c5cad2d448d1">До 1950-х годов буррату знали только в Апулии. Её продавали в лавках местных фермеров, заворачивая в зелёные листья лилии — природную «упаковку», которая показывала свежесть: если листья поблекли, сыр старый. Позже буррата вышла за пределы региона и завоевала Италию, а в 2016 году получила статус <strong>PDO (защищённое географическое указание)</strong> — теперь подлинной бурратой можно называть только сыр, произведённый в Андрии и окрестностях.</p><figure class="block-color-teal_background callout" id="2a333974-4d17-80ec-b766-de695ecb12b2" style="white-space:pre-wrap;display:flex"><div style="font-size:1.5em"><span class="icon">💡</span></div><div style="width:100%"><p class="block-color-teal_background" id="2a333974-4d17-8068-9fc4-ce22d08be0cb">Долгое время буррату считали слишком «капризным» сыром для экспорта — её нежная структура быстро теряла форму при транспортировке. Лишь в 1980-х итальянские мастера придумали щадящее охлаждение, которое сохраняет текстуру страччателлы и сливок внутри. Сегодня буррату можно попробовать по всему миру, но гурманы уверены: настоящий вкус возможен только в первые дни после приготовления. Перед подачей сыр обязательно должен «проснуться» — достань его из холодильника за полчаса, чтобы сливки прогрелись и аромат свежего молока раскрылся полностью.</p></div></figure></div></div><div class="column-list" id="2a333974-4d17-8088-9950-d52d27fae080"><div class="column" id="2a333974-4d17-805a-a020-edc02320b7c5" style="width:56.25%"><h3 class="block-color-brown_background" id="29933974-4d17-80f6-ab2e-d5934c932537">Французский луковый суп: вкус, рожденный из скромности</h3><p class="" id="2a333974-4d17-80cc-b819-c3254345b957">Луковый суп — одно из самых узнаваемых блюд французской кухни, но его история уходит гораздо глубже — ещё во времена <strong>Древнего Рима</strong>. Лук был доступен всем слоям населения, его хранили долго, и именно из него готовили простые, питательные супы.</p><p class="" id="2a333974-4d17-80db-af00-d5d8016cf2b9"><strong>От крестьян до королей</strong></p><p class="" id="2a333974-4d17-8062-b60a-f5f95bb5c373">Современный французский вариант появился в XVII веке. Главный секрет блюда — <strong>медленное карамелизование лука</strong>: он томится на сливочном или оливковом масле до золотистого, сладкого состояния. Затем добавляют белое вино, которое придаёт лёгкую кислинку и раскрывает аромат, после чего суп варят на бульоне, обычно говяжьем.</p><p class="" id="2a333974-4d17-8050-898e-c0d6f42184b4">Перед подачей блюдо заливают в керамические горшочки, кладут ломтик багета и посыпают тёртым сыром <em>груйер</em> или <em>emmental</em>, а затем запекают до золотистой корочки.</p><p class="" id="2a333974-4d17-80f8-a0ff-d0a14a75b0a7"><strong>Королевская легенда</strong></p><p class="" id="2a333974-4d17-80e0-9576-ca8fea1ead90">По одной из самых известных историй, автором французского лукового супа стал сам <strong>Людовик XV</strong>. На охоте король остался без провизии и нашёл лишь лук, масло и шампанское. Смешав всё в одном котле, он неожиданно получил ароматное и сытное блюдо, которое позже усовершенствовали придворные повара.</p><p class="" id="2a333974-4d17-8057-a9f2-f3f9e1b7643b">
+</p><figure class="image" id="29933974-4d17-804c-bd44-ceddb941835b"><a href="spravochnik-oficianta_onion_soup.jpg"><img src="../images/spravochnik/spravochnik-oficianta-onion-soup.webpjpg style="width:1080px"/></a><figcaption>Подача лукового супа в керамической миске</figcaption></figure><p class="" id="2a333974-4d17-808b-a3ab-db01b44b5d12">
+</p></div><div class="column" id="2a333974-4d17-8059-b7a3-c93b905c1b21" style="width:43.74999999999999%"><h3 class="block-color-brown_background" id="29933974-4d17-8090-8374-cd8534b451a1">Минестроне — итальянский суп без правил</h3><p class="" id="2a333974-4d17-808f-9602-ead35e803a80">Минестроне (<em>Minestrone</em>) — один из самых узнаваемых символов итальянской кухни. В переводе название означает «большой суп» — и не зря: это густое, сытное блюдо из множества овощей, бобовых и иногда макарон или риса.</p><p class="" id="2a333974-4d17-800b-9bd4-e1f344dffd18">
+</p><figure class="image" id="2a333974-4d17-8037-94a2-f34e9efedf00"><a href="spravochnik-oficianta_ministrone.jpg"><img src="../images/spravochnik/spravochnik-oficianta-ministrone.webpjpg style="width:305.4921875px"/></a><figcaption>Традиционный итальянский суп минестроне</figcaption></figure><p class="" id="2a333974-4d17-80da-aa06-e66b0dfa393b"><strong>История происхождения</strong></p><p class="" id="2a333974-4d17-806a-853c-e6a8d00ca463">Первые упоминания минестроне относятся к XV веку. Тогда это был повседневный суп крестьян, в котором использовали всё, что росло в огороде. Овощи, фасоль, репа, лук, травы, немного оливкового масла — простой, но питательный обед. Иногда, если удавалось достать кусочек мяса, его добавляли для насыщенности.</p><p class="" id="2a333974-4d17-80d9-9f18-f2e97ce9413b">Когда в XVI веке в Европу завезли томаты и картофель, минестроне стал ярче и ароматнее. В XVII веке, в годы неурожаев, к овощам начали добавлять макароны или рис — так появился привычный вариант супа, который дошёл до наших дней.</p><p class="" id="2a333974-4d17-807a-9b39-c761ce206d34"><strong>Главный принцип</strong></p><p class="" id="2a333974-4d17-809b-be85-eb5ed4574a50">Минестроне — это не конкретный рецепт, а философия. Итальянцы говорят: <em>«Готовь минестроне из того, что даёт сезон».</em> Летом — помидоры, цукини и зелёная фасоль, зимой — картофель, капуста, морковь и бобы.</p><p class="" id="2a333974-4d17-80a7-a742-c29577a3b221">Обязательно добавляют лук, сельдерей, чеснок и оливковое масло, а вкус усиливают соусом <em>песто</em>, тёртым пармезаном или белым вином. Каждый регион Италии имеет свой вариант — от лёгкого летнего супа до густого зимнего рагу.</p></div></div><h3 class="block-color-brown_background" id="29933974-4d17-8004-91bd-e6bc471867b1">Суп из каштанов — забытая классика Европы</h3><div class="column-list" id="29933974-4d17-802d-90da-deed9f839fbe"><div class="column" id="29933974-4d17-8071-953a-e4381f8828d8" style="width:56.25%"><figure class="image" id="29933974-4d17-80fa-8fe2-d02debb88ad4"><a href="spravochnik-oficianta_chestnut_soup.jpg"><img src="../images/spravochnik/spravochnik-oficianta-chestnut-soup.webpjpg style="width:1080px"/></a><figcaption>Итальянский суп из каштанов</figcaption></figure><p class="" id="2a333974-4d17-808e-96c3-c0c8114845bc"><strong>Французская и итальянская традиция</strong></p><p class="" id="2a333974-4d17-80f8-81af-ea46b6c24e67">Во Франции каштановый суп (<em>soupe aux marrons</em>) — это изысканное блюдо, подаваемое осенью. Его готовят на курином или овощном бульоне, добавляют сливки, мускатный орех и иногда немного коньяка для глубины вкуса. Итальянцы предпочитают более простую версию — густую, чуть сладковатую, с добавлением тимьяна, шалфея и оливкового масла. В некоторых рецептах каштаны сочетают с грибами или копчёным мясом.</p><p class="" id="2a333974-4d17-80d9-bcdf-fd3c586a0f80"><strong>Интересные факты</strong></p><ul class="bulleted-list" id="2a333974-4d17-8025-a71b-cafd48c3a236"><li style="list-style-type:disc">Каштан считался «деревом бедняков», но его плоды были настолько питательными, что спасали целые деревни от голода.</li></ul><ul class="bulleted-list" id="2a333974-4d17-80eb-8a55-cd95ca94e889"><li style="list-style-type:disc">Каштановый суп считается идеальным осенним блюдом: он согревает, насыщает и содержит большое количество клетчатки, железа и витаминов группы B.</li></ul></div><div class="column" id="29933974-4d17-80fe-aa34-d51ba395e91f" style="width:43.75%"><p class="" id="2a333974-4d17-80c8-a6f3-d1bfc46510ec">Суп из каштанов — блюдо с древней историей, уходящей к античности. Первые упоминания о нём связаны с именем <strong>Александра Македонского</strong>: во время походов его воины спасались от голода именно каштанами. По легенде, сам полководец приказал сажать эти деревья во всех завоёванных землях, чтобы армия всегда имела пропитание.</p><p class="" id="2a333974-4d17-80a0-993b-f2c297c8c2ec"><strong>Каштан — хлеб древних европейцев</strong></p><p class="" id="2a333974-4d17-8092-a738-c4ab54533c81">До появления картофеля в XVI веке каштаны были важнейшим продуктом питания в южной Европе. Их сушили, мололи в муку, жарили, варили и добавляли в супы. Особенно широко каштаны использовались в <strong>Италии</strong>, где из них готовили пюре, десерты и питательные похлёбки. В некоторых горных регионах Тосканы и Лигурии каштан заменял хлеб — настолько он был распространён.</p><figure class="image" id="2a333974-4d17-80b0-9df1-ce0b57353c37"><a href="spravochnik-oficianta_chestnut.jpg"><img src="../images/spravochnik/spravochnik-oficianta-chestnut.webpjpg style="width:576px"/></a><figcaption>Атмосфера европейских улиц с жареными каштанами</figcaption></figure></div></div><h3 class="block-color-brown_background" id="29933974-4d17-8060-9759-ff52c23a06b9">Уха со сливками: русская классика с изюминкой</h3><p class="" id="2a333974-4d17-806c-972e-ca903620c5e8">Сливочная уха — один из самых утончённых вариантов традиционного русского супа. Это не просто блюдо, а пример того, как классическая простота может стать изысканным деликатесом.</p><p class="" id="2a333974-4d17-8024-9ee8-d672d91a4351"><strong>История происхождения</strong></p><p class="" id="2a333974-4d17-800b-97be-fca851845a22">По легенде, рецепт ухи со сливками придумал <strong>композитор Александр Даргомыжский</strong> в начале XIX века. Он был известен не только музыкальными произведениями, но и страстью к кулинарным экспериментам. Однажды Даргомыжский решил добавить в обычную рыбную уху немного свежих сливок — и получил блюдо с мягким, округлым вкусом, который покорил всю Петербургскую знать. С тех пор «уха по-даргомыжски» стала украшением светских обедов.</p><p class="" id="2a333974-4d17-8074-8477-ca8847dc693e"><strong>Особенности рецепта</strong></p><p class="" id="2a333974-4d17-80ae-9c54-f0030ea71605">Основу составляют рыба (традиционно судак, треска, лосось или щука), картофель, морковь, лук и корень петрушки. Рыбу варят до готовности, удаляют кости, а в бульон возвращают только нежное мясо. Затем добавляют сливки, иногда немного сливочного масла или белого вина. Бульон становится бархатным, а вкус — удивительно сбалансированным: между солоноватой рыбой и нежной молочной ноткой.</p><p class="" id="2a333974-4d17-8011-936c-dfc4fdb67480"><strong>Современные вариации</strong></p><p class="" id="2a333974-4d17-8057-b908-f358bd03c73a">Сегодня сливочную уху готовят не только в России, но и в Скандинавии, Франции и Японии — везде, где любят рыбу и ценят нежные сливочные супы. В Финляндии аналог блюда известен как <em>lohikeitto</em> — суп из лосося со сливками. В ресторанах России уху со сливками подают с чёрным хлебом и зеленью, а иногда — с ложкой красной икры.</p><h3 class="block-color-brown_background" id="29933974-4d17-805d-824f-e54db92ecf04">Том Ям — искусство баланса кислого и острого</h3><p class="" id="2a333974-4d17-8056-847c-c96fc984cf41"><strong>Том Ям (Tom Yum)</strong> — символ тайской кухни и одно из самых узнаваемых блюд Азии. Его название буквально переводится как <em>«варить (том) + остро-кислый салат (ям)»</em>, что точно описывает характер супа: он одновременно горячий, кислый, острый и ароматный.</p><p class="" id="2a333974-4d17-8003-82d7-f74e32216f00"><strong>Происхождение</strong></p><p class="" id="2a333974-4d17-80fb-9b39-ffc128b427c4">Родина Том Яма — центральный Таиланд, долина реки Чаупхрая, богатая рыбой и креветками. Считается, что именно здесь впервые сварили этот «варёный салат», сочетая простую рыбу с местными травами и специями. Постепенно блюдо стало частью национальной гордости и распространилось по всей Азии.</p><p class="" id="2a333974-4d17-8047-a08a-e7e600d295b2"><strong>Основные виды Том Яма</strong></p><ul class="bulleted-list" id="2a333974-4d17-803e-9480-da38fb14fd4d"><li style="list-style-type:disc"><strong>Tom Yum Goong (Том Ям Кунг)</strong> — классический вариант с креветками, самый известный и любимый в мире.</li></ul><ul class="bulleted-list" id="2a333974-4d17-805b-a2ea-c725ff708e59"><li style="list-style-type:disc"><strong>Tom Yum Pla</strong> — с рыбой.</li></ul><ul class="bulleted-list" id="2a333974-4d17-8078-ba43-f975f4bb612d"><li style="list-style-type:disc"><strong>Tom Yum Gai</strong> — с курицей.</li></ul><ul class="bulleted-list" id="2a333974-4d17-8059-85da-d8a92eb9025d"><li style="list-style-type:disc"><strong>Tom Yum Moo</strong> — с рулькой или свининой.<p class="" id="2a333974-4d17-8009-9166-cf478b76490f">Иногда суп готовят с кокосовым молоком (<em>Tom Yum Nam Khon</em>), что делает его мягче и сливочнее, или без него (<em>Tom Yum Nam Sai</em>), оставляя прозрачным и более острым.</p></li></ul><p class="" id="2a333974-4d17-8002-96bf-ee577620e2ba"><strong>Секрет вкуса</strong></p><p class="" id="2a333974-4d17-801b-bde6-dcf63f050f10">Настоящий Том Ям не похож на обычный суп — это взрыв ароматов. В бульон добавляют <strong>лемонграсс, галангал, листья кафрского лайма, чили, сок лайма, рыбный соус и пасту том ям</strong>. Все ингредиенты балансируют между остротой, кислинкой и лёгкой сладостью.</p><p class="" id="2a333974-4d17-80b6-9f4b-c37f28e4109e">Том Ям официально включён в список нематериального культурного наследия Таиланда.</p><h3 class="block-color-brown_background" id="29933974-4d17-80e9-a79e-c89413416982">Ризотто - блюдо, рожденное из ошибки</h3><div class="column-list" id="2a333974-4d17-8024-a997-fc4f341f1970"><div class="column" id="2a333974-4d17-80e5-ba6f-eb4ee50c6eb6" style="width:50%"><figure class="image" id="2a333974-4d17-8009-a50c-f8e378b2df23"><a href="spravochnik-oficianta_risotto.jpg"><img src="../images/spravochnik/spravochnik-oficianta-risotto.webpjpg style="width:659px"/></a><figcaption>Ризотто с грибами (<em>Risotto ai Funghi</em> )</figcaption></figure></div><div class="column" id="2a333974-4d17-8075-8fed-e0534375666e" style="width:50%"><p class="" id="2a333974-4d17-8083-92d2-d0f31298e749"><strong>Ризотто (Risotto)</strong> — одно из самых известных итальянских блюд, воплощение уюта и кулинарной точности. Название происходит от итальянского <em>riso</em> — «рис» и буквально означает «мелкий рис». Это не просто гарнир, а самостоятельное блюдо, приготовленное на бульоне до кремовой консистенции.</p><p class="" id="2a333974-4d17-80df-ab9a-df2ef26df71e"><strong>История происхождения</strong></p><p class="" id="2a333974-4d17-80f6-ac92-f7269514c9c3">Рис появился в Италии в Средние века благодаря торговым путям с Востоком. Сначала его использовали для приготовления каш, но на севере страны, особенно в регионе <strong>Ломбардия</strong>, изобретательные повара научились варить рис так, чтобы он оставался чуть упругим, а бульон превращался в нежный соус. Так и родилось ризотто — блюдо, которое стало символом североитальянской кухни.</p><p class="" id="2a333974-4d17-80f4-9c74-ea40b001c39f">Существует несколько версий появления ризотто.</p><ol class="numbered-list" id="2a333974-4d17-800b-9cf0-d97ba80a542f" start="1" type="1"><li><strong>Миланская легенда.</strong> Говорят, что миланский герцог Феррары получил в подарок мешки с необычным круглым рисом, из которого начали варить сытные каши. Это помогло прокормить население во времена голода.</li></ol><ol class="numbered-list" id="2a333974-4d17-805d-a11e-c3881fa3e6cf" start="2" type="1"><li><strong>Ошибка повара.</strong> По другой версии, повар случайно испортил суп с рисом и подал оставшиеся зёрна без бульона. Блюдо оказалось настолько вкусным, что рецепт быстро распространился по Италии.</li></ol><ol class="numbered-list" id="2a333974-4d17-80eb-9113-e6a9be928c35" start="3" type="1"><li><strong>История стеклодува.</strong> Самая известная легенда связана с молодым стеклодувом из Фландрии, работавшим в Милане. В 1809 году он добавил в рис <strong>шафран</strong>, которым обычно окрашивал стекло, и подал яркое блюдо на свадьбе. Так появилось <strong>Risotto alla Milanese</strong> — золотое ризотто, ставшее классикой итальянской кухни.</li></ol></div></div><p class="" id="2a333974-4d17-80ea-adb9-f2dcee3ecd97"><strong>Основные принципы приготовления</strong></p><p class="" id="2a333974-4d17-804f-b4c8-c40c51a6cd1b">Настоящее ризотто готовят только из специальных сортов риса — <strong>Arborio, Carnaroli или Vialone Nano</strong>, которые выделяют крахмал и создают кремовую текстуру. Рис сначала обжаривают в сливочном масле с луком, затем постепенно подливают горячий бульон, помешивая, пока зёрна не станут мягкими с лёгкой сердцевиной. В конце добавляют сыр <strong>пармезан</strong>, сливочное масло и иногда белое вино.</p><p class="" id="2a333974-4d17-8009-bb11-e43b36150d0d"><strong>Разновидности ризотто</strong></p><ul class="bulleted-list" id="2a333974-4d17-800c-ba53-ec081c84dc16"><li style="list-style-type:disc"><em>Risotto alla Milanese</em> — с шафраном, сливочным маслом и пармезаном.</li></ul><ul class="bulleted-list" id="2a333974-4d17-809b-8d9d-d5bbf483b586"><li style="list-style-type:disc"><em>Risotto ai Funghi</em> — с белыми грибами или шампиньонами.</li></ul><ul class="bulleted-list" id="2a333974-4d17-80d3-b6f8-eb9e72298dcd"><li style="list-style-type:disc"><em>Risotto al Nero di Seppia</em> — с чернилами каракатицы, популярное в Венеции.</li></ul><ul class="bulleted-list" id="2a333974-4d17-80bc-b92c-d0bb149b41dc"><li style="list-style-type:disc"><em>Risotto ai Frutti di Mare</em> — с морепродуктами, классика прибрежных регионов.</li></ul><h3 class="block-color-brown_background" id="29933974-4d17-801f-ab30-ecec2e7041e3">Чёрная треска — деликатес глубин</h3><div class="column-list" id="29933974-4d17-803a-8a2e-ff297a766a6c"><div class="column" id="29933974-4d17-80ac-8029-cae77ed5593d" style="width:57.14285714285715%"><figure class="image" id="29933974-4d17-80e5-a6b0-e7fa70068d14"><a href="spravochnik-oficianta_black_cod.jpg"><img src="../images/spravochnik/spravochnik-oficianta-black-cod.webpjpg style="width:1080px"/></a><figcaption>Black Cod with Miso — легендарное блюдо шефа Нобу</figcaption></figure><p class="" id="2a333974-4d17-8000-8c2d-fc36379e4ad7"><strong>Пищевая и биологическая ценность</strong></p><p class="" id="2a333974-4d17-80cd-ab2d-eaebbeff1188">На 100 грамм продукта приходится около <strong>195 ккал</strong>, из которых <strong>13 г белка</strong> и <strong>15 г полезных жиров</strong>. В составе — целый спектр витаминов (A, D, E, K, группы B) и микроэлементов: фосфор, калий, цинк, селен, железо. Особенно важны <strong>жирные кислоты Омега-3 (EPA и DHA)</strong> — они укрепляют сосуды, поддерживают работу мозга и иммунитет.</p><p class="" id="2a333974-4d17-8016-8c52-d76df0406231">Благодаря такому составу чёрную треску рекомендуют при диабете, кожных и глазных заболеваниях, а также в сезон простуд. Однако из-за высокой калорийности её стоит употреблять умеренно.</p></div><div class="column" id="29933974-4d17-8020-bf3f-fe1eae1fa805" style="width:42.85714285714286%"><p class="" id="2a333974-4d17-80ae-9ea6-dc2c9e8df464"><strong>Чёрная треска</strong>, или <strong>угольная рыба (Anoplopoma fimbria)</strong>, — глубоководный морской деликатес, известный своим насыщенным вкусом, нежным мясом и высоким содержанием полезных жиров. Её добывают в холодных водах <strong>Северной части Тихого океана</strong> — у берегов Камчатки, Аляски, Курильских островов, Японии и Калифорнии.</p><p class="" id="2a333974-4d17-8091-ab4f-d0a0e7d7067e">Эта рыба живёт на глубине от <strong>300 до 2700 метров</strong>, предпочитая ледяные, чистые воды. Она хищник, питающийся сельдью, мойвой, креветками и другими мелкими морскими обитателями. Особи достигают <strong>120 см</strong> в длину и могут прожить до <strong>65 лет</strong>. Своё название «угольная» рыба получила за характерную тёмную, синевато-чёрную окраску.</p><p class="" id="2a333974-4d17-8004-aec0-c47323effd64"><strong>Кулинарная ценность</strong></p><p class="" id="2a333974-4d17-805e-8702-c0d661b3c147">Чёрная треска ценится во всём мире за нежное, жирное, почти кремовое мясо, которое буквально тает во рту. Благодаря высокому содержанию природных масел, она не пересыхает даже при запекании или жарке. В Японии эту рыбу называют <strong>гиндара (gindara)</strong> — и подают в элитных ресторанах в виде суши, копчёной или запечённой в мисо-глазури.</p><p class="" id="2a333974-4d17-8020-a0f4-ea689cb8dc74">Самое знаменитое блюдо с чёрной треской — <strong>Black Cod with Miso</strong>, созданное японским шефом Нобу Мацуисой. Оно стало иконой современной гастрономии и подаётся в лучших ресторанах мира.</p></div></div><figure class="block-color-teal_background callout" id="2a333974-4d17-80db-8442-fc48c905d073" style="white-space:pre-wrap;display:flex"><div style="font-size:1.5em"><span class="icon">💡</span></div><div style="width:100%"><p class="block-color-teal_background" id="2a333974-4d17-80f6-8bbb-f2027253b3a5">Ресурсы угольной рыбы ограничены: ежегодный вылов у берегов Аляски составляет всего <strong>около 13,5 тыс. тонн</strong>, что почти в двадцать раз меньше, чем тихоокеанской трески. Это делает её продуктом премиум-класса. Стоимость филе чёрной трески в несколько раз выше палтуса, но гурманы уверены — вкус полностью оправдывает цену.</p><p class="" id="2a333974-4d17-80a9-85c4-d4a188f5023f">С 2000-х годов предпринимаются успешные попытки <strong>разведения чёрной трески в неволе</strong> — в Канаде и США создаются фермы, позволяющие сохранить популяцию и сделать деликатес более доступным.</p></div></figure><h3 class="block-color-brown_background" id="29933974-4d17-808e-a010-f9f3cedd092e">Стейки — анатомия идеального куска мяса</h3><div class="column-list" id="2a333974-4d17-8041-af18-c451976dfb2d"><div class="column" id="2a333974-4d17-8021-a911-c22d01170559" style="width:50%"><figure class="image" id="2a333974-4d17-806b-935e-c5a7b87f1bb8"><a href="spravochnik-oficianta_steaks.jpg"><img src="../images/spravochnik/spravochnik-oficianta-steaks.webpjpg style="width:658.9921875px"/></a><figcaption>Стейки из мраморной говядины</figcaption></figure><figure class="block-color-teal_background callout" id="29933974-4d17-80cf-afef-d7e006158414" style="white-space:pre-wrap;display:flex"><div style="font-size:1.5em"><span class="icon">💡</span></div><div style="width:100%"><p class="block-color-teal_background" id="29933974-4d17-80cb-a791-fda316b727d2"><strong>Классические стейки</strong> — это настоящая редкость. Из целой туши бычка лишь <strong>7–10%</strong> пригодны для таких отрубов, как Рибай, Стриплойн или Филе Миньон. Всё остальное мясо идёт на тушёнку, фарш, рагу и гуляши. Поэтому премиальные стейки — не просто мясо, а концентрат лучших качеств животного. Чтобы получить один идеальный Рибай, требуется бык весом под полтонны и более года правильного откорма — отсюда и высокая цена, и уважение к каждому кусочку.</p></div></figure><ul class="bulleted-list" id="2a333974-4d17-8057-b548-caaf155f1f45"><li style="list-style-type:disc"><strong>Рибай</strong> — король стейков, вырезается из рёберной части туши. Именно по нему оценивают качество всей говядины.</li></ul><ul class="bulleted-list" id="2a333974-4d17-804a-8f72-f551c5d5b6f0"><li style="list-style-type:disc"><strong>Стриплойн (Нью-Йорк)</strong> — поясничная часть с ярким мясным вкусом и жировой каймой, защищающей от пересушивания.</li></ul><ul class="bulleted-list" id="2a333974-4d17-8076-a0bf-e172fd955c28"><li style="list-style-type:disc"><strong>Филе Миньон</strong> — самый нежный, постный и утончённый. Его часто оборачивают беконом, чтобы сохранить сочность.</li></ul><ul class="bulleted-list" id="2a333974-4d17-80c1-933b-c2ebf5b0d921"><li style="list-style-type:disc"><strong>Ти-Бон и Портерхаус</strong> — два в одном: на одной кости соединены Стриплойн и Филе Миньон.</li></ul><figure class="block-color-teal_background callout" id="2a333974-4d17-8032-9890-ef2237b84687" style="white-space:pre-wrap;display:flex"><div style="font-size:1.5em"><span class="icon">💡</span></div><div style="width:100%"><p class="block-color-teal_background" id="2a333974-4d17-8034-af37-cc106f107711"><strong>Tagliata di manzo</strong> — классика итальянской кухни. Обжаренный до <em>medium rare</em> стейк (обычно рибай или филе) нарезают поперёк волокон тонкими ломтиками и подают на подушке из рукколы, с оливковым маслом, бальзамиком и стружкой пармезана. Название происходит от <em>tagliare</em> — «резать», ведь вся суть блюда в эффектной подаче уже нарезанного сочного мяса.</p></div></figure><p class="" id="2a333974-4d17-8064-b9c4-e41501a45ea0"><strong>Рождение альтернативных стейков</strong></p><p class="" id="2a333974-4d17-80e7-bc70-e19fa539eeb2">Чтобы сделать мраморную говядину доступнее, в 2000-х американские учёные <strong>Крис Калкинс</strong> (Небраска) и <strong>Дуэйн Джонсон</strong> (Флорида) начали искать вкусные отрубы за пределами классики. В 2002 году они открыли новый кусок из лопатки — <strong>Flat Iron (Флет Айрон)</strong>, который по вкусу не уступал Рибаю. Позже появились <strong>Chuck Eye, Ranch, Denver, Teres Major</strong> — и началась новая эра стейков.</p></div><div class="column" id="2a333974-4d17-805e-a4f6-f1bb8eca92e3" style="width:50%"><p class="" id="2a333974-4d17-8006-ae8a-fbbf515fd121"><strong>Стейк</strong> — символ силы, вкуса и уважения к продукту. Настоящий стейк — это не просто жареное мясо, а результат селекции, правильного откорма и мастерства повара. Его делают из мраморной говядины — мяса, пронизанного тонкими прожилками жира, которые при жарке тают и превращают волокна в сочный, ароматный шедевр.</p><p class="" id="2a333974-4d17-80e1-9783-c135d0b00af6"><strong>Откуда берётся мраморная говядина</strong></p><p class="" id="2a333974-4d17-8067-a437-e151b66605e0">Лучшие бычки для стейков — <strong>Ангус, Герефорд, Вагю</strong>. Их выращивают в экологически чистых регионах, где животные проводят до полутора лет на свободном выпасе, питаясь травой и водой. Затем их переводят на зерновой рацион — кукурузу, пшеницу и овёс. Такой откорм формирует идеальную мраморность и насыщенный вкус.</p><p class="" id="2a333974-4d17-8049-8ea2-e19a93969a38"><strong>Классика жанра</strong></p><p class="" id="2a333974-4d17-8006-9381-e5f8e4c705d0">К премиальным стейкам относят <strong>Рибай, Стриплойн, Филе Миньон, Ти-Бон и Портерхаус</strong>. Эти куски вырезают из участков, которые почти не участвуют в движении животного. Мясо там мягкое, жир распределён равномерно, а вкус — сливочно-ореховый.</p><figure class="image" id="2a333974-4d17-808f-abce-d26eb3f4c429"><a href="spravochnik-oficianta_tagliata.jpg"><img src="../images/spravochnik/spravochnik-oficianta-tagliata.webpjpg style="width:659px"/></a><figcaption>Подача стейка tagliata (тальята)</figcaption></figure><p class="" id="2a333974-4d17-80a2-ab4d-c3307253a8a2">
+</p><figure class="image" id="2a333974-4d17-80f6-9b17-df6f6d5ff1b9"><a href="spravochnik-oficianta_porterhouse.jpg"><img src="../images/spravochnik/spravochnik-oficianta-porterhouse.webpjpg style="width:658.9921875px"/></a><figcaption>Портерхаус — сочетание филе миньон и стриплойна</figcaption></figure></div></div><p class="" id="2a333974-4d17-80ea-9feb-c69800113497"><strong>Альтернативные стейки</strong></p><ul class="bulleted-list" id="2a333974-4d17-80ea-a7da-f4860f1448f2"><li style="list-style-type:disc"><strong>Денвер</strong> — из шейной части. После выдержки становится мягким и сладковатым, с лёгким сливочным оттенком.</li></ul><ul class="bulleted-list" id="2a333974-4d17-80d6-b65d-e8fb390ff8e1"><li style="list-style-type:disc"><strong>Флет Айрон</strong> — второй по нежности кусок после Филе Миньона, с ярким мясным вкусом и умеренной мраморностью.</li></ul><ul class="bulleted-list" id="2a333974-4d17-8078-93a5-cc5a69c6e9b8"><li style="list-style-type:disc"><strong>Ранч и Чак Ай</strong> — плотные, ароматные, идеальны для гриля и маринадов.</li></ul><p class="" id="2a333974-4d17-80da-8ff0-d1d650aa531b">Альтернативные стейки требуют внимания: из них удаляют жилы, иногда маринуют или слегка отбивают. Зато они дешевле и обладают более насыщенным вкусом — за счёт работы мышц, где мясо плотнее и ароматнее.</p><p class="" id="2a333974-4d17-80b7-b579-e04d47e086a7"><strong>Как жарить идеальный стейк</strong></p><p class="" id="2a333974-4d17-8031-87f2-df5bf8a0e88c">Лучше всего — на гриле или углях, но и дома можно достичь совершенства.</p><ol class="numbered-list" id="2a333974-4d17-803e-b1ef-c298e8467274" start="1" type="1"><li>Достань мясо за час до жарки, чтобы прогрелось.</li></ol><ol class="numbered-list" id="2a333974-4d17-8081-957d-d73f559c03ce" start="2" type="1"><li>Разогрей чугунную сковороду до максимума.</li></ol><ol class="numbered-list" id="2a333974-4d17-8087-b3b4-efe60b0d8999" start="3" type="1"><li>Обжарь по 1–2 минуты с каждой стороны, чтобы образовалась корочка.</li></ol><ol class="numbered-list" id="2a333974-4d17-80cc-af51-c398cb04f1e8" start="4" type="1"><li>Доведи до нужной прожарки в духовке при 180 °C.</li></ol><ol class="numbered-list" id="2a333974-4d17-8079-825b-db2e0f2ca479" start="5" type="1"><li>Дай мясу «отдохнуть» 5–7 минут — соки равномерно распределятся.</li></ol><h3 class="block-color-brown_background" id="29933974-4d17-8073-9098-fee295ad8e61">Что такое вызревание мяса: Dry Aged и Wet Aged</h3><div class="column-list" id="2a333974-4d17-80ce-b95d-c63b6de0ba91"><div class="column" id="2a333974-4d17-80e1-a796-e60811a6e29a" style="width:50%"><p class="" id="2a333974-4d17-8008-9e29-fe40b3e06c4a"><strong>Сухое вызревание (Dry Aged)</strong> — старейшая техника, появившаяся задолго до изобретения холодильников. Тогда мясо подвешивали в прохладных подвалах, где оно естественным образом ферментировалось. Сегодня этот процесс проводят в специальных камерах с постоянной циркуляцией воздуха, при температуре +1…+3 °C и влажности 50–75%. В течение 14–30 дней (а иногда до 120 суток) ферменты мягко разрушают волокна, из мяса уходит лишняя влага, а вкус становится насыщенным, глубоким, с ореховыми и маслянистыми оттенками.</p><p class="" id="2a333974-4d17-80a8-854f-d8dfd3a1ed36">Такая выдержка придаёт говядине характерный аромат, который невозможно воспроизвести другими способами. Минусы — высокая трудоёмкость, необходимость строгого контроля условий и потеря до 35 % веса. Кроме того, перед продажей приходится срезать верхний слой, подсушенный в процессе. Именно поэтому Dry Aged стейки считаются деликатесом и ценятся гурманами во всём мире.</p><p class="" id="2a333974-4d17-80a1-9bc1-fbcbb922c278"><strong>Влажное вызревание (Wet Aged)</strong> — современная альтернатива, появившаяся в XX веке вместе с развитием технологии вакуумной упаковки. Отрубы помещают в герметичные пакеты и выдерживают при 0…+2 °C без доступа кислорода. За 5–14 дней происходит ферментация, мясо становится мягким и сочным, не теряя массы и влаги. Благодаря простоте и гигиеничности метод используют 90 % производителей премиальной говядины.</p><figure class="image" id="29933974-4d17-803c-aeeb-cd0b0aaba335"><a href="spravochnik-oficianta_wet_aged.jpg"><img src="../images/spravochnik/spravochnik-oficianta-wet-aged.webpjpg style="width:1080px"/></a><figcaption>Процесс <strong>влажного вызревания</strong> проходит в герметичных вакуумных пакетах, где мясо полностью изолировано от воздуха<br/><br/></figcaption></figure></div><div class="column" id="2a333974-4d17-8096-a562-ef0ebb341e16" style="width:50%"><figure class="image" id="2a333974-4d17-80e0-bfad-cf5dfeada813"><a href="spravochnik-oficianta_dry_aged_box.jpg"><img src="../images/spravochnik/spravochnik-oficianta-dry-aged-box.webpjpg style="width:624px"/></a><figcaption>Процесс <strong>сухого вызревания</strong> проводят в специальных холодильных камерах с контролируемыми условиями<br/></figcaption></figure><p class="" id="2a333974-4d17-80b2-8b85-e0adccae59c4">Существуют и более изысканные варианты влажного вызревания:</p><ul class="bulleted-list" id="2a333974-4d17-8008-b93d-fd9f13aaf8ad"><li style="list-style-type:disc"><strong>Аква-вызревание</strong> — мясо погружают на 4–5 недель в минеральную воду с определённым составом магния и кальция.</li></ul><ul class="bulleted-list" id="2a333974-4d17-805a-912e-e56afdfd7b7e"><li style="list-style-type:disc"><strong>В пергаменте</strong> — отруб заворачивают в бумагу, которая впитывает сок и смягчает кислотность.</li></ul><ul class="bulleted-list" id="2a333974-4d17-804d-b646-e392c07a6347"><li style="list-style-type:disc"><strong>В жире</strong> — старинная техника, когда мясо покрывают топлёным салом, защищая от контакта с воздухом.</li></ul><p class="" id="29933974-4d17-80b3-b980-ce864a56151c">
+</p></div></div><figure class="block-color-teal_background callout" id="29933974-4d17-8047-aaf2-d0fa8300cfbc" style="white-space:pre-wrap;display:flex"><div style="font-size:1.5em"><span class="icon">💡</span></div><div style="width:100%"><p class="" id="2a333974-4d17-80c6-b2b2-c521eeb0bc1b">Мясо Dry Aged теряет до трети массы, но приобретает мощный вкус и текстуру, за которые его любят шефы лучших стейк-хаусов. Wet Aged, напротив, сохраняет до 95 % веса и идеально подходит для нежных, сочных стейков, особенно при транспортировке и хранении.</p></div></figure><h3 class="block-color-brown_background" id="29933974-4d17-80c3-9002-f63fccd1bc83">Хоспер — жар, вкус и аромат угля</h3><div class="column-list" id="29933974-4d17-80e8-8e9f-c728e3e481a8"><div class="column" id="29933974-4d17-80a0-b073-ee62a96fc0de" style="width:57.14285714285715%"><figure class="image" id="29933974-4d17-80bb-a302-dddbac78ad8b"><a href="spravochnik-oficianta_josper.jpg"><img src="../images/spravochnik/spravochnik-oficianta-josper.webpjpg style="width:1080px"/></a><figcaption>Хоспер (Josper) — гибрид гриля и печи, созданный испанской компанией Josper</figcaption></figure></div><div class="column" id="29933974-4d17-80ef-ba4e-c08d3accab74" style="width:42.85714285714286%"><p class="" id="2a333974-4d17-806d-b273-ff19a735b2df"><strong>Хоспер (Josper)</strong> — гибрид гриля и печи, созданный испанской компанией <em>Josper S.A.</em> в 1969 году. Это устройство стало революцией в ресторанной кухне и сегодня используется лучшими шефами мира.</p><p class="" id="2a333974-4d17-80d4-b610-fd5345a9dccb">Рабочая температура в хоспере достигает <strong>300–500 °C</strong>, при этом благодаря закрытой конструкции и теплоизоляции тепло удерживается внутри, а снаружи корпус остаётся безопасным. Топливом служат <strong>древесные угли или дрова</strong>, за счёт чего блюда приобретают аромат лёгкого копчения и характерный вкус живого огня.</p><p class="" id="2a333974-4d17-801f-b486-edad9e204d54">Благодаря высокой температуре приготовления хоспер позволяет:</p><ul class="bulleted-list" id="2a333974-4d17-80ff-bb8d-cfceb4cc993f"><li style="list-style-type:disc">обжаривать продукты быстрее, чем на обычном гриле;</li></ul><ul class="bulleted-list" id="2a333974-4d17-8080-94e6-d4b877b88af0"><li style="list-style-type:disc">сохранять влагу и структуру мяса, рыбы или овощей;</li></ul><ul class="bulleted-list" id="2a333974-4d17-8081-be82-c399c6385c33"><li style="list-style-type:disc">придавать блюдам золотистую корочку и аромат дыма;</li></ul><ul class="bulleted-list" id="2a333974-4d17-80d9-92a3-c984337426f7"><li style="list-style-type:disc">экономить топливо — расход угля на 40–50 % меньше, чем у открытого гриля.</li></ul><p class="" id="2a333974-4d17-8033-a13b-d5eca9d4632d">
+</p></div></div><p class="" id="2a333974-4d17-8001-918a-dcb860fab120">Хоспер используют в ресторанах для приготовления <strong>стейков, рыбы, морепродуктов, птицы и овощей</strong>. Он ценится за стабильный результат, эстетичный внешний вид блюд и глубокий вкус.</p><figure class="block-color-teal_background callout" id="29933974-4d17-807e-92b6-f846d93cc12c" style="white-space:pre-wrap;display:flex"><div style="font-size:1.5em"><span class="icon">💡</span></div><div style="width:100%"><p class="" id="2a333974-4d17-8074-ab3c-cd50e4ec2151">Название <em>Josper</em> образовано от имён основателей — Хосе и Переса, двух испанских инженеров, придумавших печь, которая сегодня считается золотым стандартом профессиональных кухонь.</p></div></figure><div class="column-list" id="2a333974-4d17-8060-ada1-f5430f743c34"><div class="column" id="2a333974-4d17-80a9-ba66-ed17124c8556" style="width:50%"><h3 class="block-color-brown_background" id="29933974-4d17-80b2-9cf2-cd6f4d9fe5b2">Шоколадный Фондан — сладкая случайность, ставшая легендой</h3><p class="" id="2a333974-4d17-8058-9dd4-fe567caeeb8f"><strong>Фондан (Fondant au chocolat)</strong> — знаменитый десерт с жидким шоколадным центром, известный во всём мире как <em>«лавовый торт»</em>. Его история началась во Франции в 1980-х годах и, как часто бывает в гастрономии, во многом обязана случаю.</p><p class="" id="2a333974-4d17-8082-b90c-df6af492ad34">По одной из версий, молодой шеф-повар <strong>Жан-Жак Грассетт</strong> случайно недопёк шоколадный бисквит, и при разрезании из середины потёк тёплый шоколад. Вкус оказался настолько изысканным, что блюдо решено было оставить в меню, назвав его <em>«Fondant»</em> — от французского <em>fondre</em>, что означает «таять». Вскоре десерт стал визитной карточкой французских ресторанов.</p><p class="" id="2a333974-4d17-8077-9005-d1f228756b1a">По другой версии, авторство приписывают шефу <strong>Жану-Жоржу Вонгерихтену</strong>, который представил похожий десерт в Нью-Йорке в 1987 году. Независимо от истинного первооткрывателя, фондан стал символом современной высокой кухни: лаконичный, эффектный и неподвластный времени.</p><p class="" id="2a333974-4d17-8043-b90c-cc214aab3d45"><strong>Секрет фондана</strong> — в контрасте текстур: снаружи — тонкая хрустящая корочка, внутри — горячий текучий шоколад. Чтобы добиться идеального эффекта, повар должен строго контролировать температуру и время выпекания: лишняя минута — и центр застынет.</p><p class="" id="2a333974-4d17-801d-a36b-f172a4856c0a">Со временем появились десятки вариаций классического рецепта: с добавлением <strong>ванили, карамели, фисташек, вишни, соли или даже перца чили</strong>, но неизменными остаются его основа — <strong>шоколад, масло, яйца, мука и немного манной крупы</strong>.</p><figure class="image" id="29933974-4d17-80f9-bf23-c69c117eef3c"><a href="spravochnik-oficianta_fondant_au_chocolat.jpg"><img src="../images/spravochnik/spravochnik-oficianta-fondant-au-chocolat.webpjpg style="width:1080px"/></a><figcaption>Шоколадный фондан с текучей начинкой</figcaption></figure></div><div class="column" id="2a333974-4d17-80a0-99bc-f930f29c71b0" style="width:50%"><h3 class="block-color-brown_background" id="29933974-4d17-806c-90cb-e6d7abee0312">Макарон и Макарун — сладкие тёзки с разным характером</h3><p class="" id="2a333974-4d17-808c-9563-d328a359b64d">Несмотря на схожие названия и схожий набор ингредиентов — <strong>яичный белок и сахар</strong>, — эти два десерта имеют совершенно разное происхождение и вкус.</p><p class="" id="2a333974-4d17-80f2-982c-e8d35c1dea70"><strong>Макарон (macaron)</strong> — это элегантное французское печенье-безе с миндальной мукой и нежной кремовой прослойкой. Оно имеет идеально гладкую поверхность, круглую форму и характерную «юбочку» у основания. Макароны — символ парижской кондитерской культуры, лёгкие, воздушные и цветные, со вкусами от классического фисташкового до лавандового или солёной карамели.</p><p class="" id="2a333974-4d17-804c-b43d-f31e40429d4b"><strong>Макарун (macaroon)</strong> — более плотное и домашнее лакомство. Его родина — Италия, а позже он стал особенно популярен в США. В тесто, помимо белков и сахара, добавляют <strong>много кокосовой стружки</strong> и иногда орехи. В результате получается жевательное, рассыпчатое печенье с ярко выраженным вкусом кокоса.</p><figure class="block-color-teal_background callout" id="2a333974-4d17-8057-b31e-e0131468bf0d" style="white-space:pre-wrap;display:flex"><div style="font-size:1.5em"><span class="icon">💡</span></div><div style="width:100%"><p class="" id="2a333974-4d17-8076-b9b5-d384a379854a">Слово <em>macaron</em> происходит от итальянского <em>maccarone</em> — «измельчённое тесто». Со временем французская версия превратилась в символ высокой кондитерии, а американская — в уютный домашний десерт.</p></div></figure><figure class="image" id="29933974-4d17-8043-a4d0-f940d14c9347"><a href="spravochnik-oficianta_macaron.jpg"><img src="../images/spravochnik/spravochnik-oficianta-macaron.webpjpg style="width:1080px"/></a><figcaption>Макарон — символ французской кондитерской элегантности</figcaption></figure><p class="" id="2a333974-4d17-8049-86cf-ef91e207f6bb">
+</p></div></div><div class="column-list" id="2a333974-4d17-80dd-8000-db2714154292"><div class="column" id="2a333974-4d17-80da-9038-f43c7dc4a5c3" style="width:43.75%"><h3 class="block-color-brown_background" id="29933974-4d17-80d8-98cb-e2e202f136db">Медовик — любимый десерт императорского двора</h3><p class="" id="2a333974-4d17-8079-ac96-dec34df18128"><strong>Медовик (Medovik)</strong> — традиционный русский многослойный торт, получивший известность далеко за пределами России. За границей он известен под названием <strong>“Russian Honey Cake”</strong>, реже просто <strong>“Honey Cake”</strong>.</p><p class="" id="2a333974-4d17-8041-ad93-ffee11064ad8">Этот десерт часто называют визитной карточкой русской кухни наряду с борщом и блинами. В Европе и Америке Медовик подают в ресторанах восточноевропейской кухни и в модных кофейнях, где он стал символом домашнего уюта и «slow dessert culture» — десертов, которые требуют времени и терпения.</p><figure class="image" id="29933974-4d17-8016-b76a-d31cfcdd8d4a"><a href="spravochnik-oficianta_medovik.jpg"><img src="../images/spravochnik/spravochnik-oficianta-medovik.webpjpg style="width:1080px"/></a><figcaption>Классический медовик с заварным кремом</figcaption></figure><p class="" id="2a333974-4d17-8068-8e0b-f02865f04f36">История <strong>Медовика</strong> уходит в XVIII век, когда рецепт медовых коржей пришёл в Россию из восточно-европейской кухни. Однако именно при дворе российской императрицы <strong>Елизаветы Алексеевны</strong>, супруги <strong>Александра I</strong>, этот десерт обрёл свой узнаваемый вкус и форму.</p><p class="" id="2a333974-4d17-80fa-90c4-e983cb5b45c4">Согласно легенде, молодой придворный кондитер, не зная о нелюбви императрицы к мёду, решил приготовить для неё новый десерт — <strong>торт из тонких медовых коржей с заварным кремом</strong>. Аромат и нежная текстура торта покорили Елизавету с первого кусочка. Лишь позже она узнала, что лакомство сделано с использованием мёда — продукта, который прежде избегала.</p><p class="" id="2a333974-4d17-808b-a37d-caa12175a6cf">Неожиданно для всех, императрица была восхищена. С того дня <strong>Медовик</strong> стал фаворитом императорского стола и быстро распространился среди знати, а затем и по всей России.</p><p class="" id="2a333974-4d17-8047-815d-c3818288462a">Со временем рецепт изменялся: крем на основе сметаны, сливок или варёной сгущёнки, орехи, цукаты и даже лёгкий алкоголь стали добавляться для разнообразия вкуса. Но суть осталась прежней — <strong>тонкие ароматные коржи и нежная пропитка, создающая эффект “тающего во рту” торта</strong>.</p><p class="" id="2a333974-4d17-80e0-9abf-e83ebe8ff62e">
+</p><p class="" id="2a333974-4d17-807c-a273-f5047ceb4dd1">
+</p><p class="" id="2a333974-4d17-8022-8d77-dba36cc2ad0b">
+</p></div><div class="column" id="2a333974-4d17-80f5-924e-d7bf1fc070bc" style="width:56.25%"><h3 class="block-color-brown_background" id="29933974-4d17-80aa-a194-e99979d1bdcc">Тирамису — сладкое «подними меня» из Италии</h3><p class="" id="2a333974-4d17-8080-a1e9-c90985cfec41">
+</p><p class="" id="2a333974-4d17-8035-9dcc-ed1a8a6887d3"><strong>Тирамису</strong> — один из самых известных итальянских десертов, чьё название буквально переводится как <em>«подними меня»</em> (<em>tira mi su</em>) — намёк на бодрящий эффект кофе и какао.</p><p class="" id="2a333974-4d17-80c3-9f2f-d7e469bd9988">Впервые десерт приготовили в <strong>конце XVII века</strong> в городе <strong>Сиена</strong>, регионе Тоскана, в честь приезда Великого герцога <strong>Козимо III де Медичи</strong>. Местные кондитеры создали новое лакомство из простых, но насыщенных ингредиентов — сливочного сыра, яиц, сахара, кофе и печенья савоярди. Герцогу десерт так понравился, что его назвали <em>«Zuppa del Duca»</em> — «герцогский суп».</p><p class="" id="2a333974-4d17-8039-9227-c8107d802bc2">Позже рецепт попал во <strong>Флоренцию</strong>, где стал фаворитом итальянской знати, а уже из Венеции распространился по всей Италии. Именно там он получил своё современное имя — <em>Tiramisù</em>. В XX веке блюдо стало символом итальянской кухни во всём мире.</p><p class="" id="2a333974-4d17-80ad-979c-e330a0bbb2d8">Классический тирамису готовят без выпечки: савоярди пропитывают свежесваренным <strong>эспрессо</strong>, выкладывают слоями с кремом из <strong>маскарпоне, яичных желтков и сахара</strong>, а сверху посыпают <strong>какао-порошком</strong>. Современные версии включают добавление <strong>ликёра, рома или амаретто</strong>, а также фрукты, ягоды и даже фисташковый крем.</p><p class="" id="2a333974-4d17-809b-a173-d6cb848f5522">
+</p><figure class="image" id="29933974-4d17-8088-991b-fc0694584439"><a href="spravochnik-oficianta_tiramisu.jpg"><img src="../images/spravochnik/spravochnik-oficianta-tiramisu.webpjpg style="width:1080px"/></a><figcaption>Классический тирамису с какао-пудрой сверху</figcaption></figure></div></div><figure class="block-color-teal_background callout" id="29933974-4d17-804c-9188-f68681dec010" style="white-space:pre-wrap;display:flex"><div style="font-size:1.5em"><span class="icon">💡</span></div><div style="width:100%"><p class="" id="2a333974-4d17-801f-9b88-e9a2fba515f5">В оригинальном рецепте тирамису не использовалось ни сливок, ни алкоголя — это были позже добавленные элементы. В регионе Венето даже существует спор за «настоящее» происхождение десерта: несколько городов считают себя родиной легендарного лакомства.</p></div></figure><h3 class="block-color-brown_background" id="29933974-4d17-802e-a69f-f6a079e9dcd2">Баскский чизкейк: нежность внутри, огонь снаружи</h3><div class="column-list" id="29933974-4d17-8006-a7de-df8333320ebf"><div class="column" id="29933974-4d17-803a-8241-e7817c9d59b2" style="width:46.15384615384617%"><p class="" id="2a333974-4d17-805b-8eaa-c9895470516b"><strong>Баскский чизкейк</strong> (<em>Basque Burnt Cheesecake</em>) — испанская интерпретация классического чизкейка, покорившая весь мир своей простотой и выразительным вкусом. Его главная особенность — <strong>отсутствие коржа</strong> и <strong>карамелизованная, слегка подгоревшая верхушка</strong>, которая придаёт десерту узнаваемый аромат и характер.</p><p class="" id="2a333974-4d17-808a-bff1-fdba2b9f98e7">Рецепт родился в <strong>1990 году</strong> в ресторане <em>La Viña</em> в городе <strong>Сан-Себастьян</strong> (Страна Басков). Его автор — шеф-повар <strong>Сантьяго Ривера</strong>, который хотел создать чизкейк, лёгкий и воздушный, в отличие от плотных американских версий. Он использовал местный сливочный сыр, схожий с «Филадельфией», но чуть солонее — именно баланс сладости и соли стал визитной карточкой десерта.</p><p class="" id="2a333974-4d17-80f7-861d-cb7dde054211">Поверхность чизкейка намеренно «обжигают» в духовке при высокой температуре, из-за чего образуется <strong>тёмно-золотистая корочка</strong>, а внутри остаётся <strong>мягкая, кремовая и слегка текучая серединка</strong>. Этот контраст текстур — то, что делает баскский чизкейк уникальным.</p><p class="" id="2a333974-4d17-8088-8f3c-d1f49b604937">Со временем десерт стал гастрономическим символом Сан-Себастьяна — города, известного высокой кухней и множеством ресторанов с мишленовскими звёздами.</p><p class="" id="2a333974-4d17-8039-977c-f5ad8ef47e38"><strong>Интересный факт:</strong> несмотря на испанское происхождение, в Россию баскский чизкейк пришёл через <strong>Турцию</strong>, где он невероятно популярен и встречается почти в каждом кафе. Туристы распробовали его там и «привезли» домой, породив новую волну моды на этот нежный десерт.</p><p class="" id="2a333974-4d17-80f7-bb6e-ff4c90120e10">
+</p></div><div class="column" id="2a333974-4d17-8065-948f-ebdc9586f9b5" style="width:53.846153846153854%"><figure class="image" id="29933974-4d17-8062-bd00-c4fff337c2e5"><a href="spravochnik-oficianta_sansebastian_cheesecake.jpg"><img src="../images/spravochnik/spravochnik-oficianta-sansebastian-cheesecake.webpjpg style="width:678.2734375px"/></a><figcaption>Баскский чизкейк с карамелизованной корочкой</figcaption></figure></div></div><p class="" id="2a333974-4d17-80ad-8d07-e71a301566d6">
+</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span><button class="toc-fab" id="tocFab" type="button">↑ Оглавление</button><style>
+  .toc-fab{
+    position:fixed; right:40px; bottom:40px;
+    padding:15px; border-radius:999px;
+    font:500 12px/1 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+    background:rgba(0,0,0,.75); color:#fff;
+    border:1px solid rgba(255,255,255,.2);
+    box-shadow:0 8px 24px rgba(0,0,0,.25);
+    cursor:pointer; opacity:0; pointer-events:none; transform:translateY(8px);
+    transition:opacity .2s ease, transform .2s ease;
+    z-index:2147483647;
+  }
+  .toc-fab.show{opacity:1; pointer-events:auto; transform:translateY(0);}
+  .toc-fab:active{transform:translateY(1px);}
+</style><script>
+(function(){
+  const btn = document.getElementById('tocFab');
+  const TOC_SELECTORS = '.table_of_contents, #toc';
+  const HIDE_NEAR_TOP = 300;   // рядом с верхом/оглавлением кнопку не показываем
+  const HIDE_TIMEOUT_MS = 1000;
+  let hideTimer = null, muteUntil = 0;
+
+  function findTOC(){ return document.querySelector(TOC_SELECTORS); }
+  function scrollToTOC(){
+    const toc = findTOC();
+    if (!toc) { window.scrollTo({top:0, behavior:'smooth'}); return; }
+    toc.scrollIntoView({ behavior:'smooth', block:'start' });
+  }
+  function safeShow(){
+    const now = Date.now();
+    if (now < muteUntil) return;
+    if (window.scrollY < HIDE_NEAR_TOP) { btn.classList.remove('show'); return; }
+    btn.classList.add('show');
+    if (hideTimer) clearTimeout(hideTimer);
+    hideTimer = setTimeout(()=> btn.classList.remove('show'), HIDE_TIMEOUT_MS);
+  }
+
+  ['scroll','mousemove','touchmove','keydown'].forEach(ev =>
+    window.addEventListener(ev, safeShow, { passive:true })
+  );
+
+  const tocRoot = findTOC();
+  if (tocRoot){
+    tocRoot.addEventListener('click', (e)=>{
+      if (e.target.closest('a')){
+        btn.classList.remove('show');
+        muteUntil = Date.now() + 1200; // «глушим» всплытие на время прыжка по якорю
+        setTimeout(()=>{ muteUntil = 0; }, 1300);
+      }
+    }, true); // capture
+  }
+
+  window.addEventListener('hashchange', ()=>{
+    btn.classList.remove('show');
+    muteUntil = Date.now() + 800;
+    setTimeout(()=>{ muteUntil = 0; }, 900);
+  });
+
+  btn.addEventListener('click', scrollToTOC);
+})();
+</script><script>
+(function(){
+  const btn = document.getElementById('tocFab');
+  if (!btn) return;
+  function scaleVal(){ return (window.visualViewport && window.visualViewport.scale) || 1; }
+  function apply(){
+    const s = scaleVal();
+    btn.style.transformOrigin = "bottom right";
+    btn.style.transform = "translateZ(0) scale(" + (1/s) + ")";
+    btn.style.right = (40 / s) + "px";
+    btn.style.bottom = (40 / s) + "px";
+  }
+  apply();
+  if (window.visualViewport){
+    window.visualViewport.addEventListener('resize', apply);
+    window.visualViewport.addEventListener('scroll', apply);
+  }
+  window.addEventListener('orientationchange', apply);
+})();
+</script>
+
+</body></html>

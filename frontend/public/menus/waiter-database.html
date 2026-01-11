@@ -1,0 +1,1748 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>База знаний официанта</title>
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#111111">
+  <link rel="apple-touch-icon" href="../icons/sabor-icon-180.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Sabor Menu">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #050505;
+      --panel: rgba(28, 28, 30, 0.9);
+      --panel-border: rgba(255, 255, 255, 0.08);
+      --text: #f7f7f7;
+      --muted: rgba(255, 255, 255, 0.6);
+      --accent: #ffd166;
+      --accent-strong: #ffbd2e;
+      --danger: #ff6b6b;
+      --english-highlight: #9ad4ff;
+      font-family: 'Inter', system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: radial-gradient(circle at top left, rgba(255,209,102,0.15), transparent 45%),
+                  radial-gradient(circle at bottom right, rgba(255,109,109,0.12), transparent 40%),
+                  var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      padding: 24px clamp(16px, 6vw, 48px) 12px;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: clamp(24px, 4vw, 36px);
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    header p {
+      margin: 12px 0 0;
+      color: var(--muted);
+      font-size: 15px;
+      max-width: 720px;
+      line-height: 1.5;
+    }
+
+    main {
+      flex: 1 1 auto;
+      display: grid;
+      grid-template-columns: minmax(0, 320px) minmax(0, 1fr);
+      gap: clamp(16px, 3vw, 32px);
+      padding: 0 clamp(16px, 6vw, 48px) clamp(24px, 6vw, 48px);
+    }
+
+    @media (max-width: 960px) {
+      main {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--panel-border);
+      border-radius: 20px;
+      padding: clamp(18px, 2vw, 24px);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35);
+    }
+
+    .filters {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      position: sticky;
+      top: 24px;
+      max-height: calc(100vh - 48px);
+      overflow-y: auto;
+      padding-right: 6px;
+    }
+
+    .filters h2,
+    .results-header h2 {
+      margin: 0 0 6px;
+      font-size: 16px;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    label span {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 14px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    input[type="search"],
+    input[type="text"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+      font-size: 15px;
+      transition: border 0.2s ease, background 0.2s ease;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      outline: none;
+      border-color: var(--accent);
+      background: rgba(255,255,255,0.07);
+    }
+
+    textarea {
+      min-height: 96px;
+      resize: vertical;
+    }
+
+    .chip-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag-group-container {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .tag-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 14px 16px;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 209, 102, 0.35);
+      background: linear-gradient(145deg, rgba(255, 209, 102, 0.14), rgba(255, 189, 46, 0.08));
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
+      position: relative;
+      overflow: hidden;
+      isolation: isolate;
+    }
+
+    .tag-group[open] {
+      border-color: var(--accent);
+      box-shadow: 0 14px 32px rgba(255, 209, 102, 0.18);
+    }
+
+    .tag-group::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 12% 20%, rgba(255, 255, 255, 0.16), transparent 30%),
+                  radial-gradient(circle at 88% 70%, rgba(255, 189, 46, 0.18), transparent 32%);
+      opacity: 0.55;
+      z-index: -1;
+    }
+
+    .tag-group-title {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #2b210a;
+      background: rgba(255, 209, 102, 0.9);
+      padding: 8px 12px;
+      border-radius: 12px;
+      width: fit-content;
+      box-shadow: 0 8px 18px rgba(255, 209, 102, 0.28);
+    }
+
+    .tag-group-summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      cursor: pointer;
+      list-style: none;
+      margin: 0;
+    }
+
+    .tag-group-summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .tag-group-indicator {
+      font-size: 16px;
+      color: #2b210a;
+      transition: transform 0.18s ease;
+    }
+
+    .tag-group[open] .tag-group-indicator {
+      transform: rotate(180deg);
+    }
+
+    .tag-group-content {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .tag-subsection {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: rgba(0, 0, 0, 0.08);
+      border: 1px dashed rgba(255, 209, 102, 0.32);
+    }
+
+    .tag-subsection h3 {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .chip {
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.05);
+      font-size: 13px;
+      cursor: pointer;
+      transition: border 0.25s ease, background 0.25s ease, color 0.25s ease, box-shadow 0.25s ease, transform 0.22s ease;
+      position: relative;
+      overflow: hidden;
+      animation: chip-pop 0.4s ease;
+    }
+
+    .chip.active {
+      border-color: var(--accent);
+      background: rgba(255, 209, 102, 0.16);
+      color: var(--accent);
+      box-shadow: 0 8px 18px rgba(255, 209, 102, 0.22);
+    }
+
+    .chip::after {
+      content: '';
+      position: absolute;
+      inset: -60% -40%;
+      background: radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.18), transparent 45%);
+      transform: translateX(-60%) rotate(12deg);
+      transition: transform 0.45s ease;
+      pointer-events: none;
+    }
+
+    .chip:hover {
+      transform: translateY(-2px) scale(1.02);
+      border-color: rgba(255, 209, 102, 0.75);
+      background: rgba(255, 209, 102, 0.16);
+      color: var(--accent);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 209, 102, 0.25);
+    }
+
+    .chip:hover::after {
+      transform: translateX(40%) rotate(0deg);
+    }
+
+    .chip:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    @keyframes chip-pop {
+      0% { opacity: 0; transform: translateY(6px) scale(0.97); }
+      60% { opacity: 1; transform: translateY(-2px) scale(1.02); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .results {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .results-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .results-header .count {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: clamp(12px, 2.5vw, 20px);
+      align-items: start;
+    }
+
+    .card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+    transition: border 0.2s ease, box-shadow 0.2s ease, transform 0.18s ease;
+    cursor: pointer;
+    min-height: 240px;
+    height: 100%;
+}
+
+
+    .card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255,255,255,0.16);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+    }
+
+    .card.card-static {
+      cursor: default;
+    }
+
+    .card.card-static:hover {
+      transform: none;
+      border-color: rgba(255,255,255,0.08);
+      box-shadow: none;
+    }
+
+    .card.expanded {
+      border-color: var(--accent);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.32);
+    }
+
+    .card.card--archived {
+      opacity: 0.5;
+      filter: brightness(0.6);
+    }
+
+    .card.card--archived:hover {
+      opacity: 0.65;
+      filter: brightness(0.7);
+    }
+
+    .card-summary {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 12px 14px 14px;
+    }
+
+    .card-summary figure {
+      margin: 0;
+      border-radius: 12px;
+      overflow: hidden;
+      aspect-ratio: 4 / 3;
+      background: rgba(255,255,255,0.03);
+    }
+
+    .card-summary figure img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .card-summary figcaption {
+      display: none;
+    }
+
+    .card.expanded .card-summary {
+      padding-bottom: 8px;
+    }
+
+    .card.expanded .card-summary figure {
+      display: none;
+    }
+
+    .card .menu-tag {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+    }
+
+    .card-summary h3 {
+      margin: 0;
+      font-size: 16px;
+      letter-spacing: -0.01em;
+    }
+
+    .card-update-note {
+      margin: 0;
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0.01em;
+    }
+
+    .card-summary .section {
+      font-size: 12px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .badge-row {
+      display: inline-flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      margin: 0;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(46, 204, 113, 0.35);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #2ecc71;
+      background: rgba(46, 204, 113, 0.12);
+      width: fit-content;
+    }
+
+    .status-badge--archived {
+      border-color: rgba(231, 76, 60, 0.4);
+      color: #e74c3c;
+      background: rgba(231, 76, 60, 0.12);
+    }
+
+    .card-status-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .feature-icons {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-left: auto;
+    }
+
+    .feature-icons__item {
+      font-size: 16px;
+      line-height: 1;
+    }
+
+    .origin-badge {
+      display: inline-flex;
+      margin: 0;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 189, 46, 0.35);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent-strong);
+      background: rgba(255, 189, 46, 0.14);
+      width: fit-content;
+    }
+
+    .card-summary .status-badge {
+      margin-top: 0;
+    }
+
+    .card-details {
+      display: none;
+      flex-direction: column;
+      gap: 14px;
+      padding: 0 14px 16px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      background: rgba(0,0,0,0.14);
+    }
+
+    .card.expanded .card-details {
+      display: flex;
+    }
+
+    .card-details .dish-image {
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .card-details .dish-image img {
+      width: 100%;
+      border-radius: 12px;
+      object-fit: cover;
+    }
+
+    .card-details .dish-image figcaption {
+      margin-top: 6px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .card-details p {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.55;
+      color: rgba(255,255,255,0.9);
+    }
+
+    .meta-block {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .meta-block strong {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      /* Use the accent colour for modal headings (e.g. "Аллергены",
+         "Подача/состав") so they stand out and match the site's
+         palette. The dish name in the header remains unaffected. */
+      color: var(--accent);
+    }
+
+    .meta-block .rich-text {
+      font-size: 15px;
+      line-height: 1.55;
+      color: rgba(255,255,255,0.9);
+    }
+
+    .meta-block .rich-text ul,
+    .meta-block .rich-text ol {
+      margin: 6px 0 0;
+      padding-left: 20px;
+    }
+
+    .meta-block .rich-text li + li {
+      margin-top: 2px;
+    }
+
+    .wine-details {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .wine-detail {
+      display: grid;
+      grid-template-columns: minmax(120px, 180px) 1fr;
+      gap: 10px;
+      padding: 10px 12px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .wine-detail__label {
+      font-size: 12px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .wine-detail__value {
+      font-size: 15px;
+      line-height: 1.55;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .wine-grape-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .wine-grape-chip {
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.04);
+      font-size: 13px;
+    }
+
+    .meta-block.translation {
+      padding: 12px;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.02);
+    }
+
+    /* Кликабельный блок перевода English с подсветкой */
+    .meta-block.translation-button {
+      position: relative;
+      width: 100%;
+      text-align: left;
+      cursor: pointer;
+      appearance: none;
+      color: inherit;
+      border: 1px solid rgba(255, 209, 102, 0.25);
+      background: linear-gradient(135deg, rgba(255, 209, 102, 0.12), rgba(255, 209, 102, 0.04));
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.28);
+      transition: transform 0.2s ease, box-shadow 0.3s ease, border 0.2s ease;
+      overflow: hidden;
+    }
+
+    .meta-block.translation-button::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 20% 20%, rgba(255, 209, 102, 0.3), transparent 30%),
+                  radial-gradient(circle at 80% 0%, rgba(255, 109, 109, 0.2), transparent 28%);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .meta-block.translation-button:hover,
+    .meta-block.translation-button:focus-visible {
+      transform: translateY(-1px);
+      border-color: rgba(255, 209, 102, 0.45);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    .meta-block.translation-button:hover::after,
+    .meta-block.translation-button:focus-visible::after {
+      opacity: 1;
+    }
+
+    .meta-block.translation-button:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .translation-title {
+      font-weight: 600;
+      font-size: 15px;
+      /* Use the default light colour for translation section headings. */
+      color: rgba(255,255,255,0.9);
+    }
+
+    .translation-description {
+      margin-top: 4px;
+      font-size: 14px;
+      line-height: 1.5;
+      color: rgba(255,255,255,0.75);
+      white-space: pre-line;
+    }
+
+    /*
+     * Hide figcaptions within the modal body so that any supplementary
+     * captions associated with images are not displayed. This ensures
+     * that when viewing a dish in the modal, only the picture itself
+     * is shown without additional captions underneath.
+     */
+    .modal-body figcaption {
+      display: none;
+    }
+
+    /*
+     * Highlight bold text within the modal body using the accent colour. This
+     * applies to <strong> and <b> elements inside rich-text sections such
+     * as descriptions, features and ingredient lists. The dish title and
+     * translation titles are unaffected.
+     */
+    .modal-body .rich-text strong,
+    .modal-body .rich-text b {
+      color: var(--accent);
+    }
+
+    /*
+     * Remove the special styling for bold text within the modal body.
+     * Bolded words will now inherit the default text colour.
+     */
+
+    .meta-block ul {
+      margin: 4px 0 0;
+      padding-left: 20px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .meta-block ul li + li {
+      margin-top: 2px;
+    }
+
+    .allergen-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 8px;
+      align-items: flex-start;
+    }
+
+    .allergen-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 12px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      background: rgba(255, 189, 46, 0.16);
+      border: 1px solid rgba(255, 189, 46, 0.42);
+      color: #ffe3b3;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.28);
+    }
+
+    .allergen-badge--medium {
+      background: rgba(255, 156, 85, 0.2);
+      border-color: rgba(255, 156, 85, 0.5);
+      color: #ffe0d0;
+    }
+
+    .allergen-badge--high {
+      background: linear-gradient(135deg, rgba(255, 95, 109, 0.28), rgba(255, 189, 46, 0.24));
+      border-color: rgba(255, 95, 109, 0.65);
+      color: #ffeaea;
+      box-shadow: 0 10px 24px rgba(255, 95, 109, 0.3);
+    }
+
+    .allergen-badge__icon {
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    .allergen-badge__label {
+      font-size: 13px;
+      text-transform: uppercase;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 2px;
+    }
+
+    .tag {
+      font-size: 12px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.85);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .source-file {
+      margin-top: 6px;
+      font-size: 12px;
+      color: var(--text);
+    }
+
+    /*
+     * Restored default behaviour: the card summary displays its menu tag,
+     * title, section and status badge. Captions beneath images are
+     * visible again when the card is collapsed.
+     */
+
+    .card .edit-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      border: none;
+      border-radius: 50%;
+      width: 34px;
+      height: 34px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255,255,255,0.08);
+      color: var(--text);
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .card .edit-btn:hover {
+      background: rgba(255,255,255,0.16);
+    }
+
+    body.edit-mode .card .edit-btn {
+      display: flex;
+    }
+
+    .card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 16px;
+      pointer-events: none;
+      border: 1px solid transparent;
+      transition: border 0.2s ease;
+    }
+
+    .card.expanded::after {
+      border-color: rgba(255, 209, 102, 0.4);
+    }
+
+        .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(16px, 4vw, 40px);
+      z-index: 40;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-dialog {
+      position: relative;
+      width: min(1040px, 88vw);
+      height: min(720px, 90vh);
+      background: var(--panel);
+      border: 1px solid var(--panel-border);
+      border-radius: 24px;
+      box-shadow: 0 35px 90px rgba(0, 0, 0, 0.55);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .modal-content {
+      /* Use a two-row grid so that the header occupies only the height
+         it needs and the body fills the remaining space. The body can
+         scroll independently without overlapping the header. */
+      display: grid;
+      grid-template-rows: auto 1fr;
+      flex: 1 1 auto;
+      min-height: 0;
+      height: 100%;
+      /* Prevent scrolling on the container itself; scrolling will be
+         handled by the body section. */
+      overflow-y: hidden;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      width: 38px;
+      height: 38px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(0,0,0,0.45);
+      color: var(--text);
+      font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s ease, border 0.2s ease;
+    }
+
+    .modal-close:hover {
+      background: rgba(0,0,0,0.6);
+      border-color: rgba(255,255,255,0.3);
+    }
+
+    .modal-header {
+      display: grid;
+      /* Size the first column to the media width and let the second column
+         take the remaining space */
+      grid-template-columns: max-content minmax(0, 1fr);
+      gap: clamp(12px, 2.4vw, 22px);
+      padding: clamp(12px, 1.8vh, 18px) clamp(18px, 3vw, 32px);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      /* Align content to the top of the header so multi-line titles stay inside */
+      align-items: flex-start;
+      /* Remove the fixed minimum height; the header will grow with its content */
+      min-height: unset;
+    }
+
+    .modal-header.modal-header--no-media {
+      grid-template-columns: minmax(0, 1fr);
+      align-items: start;
+    }
+
+    .modal-media {
+      /* Keep the media area a constant size across screen widths so
+         images are not squashed or stretched. The width and height
+         here define the size of the column in the header. */
+      width: 160px;
+      height: 160px;
+      flex: none;
+      align-self: flex-start;
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .modal-media img {
+      width: 100%;
+      height: 100%;
+      /* Show the entire image without cropping. */
+      object-fit: contain;
+    }
+
+    .modal-media figcaption {
+      /* Hide captions in the modal media so only the image is displayed */
+      display: none;
+    }
+
+    .modal-header-info {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      align-content: start;
+      gap: 8px;
+      min-width: 0;
+      width: 100%;
+      max-width: 100%;
+      overflow: hidden;
+      box-sizing: border-box;
+    }
+
+    .modal-header-info .menu-tag {
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      min-width: 0;
+    }
+
+    .modal-update-note {
+      margin: 0;
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0.01em;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      min-width: 0;
+    }
+
+      .modal-header-info h2 {
+        margin: 0;
+        font-size: clamp(18px, 3vw, 22px);
+        letter-spacing: -0.015em;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        min-width: 0;
+      }
+
+    .modal-title-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      min-width: 0;
+    }
+
+    .modal-title-row h2 {
+      min-width: 0;
+      flex: 1 1 auto;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+    }
+
+    .modal-audio-btn {
+      border: 1px solid rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.06);
+      color: inherit;
+      border-radius: 999px;
+      padding: 6px 10px;
+      cursor: pointer;
+      font-size: 16px;
+      line-height: 1;
+      transition: transform 0.1s ease, background 0.2s ease;
+    }
+
+    .modal-audio-btn:hover {
+      background: rgba(255,255,255,0.12);
+    }
+
+    .modal-audio-btn:active {
+      transform: scale(0.95);
+    }
+
+    .modal-header-info .section {
+      font-size: 13px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-width: 0;
+      flex-wrap: wrap;
+    }
+
+    .modal-header-info .section img,
+    .card-summary .section img {
+      width: 16px;
+      height: 16px;
+      object-fit: contain;
+    }
+
+    .modal-header-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      min-width: 0;
+      max-width: 100%;
+      overflow: hidden;
+    }
+
+    .modal-header-meta .id-badge {
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      border: 1px dashed rgba(255,255,255,0.2);
+      border-radius: 999px;
+      padding: 2px 10px;
+    }
+
+    .modal-body {
+      padding: clamp(18px, 2.4vw, 28px) clamp(20px, 3vw, 36px);
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: clamp(18px, 2.8vw, 32px);
+      align-content: start;
+      /* Allow the body to scroll independently of the header when
+         content overflows. min-height:0 is necessary for the grid
+         child to shrink properly within the modal. */
+      overflow-y: auto;
+      min-height: 0;
+    }
+
+    .modal-body .modal-column {
+      display: flex;
+      flex-direction: column;
+      gap: clamp(12px, 2vw, 16px);
+      min-width: 0;
+    }
+
+    .modal-body .modal-column.modal-column--full {
+      grid-column: 1 / -1;
+    }
+
+    .modal-body .tags {
+      margin-top: 6px;
+    }
+
+    .modal-body .tags-block {
+      gap: 10px;
+    }
+
+    .modal-body .tags-block .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .modal-body .meta-block pre {
+      margin: 8px 0 0;
+      padding: 12px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
+      font-size: 12px;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .modal-body .meta-block details {
+      margin-top: 6px;
+    }
+
+    .modal-body .meta-block summary {
+      cursor: pointer;
+      color: var(--accent);
+    }
+
+    /* Отдельная модалка для английской карточки */
+    .modal-backdrop--english {
+      z-index: 50;
+      background: radial-gradient(circle at 10% 10%, rgba(255, 209, 102, 0.25), transparent 35%),
+                  rgba(0, 0, 0, 0.7);
+    }
+
+    .modal-backdrop--english .modal-dialog {
+      border-color: rgba(255, 209, 102, 0.4);
+      box-shadow: 0 40px 90px rgba(0, 0, 0, 0.6);
+    }
+
+    /* Подсветка английских текстов в английской модалке без изменения заголовков */
+    .modal-backdrop--english .english-word--latin {
+      color: var(--english-highlight);
+    }
+
+    .modal-backdrop--english .english-word--cyrillic {
+      color: var(--text);
+    }
+
+    .modal-backdrop--english .modal-body .tags .tag,
+    .modal-backdrop--english .modal-body .tags .tag .tag-text,
+    .modal-backdrop--english .modal-body .meta-block .source-file {
+      color: var(--text);
+      border-color: rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .meta-block .pairing-link {
+      appearance: none;
+      border: none;
+      background: none;
+      color: var(--accent);
+      cursor: pointer;
+      font: inherit;
+      padding: 0;
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+      text-decoration-color: rgba(255, 209, 102, 0.7);
+      transition: color 0.2s ease, text-decoration-color 0.2s ease;
+    }
+
+    .meta-block .pairing-link:hover,
+    .meta-block .pairing-link:focus-visible {
+      color: var(--accent-strong);
+      text-decoration-color: var(--accent-strong);
+    }
+
+    .card-summary .section {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .editor-drawer input[readonly] {
+      color: var(--muted);
+      cursor: not-allowed;
+    }
+
+    body.modal-open {
+      overflow: hidden;
+    }
+
+    .pairing-preview {
+      position: fixed;
+      top: clamp(12px, 2vh, 40px);
+      right: clamp(12px, 2vw, 32px);
+      width: min(520px, 90vw);
+      display: none;
+      z-index: 45;
+    }
+
+    .pairing-preview.open {
+      display: block;
+    }
+
+    .pairing-dialog {
+      width: min(520px, 90vw);
+      height: min(680px, 88vh);
+      background: var(--panel);
+      border: 1px solid var(--panel-border);
+      border-radius: 18px;
+      box-shadow: 0 26px 70px rgba(0, 0, 0, 0.5);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      position: relative;
+    }
+
+    .pairing-header-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 14px;
+      background: rgba(0, 0, 0, 0.35);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .pairing-legend {
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .pairing-close {
+      appearance: none;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 10px;
+      color: var(--text);
+      cursor: pointer;
+      padding: 8px 10px;
+      font-size: 16px;
+      line-height: 1;
+      transition: background 0.2s ease, border 0.2s ease;
+    }
+
+    .pairing-close:hover,
+    .pairing-close:focus-visible {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .pairing-modal-content {
+      display: grid;
+      grid-template-rows: auto 1fr;
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .pairing-dialog .modal-header {
+      padding: 12px 16px;
+      gap: 12px;
+    }
+
+    .pairing-dialog .modal-body {
+      grid-template-columns: minmax(0, 1fr);
+      padding: 16px;
+    }
+
+    .pairing-dialog .modal-media {
+      width: 170px;
+      height: 170px;
+    }
+
+    @media (max-width: 900px) {
+      .pairing-preview {
+        position: fixed;
+        inset: auto 10px 10px 10px;
+        width: auto;
+      }
+
+      .pairing-dialog {
+        width: 100%;
+        height: min(70vh, 540px);
+      }
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+
+    .toolbar button {
+      appearance: none;
+      border: none;
+      border-radius: 12px;
+      padding: 10px 16px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      color: #111;
+      background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .toolbar button:active {
+      transform: translateY(1px);
+    }
+
+    .toolbar button.secondary {
+      background: rgba(255,255,255,0.08);
+      color: var(--text);
+      border: 1px solid rgba(255,255,255,0.14);
+    }
+
+    .toolbar button.danger {
+      background: linear-gradient(135deg, var(--danger), #ff3b3b);
+      color: #111;
+    }
+
+    .editor-drawer {
+      position: fixed;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      width: min(440px, 92vw);
+      background: rgba(24,24,26,0.97);
+      border-left: 1px solid rgba(255,255,255,0.08);
+      box-shadow: -16px 0 40px rgba(0,0,0,0.4);
+      transform: translateX(100%);
+      transition: transform 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      padding: 24px;
+      gap: 16px;
+      z-index: 30;
+    }
+
+    .editor-drawer.open {
+      transform: translateX(0);
+    }
+
+    .editor-drawer header {
+      padding: 0;
+    }
+
+    .editor-drawer form {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      flex: 1 1 auto;
+      overflow-y: auto;
+      padding-right: 6px;
+    }
+
+    .editor-footer {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: rgba(24,24,26,0.94);
+      color: var(--text);
+      border-radius: 14px;
+      padding: 12px 18px;
+      border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(12px);
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      max-width: min(380px, 90vw);
+      line-height: 1.5;
+      font-size: 14px;
+      z-index: 50;
+    }
+
+
+    .toast.success {
+      border-color: rgba(255, 209, 102, 0.6);
+    }
+
+    .toast.error {
+      border-color: rgba(255, 107, 107, 0.6);
+      color: #ffbdbd;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .empty-state {
+      padding: 60px 0;
+      text-align: center;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    footer {
+      padding: 24px;
+      text-align: center;
+      color: rgba(255,255,255,0.5);
+      font-size: 13px;
+    }
+    @media (max-width: 960px) {
+      .modal-dialog {
+        width: min(760px, 92vw);
+        height: auto;
+        max-height: calc(100vh - 48px);
+      }
+
+      .modal-header {
+        /* Keep the image column at its intrinsic size on narrower screens */
+        grid-template-columns: max-content minmax(0, 1fr);
+        align-items: flex-start;
+      }
+
+      .modal-media {
+        border-radius: 14px;
+      }
+
+      .modal-body {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .modal-dialog {
+        width: 94vw;
+        max-height: calc(100vh - 28px);
+      }
+
+      .modal-header {
+        grid-template-columns: 110px minmax(0, 1fr);
+        gap: 12px;
+        padding: 10px 14px;
+      }
+
+      .modal-header-info {
+        max-width: 100%;
+        overflow: hidden;
+      }
+
+      .modal-media {
+        width: 110px;
+        height: 110px;
+        border-radius: 12px;
+      }
+
+        .modal-header-info h2 {
+          font-size: clamp(16px, 4.5vw, 20px);
+          line-height: 1.2;
+          word-wrap: break-word;
+          overflow-wrap: break-word;
+          min-width: 0;
+        }
+
+      .modal-header-info .section {
+        font-size: 12px;
+      }
+
+      .modal-header-meta .id-badge {
+        font-size: 10px;
+      }
+
+      .modal-audio-btn {
+        padding: 5px 8px;
+        font-size: 14px;
+      }
+
+      .modal-close {
+        width: 36px;
+        height: 36px;
+        font-size: 18px;
+      }
+
+      .modal-body {
+        padding: 14px 16px 16px;
+        gap: 14px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .cards {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        grid-auto-rows: 1fr;
+        gap: 10px;
+      }
+
+      .card {
+        min-height: 0;
+        border-radius: 12px;
+      }
+
+      .card-summary {
+        padding: 10px 8px;
+        gap: 6px;
+        align-items: center;
+      }
+
+      .card-summary figure {
+        aspect-ratio: 1 / 1;
+        width: 100%;
+      }
+
+      .card-summary .menu-tag,
+      .card-summary .section,
+      .card-summary .card-status-row,
+      .card-summary .status-badge,
+      .card-summary .origin-badge,
+      .card-summary .feature-icons,
+      .card-summary .badge-row,
+      .card-summary .card-update-note {
+        display: none;
+      }
+
+      .card-summary h3 {
+        font-size: 11px;
+        line-height: 1.3;
+        text-align: center;
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .modal-dialog {
+        width: 94vw;
+        max-height: calc(100vh - 24px);
+      }
+
+      .modal-body {
+        padding: 12px 14px 16px;
+        gap: 12px;
+      }
+
+      .modal-header {
+        grid-template-columns: 92px minmax(0, 1fr);
+        gap: 10px;
+      }
+
+      .modal-header-info {
+        max-width: 100%;
+        overflow: hidden;
+      }
+
+      .modal-media {
+        width: 92px;
+        height: 92px;
+        border-radius: 10px;
+      }
+
+        .modal-header-info h2 {
+          font-size: 16px;
+          word-wrap: break-word;
+          overflow-wrap: break-word;
+          min-width: 0;
+        }
+
+      .modal-header-info .section,
+      .modal-body p,
+      .modal-body .rich-text,
+      .modal-body .meta-block strong,
+      .meta-block ul,
+      .meta-block .rich-text,
+      .modal-body .tags .tag .tag-text {
+        font-size: 13px;
+      }
+
+      .meta-block .rich-text {
+        line-height: 1.45;
+      }
+
+      .modal-body .tags .tag {
+        padding: 6px 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>База данных официанта</h1>
+  </header>
+
+  <main>
+    <section class="panel filters" aria-label="Фильтры и поиск">
+      <div>
+        <label>
+          <span>Поиск</span>
+          <input type="search" id="searchInput" placeholder="Название, ингредиент, пара..." autocomplete="off">
+        </label>
+      </div>
+
+      <div>
+        <h2>Меню</h2>
+        <div class="chip-group" id="menuChips" aria-label="Меню"></div>
+      </div>
+
+      <div>
+        <h2>Аллергены</h2>
+        <p style="margin: 0 0 8px; font-size: 13px; color: var(--muted);">Будет показано всё, что содержит выбранные аллергены.</p>
+        <div class="chip-group" id="allergenChips" aria-label="Аллергены"></div>
+      </div>
+
+      <div>
+        <h2>Теги</h2>
+        <div class="tag-group-container" id="tagChips" aria-label="Теги"></div>
+      </div>
+
+      <div class="toolbar">
+        <button type="button" id="toggleEdit">Включить редактирование</button>
+        <button type="button" class="secondary" id="addDishBtn">Добавить позицию</button>
+      </div>
+    </section>
+
+    <section class="panel results" aria-live="polite">
+      <div class="results-header">
+        <div>
+          <h2>Результаты</h2>
+          <div class="count" id="resultsCount"></div>
+        </div>
+        <button type="button" class="secondary" id="refreshBtn">Обновить данные</button>
+      </div>
+      <div id="cards" class="cards" aria-label="Карточки блюд"></div>
+      <div id="emptyState" class="empty-state" style="display:none;">По вашему запросу ничего не найдено. Попробуйте изменить фильтры.</div>
+    </section>
+  </main>
+
+  <aside class="editor-drawer" id="editor" aria-hidden="true">
+    <header>
+      <h2 id="editorTitle">Новая позиция</h2>
+      <p style="color:var(--muted); font-size:13px; margin-top:4px;">Списки ингредиентов и аллергенов вводите через запятую.</p>
+    </header>
+    <form id="editorForm">
+      <label>
+        <span>Меню</span>
+        <input type="text" name="menu" required>
+      </label>
+      <label>
+        <span>Раздел</span>
+        <input type="text" name="section" required>
+      </label>
+      <label>
+        <span>Иконка раздела — тип</span>
+        <input type="text" name="sectionIconType" placeholder="Например: icon">
+      </label>
+      <label>
+        <span>Иконка раздела — адрес</span>
+        <input type="text" name="sectionIconSrc" placeholder="Например: ./icons/fish.png">
+      </label>
+      <label>
+        <span>Иконка раздела — описание</span>
+        <input type="text" name="sectionIconAlt" placeholder="Альтернативный текст иконки">
+      </label>
+      <label>
+        <span>Название</span>
+        <input type="text" name="title" required>
+      </label>
+      <label>
+        <span>ID</span>
+        <input type="text" name="dishId" placeholder="Генерируется автоматически" readonly>
+      </label>
+      <label>
+        <span>Описание</span>
+        <textarea name="description" placeholder="Короткое описание"></textarea>
+      </label>
+      <label>
+        <span>Подача / состав</span>
+        <textarea name="contains" placeholder="Например: с чем подаётся"></textarea>
+      </label>
+      <label>
+        <span>Ингредиенты</span>
+        <textarea name="ingredients" placeholder="через запятую"></textarea>
+      </label>
+      <label>
+        <span>Аллергены</span>
+        <textarea name="allergens" placeholder="через запятую"></textarea>
+      </label>
+      <label>
+        <span>Пары блюд</span>
+        <textarea name="pairDishes" placeholder="через запятую"></textarea>
+      </label>
+      <label>
+        <span>Пары напитков</span>
+        <textarea name="pairDrinks" placeholder="через запятую"></textarea>
+      </label>
+      <label>
+        <span>Пары вин</span>
+        <textarea name="pairWines" placeholder="через запятую"></textarea>
+      </label>
+      <label>
+        <span>Комментарии к парам</span>
+        <textarea name="pairNotes" placeholder="через запятую"></textarea>
+      </label>
+      <label>
+        <span>Теги</span>
+        <textarea name="tags" placeholder="через запятую"></textarea>
+      </label>
+      <label>
+        <span>Комментарии</span>
+        <textarea name="comments" placeholder="Каждый комментарий с новой строки"></textarea>
+      </label>
+      <label>
+        <span>Статус</span>
+        <input type="text" name="status" placeholder="Например: draft / active">
+      </label>
+      <label>
+        <span>Файл источника</span>
+        <input type="text" name="sourceFile" placeholder="Например: osnovnoe-menu.html">
+      </label>
+      <label>
+        <span>Особенности</span>
+        <textarea name="features" placeholder="Ключевые особенности блюда"></textarea>
+      </label>
+      <label>
+        <span>Изображение — адрес</span>
+        <input type="text" name="imageSrc" placeholder="Например: ../images/dish.jpg">
+      </label>
+      <label>
+        <span>Изображение — описание</span>
+        <input type="text" name="imageAlt" placeholder="Альтернативный текст">
+      </label>
+      <label>
+        <span>EN — название</span>
+        <input type="text" name="enTitle" placeholder="Перевод названия">
+      </label>
+      <label>
+        <span>EN — описание</span>
+        <textarea name="enDescription" placeholder="Перевод описания"></textarea>
+      </label>
+    </form>
+    <div class="editor-footer">
+      <button type="button" class="secondary" id="closeEditor">Закрыть</button>
+      <button type="button" class="danger" id="deleteDish" style="display:none;">Удалить</button>
+      <button type="button" id="saveDish">Сохранить</button>
+    </div>
+  </aside>
+
+  <div class="modal-backdrop" id="dishModal" aria-hidden="true">
+    <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="modalDishTitle">
+      <button type="button" class="modal-close" id="modalClose" aria-label="Закрыть модальное окно">×</button>
+      <div class="modal-content" id="modalContent"></div>
+    </div>
+  </div>
+
+  <!-- Отдельное модальное окно для английской карточки блюда -->
+  <div class="modal-backdrop modal-backdrop--english" id="englishModal" aria-hidden="true">
+    <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="englishModalTitle">
+      <button type="button" class="modal-close" id="englishModalClose" aria-label="Закрыть английскую карточку">×</button>
+      <div class="modal-content" id="englishModalContent"></div>
+    </div>
+  </div>
+
+  <div class="pairing-preview" id="pairingPreview" aria-hidden="true">
+    <div class="pairing-dialog" role="dialog" aria-modal="false" aria-label="Параллельный просмотр пар">
+      <div class="pairing-header-bar">
+        <span class="pairing-legend">Параллельный просмотр</span>
+        <button type="button" class="pairing-close" id="pairingClose" aria-label="Закрыть параллельную карточку">×</button>
+      </div>
+      <div class="modal-content pairing-modal-content" id="pairingContent"></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <footer>© Sabor de la Vida</footer>
+
+  <script src="../scripts/fuse.min.js"></script>
+  <script type="module" src="../scripts/waiter-db.js"></script>
+</body>
+</html>

@@ -1,0 +1,295 @@
+.dish-detail-page {
+  min-height: 100vh;
+  padding: 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.dish-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.back-button {
+  padding: 0.5rem 1rem;
+  background: #f5f5f5;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.2s;
+}
+
+.back-button:hover {
+  background: #e0e0e0;
+}
+
+.home-link {
+  color: #1976d2;
+  text-decoration: none;
+  font-size: 1rem;
+}
+
+.home-link:hover {
+  text-decoration: underline;
+}
+
+.dish-content {
+  background: white;
+  border-radius: 8px;
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dish-image-container {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.dish-main-image {
+  max-width: 100%;
+  max-height: 400px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dish-info h1 {
+  font-size: 2rem;
+  color: #333;
+  margin-bottom: 1.5rem;
+}
+
+.dish-section {
+  margin-bottom: 2rem;
+}
+
+.dish-section h2 {
+  font-size: 1.3rem;
+  color: #333;
+  margin-bottom: 0.75rem;
+}
+
+.dish-section p {
+  color: #666;
+  line-height: 1.6;
+}
+
+.allergens-list,
+.tags-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.allergen-tag {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background: #ffebee;
+  color: #c62828;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.tag {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background: #e3f2fd;
+  color: #1976d2;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.dish-section ul {
+  list-style: none;
+  padding: 0;
+}
+
+.dish-section li {
+  padding: 0.5rem 0;
+  color: #666;
+  border-bottom: 1px solid #eee;
+}
+
+.dish-section li:last-child {
+  border-bottom: none;
+}
+
+/* Стили для нумерованных списков в поле contains */
+.contains-list ol[type="1"],
+.contains-list ol {
+  list-style-type: decimal !important;
+  padding-left: 1.75rem !important;
+  margin: 0.75rem 0 !important;
+  counter-reset: list-counter;
+}
+
+.contains-list ol[type="1"] li,
+.contains-list ol li {
+  display: list-item !important;
+  list-style-type: decimal !important;
+  list-style-position: outside !important;
+  padding-left: 0.5rem !important;
+  margin: 0.5rem 0 !important;
+  margin-left: 1rem !important;
+  line-height: 1.6 !important;
+}
+
+/* Явное указание для нумерованных списков с type="1" в любом контексте */
+.prose ol[type="1"],
+ol[type="1"] {
+  list-style-type: decimal !important;
+  padding-left: 1.75rem !important;
+  margin: 0.75rem 0 !important;
+}
+
+.prose ol[type="1"] li,
+ol[type="1"] li {
+  display: list-item !important;
+  list-style-type: decimal !important;
+  list-style-position: outside !important;
+  padding-left: 0.5rem !important;
+  margin: 0.5rem 0 !important;
+  margin-left: 1rem !important;
+  line-height: 1.6 !important;
+}
+
+/* Обычные нумерованные списки без type тоже должны показывать цифры */
+.prose ol:not([type]),
+ol:not([type]) {
+  list-style-type: decimal !important;
+  padding-left: 1.75rem !important;
+  margin: 0.75rem 0 !important;
+}
+
+.prose ol:not([type]) li,
+ol:not([type]) li {
+  display: list-item !important;
+  list-style-type: decimal !important;
+  list-style-position: outside !important;
+  padding-left: 0.5rem !important;
+  margin: 0.5rem 0 !important;
+  margin-left: 1rem !important;
+  line-height: 1.6 !important;
+}
+
+/* Блоки аллергенов и особенностей - одинаковый размер и анимация */
+.allergens-features-card {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  animation: fadeInUp 0.6s ease-out;
+}
+
+/* Когда блоков два, они одинаковой высоты */
+.grid.grid-cols-2 .allergens-features-card {
+  height: 100%;
+  min-height: 200px;
+}
+
+/* Когда блок один, он не растягивается на всю высоту */
+.grid.grid-cols-1 .allergens-features-card {
+  min-height: auto;
+}
+
+/* Обрезка текста с многоточием для особенностей */
+.features-text-collapsed {
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-height: 6rem; /* Примерно 4 строки */
+}
+
+.allergens-features-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s;
+}
+
+.allergens-features-card:hover::before {
+  left: 100%;
+}
+
+.allergens-card {
+  animation-delay: 0.1s;
+}
+
+.features-card {
+  animation-delay: 0.2s;
+}
+
+/* Анимация появления снизу */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Медленная пульсация для иконок */
+@keyframes pulse-slow {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 2s ease-in-out infinite;
+}
+
+/* Дополнительные эффекты при наведении */
+.allergens-features-card:hover {
+  transform: translateY(-4px);
+}
+
+.allergens-card:hover {
+  box-shadow: 0 10px 25px rgba(239, 68, 68, 0.2);
+}
+
+.features-card:hover {
+  box-shadow: 0 10px 25px rgba(168, 85, 247, 0.2);
+}
+
+/* Временная подсветка при переходе из глобального поиска */
+.search-highlight-temporary {
+  animation: searchHighlightPulse 2s ease-in-out;
+  background-color: rgba(255, 235, 59, 0.2) !important;
+  border-radius: 8px;
+  padding: 4px;
+  margin: -4px;
+}
+
+@keyframes searchHighlightPulse {
+  0% {
+    background-color: rgba(255, 235, 59, 0.4);
+    box-shadow: 0 0 0 0 rgba(255, 235, 59, 0.7);
+  }
+  50% {
+    background-color: rgba(255, 235, 59, 0.3);
+    box-shadow: 0 0 0 8px rgba(255, 235, 59, 0);
+  }
+  100% {
+    background-color: rgba(255, 235, 59, 0.1);
+    box-shadow: 0 0 0 0 rgba(255, 235, 59, 0);
+  }
+}
+
+

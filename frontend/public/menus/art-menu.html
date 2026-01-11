@@ -1,0 +1,710 @@
+﻿ <html><head><meta content="text/html; charset=utf-8" http-equiv="Content-Type"/><title>:art_icon: Искусство в Sabor de la Vida</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(134, 131, 126, 1);
+	fill: rgba(134, 131, 126, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(134, 131, 126, 1);
+	fill: rgba(134, 131, 126, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article class="page sans" id="24e33974-4d17-8096-8083-e0fa244c048e"><header><img class="page-cover-image" src="../images/arts/art-head-michelangelo-the-creation-of-adam.webppng style="object-position:center 50%"/><div class="page-header-icon page-header-icon-with-cover"><img class="icon" src="../icons/sabor-icon-small.png"/></div><h1 class="page-title"><img alt="art_icon" src="../icons/art-icon.png" style="width:1em;height:1em"/> Искусство в Sabor de la Vida</h1><p class="page-description"></p></header><div class="page-body"><p class="block-color-red_background" id="24e33974-4d17-8019-a9e3-ef6ec33f3e39"><strong>Пьер Огюст Ренуар: "Бал в Мулен де ла Галет."</strong></p><div class="column-list" id="24e33974-4d17-8088-a203-f2d3f8c8678b"><div class="column" id="24e33974-4d17-80ff-888d-dca6d0ab6d53" style="width:50%"><figure class="image" id="24e33974-4d17-80d4-99a0-e31f76c65391"><a href="../images/arts/art-pierre-auguste-renoir-bal-du-moulin-de-la-galette.webpjpg><img src="../images/arts/art-pierre-auguste-renoir-bal-du-moulin-de-la-galette.webpjpg style="width:681.9921875px"/></a><figcaption><strong>Пьер Огюст Ренуар: "Бал в Мулен де ла Галет."</strong></figcaption></figure></div><div class="column" id="24e33974-4d17-8077-9c73-e5b94409985d" style="width:49.99999999999999%"><p class="" id="24e33974-4d17-803f-930a-de42c96710fc">«Мулен де ла Галет» - кафе с танцплощадкой в районе Монмартра, названное так из-за расположенной неподалеку старой ветряной мельницы (le moulin). Во время теплой погоды все танцующие выходили веселиться на улицу, где стояли по кругу деревянные столы и лавки. Ренуару нравилась непритязательная и веселая обстановка этой таверны. Чтобы фигуры людей были более реалистичными, художник просил, чтобы его друзья позировали для этой картины.</p><p class="" id="24e33974-4d17-80f8-944d-e95761e606df">Эта работа Ренуара отражает дух радости и лёгкости жизни. Еда и напитки как часть радостной, беззаботной жизни. Кроме того <br/>ресторан <em>Sabor de la Vida</em> использует элементы fine dining с французскими мотивами, а Ренуар — один из символов французской культуры и импрессионизма. Картина усиливает этот культурный контекст.<br/></p></div></div><figure class="block-color-teal_background callout" id="29a33974-4d17-80e9-9713-f1667675e9ab" style="white-space:pre-wrap;display:flex"><div style="font-size:1.5em"><span class="icon">💡</span></div><div style="width:100%"><p class="" id="24e33974-4d17-80b1-bad3-da6e66ffa963"><strong>Свет и цвет у Ренуара создают эффект мягкого солнечного света, что психологически вызывает у гостей ощущение тепла, расслабленности и романтики — важные эмоции для комфортного ужина.<br/>Импрессионисты писали о мимолётной красоте жизни. В ресторане это перекликается с философией: гость должен «ловить момент», наслаждаясь вкусом, общением и красивым моментом здесь и сейчас.</strong></p></div></figure><p class="" id="24e33974-4d17-8037-8d18-db881705b41d">
+</p><p class="block-color-red_background" id="24e33974-4d17-8029-b8fe-dd7ad1462902"><strong>Пьер Огюст Ренуар: "Обед в ресторане Fournaise", "The Rowers' Lunch."</strong></p><div class="column-list" id="24e33974-4d17-8093-981b-dc251f5a6426"><div class="column" id="24e33974-4d17-8071-b186-eae2cbbdeec9" style="width:50%"><figure class="image" id="24e33974-4d17-8071-b10d-ee5761c2e2cb"><a href="../images/arts/art-pierre-auguste-renoir-the-rowers-lunch.webpjpg><img src="../images/arts/art-pierre-auguste-renoir-the-rowers-lunch.webpjpg style="width:681.9921875px"/></a><figcaption><strong>Пьер Огюст Ренуар: "Обед в ресторане Fournaise", "The Rowers' Lunch."</strong></figcaption></figure></div><div class="column" id="24e33974-4d17-80ed-b0ba-dd80ab27c88f" style="width:50%"><p class="" id="24e33974-4d17-8042-9d86-f71103e9d155">Картина "Завтрак гребцов" (также известная как "Обед в ресторане Fournaise") - это произведение французского импрессиониста Пьера-Огюста Ренуара. На картине изображены группа людей, отдыхающих на террасе ресторана Fournaise на реке Сена, недалеко от Парижа. </p><p class="" id="24e33974-4d17-8078-b6cb-cab8e10f5e20">Ренуар запечатлел момент непринужденного общения и отдыха. Картина наполнена яркими, солнечными красками, типичными для импрессионистского стиля. Ренуар мастерски передает игру света и тени на лицах и одежде персонажей, а также на поверхности воды и листвы деревьев.</p></div></div><figure class="block-color-teal_background callout" id="29a33974-4d17-8043-9796-cd2f65c85445" style="white-space:pre-wrap;display:flex"><div style="font-size:1.5em"><span class="icon">💡</span></div><div style="width:100%"><p class="" id="29a33974-4d17-8046-9af5-d65a087be795"><strong>Картина излучает радость, беззаботность и оптимизм. Она передает атмосферу летнего дня, отдыха и удовольствия от общения, что так же перекликается с атмосферой в ресторане. </strong></p></div></figure><p class="block-color-red_background" id="24e33974-4d17-80c5-8e31-cb76583be1e4"><strong>Густав Климт: "Маковое поле"</strong></p><div class="column-list" id="24e33974-4d17-80d8-8598-d7dd76394468"><div class="column" id="24e33974-4d17-8057-a34e-c9176b4f00ff" style="width:50%"><figure class="image" id="24e33974-4d17-80a8-97ea-f2fe6653f188"><a href="../images/arts/art-gustav-klimt-poppy-field.webpjpg><img src="../images/arts/art-gustav-klimt-poppy-field.webpjpg style="width:469.5px"/></a><figcaption><strong>Густав Климт: "Маковое поле."</strong></figcaption></figure></div><div class="column" id="24e33974-4d17-80a7-87a8-cb0d6287be77" style="width:50.000000000000014%"><p class="" id="24e33974-4d17-8043-8828-d0a31dc98d24">Картина Густава Климта "Маковое поле" - это пейзаж, на котором изображено маковое поле, расположенное вблизи дома, где художник проводил летний отдых. Картина написана в стиле, напоминающем импрессионизм, с использованием пуантилистской техники, где цветы и трава переданы точечными мазками. Климт высоко поднял линию горизонта, чтобы акцентировать внимание на цветочном ковре, а небо изобразил облачным. В глубине поля видны одиночные деревья, структурирующие пространство. Маки и ромашки уменьшаются в размере по мере удаления от переднего плана, создавая ощущение глубины.<br/>Картина насыщена яркими красками, с преобладанием красного цвета маков и зеленого цвета травы и деревьев.<br/></p></div></div><figure class="block-color-teal_background callout" id="29a33974-4d17-80ce-b7a5-c4f77847dd3f" style="white-space:pre-wrap;display:flex"><div style="font-size:1.5em"><span class="icon">💡</span></div><div style="width:100%"><p class="" id="29a33974-4d17-8006-89f9-d1172b8c575a"><strong>Картина передает ощущение гармонии, спокойствия и вечного всесилия природы. Она не просто запечатлевает мимолетный момент, а скорее отражает вечную красоту и силу природы.<br/>Мы выбрали эту картину, потому что хотим, чтобы гости чувствовали ту же лёгкость и умиротворение, которое передает полотно, наслаждаясь вкусами и атмосферой ресторана.</strong></p></div></figure><p class="block-color-red_background" id="24e33974-4d17-8090-bdbf-c2f4927e7419"><strong>Густав Климт: "Золотая Адель."</strong></p><div class="column-list" id="24e33974-4d17-8041-bbad-d8cbefe3c3a7"><div class="column" id="24e33974-4d17-80cc-b506-fd8533304577" style="width:50%"><figure class="image" id="24e33974-4d17-800a-beb9-f532d7b2ceae"><a href="../images/arts/art-gustav-klimt-the-woman-in-gold.webpjpg><img src="../images/arts/art-gustav-klimt-the-woman-in-gold.webpjpg style="width:681.9921875px"/></a><figcaption><strong>Густав Климт: "Золотая Адель."</strong></figcaption></figure></div><div class="column" id="24e33974-4d17-8030-9a54-c29b5200c12c" style="width:50%"><p class="" id="24e33974-4d17-80ec-ac68-c961821abce4">"Золотая Адель", также известная как "Портрет Адели Блох-Бауэр I", - это знаменитая картина австрийского художника Густава Климта, написанная в 1907 году. Работа выполнена в стиле модерн, с использованием сусального золота, которое придает ей роскошный и декоративный вид. </p><p class="" id="29a33974-4d17-8098-9daf-cff6fe964644">На портрете изображена Адель Блох-Бауэр, жена австрийского промышленника, в обрамлении золотых орнаментов и символов. Адель изображена в вечернем платье, с обнаженными плечами, сидящей на стилизованном троне. Работа была создана по заказу мужа Адели, Фердинанда Блох-Бауэра, и считается одним из самых известных портретов Климта.</p><p class="" id="24e33974-4d17-8069-88d5-c10248297706">Этот портрет Климта — символ утончённой роскоши и красоты начала XX века. Художник использовал золото, мозаичные орнаменты и изысканные детали, чтобы передать не только облик, но и ауру элегантности своей модели. </p></div></div><figure class="block-color-teal_background callout" id="29a33974-4d17-80b3-8c7b-d0a8b0dae01c" style="white-space:pre-wrap;display:flex"><div style="font-size:1.5em"><span class="icon">💡</span></div><div style="width:100%"><p class="" id="29a33974-4d17-8079-bf1d-c9365f51b2eb"><strong>Мы выбрали эту картину, потому что она отражает атмосферу нашего ресторана — изящество, внимание к деталям и особую ценность каждого момента.</strong></p></div></figure><p class="block-color-red_background" id="24e33974-4d17-805f-b416-cfb0b1ddc463"><strong>Густав Климт: "Древо жизни."</strong></p><figure class="image" id="24e33974-4d17-8057-bb59-ccfd4858433c"><a href="../images/arts/art-gustav-klimt-tree-of-life.webpjpg><img src="../images/arts/art-gustav-klimt-tree-of-life.webpjpg style="width:681.984375px"/></a><figcaption><strong>Густав Климт: "Древо жизни."</strong></figcaption></figure><p class="" id="24e33974-4d17-8059-aad4-dc966280b07b">Картина представляет собой триптих, в котором центральное место занимает "Древо жизни", а по бокам расположены другие панно, изображающие женскую фигуру (Ожидание) и обнимающуюся пару (Упоение).</p><p class="" id="24e33974-4d17-8028-976d-eca489d5ffbf">Центральным элементом композиции является огромное дерево с раскидистой кроной и глубокими корнями. Ветви дерева переплетаются, образуя причудливые узоры и заполняя все пространство картины.</p><p class="" id="24e33974-4d17-8047-aa71-deb79d6dd736">Климт использовал множество геометрических фигур, таких как круги, треугольники, квадраты, а также различные орнаменты, выполненные в золотом цвете и других оттенках, для украшения дерева и пространства вокруг него.</p><p class="" id="24e33974-4d17-80a3-8c0e-c5a00106d399">Картина символизирует жизнь, ее непрерывность и взаимосвязь всех элементов Вселенной. Ветви, уходящие в небо, и корни, уходящие в землю, олицетворяют связь с прошлым и будущим. Вокруг дерева изображены фигуры людей, которые сливаются с природой, что подчеркивает единство человека и окружающего мира.</p><figure class="block-color-teal_background callout" id="29a33974-4d17-8021-beee-cb3ff1b88f51" style="white-space:pre-wrap;display:flex"><div style="font-size:1.5em"><span class="icon">💡</span></div><div style="width:100%"><p class="" id="29a33974-4d17-80d1-a341-ec9565ccbe60"><strong>Эта работа выбрана нами, потому что она перекликается с философией ресторана — ценить момент, но помнить о вечных ценностях.</strong></p></div></figure><p class="block-color-red_background" id="24e33974-4d17-8093-a705-ea8ad59a79bc"><strong>Густав Климт: "Мальчизене."</strong></p><div class="column-list" id="24e33974-4d17-8031-85d8-c407bfd9cf8d"><div class="column" id="24e33974-4d17-80e3-adff-f7520a5aff77" style="width:50%"><figure class="image" id="24e33974-4d17-8068-8235-d3680aaed342"><a href="../images/arts/art-gustav-klimt-malcesine.webpjpg><img src="../images/arts/art-gustav-klimt-malcesine.webpjpg style="width:681.9921875px"/></a><figcaption><strong>Густав Климт: "Мальчизене."</strong></figcaption></figure><p class="" id="29a33974-4d17-8046-8884-e69aee843f64">
+</p></div><div class="column" id="24e33974-4d17-801d-8cc7-c84627ba0e3d" style="width:50%"><p class="" id="24e33974-4d17-8073-a2ac-cbd4ab2c18ce">Городской пейзаж с изображением маленького города Мальчезине, расположенного на берегу озера Гарда, в 120 км к северо-западу от Венеции. Картина написана с вида с лодки. Климт здесь отказался от своей «золотой» эпохи и изобразил прозрачные воды озера Гарда, мягкий свет и атмосферу летнего отдыха, наполненной жизнью и легкомыслием, в отличие от мрачных и эмоционально напряжённых австрийских сцен. К сожалению, картина была уничтожена в 1945 году.</p><p class="" id="24e33974-4d17-805c-a5b4-f163927a8f39">
+</p></div></div><figure class="block-color-teal_background callout" id="29a33974-4d17-8026-a2f4-e22e5c1f72b3" style="white-space:pre-wrap;display:flex"><div style="font-size:1.5em"><span class="icon">💡</span></div><div style="width:100%"><p class="" id="29a33974-4d17-8087-9daf-d8524ad2f2be"><strong>Картина создает ощущение свободы, пространства и вдохновения — именно такие чувства мы хотим дарить гостям в момент встреч, бесед и наслаждения вкусами.</strong></p></div></figure><p class="block-color-red_background" id="24e33974-4d17-8068-8a23-f8966789e50c"><strong>Жан-Марк Жаньячик: “Пейзажная тема 7».</strong></p><div class="column-list" id="24e33974-4d17-802c-8d33-cc578db21ac7"><div class="column" id="24e33974-4d17-8006-a001-d94345331cbd" style="width:50%"><figure class="image" id="24e33974-4d17-800a-8c35-e7c21723eab7"><a href="../images/arts/art-jean-marc-janiatzyk-landscape-theme-7.webpjpg><img src="../images/arts/art-jean-marc-janiatzyk-landscape-theme-7.webpjpg style="width:681.9921875px"/></a><figcaption><strong>Жан-Марк Жаньячик: “Пейзажная тема 7».</strong></figcaption></figure></div><div class="column" id="24e33974-4d17-80c6-843e-d474b2cfb290" style="width:50%"><p class="" id="24e33974-4d17-8056-9625-f63d6c8af731">Картина современного французского художника Жана-Марка Жаньячика «Пейзажная тема 7» (или просто «Пейзаж») изображает сельский пейзаж юга Франции. Это часть серии ярких пейзажей, написанных художником, вдохновлённых природой Прованса. Цветовая палитра: яркие, насыщенные краски, контрасты. Художник передаёт красоту природы, например, поле цветущей лаванды, подсолнухи, маки, цветочные сады, морской пейзаж. Картина вызывает чувство умиротворения, наслаждения от созерцания природной панорамы. Работы Жан-Марка Жаньячика балансируют на грани между реализмом и импрессионизмом.</p></div></div><figure class="block-color-teal_background callout" id="29a33974-4d17-8048-a2b9-d42eaed4f925" style="white-space:pre-wrap;display:flex"><div style="font-size:1.5em"><span class="icon">💡</span></div><div style="width:100%"><p class="" id="29a33974-4d17-801b-8242-cb48130296cf"><strong>Эта работа художника вносит в пространство ощущение лёгкости, вдохновения и гармонии с природой — идеально подходит атмосфере нашего ресторана.</strong></p></div></figure><p class="block-color-red_background" id="24e33974-4d17-803e-b2d1-d5c969390176"><strong>Эдуард Мане: "Завтрак в мастерской".</strong></p><div class="column-list" id="24e33974-4d17-80e8-b528-ee463c41e7d5"><div class="column" id="24e33974-4d17-80f4-91a2-d642d6923be2" style="width:50%"><figure class="image" id="24e33974-4d17-80a8-a295-c0096c7aa5ec"><a href="../images/arts/art-edouard-manet-luncheon-in-the-studio.webpjpg><img src="../images/arts/art-edouard-manet-luncheon-in-the-studio.webpjpg style="width:681.9921875px"/></a><figcaption><strong>Эдуард Мане: "Завтрак в мастерской".</strong></figcaption></figure></div><div class="column" id="24e33974-4d17-80f6-a106-e6017a1f9eac" style="width:50%"><p class="" id="24e33974-4d17-808c-ad56-fcfd79b03aca">Картина представляет собой сложное сочетание портрета, бытовой сцены и натюрморта. На полотне изображены три фигуры: сын художника Леон, сам Мане в цилиндре и его жена Сюзанна Леенхофф, которая протирает кувшин. Картина выделяется необычной композицией, где герои как будто застигнуты врасплох в повседневной сцене, а также смелым использованием темных тонов, разбавленных яркими акцентами.</p><p class="" id="24e33974-4d17-8079-864d-d5cd73856be9">Картина является новаторской, демонстрируя интерес Мане к передаче мимолетных впечатлений и использованию графических средств для организации композиции.</p><p class="" id="24e33974-4d17-80d4-89a4-e3a30650c4e8">Эта работа Мане передаёт атмосферу спокойного утра в Париже. Здесь нет пышного застолья — лишь утренний свет, тишина и люди, погружённые в свои мысли. </p></div></div><figure class="block-color-teal_background callout" id="29a33974-4d17-80b6-840e-d42224761807" style="white-space:pre-wrap;display:flex"><div style="font-size:1.5em"><span class="icon">💡</span></div><div style="width:100%"><p class="" id="29a33974-4d17-8060-8062-daf02518fadd"><strong>Картина отражает ту же интимную, почти камерную атмосферу, которую мы хотим создать в ресторане — место, где можно отдохнуть, насладиться вкусом и моментом.</strong></p></div></figure><p class="" id="24e33974-4d17-80de-9640-c26e941b8974">
+</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>
