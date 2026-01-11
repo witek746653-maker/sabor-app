@@ -14,6 +14,11 @@ load_dotenv()
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'change-this-in-production-12345')
 
+# Настройки для работы cookies между доменами (Netlify и PythonAnywhere)
+app.config['SESSION_COOKIE_SAMESITE'] = 'None'  # Разрешаем cross-domain cookies
+app.config['SESSION_COOKIE_SECURE'] = True      # Только HTTPS (для продакшена)
+app.config['SESSION_COOKIE_HTTPONLY'] = True    # Защита от XSS атак
+
 # Настройка базы данных SQLite
 ROOT_DIR = Path(__file__).resolve().parent.parent
 DB_PATH = ROOT_DIR / "backend" / "database.db"
