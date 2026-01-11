@@ -17,29 +17,17 @@ WSGI (Web Server Gateway Interface) - это стандарт взаимодей
 import sys
 from pathlib import Path
 
-# Добавляем путь к проекту в sys.path
-# ЗАМЕНИТЕ '/home/u1234567/sabor-app' на реальный путь к вашему проекту на Beget!
+# Корень проекта (папка, где лежит этот wsgi.py)
 PROJECT_ROOT = Path(__file__).resolve().parent
+# Папка с бэкендом (нужна, потому что в backend/app.py есть импорты вида `from models import ...`)
 BACKEND_DIR = PROJECT_ROOT / "backend"
 
-# Добавляем путь к backend в sys.path, чтобы можно было импортировать модули
-if str(BACKEND_DIR) not in sys.path:
-    sys.path.insert(0, str(BACKEND_DIR))
-
-# Активируем виртуальное окружение (если оно используется)
-# ЗАМЕНИТЕ '/home/u1234567/sabor-app/venv' на реальный путь к вашему venv на Beget!
-# Обычно на Beget путь к venv: /home/uXXXXXXX/sabor-app/venv
-VENV_PATH = PROJECT_ROOT / "venv"
-if VENV_PATH.exists():
-    activate_this = VENV_PATH / "bin" / "activate_this.py"
-    if activate_this.exists():
-        with open(activate_this) as file_:
-            exec(file_.read(), dict(__file__=activate_this))
-    else:
-        # Если activate_this.py не найден, добавляем путь к пакетам вручную
-        site_packages = VENV_PATH / "lib" / "python3.10" / "site-packages"
-        if site_packages.exists() and str(site_packages) not in sys.path:
-            sys.path.insert(0, str(site_packages))
+# ВАЖНО: Beget запускает WSGI уже внутри выбранного venv (который вы укажете в панели).
+# Здесь мы НЕ "активируем" venv вручную — мы только добавляем пути к коду проекта.
+for path in (PROJECT_ROOT, BACKEND_DIR):
+    path_str = str(path)
+    if path_str not in sys.path:
+        sys.path.insert(0, path_str)
 
 # Импортируем приложение Flask
 # application - это стандартное имя для WSGI приложения (Beget ожидает именно его)
