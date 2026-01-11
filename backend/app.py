@@ -34,7 +34,8 @@ CORS(app,
 # Настройка Flask-Login для аутентификации
 login_manager = LoginManager()
 login_manager.init_app(app)
-login_manager.login_view = 'login'
+# Для API не используем login_view (перенаправления не нужны)
+# login_manager.login_view = 'admin_login'  # Если нужно, используйте имя функции
 
 # Пути к директориям
 IMAGES_DIR = ROOT_DIR / "images"
