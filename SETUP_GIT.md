@@ -16,7 +16,7 @@
 Откройте PowerShell или Command Prompt в папке проекта (`d:\GitHub\sabor-app`) и выполните:
 
 ```powershell
-git remote set-url origin https://github.com/ВАШ_USERNAME/sabor-app.git
+git remote set-url origin https://github.com/witek746653-maker/sabor-app.git
 ```
 
 **Замените `ВАШ_USERNAME` на ваш реальный GitHub username!**
@@ -71,4 +71,4 @@ git push -u origin main
 
 ---
 
-После этого можно переходить к настройке Netlify и PythonAnywhere (см. файл DEPLOY.md)
+После этого можно переходить к развертыванию на Beget (см. файл BEGET_DEPLOY.md)

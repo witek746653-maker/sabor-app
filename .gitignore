@@ -4,32 +4,51 @@ __pycache__/
 *$py.class
 *.so
 .Python
-venv/
 env/
+venv/
 ENV/
 .venv
+pip-log.txt
+pip-delete-this-directory.txt
 
-# Node
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+# Flask
+instance/
+.webassets-cache
 
-# Environment
+# Environment variables
 .env
 .env.local
+.env.production
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+database.db
 
 # IDE
 .vscode/
 .idea/
 *.swp
 *.swo
-
-# Build
-frontend/build/
-frontend/dist/
+*~
 
 # OS
 .DS_Store
 Thumbs.db
 
+# Frontend build (React)
+frontend/build/
+frontend/node_modules/
+
+# Logs
+*.log
+logs/
+
+# Beget specific
+*.pid
+*.sock
+
+# Temporary files
+*.tmp
+*.temp

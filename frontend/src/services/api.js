@@ -1,7 +1,9 @@
 import axios from 'axios';
 
 // Базовый URL API
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+// На Beget фронтенд и бэкенд работают на одном домене, поэтому используем относительный путь
+// Если REACT_APP_API_URL не задан, используем пустую строку (относительный путь)
+const API_URL = process.env.REACT_APP_API_URL || '';
 
 // Создаём экземпляр axios с настройками
 const api = axios.create({

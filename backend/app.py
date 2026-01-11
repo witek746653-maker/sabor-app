@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, send_from_directory
+from flask import Flask, jsonify, request, send_from_directory, send_file
 from flask_cors import CORS
 from flask_login import LoginManager, login_required, login_user, logout_user, UserMixin
 from pathlib import Path
@@ -14,8 +14,9 @@ load_dotenv()
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'change-this-in-production-12345')
 
-# Настройки для работы cookies между доменами (Netlify и PythonAnywhere)
-app.config['SESSION_COOKIE_SAMESITE'] = 'None'  # Разрешаем cross-domain cookies
+# Настройки для работы cookies (единый домен на Beget)
+# На Beget фронтенд и бэкенд работают на одном домене, поэтому cross-domain не нужен
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'  # Защита от CSRF атак
 app.config['SESSION_COOKIE_SECURE'] = True      # Только HTTPS (для продакшена)
 app.config['SESSION_COOKIE_HTTPONLY'] = True    # Защита от XSS атак
 
@@ -48,6 +49,10 @@ AUDIO_DIR = ROOT_DIR / "audio"
 # Добавляем пути к директориям с HTML файлами и PDF
 MENUS_DIR = ROOT_DIR / "frontend" / "public" / "menus"
 TRAINER_DIR = ROOT_DIR / "frontend" / "public" / "trainer"
+# Путь к собранному фронтенду (React build)
+FRONTEND_BUILD_DIR = ROOT_DIR / "frontend" / "build"
+FRONTEND_STATIC_DIR = FRONTEND_BUILD_DIR / "static"
+FRONTEND_INDEX = FRONTEND_BUILD_DIR / "index.html"
 
 # Класс для гостевого пользователя (не сохраняется в базе данных)
 class GuestUser(UserMixin):
@@ -779,6 +784,59 @@ def delete_user(user_id):
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
+
+# ========== ОТДАЧА СТАТИКИ ФРОНТЕНДА (React) ==========
+
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def serve_frontend(path):
+    """
+    Отдаёт index.html для всех маршрутов, кроме API и статики.
+    Это нужно для работы React Router (client-side routing).
+    
+    Важно: этот маршрут должен быть последним, чтобы не перехватывать API запросы!
+    """
+    # Проверяем, что это не API или статические маршруты
+    if path.startswith('api/') or path.startswith('images/') or \
+       path.startswith('audio/') or path.startswith('menus/') or path.startswith('trainer/'):
+        return jsonify({'error': 'Not found'}), 404
+    
+    # Если путь начинается со static/, проверяем, есть ли файл в build/static/
+    if path.startswith('static/'):
+        static_file = FRONTEND_BUILD_DIR / path
+        if static_file.exists() and static_file.is_file():
+            # Определяем MIME-тип
+            if path.endswith('.js'):
+                mimetype = 'application/javascript'
+            elif path.endswith('.css'):
+                mimetype = 'text/css'
+            elif path.endswith('.png'):
+                mimetype = 'image/png'
+            elif path.endswith('.jpg') or path.endswith('.jpeg'):
+                mimetype = 'image/jpeg'
+            elif path.endswith('.svg'):
+                mimetype = 'image/svg+xml'
+            elif path.endswith('.ico'):
+                mimetype = 'image/x-icon'
+            elif path.endswith('.json'):
+                mimetype = 'application/json'
+            elif path.endswith('.woff') or path.endswith('.woff2'):
+                mimetype = 'font/woff' if path.endswith('.woff') else 'font/woff2'
+            else:
+                mimetype = None
+            
+            return send_from_directory(str(FRONTEND_BUILD_DIR), path, mimetype=mimetype)
+        else:
+            return jsonify({'error': 'Static file not found'}), 404
+    
+    # Для всех остальных маршрутов отдаём index.html (React Router)
+    if FRONTEND_INDEX.exists():
+        return send_file(str(FRONTEND_INDEX))
+    else:
+        return jsonify({
+            'error': 'Frontend not built',
+            'message': 'Please build the frontend first: cd frontend && npm run build'
+        }), 503
 
 # ========== ИНИЦИАЛИЗАЦИЯ БАЗЫ ДАННЫХ ==========
 
