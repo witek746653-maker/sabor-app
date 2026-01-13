@@ -14,10 +14,16 @@ load_dotenv()
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'change-this-in-production-12345')
 
+# DEBUG (режим отладки) — когда True, Flask показывает подробные ошибки и обычно работает по HTTP локально.
+# В продакшене (на сервере) нужно ставить FLASK_DEBUG=False.
+FLASK_DEBUG = os.getenv('FLASK_DEBUG', 'True').lower() == 'true'
+
 # Настройки для работы cookies (единый домен на Beget)
 # На Beget фронтенд и бэкенд работают на одном домене, поэтому cross-domain не нужен
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'  # Защита от CSRF атак
-app.config['SESSION_COOKIE_SECURE'] = True      # Только HTTPS (для продакшена)
+# Secure cookie — это cookie, которую браузер принимает ТОЛЬКО по HTTPS.
+# Локально обычно HTTP, поэтому в режиме отладки выключаем Secure, иначе логин "не держится".
+app.config['SESSION_COOKIE_SECURE'] = not FLASK_DEBUG
 app.config['SESSION_COOKIE_HTTPONLY'] = True    # Защита от XSS атак
 
 # Настройка базы данных SQLite
@@ -31,11 +37,25 @@ db.init_app(app)
 
 # Разрешаем запросы с фронтенда (CORS)
 # Важно: allows_credentials=True необходимо для работы с cookies (сессии Flask-Login)
-CORS(app, 
-     supports_credentials=True,
-     resources={r"/api/*": {"origins": "*"}},
-     allow_headers=["Content-Type", "Authorization"],
-     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"])
+def _parse_cors_origins(value):
+    """
+    CORS (Cross-Origin Resource Sharing) — правила, которые говорят браузеру,
+    можно ли делать запросы на этот сервер с другого домена/порта.
+    """
+    if not value:
+        # Для разработки: React обычно на :3000
+        return ["http://localhost:3000", "http://127.0.0.1:3000"]
+    return [item.strip() for item in value.split(",") if item.strip()]
+
+# Важно: с cookies нельзя использовать origins="*" — браузер это блокирует.
+cors_origins = _parse_cors_origins(os.getenv("CORS_ORIGINS"))
+CORS(
+    app,
+    supports_credentials=True,
+    resources={r"/api/*": {"origins": cors_origins}},
+    allow_headers=["Content-Type", "Authorization"],
+    methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+)
 
 # Настройка Flask-Login для аутентификации
 login_manager = LoginManager()
@@ -848,6 +868,5 @@ with app.app_context():
 
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 5000))
-    debug = os.getenv('FLASK_DEBUG', 'True').lower() == 'true'
-    app.run(debug=debug, port=port, host='0.0.0.0')
+    app.run(debug=FLASK_DEBUG, port=port, host='0.0.0.0')
 
