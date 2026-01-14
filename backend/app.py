@@ -17,7 +17,10 @@ app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'change-this-in-production-12
 # Настройки для работы cookies (единый домен на Beget)
 # На Beget фронтенд и бэкенд работают на одном домене, поэтому cross-domain не нужен
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'  # Защита от CSRF атак
-app.config['SESSION_COOKIE_SECURE'] = True      # Только HTTPS (для продакшена)
+# Важно:
+# - True  = cookie будет отправляться ТОЛЬКО по HTTPS (это правильно для продакшена)
+# - False = можно временно тестировать по http://IP (например, пока нет домена/SSL)
+app.config['SESSION_COOKIE_SECURE'] = os.getenv('SESSION_COOKIE_SECURE', 'true').lower() == 'true'
 app.config['SESSION_COOKIE_HTTPONLY'] = True    # Защита от XSS атак
 
 # Настройка базы данных SQLite
@@ -30,12 +33,25 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # Отключаем от�
 db.init_app(app)
 
 # Разрешаем запросы с фронтенда (CORS)
-# Важно: allows_credentials=True необходимо для работы с cookies (сессии Flask-Login)
-CORS(app, 
-     supports_credentials=True,
-     resources={r"/api/*": {"origins": "*"}},
-     allow_headers=["Content-Type", "Authorization"],
-     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"])
+# CORS — это правило "с каких адресов браузеру можно обращаться к вашему API".
+# Важно: supports_credentials=True нужно для cookies (сессии Flask-Login).
+#
+# Рекомендуется явно перечислить домены через переменную окружения CORS_ORIGINS:
+#   CORS_ORIGINS=https://example.ru,https://www.example.ru,http://localhost:3000
+cors_origins_raw = os.getenv('CORS_ORIGINS', '').strip()
+if cors_origins_raw:
+    cors_origins = [o.strip() for o in cors_origins_raw.split(',') if o.strip()]
+else:
+    # Безопасный дефолт для разработки (и не мешает продакшену на одном домене)
+    cors_origins = ['http://localhost:3000', 'http://127.0.0.1:3000']
+
+CORS(
+    app,
+    supports_credentials=True,
+    resources={r"/api/*": {"origins": cors_origins}},
+    allow_headers=["Content-Type", "Authorization"],
+    methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+)
 
 # Настройка Flask-Login для аутентификации
 login_manager = LoginManager()
@@ -53,6 +69,68 @@ TRAINER_DIR = ROOT_DIR / "frontend" / "public" / "trainer"
 FRONTEND_BUILD_DIR = ROOT_DIR / "frontend" / "build"
 FRONTEND_STATIC_DIR = FRONTEND_BUILD_DIR / "static"
 FRONTEND_INDEX = FRONTEND_BUILD_DIR / "index.html"
+
+# Путь к исходным данным меню (нужно, чтобы подмешивать поля, которых нет в БД)
+MENU_DB_PATH = ROOT_DIR / "data" / "menu-database.json"
+MENU_DB_BACKUP_PATH = ROOT_DIR / "frontend" / "public" / "data" / "menu-database.json"
+_MENU_DB_BY_ID_CACHE = None
+
+def _load_menu_db_by_id():
+    """
+    Загружает menu-database.json и строит словарь {id: full_item}.
+    Это нужно, потому что в таблице dishes сейчас хранятся не все поля вина
+    (например origin/producer/grapeVarieties/region).
+    """
+    global _MENU_DB_BY_ID_CACHE
+    if _MENU_DB_BY_ID_CACHE is not None:
+        return _MENU_DB_BY_ID_CACHE
+
+    db_map = {}
+    for path in (MENU_DB_PATH, MENU_DB_BACKUP_PATH):
+        try:
+            if path.exists():
+                with open(path, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                if isinstance(data, list):
+                    for item in data:
+                        item_id = item.get("id")
+                        if item_id:
+                            db_map[item_id] = item
+                break
+        except Exception as e:
+            app.logger.warning(f"Не удалось загрузить {path}: {e}")
+
+    _MENU_DB_BY_ID_CACHE = db_map
+    return _MENU_DB_BY_ID_CACHE
+
+def _enrich_wine_dict(wine_dict: dict) -> dict:
+    """
+    Подмешивает в ответ поля из menu-database.json, которых может не быть в БД.
+    БД остаётся источником правды; мы добавляем только отсутствующие ключи.
+    """
+    if not wine_dict or not wine_dict.get("id"):
+        return wine_dict
+
+    full = _load_menu_db_by_id().get(wine_dict["id"])
+    if not full:
+        return wine_dict
+
+    # Поля, которые нужны фронту для карточки вина
+    extra_keys = [
+        "origin",
+        "region",
+        "producer",
+        "grapeVarieties",
+        "features",
+        "category",
+        "alcoholContent",
+    ]
+
+    for k in extra_keys:
+        if k not in wine_dict and k in full:
+            wine_dict[k] = full.get(k)
+
+    return wine_dict
 
 # Класс для гостевого пользователя (не сохраняется в базе данных)
 class GuestUser(UserMixin):
@@ -260,7 +338,10 @@ def get_wines():
     try:
         # Ищем все блюда, где menu = 'Вино'
         wines = Dish.query.filter(Dish.menu == 'Вино').all()
-        return jsonify([wine.to_dict() for wine in wines])
+        enriched = []
+        for wine in wines:
+            enriched.append(_enrich_wine_dict(wine.to_dict()))
+        return jsonify(enriched)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -296,7 +377,7 @@ def get_wine(wine_id):
         if not wine:
             return jsonify({'error': 'Wine not found'}), 404
         
-        return jsonify(wine.to_dict())
+        return jsonify(_enrich_wine_dict(wine.to_dict()))
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
