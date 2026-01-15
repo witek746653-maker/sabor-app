@@ -221,11 +221,62 @@ def _resolve_db_path() -> Path:
 DB_PATH = _resolve_db_path()
 # Создаём папку для базы, если её ещё нет (иначе SQLite не сможет создать файл)
 DB_PATH.parent.mkdir(parents=True, exist_ok=True)
+
+# ===== KISS-защита: понятная ошибка, если SQLite "read-only" =====
+# Тех-термин: **SQLite** — это база данных “в одном файле”.
+# Если этот файл (или папка, где он лежит) без прав на запись — любые операции сохранения будут падать.
+def _is_readonly_db_error(err: Exception) -> bool:
+    """
+    Возвращает True, если похоже, что SQLite открыта "только для чтения".
+    SQLAlchemy оборачивает ошибки, поэтому проверяем текст.
+    """
+    try:
+        msg = str(err).lower()
+    except Exception:
+        return False
+    return (
+        "attempt to write a readonly database" in msg
+        or "readonly database" in msg
+        or ("read-only" in msg and "database" in msg)
+    )
+
+
+def _readonly_db_response():
+    """
+    Единый ответ для фронта, чтобы сразу было понятно, что чинить на сервере.
+    """
+    hint = (
+        "База данных SQLite сейчас доступна только для чтения (нет прав на запись).\n"
+        "Самый простой фикс: вынести файл базы в writable-папку и задать переменную окружения SABOR_DB_PATH.\n"
+        f"Текущий путь к базе: {DB_PATH}"
+    )
+    return jsonify({"error": "DB_READONLY", "message": hint}), 503
+
+
+def _log_db_writable_status():
+    """
+    Логируем статус прав на запись (чтобы это было видно в логах хостинга).
+    """
+    try:
+        if DB_PATH.exists():
+            can_write = os.access(str(DB_PATH), os.W_OK)
+        else:
+            can_write = os.access(str(DB_PATH.parent), os.W_OK)
+        if not can_write:
+            app.logger.warning(
+                "SQLite DB path is NOT writable. Writes will fail. "
+                "Set SABOR_DB_PATH to a writable location. "
+                f"DB_PATH={DB_PATH}"
+            )
+    except Exception:
+        # Не ломаем запуск, если что-то пошло не так при проверке прав
+        pass
 app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{DB_PATH}"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # Отключаем отслеживание изменений (не нужно для SQLite)
 
 # Инициализируем базу данных
 db.init_app(app)
+_log_db_writable_status()
 
 # Разрешаем запросы с фронтенда (CORS)
 # CORS — это правило "с каких адресов браузеру можно обращаться к вашему API".
@@ -308,7 +359,9 @@ def _require_admin():
 def _atomic_write_json(path: Path, data_obj):
     path.parent.mkdir(parents=True, exist_ok=True)
     tmp = path.with_suffix(path.suffix + ".tmp")
-    tmp.write_text(json.dumps(data_obj, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+    # Важно: сохраняем JSON "по-человечески" (с отступами), иначе он схлопывается в одну строку
+    # и его становится сложно править руками.
+    tmp.write_text(json.dumps(data_obj, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     tmp.replace(path)
 
 def _dedupe_menu_items(items: list[dict]):
@@ -1032,6 +1085,8 @@ def save_dishes():
         })
     except Exception as e:
         db.session.rollback()  # Откатываем изменения в случае ошибки
+        if _is_readonly_db_error(e):
+            return _readonly_db_response()
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/admin/dishes/<dish_id>', methods=['PUT'])
@@ -1083,6 +1138,8 @@ def update_dish(dish_id):
         return jsonify({'status': 'ok', 'dish': _deep_merge_dicts(full or {}, dish.to_dict())})
     except Exception as e:
         db.session.rollback()
+        if _is_readonly_db_error(e):
+            return _readonly_db_response()
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/admin/dishes', methods=['PUT'])
@@ -1120,6 +1177,8 @@ def add_dish():
         return jsonify({'status': 'ok', 'dish': _deep_merge_dicts(full or {}, new_dish.to_dict())})
     except Exception as e:
         db.session.rollback()
+        if _is_readonly_db_error(e):
+            return _readonly_db_response()
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/admin/dishes/<dish_id>', methods=['DELETE'])
@@ -1154,6 +1213,8 @@ def delete_dish(dish_id):
         return jsonify({'status': 'ok'})
     except Exception as e:
         db.session.rollback()
+        if _is_readonly_db_error(e):
+            return _readonly_db_response()
         return jsonify({'error': str(e)}), 500
 
 # ========== API ДЛЯ ОБРАТНОЙ СВЯЗИ ==========
@@ -1187,6 +1248,8 @@ def submit_feedback():
         return jsonify({'status': 'ok', 'message': 'Сообщение отправлено', 'id': feedback.id})
     except Exception as e:
         db.session.rollback()
+        if _is_readonly_db_error(e):
+            return _readonly_db_response()
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/admin/feedback', methods=['GET'])
@@ -1228,6 +1291,8 @@ def mark_feedback_read(message_id):
         return jsonify({'status': 'ok', 'message': message.to_dict()})
     except Exception as e:
         db.session.rollback()
+        if _is_readonly_db_error(e):
+            return _readonly_db_response()
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/admin/feedback/<int:message_id>', methods=['DELETE'])
@@ -1252,6 +1317,8 @@ def delete_feedback_message(message_id):
         return jsonify({'status': 'ok'})
     except Exception as e:
         db.session.rollback()
+        if _is_readonly_db_error(e):
+            return _readonly_db_response()
         return jsonify({'error': str(e)}), 500
 
 # ========== API ДЛЯ УПРАВЛЕНИЯ ПОЛЬЗОВАТЕЛЯМИ ==========
@@ -1335,6 +1402,8 @@ def create_user():
         return jsonify({'status': 'ok', 'message': 'Пользователь создан', 'user': new_user.to_dict()})
     except Exception as e:
         db.session.rollback()
+        if _is_readonly_db_error(e):
+            return _readonly_db_response()
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/admin/users/<int:user_id>', methods=['PUT'])
@@ -1390,6 +1459,8 @@ def update_user(user_id):
         return jsonify({'status': 'ok', 'message': 'Пользователь обновлен', 'user': user.to_dict()})
     except Exception as e:
         db.session.rollback()
+        if _is_readonly_db_error(e):
+            return _readonly_db_response()
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/admin/users/<int:user_id>', methods=['DELETE'])
@@ -1425,6 +1496,8 @@ def delete_user(user_id):
         return jsonify({'status': 'ok', 'message': 'Пользователь удален'})
     except Exception as e:
         db.session.rollback()
+        if _is_readonly_db_error(e):
+            return _readonly_db_response()
         return jsonify({'error': str(e)}), 500
 
 # ========== АДМИН: ОБНОВЛЕНИЕ МЕНЮ И (ОПЦ.) ДЕПЛОЙ ==========
@@ -1485,6 +1558,8 @@ def admin_import_menu_json():
         })
     except Exception as e:
         db.session.rollback()
+        if _is_readonly_db_error(e):
+            return _readonly_db_response()
         return jsonify({"error": f"Ошибка применения меню: {e}"}), 500
 
 

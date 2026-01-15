@@ -50,55 +50,57 @@ function App() {
     <ErrorBoundary>
       <AuthProvider>
         <Router>
-          {/* Компонент для отслеживания контекста (страница, роль пользователя) */}
-          <SentryContextTracker />
-          {/* Индикатор статуса сервера/источника данных (виден и пользователю, и админу) */}
-          <StatusBanner />
           <div className="App">
-            <Routes>
-              {/* Публичные маршруты */}
-              <Route path="/" element={<HomePage />} />
-              <Route path="/menu/:menuName" element={<MenuPage />} />
-              <Route path="/dish/:id" element={<DishDetailPage />} />
-              <Route path="/wine-menu" element={<WineMenuPage />} />
-              <Route path="/wine-catalog" element={<WineCatalogPage />} />
-              <Route path="/wine-catalog/:category" element={<WineCatalogPage />} />
-              {/* Новые детальные страницы */}
-              <Route path="/wine/:id" element={<WineDetailPage />} />
-              <Route path="/bar/:id" element={<BarItemDetailPage />} />
+            <div className="sabor-container">
+              {/* Компонент для отслеживания контекста (страница, роль пользователя) */}
+              <SentryContextTracker />
+              {/* Индикатор статуса сервера/источника данных (виден и пользователю, и админу) */}
+              <StatusBanner />
+              <Routes>
+                {/* Публичные маршруты */}
+                <Route path="/" element={<HomePage />} />
+                <Route path="/menu/:menuName" element={<MenuPage />} />
+                <Route path="/dish/:id" element={<DishDetailPage />} />
+                <Route path="/wine-menu" element={<WineMenuPage />} />
+                <Route path="/wine-catalog" element={<WineCatalogPage />} />
+                <Route path="/wine-catalog/:category" element={<WineCatalogPage />} />
+                {/* Новые детальные страницы */}
+                <Route path="/wine/:id" element={<WineDetailPage />} />
+                <Route path="/bar/:id" element={<BarItemDetailPage />} />
 
-              {/* Совместимость со старыми ссылками (старые файлы не используем, только редирект) */}
-              <Route path="/wine-item/:id" element={<WineDetailPage />} />
-              <Route path="/bar-menu" element={<Navigate to={`/menu/${encodeURIComponent('Барное меню')}`} replace />} />
-              <Route path="/tools" element={<ToolsPage />} />
-              <Route path="/favorites" element={<FavoritesPage />} />
+                {/* Совместимость со старыми ссылками (старые файлы не используем, только редирект) */}
+                <Route path="/wine-item/:id" element={<WineDetailPage />} />
+                <Route path="/bar-menu" element={<Navigate to={`/menu/${encodeURIComponent('Барное меню')}`} replace />} />
+                <Route path="/tools" element={<ToolsPage />} />
+                <Route path="/favorites" element={<FavoritesPage />} />
 
-              {/* Страница входа в админ-панель */}
-              <Route path="/admin/login" element={<AdminLoginPage />} />
-              
-              {/* Админ-маршруты с защитой и layout */}
-              <Route
-                path="/admin"
-                element={
-                  <AdminRoute>
-                    <AdminLayout />
-                  </AdminRoute>
-                }
-              >
-                {/* Вложенные маршруты отображаются в центральной области AdminLayout */}
-                <Route index element={<Navigate to="kitchen" replace />} />
-                <Route path="kitchen" element={<DishesPage mode="kitchen" />} />
-                <Route path="wine" element={<DishesPage mode="wine" />} />
-                <Route path="bar" element={<DishesPage mode="bar" />} />
-                <Route path="edit/:id" element={<DishEditPage />} />
-                <Route path="add" element={<DishEditPage />} />
-                <Route path="users" element={<UsersPage />} />
-                <Route path="feedback" element={<FeedbackMessagesPage />} />
-                <Route path="notifications" element={<NotificationsPage />} />
-                <Route path="deploy" element={<DeployPage />} />
-                <Route path="help" element={<AdminHelpPage />} />
-              </Route>
-            </Routes>
+                {/* Страница входа в админ-панель */}
+                <Route path="/admin/login" element={<AdminLoginPage />} />
+                
+                {/* Админ-маршруты с защитой и layout */}
+                <Route
+                  path="/admin"
+                  element={
+                    <AdminRoute>
+                      <AdminLayout />
+                    </AdminRoute>
+                  }
+                >
+                  {/* Вложенные маршруты отображаются в центральной области AdminLayout */}
+                  <Route index element={<Navigate to="kitchen" replace />} />
+                  <Route path="kitchen" element={<DishesPage mode="kitchen" />} />
+                  <Route path="wine" element={<DishesPage mode="wine" />} />
+                  <Route path="bar" element={<DishesPage mode="bar" />} />
+                  <Route path="edit/:id" element={<DishEditPage />} />
+                  <Route path="add" element={<DishEditPage />} />
+                  <Route path="users" element={<UsersPage />} />
+                  <Route path="feedback" element={<FeedbackMessagesPage />} />
+                  <Route path="notifications" element={<NotificationsPage />} />
+                  <Route path="deploy" element={<DeployPage />} />
+                  <Route path="help" element={<AdminHelpPage />} />
+                </Route>
+              </Routes>
+            </div>
           </div>
         </Router>
       </AuthProvider>

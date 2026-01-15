@@ -497,7 +497,7 @@ function DishEditPage() {
       </main>
 
       {/* Footer */}
-      <footer className="fixed bottom-0 left-0 right-0 p-4 bg-white dark:bg-[#2c2420] border-t border-slate-100 dark:border-white/5 z-20 safe-pb">
+      <footer className="fixed bottom-0 p-4 bg-white dark:bg-[#2c2420] border-t border-slate-100 dark:border-white/5 z-20 safe-pb w-full sabor-fixed">
         <div className="flex gap-3 max-w-lg mx-auto">
           <button
             onClick={() => navigate(-1)}

@@ -120,8 +120,8 @@
 .contains-list ol[type="1"],
 .contains-list ol {
   list-style-type: decimal !important;
-  padding-left: 1.75rem !important;
-  margin: 0.75rem 0 !important;
+  padding-left: 1rem !important;
+  margin: 0 !important; /* максимально компактно */
   counter-reset: list-counter;
 }
 
@@ -131,17 +131,32 @@
   list-style-type: decimal !important;
   list-style-position: outside !important;
   padding-left: 0.5rem !important;
-  margin: 0.5rem 0 !important;
-  margin-left: 1rem !important;
-  line-height: 1.6 !important;
+  margin: 0 !important; /* максимально компактно */
+  margin-left: 0.25rem !important;
+  line-height: 1.5 !important;
+}
+
+/* Минимальные “абзацные” отступы в HTML-тексте (reference_info/contains и т.п.) */
+.contains-list p {
+  margin: 0 !important; /* без пустоты между абзацами */
+}
+
+.contains-list ul {
+  margin: 0 !important;
+  padding-left: 1rem !important;
+}
+
+.contains-list ul li {
+  margin: 0 !important;
+  line-height: 1.5 !important;
 }
 
 /* Явное указание для нумерованных списков с type="1" в любом контексте */
 .prose ol[type="1"],
 ol[type="1"] {
   list-style-type: decimal !important;
-  padding-left: 1.75rem !important;
-  margin: 0.75rem 0 !important;
+  padding-left: 1rem !important;
+  margin: 0 !important;
 }
 
 .prose ol[type="1"] li,
@@ -150,17 +165,17 @@ ol[type="1"] li {
   list-style-type: decimal !important;
   list-style-position: outside !important;
   padding-left: 0.5rem !important;
-  margin: 0.5rem 0 !important;
-  margin-left: 1rem !important;
-  line-height: 1.6 !important;
+  margin: 0 !important;
+  margin-left: 0.25rem !important;
+  line-height: 1.5 !important;
 }
 
 /* Обычные нумерованные списки без type тоже должны показывать цифры */
 .prose ol:not([type]),
 ol:not([type]) {
   list-style-type: decimal !important;
-  padding-left: 1.75rem !important;
-  margin: 0.75rem 0 !important;
+  padding-left: 1rem !important;
+  margin: 0 !important;
 }
 
 .prose ol:not([type]) li,
@@ -169,9 +184,9 @@ ol:not([type]) li {
   list-style-type: decimal !important;
   list-style-position: outside !important;
   padding-left: 0.5rem !important;
-  margin: 0.5rem 0 !important;
-  margin-left: 1rem !important;
-  line-height: 1.6 !important;
+  margin: 0 !important;
+  margin-left: 0.25rem !important;
+  line-height: 1.5 !important;
 }
 
 /* Блоки аллергенов и особенностей - одинаковый размер и анимация */

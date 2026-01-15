@@ -52,6 +52,20 @@ function BarItemDetailPage() {
     return item[fieldName] || '';
   };
 
+  // Термин **\\n**: это “текстовый перенос строки” (два символа: обратный слэш и n).
+  // Иногда он попадает в JSON как "\\n". Здесь мы превращаем его в настоящий перенос строки "\n".
+  function normalizeNewlines(v) {
+    const s = String(v ?? '')
+      .replace(/\r\n/g, '\n') // Windows-переносы
+      .replace(/\\n/g, '\n'); // текстовые "\n"
+
+    return s
+      .replace(/\n{2,}/g, '\n')
+      .replace(/\n\s*(<(?:ol|ul|p|div|h[1-6])\b)/gi, '$1')
+      .replace(/(<\/(?:ol|ul|p|div|h[1-6])>)\s*\n/gi, '$1')
+      .trim();
+  }
+
   const getTagsForLanguage = () => {
     if (!item) return [];
     if (language === 'EN' && item.i18n?.en?.['tags-en']) {
@@ -104,7 +118,7 @@ function BarItemDetailPage() {
   const handleShare = async () => {
     if (!item) return;
     const title = getFieldValue('title') || (language === 'EN' ? 'Drink' : 'Напиток');
-    const description = getFieldValue('description') || '';
+    const description = normalizeNewlines(getFieldValue('description') || '');
     const shareText = `${title}\n\n${description}\n\n${window.location.href}`;
 
     if (navigator.share) {
@@ -230,10 +244,10 @@ function BarItemDetailPage() {
   return (
     <div className="relative z-20 min-h-[100dvh] overflow-hidden bg-background-light dark:bg-background-dark">
       {/* Верхняя панель */}
-      <div className="fixed top-0 left-0 right-0 p-4 pt-12 flex justify-between items-center z-50">
+      <div className="fixed top-0 p-4 pt-12 flex justify-between items-center z-50 sabor-fixed">
         <button
           onClick={() => navigate(-1)}
-          className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-md border border-white/10 hover:bg-white/30 transition-all active:scale-95 group"
+          className="flex h-10 w-10 items-center justify-center rounded-full bg-black/35 dark:bg-white/15 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-lg shadow-black/20 hover:bg-black/45 dark:hover:bg-white/20 hover:shadow-black/30 transition-all active:scale-95 group"
         >
           <span className="material-symbols-outlined text-white group-hover:-translate-x-0.5 transition-transform">arrow_back</span>
         </button>
@@ -245,7 +259,7 @@ function BarItemDetailPage() {
               setLanguage(newLanguage);
               localStorage.setItem('menuLanguage', newLanguage);
             }}
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-md border border-white/10 hover:bg-white/30 transition-all active:scale-95 text-white"
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-black/35 dark:bg-white/15 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-lg shadow-black/20 hover:bg-black/45 dark:hover:bg-white/20 hover:shadow-black/30 transition-all active:scale-95 text-white"
           >
             <span className="text-xs font-bold">{language === 'RU' ? 'EN' : 'RU'}</span>
           </button>
@@ -256,7 +270,7 @@ function BarItemDetailPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={language === 'EN' ? 'Search...' : 'Поиск...'}
-              className="h-10 px-4 pr-10 rounded-full bg-white/20 backdrop-blur-md border border-white/10 text-white placeholder:text-white/70 focus:outline-none focus:ring-2 focus:ring-white/50 text-sm w-40"
+              className="h-10 px-4 pr-10 rounded-full bg-black/35 dark:bg-white/15 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-lg shadow-black/20 text-white placeholder:text-white/70 focus:outline-none focus:ring-2 focus:ring-white/60 text-sm w-40"
             />
             <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-white text-[18px] pointer-events-none">
               search
@@ -265,7 +279,7 @@ function BarItemDetailPage() {
 
           <button
             onClick={handleShare}
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-md border border-white/10 hover:bg-white/30 transition-all active:scale-95"
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-black/35 dark:bg-white/15 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-lg shadow-black/20 hover:bg-black/45 dark:hover:bg-white/20 hover:shadow-black/30 transition-all active:scale-95"
           >
             <span className="material-symbols-outlined text-white">ios_share</span>
           </button>
@@ -274,8 +288,8 @@ function BarItemDetailPage() {
             onClick={toggleFavorite}
             disabled={isGuest}
             title={isGuest ? 'Доступно после входа' : isFavorite ? 'Удалить из избранного' : 'Добавить в избранное'}
-            className={`flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-md border border-white/10 transition-all ${
-              isGuest ? 'opacity-50 cursor-not-allowed' : 'hover:bg-white/30 active:scale-95 cursor-pointer'
+            className={`flex h-10 w-10 items-center justify-center rounded-full bg-black/35 dark:bg-white/15 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-lg shadow-black/20 transition-all ${
+              isGuest ? 'opacity-50 cursor-not-allowed' : 'hover:bg-black/45 dark:hover:bg-white/20 hover:shadow-black/30 active:scale-95 cursor-pointer'
             } ${isFavorite ? 'text-primary' : 'text-white'}`}
           >
             <span className={`material-symbols-outlined ${isFavorite ? 'fill-1' : ''}`}>favorite</span>
@@ -355,9 +369,19 @@ function BarItemDetailPage() {
               <h2 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider mb-2 opacity-80">
                 {language === 'EN' ? 'Description' : 'Описание'}
               </h2>
-              <p className="text-gray-600 dark:text-gray-300 text-[15px] leading-relaxed">
-                {searchQuery ? highlightText(getFieldValue('description'), searchQuery) : getFieldValue('description')}
-              </p>
+              {/* Термин **dangerouslySetInnerHTML**: вставить HTML “как есть” (нужно для списков <ol>/<ul>). */}
+              {/* ВАЖНО: если HTML приходит от пользователей, это риск **XSS** (вредный HTML/скрипты). */}
+              <div
+                className="text-gray-600 dark:text-gray-300 text-[15px] leading-relaxed whitespace-pre-line contains-list"
+                dangerouslySetInnerHTML={{
+                  __html: searchQuery
+                    ? normalizeNewlines(getFieldValue('description')).replace(
+                        new RegExp(`(${searchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi'),
+                        '<mark class="bg-yellow-300 dark:bg-yellow-600/50 px-0.5 rounded">$1</mark>'
+                      )
+                    : normalizeNewlines(getFieldValue('description')),
+                }}
+              />
             </div>
           )}
 
@@ -409,7 +433,7 @@ function BarItemDetailPage() {
               ref={(el) => {
                 if (el) searchRefs.current['contains'] = el;
               }}
-              className="mb-8"
+              className="mb-4"
             >
               <div className="bg-primary/5 dark:bg-primary/10 p-5 rounded-xl border border-primary/20 dark:border-primary/30 shadow-md">
                 <h3 className="flex items-center gap-2 mb-3 text-gray-900 dark:text-white font-bold text-lg">
@@ -419,14 +443,14 @@ function BarItemDetailPage() {
                   {language === 'EN' ? 'Composition' : 'Состав'}
                 </h3>
                 <div
-                  className="text-gray-700 dark:text-gray-200 text-base leading-relaxed max-w-none contains-list"
+                  className="text-gray-700 dark:text-gray-200 text-base leading-relaxed max-w-none contains-list whitespace-pre-line"
                   dangerouslySetInnerHTML={{
                     __html: searchQuery
-                      ? String(getFieldValue('contains')).replace(
+                      ? normalizeNewlines(getFieldValue('contains')).replace(
                           new RegExp(`(${searchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi'),
                           '<mark class="bg-yellow-300 dark:bg-yellow-600/50 px-0.5 rounded">$1</mark>'
                         )
-                      : String(getFieldValue('contains')),
+                      : normalizeNewlines(getFieldValue('contains')),
                   }}
                 />
               </div>
@@ -471,14 +495,14 @@ function BarItemDetailPage() {
                 {language === 'EN' ? 'Features' : 'Особенности'}
               </h2>
               <div
-                className="text-gray-700 dark:text-gray-200 text-sm leading-relaxed"
+                className="text-gray-700 dark:text-gray-200 text-sm leading-relaxed whitespace-pre-line"
                 dangerouslySetInnerHTML={{
                   __html: searchQuery
-                    ? String(item.features).replace(
+                    ? normalizeNewlines(item.features).replace(
                         new RegExp(`(${searchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi'),
                         '<mark class="bg-yellow-300 dark:bg-yellow-600/50 px-0.5 rounded">$1</mark>'
                       )
-                    : String(item.features),
+                    : normalizeNewlines(item.features),
                 }}
               />
             </div>
@@ -516,12 +540,12 @@ function BarItemDetailPage() {
           )}
 
           {/* Справочная информация */}
-          {isNonEmpty(item.reference_info) && (
+          {isNonEmpty(getFieldValue('reference_info')) && (
             <div
               ref={(el) => {
                 if (el) searchRefs.current['reference'] = el;
               }}
-              className="mb-8"
+              className="mb-4"
             >
               <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 p-5 rounded-xl border-2 border-green-200 dark:border-green-800/50 shadow-md">
                 <h3 className="flex items-center gap-2 mb-3 text-gray-900 dark:text-white font-bold text-lg">
@@ -531,14 +555,14 @@ function BarItemDetailPage() {
                   {language === 'EN' ? 'Reference' : 'Справка'}
                 </h3>
                 <div
-                  className="text-gray-700 dark:text-gray-200 text-sm leading-relaxed max-w-none contains-list"
+                  className="text-gray-700 dark:text-gray-200 text-sm leading-relaxed max-w-none contains-list whitespace-pre-line"
                   dangerouslySetInnerHTML={{
                     __html: searchQuery
-                      ? String(item.reference_info).replace(
+                      ? normalizeNewlines(getFieldValue('reference_info')).replace(
                           new RegExp(`(${searchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi'),
                           '<mark class="bg-yellow-300 dark:bg-yellow-600/50 px-0.5 rounded">$1</mark>'
                         )
-                      : String(item.reference_info),
+                      : normalizeNewlines(getFieldValue('reference_info')),
                   }}
                 />
               </div>
@@ -559,7 +583,7 @@ function BarItemDetailPage() {
       </div>
 
       {/* Нижняя навигация */}
-      <nav className="fixed bottom-0 z-50 w-full max-w-md bg-white/95 dark:bg-surface-dark/95 backdrop-blur-md border-t border-gray-100 dark:border-gray-800 pb-safe">
+      <nav className="fixed bottom-0 z-50 w-full sabor-fixed bg-white/95 dark:bg-surface-dark/95 backdrop-blur-md border-t border-gray-100 dark:border-gray-800 pb-safe">
         <div className="grid grid-cols-3 px-6 items-center h-[60px]">
           <Link to="/" className="flex flex-col items-center justify-center gap-1 text-primary">
             <span className="material-symbols-outlined text-[24px]">restaurant_menu</span>

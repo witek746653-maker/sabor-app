@@ -9,11 +9,59 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Чтобы по бокам (вне контейнера) не было “белых полос” */
+  background-color: #fdfbf7; /* background-light */
+}
+
+html.dark body {
+  background-color: #221610; /* background-dark */
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+/* ==========================================================================
+   Ограничение ширины “как в индустрии”
+   Термин **контейнер**: это “коробка”, которая держит контент по центру
+   и не даёт растягиваться на очень широких экранах.
+   ========================================================================== */
+
+:root {
+  --sabor-container-max: 100%;
+}
+
+/* Брейкпоинты как в Bootstrap (очень распространённый стандарт) */
+@media (min-width: 576px) {
+  :root { --sabor-container-max: 540px; }
+}
+@media (min-width: 768px) {
+  :root { --sabor-container-max: 720px; }
+}
+@media (min-width: 992px) {
+  :root { --sabor-container-max: 960px; }
+}
+@media (min-width: 1200px) {
+  :root { --sabor-container-max: 1140px; }
+}
+@media (min-width: 1400px) {
+  :root { --sabor-container-max: 1320px; }
+}
+
+.sabor-container {
+  width: 100%;
+  max-width: var(--sabor-container-max);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Для fixed-панелей (верх/низ): та же ширина, центрирование */
+.sabor-fixed {
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: var(--sabor-container-max);
 }
 
 /* Кастомные стили для скроллбара */
