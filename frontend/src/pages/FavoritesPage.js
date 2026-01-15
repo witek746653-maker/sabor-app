@@ -20,16 +20,46 @@ function FavoritesPage() {
     return localStorage.getItem('menuLanguage') || 'RU';
   });
 
+  // Избранное может содержать и бар/вино (если их добавляли раньше), поэтому строим правильный путь.
+  const getDetailPathForItem = (it) => {
+    const menu = String(it?.menu || '').toLowerCase();
+    const section = String(it?.section || '').toLowerCase();
+
+    const isWine =
+      menu.includes('вино') ||
+      menu.includes('wine') ||
+      section.includes('вино') ||
+      section.includes('wine');
+
+    const isBar =
+      menu.includes('бар') ||
+      menu.includes('bar') ||
+      menu.includes('напит') ||
+      menu.includes('drink') ||
+      section.includes('коктейл') ||
+      section.includes('cocktail') ||
+      section.includes('чай') ||
+      section.includes('tea') ||
+      section.includes('пиво') ||
+      section.includes('beer') ||
+      section.includes('кофе') ||
+      section.includes('coffee') ||
+      section.includes('напит') ||
+      section.includes('drink');
+
+    if (isWine) return `/wine/${it.id}`;
+    if (isBar) return `/bar/${it.id}`;
+    return `/dish/${it.id}`;
+  };
+
   useEffect(() => {
     const loadDishes = async () => {
       try {
         const allDishesData = await getDishes();
         
-        // Сохраняем все активные блюда (не в архиве)
-        const activeAllDishes = allDishesData.filter(
-          (dish) => dish.status !== 'в архиве'
-        );
-        setAllDishes(activeAllDishes);
+        // Сохраняем все блюда (включая "в архиве") — архивные просто затемняем в UI
+        // Термин **архив**: позиция неактивна, но всё ещё доступна для просмотра.
+        setAllDishes(allDishesData);
       } catch (error) {
         console.error('Ошибка загрузки блюд:', error);
       } finally {
@@ -245,60 +275,71 @@ function FavoritesPage() {
             filteredDishes.map((dish) => {
               const tags = getDishTags(dish);
               const imageUrl = getDishImageUrl(dish);
+              const isArchived = dish.status === 'в архиве';
 
               return (
                 <Link
                   key={dish.id}
-                  to={`/dish/${dish.id}`}
-                  className="group flex flex-col rounded-lg overflow-hidden bg-white dark:bg-surface-dark shadow-[0_2px_8px_rgba(0,0,0,0.04)] dark:shadow-none border border-gray-100 dark:border-gray-800 hover:border-primary/30 transition-all"
+                  to={getDetailPathForItem(dish)}
+                  className="group relative rounded-lg overflow-hidden bg-white dark:bg-surface-dark shadow-[0_2px_8px_rgba(0,0,0,0.04)] dark:shadow-none border border-gray-100 dark:border-gray-800 hover:border-primary/30 transition-all"
                 >
-                  <div className="relative w-full aspect-square overflow-hidden bg-gray-100 dark:bg-gray-800">
-                    {imageUrl ? (
-                      <div
-                        className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
-                        style={{ backgroundImage: `url('${imageUrl}')` }}
-                      />
-                    ) : (
-                      <div className="absolute inset-0 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-                        <span className="material-symbols-outlined text-gray-400 text-4xl">restaurant</span>
-                      </div>
-                    )}
-                    {tags.length > 0 && (
-                      <div className="absolute top-1.5 left-1.5 flex flex-wrap gap-1">
-                        {tags.map((tag, idx) => (
-                          <span
-                            key={idx}
-                            className={`bg-white/95 dark:bg-black/60 backdrop-blur-[2px] p-0.5 rounded-md ${tag.color === 'red' ? 'text-red-500' : 'text-green-600'} shadow-sm ring-1 ring-black/5`}
-                            title={tag.type}
-                          >
-                            <span className="material-symbols-outlined text-[12px] block">{tag.icon}</span>
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                  <div className="p-2 flex flex-col flex-grow">
-                    <h3 className="font-bold text-[11px] leading-[1.2] dark:text-white line-clamp-2 mb-1 group-hover:text-primary transition-colors">
-                      {getFieldValue(dish, 'title') || (language === 'EN' ? 'No title' : 'Без названия')}
-                    </h3>
-                    {getFieldValue(dish, 'description') && (
-                      <p className="text-[9px] text-[#896f61] dark:text-gray-400 line-clamp-2 mb-2 leading-tight opacity-90">
-                        {getFieldValue(dish, 'description')}
-                      </p>
-                    )}
-                    <div className="mt-auto flex items-center justify-between pt-1.5 border-t border-dashed border-gray-100 dark:border-gray-700">
-                      {getAllergensForLanguage(dish).length > 0 && (
-                        <div className="flex items-center gap-1">
-                          <span className="material-symbols-outlined text-gray-400 dark:text-gray-500 text-[12px]">
-                            {getAllergenIcon(getAllergensForLanguage(dish)[0])}
-                          </span>
-                          <span className="text-[8px] text-gray-400 uppercase font-semibold">
-                            {getAllergensForLanguage(dish)[0].substring(0, 5)}
-                          </span>
+                  {/* Затемняем ТОЛЬКО контент карточки, чтобы бейдж "В АРХИВЕ" был читабельным */}
+                  <div className={`flex flex-col h-full ${isArchived ? 'opacity-50 grayscale' : ''}`}>
+                    <div className="relative w-full aspect-square overflow-hidden bg-gray-100 dark:bg-gray-800">
+                      {imageUrl ? (
+                        <div
+                          className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
+                          style={{ backgroundImage: `url('${imageUrl}')` }}
+                        />
+                      ) : (
+                        <div className="absolute inset-0 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                          <span className="material-symbols-outlined text-gray-400 text-4xl">restaurant</span>
+                        </div>
+                      )}
+                      {tags.length > 0 && (
+                        <div className="absolute top-1.5 left-1.5 flex flex-wrap gap-1">
+                          {tags.map((tag, idx) => (
+                            <span
+                              key={idx}
+                              className={`bg-white/95 dark:bg-black/60 backdrop-blur-[2px] p-0.5 rounded-md ${tag.color === 'red' ? 'text-red-500' : 'text-green-600'} shadow-sm ring-1 ring-black/5`}
+                              title={tag.type}
+                            >
+                              <span className="material-symbols-outlined text-[12px] block">{tag.icon}</span>
+                            </span>
+                          ))}
                         </div>
                       )}
                     </div>
+                    <div className="p-2 flex flex-col flex-grow">
+                      <h3 className="font-bold text-[11px] leading-[1.2] dark:text-white line-clamp-2 mb-1 group-hover:text-primary transition-colors">
+                        {getFieldValue(dish, 'title') || (language === 'EN' ? 'No title' : 'Без названия')}
+                      </h3>
+                      {getFieldValue(dish, 'description') && (
+                        <p className="text-[9px] text-[#896f61] dark:text-gray-400 line-clamp-2 mb-2 leading-tight opacity-90">
+                          {getFieldValue(dish, 'description')}
+                        </p>
+                      )}
+                      <div className="mt-auto flex items-center justify-between pt-1.5 border-t border-dashed border-gray-100 dark:border-gray-700">
+                        {getAllergensForLanguage(dish).length > 0 && (
+                          <div className="flex items-center gap-1">
+                            <span className="material-symbols-outlined text-gray-400 dark:text-gray-500 text-[12px]">
+                              {getAllergenIcon(getAllergensForLanguage(dish)[0])}
+                            </span>
+                            <span className="text-[8px] text-gray-400 uppercase font-semibold">
+                              {getAllergensForLanguage(dish)[0].substring(0, 5)}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   </div>
+
+                  {/* Индикатор архива поверх карточки */}
+                  {isArchived && (
+                    <div className="absolute top-2 right-2 bg-gray-700/90 text-white text-[10px] font-bold px-2 py-1 rounded-md backdrop-blur-sm">
+                      В АРХИВЕ
+                    </div>
+                  )}
                 </Link>
               );
             })

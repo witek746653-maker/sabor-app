@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { getDish, updateDish, addDish, getMenus, getSections } from '../../services/api';
 import { getImageUrl } from '../../utils/imageUtils';
+import HelpPopover from '../../components/HelpPopover';
 
 /**
  * DishEditPage - Страница редактирования/создания блюда
@@ -10,6 +11,7 @@ import { getImageUrl } from '../../utils/imageUtils';
 function DishEditPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const isNew = !id || id === 'new';
   
   const [dish, setDish] = useState({
@@ -75,6 +77,19 @@ function DishEditPage() {
 
     loadData();
   }, [id, isNew]);
+
+  // Если мы создаём новую позицию, можем предзаполнить menu из query (?menu=Вино / Барное меню)
+  useEffect(() => {
+    if (!isNew) return;
+    const params = new URLSearchParams(location.search);
+    const prefillMenu = params.get('menu');
+    if (prefillMenu && !dish.menu) {
+      setDish((prev) => ({
+        ...prev,
+        menu: prefillMenu,
+      }));
+    }
+  }, [isNew, location.search, dish.menu]);
 
   useEffect(() => {
     const loadSections = async () => {
@@ -221,7 +236,23 @@ function DishEditPage() {
         {/* Статус */}
         {!isNew && (
           <section className="flex flex-col gap-2">
-            <label className="text-text-primary-light dark:text-text-primary-dark text-sm font-bold">Статус блюда</label>
+            <div className="flex items-center gap-2">
+              <label className="text-text-primary-light dark:text-text-primary-dark text-sm font-bold">
+                Статус блюда
+              </label>
+              <HelpPopover title="Справка: статус (актуально / в архиве)" icon="help">
+                <div style={{ opacity: 0.9 }}>
+                  Термин <b>архив</b>: позиция скрыта для гостей, но остаётся в админке.
+                  <details>
+                    <summary>Когда ставить “в архиве”</summary>
+                    <div style={{ marginTop: 6, opacity: 0.9 }}>
+                      - блюдо временно недоступно
+                      <br />- вы хотите сохранить историю, но не показывать гостям
+                    </div>
+                  </details>
+                </div>
+              </HelpPopover>
+            </div>
             <button
               onClick={handleToggleStatus}
               className={`w-full h-12 rounded-xl font-bold transition-all ${
@@ -242,6 +273,24 @@ function DishEditPage() {
 
         {/* Изображение */}
         <section className="flex flex-col gap-3">
+          <div className="flex items-center gap-2">
+            <label className="text-text-primary-light dark:text-text-primary-dark text-sm font-bold">
+              Изображение
+            </label>
+            <HelpPopover title="Справка: изображение" icon="help">
+              <div style={{ opacity: 0.9 }}>
+                Можно выбрать файл с компьютера или указать путь в поле ниже.
+                <details>
+                  <summary>Важно про пути</summary>
+                  <div style={{ marginTop: 6, opacity: 0.9 }}>
+                    Если вы укажете <code>../images/имя.webp</code>, файл должен реально существовать в папке изображений проекта/сборки.
+                    <br />
+                    Термин <b>URL</b>: адрес до картинки.
+                  </div>
+                </details>
+              </div>
+            </HelpPopover>
+          </div>
           <div 
             onClick={handleImageClick}
             className="group relative w-full aspect-video rounded-xl bg-slate-100 dark:bg-[#2c2420] border-2 border-dashed border-slate-300 dark:border-white/10 overflow-hidden cursor-pointer hover:border-primary transition-colors"
@@ -284,6 +333,26 @@ function DishEditPage() {
 
         {/* Переключатель языка */}
         <section>
+          <div className="flex items-center gap-2 mb-2">
+            <div className="text-text-primary-light dark:text-text-primary-dark text-sm font-bold">
+              Язык редактирования
+            </div>
+            <HelpPopover title="Справка: RU/EN" icon="help">
+              <div style={{ opacity: 0.9 }}>
+                Переключатель RU/EN меняет <b>какое поле вы редактируете</b>.
+                <details>
+                  <summary>Как это хранится</summary>
+                  <div style={{ marginTop: 6, opacity: 0.9 }}>
+                    Русский текст хранится в обычных полях (например <code>title</code>).
+                    <br />
+                    Английский — в <code>i18n.en</code> (например <code>title-en</code>).
+                    <br />
+                    Термин <b>i18n</b>: “интернационализация”, хранение переводов.
+                  </div>
+                </details>
+              </div>
+            </HelpPopover>
+          </div>
           <div className="flex w-full p-1 bg-slate-200 dark:bg-[#3a302a] rounded-xl mb-4">
             <label className="flex-1 cursor-pointer">
               <input
@@ -316,9 +385,16 @@ function DishEditPage() {
           {/* Поля формы */}
           <div className="space-y-4">
             <div className="flex flex-col gap-2">
-              <label className="text-text-primary-light dark:text-text-primary-dark text-sm font-bold">
-                {language === 'EN' ? 'Название блюда (EN)' : 'Название блюда'}
-              </label>
+              <div className="flex items-center gap-2">
+                <label className="text-text-primary-light dark:text-text-primary-dark text-sm font-bold">
+                  {language === 'EN' ? 'Название блюда (EN)' : 'Название блюда'}
+                </label>
+                <HelpPopover title="Справка: название" icon="help">
+                  <div style={{ opacity: 0.9 }}>
+                    Короткое название, которое видно в карточках и поиске.
+                  </div>
+                </HelpPopover>
+              </div>
               <input
                 className="w-full rounded-xl border-slate-200 dark:border-white/10 bg-white dark:bg-[#2c2420] text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-primary focus:ring-primary dark:focus:border-primary h-12 px-4"
                 placeholder={language === 'EN' ? 'Enter dish name (EN)' : 'Введите название'}
@@ -329,9 +405,22 @@ function DishEditPage() {
             </div>
 
             <div className="flex flex-col gap-2">
-              <label className="text-text-primary-light dark:text-text-primary-dark text-sm font-bold">
-                {language === 'EN' ? 'Полное описание (EN)' : 'Полное описание'}
-              </label>
+              <div className="flex items-center gap-2">
+                <label className="text-text-primary-light dark:text-text-primary-dark text-sm font-bold">
+                  {language === 'EN' ? 'Полное описание (EN)' : 'Полное описание'}
+                </label>
+                <HelpPopover title="Справка: описание" icon="help" size="lg">
+                  <div style={{ opacity: 0.9 }}>
+                    Это описание показывается в карточке блюда.
+                    <details>
+                      <summary>Совет</summary>
+                      <div style={{ marginTop: 6, opacity: 0.9 }}>
+                        Пишите “как для гостя”: вкус, текстура, важные особенности.
+                      </div>
+                    </details>
+                  </div>
+                </HelpPopover>
+              </div>
               <textarea
                 className="w-full rounded-xl border-slate-200 dark:border-white/10 bg-white dark:bg-[#2c2420] text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-primary focus:ring-primary dark:focus:border-primary p-4 min-h-[100px] resize-y"
                 placeholder={language === 'EN' ? 'Describe the dish (EN)' : 'Опишите состав и вкус блюда'}
@@ -341,9 +430,24 @@ function DishEditPage() {
             </div>
 
             <div className="flex flex-col gap-2">
-              <label className="text-text-primary-light dark:text-text-primary-dark text-sm font-bold">
-                {language === 'EN' ? 'Список ингредиентов (EN)' : 'Список ингредиентов'}
-              </label>
+              <div className="flex items-center gap-2">
+                <label className="text-text-primary-light dark:text-text-primary-dark text-sm font-bold">
+                  {language === 'EN' ? 'Список ингредиентов (EN)' : 'Список ингредиентов'}
+                </label>
+                <HelpPopover title="Справка: ингредиенты" icon="help" size="lg">
+                  <div style={{ opacity: 0.9 }}>
+                    Это поле используется как “состав блюда” (видно гостям).
+                    <details>
+                      <summary>Формат</summary>
+                      <div style={{ marginTop: 6, opacity: 0.9 }}>
+                        Сейчас это обычный текст. Можно писать:
+                        <br />- через запятую: “креветки, лимон, масло…”
+                        <br />- или списком (если вставляете разметку)
+                      </div>
+                    </details>
+                  </div>
+                </HelpPopover>
+              </div>
               <textarea
                 className="w-full rounded-xl border-slate-200 dark:border-white/10 bg-white dark:bg-[#2c2420] text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-primary focus:ring-primary dark:focus:border-primary p-4 min-h-[100px] resize-y"
                 placeholder={language === 'EN' ? 'List ingredients (EN)' : 'Перечислите ингредиенты через запятую'}
@@ -353,9 +457,16 @@ function DishEditPage() {
             </div>
 
             <div className="flex flex-col gap-2">
-              <label className="text-text-primary-light dark:text-text-primary-dark text-sm font-bold">
-                {language === 'EN' ? 'Меню (EN)' : 'Меню'}
-              </label>
+              <div className="flex items-center gap-2">
+                <label className="text-text-primary-light dark:text-text-primary-dark text-sm font-bold">
+                  {language === 'EN' ? 'Меню (EN)' : 'Меню'}
+                </label>
+                <HelpPopover title="Справка: меню" icon="help">
+                  <div style={{ opacity: 0.9 }}>
+                    “Меню” — это крупная группа (например “Вино”, “Барное меню”, “Основное меню…”).
+                  </div>
+                </HelpPopover>
+              </div>
               <select
                 className="w-full rounded-xl border-slate-200 dark:border-white/10 bg-white dark:bg-[#2c2420] text-slate-900 dark:text-white focus:border-primary focus:ring-primary dark:focus:border-primary h-12 px-4"
                 value={language === 'EN' ? (dish.i18n?.en?.['menu-en'] || dish.menu || '') : (dish.menu || '')}
@@ -377,9 +488,18 @@ function DishEditPage() {
             </div>
 
             <div className="flex flex-col gap-2">
-              <label className="text-text-primary-light dark:text-text-primary-dark text-sm font-bold">
-                {language === 'EN' ? 'Раздел (EN)' : 'Раздел'}
-              </label>
+              <div className="flex items-center gap-2">
+                <label className="text-text-primary-light dark:text-text-primary-dark text-sm font-bold">
+                  {language === 'EN' ? 'Раздел (EN)' : 'Раздел'}
+                </label>
+                <HelpPopover title="Справка: раздел" icon="help">
+                  <div style={{ opacity: 0.9 }}>
+                    “Раздел” — это подгруппа внутри меню (например “Аквариум”, “Закуски”…).
+                    <br />
+                    Список разделов зависит от выбранного меню.
+                  </div>
+                </HelpPopover>
+              </div>
               <select
                 className="w-full rounded-xl border-slate-200 dark:border-white/10 bg-white dark:bg-[#2c2420] text-slate-900 dark:text-white focus:border-primary focus:ring-primary dark:focus:border-primary h-12 px-4"
                 value={language === 'EN' ? (dish.i18n?.en?.['section-en'] || dish.section || '') : (dish.section || '')}
@@ -408,7 +528,20 @@ function DishEditPage() {
         {/* Теги и аллергены */}
         <section className="space-y-6">
           <div className="flex flex-col gap-3">
-            <label className="text-text-primary-light dark:text-text-primary-dark text-sm font-bold">Теги</label>
+            <div className="flex items-center gap-2">
+              <label className="text-text-primary-light dark:text-text-primary-dark text-sm font-bold">Теги</label>
+              <HelpPopover title="Справка: теги" icon="help" size="lg">
+                <div style={{ opacity: 0.9 }}>
+                  Теги — это “ярлыки” для блюда (например “без чеснока”, “к вину”, “на компанию”).
+                  <details>
+                    <summary>Как использовать</summary>
+                    <div style={{ marginTop: 6, opacity: 0.9 }}>
+                      Добавляйте короткие и понятные слова. Они показываются гостям как чипсы.
+                    </div>
+                  </details>
+                </div>
+              </HelpPopover>
+            </div>
             <div className="flex flex-wrap gap-2">
               {dish.tags.map((tag) => (
                 <span
@@ -445,7 +578,20 @@ function DishEditPage() {
           </div>
 
           <div className="flex flex-col gap-3">
-            <label className="text-text-primary-light dark:text-text-primary-dark text-sm font-bold">Аллергены</label>
+            <div className="flex items-center gap-2">
+              <label className="text-text-primary-light dark:text-text-primary-dark text-sm font-bold">Аллергены</label>
+              <HelpPopover title="Справка: аллергены" icon="help" size="lg">
+                <div style={{ opacity: 0.9 }}>
+                  Аллергены показываются гостям отдельным блоком.
+                  <details>
+                    <summary>Важно</summary>
+                    <div style={{ marginTop: 6, opacity: 0.9 }}>
+                      Если сомневаетесь — лучше отметить аллерген. Это вопрос безопасности гостя.
+                    </div>
+                  </details>
+                </div>
+              </HelpPopover>
+            </div>
             <div className="flex flex-wrap gap-2">
               {allergenOptions.map((allergen) => {
                 const isSelected = selectedAllergens.includes(allergen.id);

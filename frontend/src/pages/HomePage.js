@@ -4,11 +4,12 @@ import { getMenus, getSections, submitFeedback, login as apiLogin, loginAsGuest 
 import { useAuth } from '../contexts/AuthContext';
 import GlobalSearch from '../components/GlobalSearch';
 import ComingSoonWrapper from '../components/ComingSoonWrapper';
+import HelpPopover from '../components/HelpPopover';
 import { isComingSoon } from '../utils/featureStatus';
 
 function HomePage() {
   const navigate = useNavigate();
-  const { isAuthenticated, currentUser, checking, logout: authLogout, setAuth, isGuest, canWrite } = useAuth();
+  const { isAuthenticated, currentUser, checking, logout: authLogout, setAuth, enableOfflineGuest, isGuest, canWrite } = useAuth();
   const [menus, setMenus] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -31,6 +32,7 @@ function HomePage() {
     password: ''
   });
   const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(true); // По умолчанию включаем "Запомнить меня"
   const [loginError, setLoginError] = useState(null);
   const [loginSubmitting, setLoginSubmitting] = useState(false);
   const [feedbackForm, setFeedbackForm] = useState({
@@ -51,11 +53,9 @@ function HomePage() {
   // Функция для загрузки уведомлений
   const loadNotifications = () => {
     const savedNotifications = localStorage.getItem('notifications');
-    console.log('Загрузка уведомлений из localStorage:', savedNotifications);
     if (savedNotifications) {
       try {
         const parsed = JSON.parse(savedNotifications);
-        console.log('Распарсенные уведомления:', parsed);
         // Фильтруем только активные уведомления (не истекшие)
         // ВРЕМЕННО: показываем все уведомления для отладки
         const activeNotifications = parsed.filter(n => {
@@ -65,7 +65,6 @@ function HomePage() {
               const expiresDate = new Date(n.expiresAt);
               const now = new Date();
               const isActive = expiresDate > now;
-              console.log(`Уведомление ${n.id || n.title}: expiresAt=${n.expiresAt}, сейчас=${now.toISOString()}, активно=${isActive}`);
               // ВРЕМЕННО: показываем все для отладки
               // return isActive;
               return true;
@@ -77,8 +76,6 @@ function HomePage() {
           // Если expiresAt нет, считаем активным
           return true;
         });
-        console.log('Активные уведомления после фильтрации:', activeNotifications);
-        console.log('Количество активных уведомлений:', activeNotifications.length);
         setNotifications(activeNotifications);
         const unread = activeNotifications.filter(n => !n.read).length;
         setUnreadCount(unread);
@@ -89,7 +86,6 @@ function HomePage() {
         setUnreadCount(0);
       }
     } else {
-      console.log('Уведомления не найдены в localStorage');
       setNotifications([]);
       setUnreadCount(0);
     }
@@ -134,15 +130,9 @@ function HomePage() {
     };
 
     window.addEventListener('storage', handleStorageChange);
-    
-    // Также проверяем изменения localStorage в том же окне (для случаев, когда изменения происходят в том же окне)
-    const checkInterval = setInterval(() => {
-      loadNotifications();
-    }, 2000); // Проверяем каждые 2 секунды
 
     return () => {
       window.removeEventListener('storage', handleStorageChange);
-      clearInterval(checkInterval);
     };
   }, []);
 
@@ -229,28 +219,28 @@ function HomePage() {
   const getMenuImage = (menuName) => {
     const menuLower = menuName.toLowerCase();
     if (menuLower.includes('основн')) {
-      return './images/main-menu-head.webp';
+      return '/images/main-menu-head.webp';
     }
     if (menuLower.includes('завтрак')) {
-      return './images/breakfast-head.webp';
+      return '/images/breakfast-head.webp';
     }
     if (menuLower.includes('детск')) {
-      return './images/kids-menu-head.webp';
+      return '/images/kids-menu-head.webp';
     }
     if (menuLower.includes('зимн')) {
-      return './images/winter-menu-head.webp';
+      return '/images/winter-menu-head.webp';
     }
     if (menuLower.includes('постн')) {
-      return './images/post-menu-head.webp';
+      return '/images/post-menu-head.webp';
     }
     if (menuLower.includes('вино')) {
-      return './images/wine-menu-head.webp';
+      return '/images/wine-menu-head.webp';
     }
     if (menuLower.includes('бар')) {
-      return './images/bar-menu-head.webp';
+      return '/images/bar-menu-head.webp';
     }
     if (menuLower.includes('каникул')) {
-      return './images/italian-holydais-head.webp';
+      return '/images/italian-holydais-head.webp';
     }
     return null;
   };
@@ -325,7 +315,7 @@ function HomePage() {
     setLoginSubmitting(true);
 
     try {
-      const result = await apiLogin(loginForm.username, loginForm.password);
+      const result = await apiLogin(loginForm.username, loginForm.password, rememberMe);
       setAuth(result.user || null); // Обновляем контекст авторизации
       setLoginForm({ username: '', password: '' });
       setShowLoginModal(false); // Скрываем модальное окно входа после успешного входа
@@ -346,7 +336,12 @@ function HomePage() {
       setAuth(result.user || null); // Обновляем контекст авторизации
       setShowLoginModal(false); // Скрываем модальное окно входа после успешного входа
     } catch (error) {
-      setLoginError(error.response?.data?.error || 'Ошибка входа в гостевой режим');
+      // Если сервер недоступен — включаем офлайн-гостя (только просмотр меню).
+      // Так меню будет доступно даже при падении API.
+      const msg = error?.response?.data?.error || error?.message || 'Ошибка входа в гостевой режим';
+      setLoginError(`${msg}. Включаем офлайн‑режим просмотра меню.`);
+      enableOfflineGuest();
+      setShowLoginModal(false);
     } finally {
       setLoginSubmitting(false);
     }
@@ -398,9 +393,10 @@ function HomePage() {
           <span className="material-symbols-outlined">menu</span>
         </button>
         <img
-            src="./icons/logo.png"
-            alt="Sabor de la Vida"
-            className="h-8 mx-auto"
+          // Абсолютный путь: чтобы логотип работал на любых маршрутах (например, /menu/..., /wine-catalog/...)
+          src="/icons/logo.png"
+          alt="Sabor de la Vida"
+          className="h-8 mx-auto"
         />
         <div className="relative">
           <button 
@@ -409,8 +405,6 @@ function HomePage() {
               // Обновляем уведомления при открытии панели
               loadNotifications();
               const newState = !showNotifications;
-              console.log('Открытие панели уведомлений:', newState);
-              console.log('Уведомления:', notifications);
               setShowNotifications(newState);
             }}
             className="notifications-button text-[#181311] dark:text-white flex size-12 shrink-0 items-center justify-center rounded-full hover:bg-orange-50 dark:hover:bg-white/5 transition-colors relative"
@@ -501,7 +495,6 @@ function HomePage() {
                   ) : (
                     <div className="space-y-3">
                       {notifications.map((notification, idx) => {
-                        console.log(`Рендеринг уведомления ${idx}:`, notification);
                         if (!notification.title && !notification.message) {
                           console.warn('Уведомление без title и message:', notification);
                           return null;
@@ -913,6 +906,18 @@ function HomePage() {
                     </div>
                   </div>
 
+                  {/* "Запомнить меня" */}
+                  <label className="flex items-center gap-3 select-none text-sm text-gray-700 dark:text-gray-300">
+                    <input
+                      type="checkbox"
+                      checked={rememberMe}
+                      onChange={(e) => setRememberMe(e.target.checked)}
+                      className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                      disabled={loginSubmitting}
+                    />
+                    <span>Запомнить меня</span>
+                  </label>
+
                   <button
                     type="submit"
                     disabled={loginSubmitting}
@@ -1017,16 +1022,53 @@ function HomePage() {
             <div className="bg-white dark:bg-[#181311] rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
               {/* Заголовок */}
               <div className="sticky top-0 bg-white dark:bg-[#181311] border-b border-gray-200 dark:border-gray-800 p-4 flex items-center justify-between z-10">
-                <h2 className="text-xl font-bold text-[#181311] dark:text-white">
-                  Обратная связь
-                </h2>
-                <button
-                  onClick={handleCloseFeedbackModal}
-                  disabled={feedbackSubmitting}
-                  className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 disabled:opacity-50"
-                >
-                  <span className="material-symbols-outlined">close</span>
-                </button>
+                <div className="flex items-center gap-2">
+                  <h2 className="text-xl font-bold text-[#181311] dark:text-white">
+                    Обратная связь
+                  </h2>
+                  <HelpPopover title="Справка: обратная связь" icon="help" size="lg">
+                    <div className="text-sm" style={{ opacity: 0.95 }}>
+                      <div style={{ fontWeight: 900, marginBottom: 6 }}>Кому уходит сообщение</div>
+                      <div style={{ opacity: 0.9 }}>
+                        Сообщение попадает в раздел “Обратная связь” в админ‑панели. Его увидит администратор приложения/ресторана.
+                      </div>
+
+                      <details>
+                        <summary>Зачем это нужно</summary>
+                        <div style={{ marginTop: 6, opacity: 0.9 }}>
+                          - сообщить об ошибке (“что-то не так на сайте”)
+                          <br />- задать вопрос
+                          <br />- предложить улучшение (меню, тексты, удобство)
+                        </div>
+                      </details>
+
+                      <details>
+                        <summary>Как написать, чтобы быстрее поняли</summary>
+                        <div style={{ marginTop: 6, opacity: 0.9 }}>
+                          1) Выберите тип сообщения
+                          <br />2) Опишите “что хотели сделать → что получилось”
+                          <br />3) Если это ошибка — добавьте шаги (1-2-3) и название блюда/страницы
+                        </div>
+                      </details>
+
+                      <details>
+                        <summary>Важно</summary>
+                        <div style={{ marginTop: 6, opacity: 0.9 }}>
+                          Это не чат “прямо сейчас”. Для срочных вопросов лучше использовать телефон/мессенджер ресторана.
+                        </div>
+                      </details>
+                    </div>
+                  </HelpPopover>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={handleCloseFeedbackModal}
+                    disabled={feedbackSubmitting}
+                    className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 disabled:opacity-50"
+                  >
+                    <span className="material-symbols-outlined">close</span>
+                  </button>
+                </div>
               </div>
 
               {/* Форма */}
@@ -1068,9 +1110,24 @@ function HomePage() {
 
                 {/* Поле "Тип сообщения" */}
                 <div>
-                  <label className="block text-sm font-medium text-[#181311] dark:text-white mb-2">
-                    Тип сообщения <span className="text-red-500">*</span>
-                  </label>
+                  <div className="flex items-center justify-between gap-3 mb-2">
+                    <label className="block text-sm font-medium text-[#181311] dark:text-white">
+                      Тип сообщения <span className="text-red-500">*</span>
+                    </label>
+                    <HelpPopover title="Справка: тип сообщения" icon="help">
+                      <div style={{ opacity: 0.9 }}>
+                        Выберите категорию — так админ быстрее поймёт, что делать.
+                        <details>
+                          <summary>Подсказка по вариантам</summary>
+                          <div style={{ marginTop: 6, opacity: 0.9 }}>
+                            - <b>Вопрос</b>: “как найти…”, “что значит…”
+                            <br />- <b>Проблема</b>: “не открывается”, “не грузится”
+                            <br />- <b>Предложение</b>: “добавить/улучшить…”
+                          </div>
+                        </details>
+                      </div>
+                    </HelpPopover>
+                  </div>
                   <select
                     value={feedbackForm.type}
                     onChange={(e) => setFeedbackForm({ ...feedbackForm, type: e.target.value })}
@@ -1087,9 +1144,25 @@ function HomePage() {
 
                 {/* Поле "Сообщение" (обязательно) */}
                 <div>
-                  <label className="block text-sm font-medium text-[#181311] dark:text-white mb-2">
-                    Сообщение <span className="text-red-500">*</span>
-                  </label>
+                  <div className="flex items-center justify-between gap-3 mb-2">
+                    <label className="block text-sm font-medium text-[#181311] dark:text-white">
+                      Сообщение <span className="text-red-500">*</span>
+                    </label>
+                    <HelpPopover title="Справка: что писать" icon="help" size="lg">
+                      <div style={{ opacity: 0.9 }}>
+                        Пишите коротко и по делу — так быстрее исправят.
+                        <details>
+                          <summary>Шаблон (скопируйте)</summary>
+                          <div style={{ marginTop: 6, opacity: 0.9 }}>
+                            Что хотел сделать:
+                            <br />Что получилось:
+                            <br />Где это было (страница/блюдо):
+                            <br />Шаги (1-2-3):
+                          </div>
+                        </details>
+                      </div>
+                    </HelpPopover>
+                  </div>
                   <textarea
                     value={feedbackForm.message}
                     onChange={(e) => setFeedbackForm({ ...feedbackForm, message: e.target.value })}

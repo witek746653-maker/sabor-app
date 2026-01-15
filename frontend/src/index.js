@@ -4,6 +4,7 @@ import './index.css';
 import App from './App';
 // Инициализируем Sentry ПЕРЕД рендером приложения
 import { initSentry } from './utils/sentry';
+import { register as registerServiceWorker } from './serviceWorkerRegistration';
 
 // Инициализируем автоматический сбор ошибок
 initSentry();
@@ -15,3 +16,5 @@ root.render(
   </React.StrictMode>
 );
 
+// PWA: регистрируем service worker в production (после сборки)
+registerServiceWorker();

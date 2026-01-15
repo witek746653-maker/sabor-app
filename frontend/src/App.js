@@ -3,9 +3,12 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import ErrorBoundary from './components/ErrorBoundary';
 import SentryContextTracker from './components/SentryContextTracker';
+import StatusBanner from './components/StatusBanner';
 import HomePage from './pages/HomePage';
 import MenuPage from './pages/MenuPage';
 import DishDetailPage from './pages/DishDetailPage';
+import WineDetailPage from './pages/WineDetailPage';
+import BarItemDetailPage from './pages/BarItemDetailPage';
 import AdminLayout from './layouts/AdminLayout';
 import AdminLoginPage from './pages/admin/AdminLoginPage';
 import DishesPage from './pages/admin/DishesPage';
@@ -13,10 +16,10 @@ import DishEditPage from './pages/admin/DishEditPage';
 import UsersPage from './pages/admin/UsersPage';
 import FeedbackMessagesPage from './pages/admin/FeedbackMessagesPage';
 import NotificationsPage from './pages/admin/NotificationsPage';
+import DeployPage from './pages/admin/DeployPage';
+import AdminHelpPage from './pages/admin/AdminHelpPage';
 import WineMenuPage from './pages/WineMenuPage';
 import WineCatalogPage from './pages/WineCatalogPage';
-import WineItemPage from './pages/WineItemPage';
-import BarMenuPage from './pages/BarMenuPage';
 import ToolsPage from './pages/ToolsPage';
 import FavoritesPage from './pages/FavoritesPage';
 import './App.css';
@@ -49,6 +52,8 @@ function App() {
         <Router>
           {/* Компонент для отслеживания контекста (страница, роль пользователя) */}
           <SentryContextTracker />
+          {/* Индикатор статуса сервера/источника данных (виден и пользователю, и админу) */}
+          <StatusBanner />
           <div className="App">
             <Routes>
               {/* Публичные маршруты */}
@@ -58,8 +63,13 @@ function App() {
               <Route path="/wine-menu" element={<WineMenuPage />} />
               <Route path="/wine-catalog" element={<WineCatalogPage />} />
               <Route path="/wine-catalog/:category" element={<WineCatalogPage />} />
-              <Route path="/wine-item/:id" element={<WineItemPage />} />
-              <Route path="/bar-menu" element={<BarMenuPage />} />
+              {/* Новые детальные страницы */}
+              <Route path="/wine/:id" element={<WineDetailPage />} />
+              <Route path="/bar/:id" element={<BarItemDetailPage />} />
+
+              {/* Совместимость со старыми ссылками (старые файлы не используем, только редирект) */}
+              <Route path="/wine-item/:id" element={<WineDetailPage />} />
+              <Route path="/bar-menu" element={<Navigate to={`/menu/${encodeURIComponent('Барное меню')}`} replace />} />
               <Route path="/tools" element={<ToolsPage />} />
               <Route path="/favorites" element={<FavoritesPage />} />
 
@@ -76,12 +86,17 @@ function App() {
                 }
               >
                 {/* Вложенные маршруты отображаются в центральной области AdminLayout */}
-                <Route index element={<DishesPage />} />
+                <Route index element={<Navigate to="kitchen" replace />} />
+                <Route path="kitchen" element={<DishesPage mode="kitchen" />} />
+                <Route path="wine" element={<DishesPage mode="wine" />} />
+                <Route path="bar" element={<DishesPage mode="bar" />} />
                 <Route path="edit/:id" element={<DishEditPage />} />
                 <Route path="add" element={<DishEditPage />} />
                 <Route path="users" element={<UsersPage />} />
                 <Route path="feedback" element={<FeedbackMessagesPage />} />
                 <Route path="notifications" element={<NotificationsPage />} />
+                <Route path="deploy" element={<DeployPage />} />
+                <Route path="help" element={<AdminHelpPage />} />
               </Route>
             </Routes>
           </div>

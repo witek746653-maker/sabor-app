@@ -65,6 +65,45 @@ function GlobalSearch({ isOpen, onClose, searchQuery: externalQuery = null }) {
   const buildSearchIndex = (dishes, menus) => {
     const index = [];
 
+    // Термин **эвристика**: простая “догадка по словам”, чтобы понять тип позиции.
+    const getItemKind = (it) => {
+      const menu = String(it?.menu || '').toLowerCase();
+      const section = String(it?.section || '').toLowerCase();
+
+      const isWine =
+        menu.includes('вино') ||
+        menu.includes('wine') ||
+        section.includes('вино') ||
+        section.includes('wine');
+
+      const isBar =
+        menu.includes('бар') ||
+        menu.includes('bar') ||
+        menu.includes('напит') ||
+        menu.includes('drink') ||
+        section.includes('коктейл') ||
+        section.includes('cocktail') ||
+        section.includes('чай') ||
+        section.includes('tea') ||
+        section.includes('пиво') ||
+        section.includes('beer') ||
+        section.includes('кофе') ||
+        section.includes('coffee') ||
+        section.includes('напит') ||
+        section.includes('drink');
+
+      if (isWine) return 'wine';
+      if (isBar) return 'bar';
+      return 'dish';
+    };
+
+    const getDetailPathForItem = (it) => {
+      const kind = getItemKind(it);
+      if (kind === 'wine') return `/wine/${it.id}`;
+      if (kind === 'bar') return `/bar/${it.id}`;
+      return `/dish/${it.id}`;
+    };
+
     // Индексируем меню
     menus.forEach(menuName => {
       index.push({
@@ -80,8 +119,9 @@ function GlobalSearch({ isOpen, onClose, searchQuery: externalQuery = null }) {
 
     // Индексируем блюда (исключаем технические поля)
     dishes.forEach(dish => {
-      // Пропускаем архивные блюда
-      if (dish.status === 'в архиве') return;
+      const isArchived = dish.status === 'в архиве';
+      const itemKind = getItemKind(dish);
+      const detailPath = getDetailPathForItem(dish);
 
       const searchableFields = {
         title: dish.title || '',
@@ -108,10 +148,12 @@ function GlobalSearch({ isOpen, onClose, searchQuery: externalQuery = null }) {
             title: dish.title || 'Без названия',
             text: value,
             location: `${dish.menu || 'Без меню'} / ${dish.section || 'Без раздела'}`,
-            path: `/dish/${dish.id}`,
+            path: detailPath,
             menu: dish.menu,
             section: dish.section,
-            dish: dish
+            dish: dish,
+            isArchived: isArchived,
+            itemKind: itemKind,
           });
         }
       });
@@ -140,11 +182,13 @@ function GlobalSearch({ isOpen, onClose, searchQuery: externalQuery = null }) {
               title: dish.i18n.en['title-en'] || dish.title || 'Без названия',
               text: value,
               location: `${dish.i18n.en['menu-en'] || dish.menu || 'Без меню'} / ${dish.i18n.en['section-en'] || dish.section || 'Без раздела'}`,
-              path: `/dish/${dish.id}`,
+              path: detailPath,
               menu: dish.i18n.en['menu-en'] || dish.menu,
               section: dish.i18n.en['section-en'] || dish.section,
               dish: dish,
-              isEnglish: true
+              isEnglish: true,
+              isArchived: isArchived,
+              itemKind: itemKind,
             });
           }
         });
@@ -248,9 +292,11 @@ function GlobalSearch({ isOpen, onClose, searchQuery: externalQuery = null }) {
   };
 
   // Получаем иконку для типа результата
-  const getResultIcon = (type, field) => {
+  const getResultIcon = (type, field, itemKind) => {
     if (type === 'menu') return 'restaurant_menu';
     if (type === 'dish') {
+      if (itemKind === 'wine') return 'wine_bar';
+      if (itemKind === 'bar') return 'local_bar';
       if (field === 'title' || field === 'title-en') return 'restaurant';
       if (field === 'description' || field === 'description-en') return 'description';
       if (field === 'section' || field === 'section-en') return 'category';
@@ -348,11 +394,16 @@ function GlobalSearch({ isOpen, onClose, searchQuery: externalQuery = null }) {
                 <button
                   key={`${result.id}-${idx}`}
                   onClick={() => handleResultClick(result)}
-                  className="w-full text-left p-4 rounded-xl bg-gray-50 dark:bg-gray-900/50 hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors border border-gray-200 dark:border-gray-800"
+                  className="w-full text-left p-4 rounded-xl bg-gray-50 dark:bg-gray-900/50 hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors border border-gray-200 dark:border-gray-800 relative"
                 >
-                  <div className="flex items-start gap-3">
+                  {result.isArchived && (
+                    <span className="absolute top-2 right-2 bg-gray-700/90 text-white text-[10px] font-bold px-2 py-1 rounded-md backdrop-blur-sm">
+                      В АРХИВЕ
+                    </span>
+                  )}
+                  <div className={`flex items-start gap-3 ${result.isArchived ? 'opacity-60 grayscale' : ''}`}>
                     <span className="material-symbols-outlined text-primary text-2xl mt-0.5 flex-shrink-0">
-                      {getResultIcon(result.type, result.field)}
+                      {getResultIcon(result.type, result.field, result.itemKind)}
                     </span>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2 mb-1">

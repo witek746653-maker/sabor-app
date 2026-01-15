@@ -46,8 +46,12 @@ function AdminLayout() {
     if (path.includes('/admin/feedback')) return 'feedback';
     if (path.includes('/admin/notifications')) return 'notifications';
     if (path.includes('/admin/users')) return 'users';
+    if (path.includes('/admin/deploy')) return 'deploy';
+    if (path.includes('/admin/help')) return 'help';
     if (path.includes('/admin/edit') || path.includes('/admin/add')) return 'dish-edit';
-    return 'dishes';
+    if (path.includes('/admin/wine')) return 'wine';
+    if (path.includes('/admin/bar')) return 'bar';
+    return 'kitchen';
   };
 
   const activeSection = getActiveSection();
@@ -69,19 +73,51 @@ function AdminLayout() {
         {/* Меню левой колонки */}
         <nav className="flex-1 p-2">
           <Link
-            to="/admin"
+            to="/admin/kitchen"
             className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors ${
-              activeSection === 'dishes'
+              activeSection === 'kitchen'
                 ? 'bg-primary text-white'
                 : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
             }`}
           >
             <span className="material-symbols-outlined text-xl">restaurant_menu</span>
-            <span className="font-medium">Блюда</span>
+            <span className="font-medium">Кухня</span>
           </Link>
 
           <Link
-            to="/admin/add"
+            to="/admin/wine"
+            className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors ${
+              activeSection === 'wine'
+                ? 'bg-primary text-white'
+                : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
+            }`}
+          >
+            <span className="material-symbols-outlined text-xl">wine_bar</span>
+            <span className="font-medium">Вино</span>
+          </Link>
+
+          <Link
+            to="/admin/bar"
+            className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors ${
+              activeSection === 'bar'
+                ? 'bg-primary text-white'
+                : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
+            }`}
+          >
+            <span className="material-symbols-outlined text-xl">local_bar</span>
+            <span className="font-medium">Бар</span>
+          </Link>
+
+          <button
+            type="button"
+            onClick={() => {
+              // Подставляем menu для новых позиций, чтобы не выбирать вручную каждый раз
+              const params = new URLSearchParams();
+              if (activeSection === 'wine') params.set('menu', 'Вино');
+              if (activeSection === 'bar') params.set('menu', 'Барное меню');
+              const qs = params.toString();
+              navigate(qs ? `/admin/add?${qs}` : '/admin/add');
+            }}
             className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors ${
               activeSection === 'dish-edit'
                 ? 'bg-primary text-white'
@@ -89,8 +125,14 @@ function AdminLayout() {
             }`}
           >
             <span className="material-symbols-outlined text-xl">add_circle</span>
-            <span className="font-medium">Добавить блюдо</span>
-          </Link>
+            <span className="font-medium">
+              {activeSection === 'wine'
+                ? 'Добавить вино'
+                : activeSection === 'bar'
+                ? 'Добавить напиток'
+                : 'Добавить блюдо'}
+            </span>
+          </button>
         </nav>
       </aside>
 
@@ -169,6 +211,30 @@ function AdminLayout() {
             >
               <span className="material-symbols-outlined text-xl">notifications</span>
               <span className="font-medium">Уведомления</span>
+            </Link>
+
+            <Link
+              to="/admin/deploy"
+              className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors ${
+                activeSection === 'deploy'
+                  ? 'bg-primary text-white'
+                  : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
+              }`}
+            >
+              <span className="material-symbols-outlined text-xl">sync</span>
+              <span className="font-medium">Обновление</span>
+            </Link>
+
+            <Link
+              to="/admin/help"
+              className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors ${
+                activeSection === 'help'
+                  ? 'bg-primary text-white'
+                  : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
+              }`}
+            >
+              <span className="material-symbols-outlined text-xl">help</span>
+              <span className="font-medium">Справка</span>
             </Link>
           </nav>
         </aside>

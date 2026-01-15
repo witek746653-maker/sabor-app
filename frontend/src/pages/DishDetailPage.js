@@ -222,6 +222,7 @@ function DishDetailPage() {
   }
 
   const imageUrl = getDishImageUrl(dish);
+  const isArchived = dish.status === 'в архиве';
 
   // Нормализация текста аллергена
   const normalizeAllergen = (value) => (value || '').toString().trim().toLowerCase();
@@ -403,22 +404,32 @@ function DishDetailPage() {
 
       {/* Content */}
       <div className="px-5 pt-1 pb-24">
-        {/* 1. Название */}
-        <h1 
-          ref={(el) => { if (el) searchRefs.current['title'] = el; }}
-          className="text-[28px] font-bold leading-tight text-gray-900 dark:text-white mb-3"
-        >
-          {searchQuery ? highlightText(getFieldValue('title') || (language === 'EN' ? 'No title' : 'Без названия'), searchQuery) : (getFieldValue('title') || (language === 'EN' ? 'No title' : 'Без названия'))}
-        </h1>
-
-        {/* Section (сразу после названия) */}
-        {getFieldValue('section') && (
-          <div className="flex flex-wrap gap-2 mb-4">
-            <div className="flex items-center justify-center rounded-full bg-primary/10 dark:bg-primary/20 px-3 py-1">
-              <span className="text-primary text-xs font-semibold uppercase tracking-wide">{getFieldValue('section')}</span>
-            </div>
+        {/* Плашка архива */}
+        {isArchived && (
+          <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-gray-800 text-white px-3 py-1 text-xs font-bold">
+            <span className="material-symbols-outlined text-[16px]">archive</span>
+            В АРХИВЕ
           </div>
         )}
+
+        {/* Затемняем контент, если позиция в архиве */}
+        <div className={isArchived ? 'opacity-60' : ''}>
+          {/* 1. Название */}
+          <h1 
+            ref={(el) => { if (el) searchRefs.current['title'] = el; }}
+            className="text-[28px] font-bold leading-tight text-gray-900 dark:text-white mb-3"
+          >
+            {searchQuery ? highlightText(getFieldValue('title') || (language === 'EN' ? 'No title' : 'Без названия'), searchQuery) : (getFieldValue('title') || (language === 'EN' ? 'No title' : 'Без названия'))}
+          </h1>
+
+          {/* Section (сразу после названия) */}
+          {getFieldValue('section') && (
+            <div className="flex flex-wrap gap-2 mb-4">
+              <div className="flex items-center justify-center rounded-full bg-primary/10 dark:bg-primary/20 px-3 py-1">
+                <span className="text-primary text-xs font-semibold uppercase tracking-wide">{getFieldValue('section')}</span>
+              </div>
+            </div>
+          )}
 
         {/* 2. Красочное описание */}
         {getFieldValue('description') && (
@@ -662,10 +673,10 @@ function DishDetailPage() {
           </div>
         )}
 
-        {/* 5. Тэги (в самом конце) */}
-        {getTagsForLanguage().length > 0 && (
-          <div className="flex flex-wrap gap-2 mb-4">
-            {getTagsForLanguage().map((tag, idx) => {
+          {/* 5. Тэги (в самом конце) */}
+          {getTagsForLanguage().length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-4">
+              {getTagsForLanguage().map((tag, idx) => {
             const tagLower = tag.toLowerCase();
             
             // Красные теги (критические): сырой, острый, долгое ожидание, свинина, на кости
@@ -770,9 +781,10 @@ function DishDetailPage() {
                 <span className="text-gray-600 dark:text-gray-300 text-xs font-medium">{tag}</span>
               </div>
             );
-            })}
-          </div>
-        )}
+              })}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Bottom Navigation */}

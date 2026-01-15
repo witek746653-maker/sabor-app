@@ -82,7 +82,8 @@ function WineItemPage() {
       setAudioPlaying(false);
     } else {
       // Преобразуем путь к аудио в правильный URL через API
-      const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+      // По умолчанию используем "тот же домен", чтобы работало на Beget и при открытии по IP.
+      const API_URL = process.env.REACT_APP_API_URL || '';
       let audioUrl;
       
       if (audioPath.startsWith('../audio/')) {
@@ -170,6 +171,7 @@ function WineItemPage() {
   }
 
   const imageUrl = getDishImageUrl(wine);
+  const isArchived = wine.status === 'в архиве';
   // Парсим origin с учетом отдельного поля region из базы данных
   const { country, region } = parseOrigin(wine.origin || '', wine);
   
@@ -198,12 +200,22 @@ function WineItemPage() {
   const secondColumn = descriptionText.substring(spaceIndex > 0 ? spaceIndex + 1 : midPoint);
 
   // Получаем URL для изображения кольца
-  const stainImageUrl = getImageUrl('/images/wine-red-stain.webp') || `${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/images/wine-red-stain.webp`;
+  // getImageUrl уже вернёт корректный абсолютный путь вида "/images/..." при пустом REACT_APP_API_URL
+  const stainImageUrl = getImageUrl('/images/wine-red-stain.webp') || '/images/wine-red-stain.webp';
 
   return (
     <div className="wine-item-page bg-[#1a1a1a] w-full" style={{ minHeight: '100vh', overflowY: 'auto' }}>
       <div className="flex justify-center py-5 px-2 sm:px-4 w-full max-w-full">
         <main className="wine-card relative w-full max-w-[800px] bg-cream flex flex-col" style={{ overflow: 'visible' }}>
+        {/* Плашка архива + лёгкое затемнение контента */}
+        {isArchived && (
+          <>
+            <div className="absolute top-4 right-4 z-[60] bg-black/70 text-white text-xs font-bold px-3 py-1 rounded-md backdrop-blur">
+              В АРХИВЕ
+            </div>
+            <div className="absolute inset-0 bg-black/10 pointer-events-none z-[50]" />
+          </>
+        )}
         {/* Decorative Stain: Top Left - левый верхний угол */}
         <img
           alt=""

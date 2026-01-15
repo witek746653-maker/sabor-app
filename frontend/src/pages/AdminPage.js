@@ -21,6 +21,7 @@ function AdminPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(true); // По умолчанию включаем "Запомнить меня"
   const [dishes, setDishes] = useState([]);
   const [loading, setLoading] = useState(false);
   const [checking, setChecking] = useState(true);
@@ -59,7 +60,7 @@ function AdminPage() {
     e.preventDefault();
     setError(null);
     try {
-      const loginResult = await login(username, password);
+      const loginResult = await login(username, password, rememberMe);
       setAuth(loginResult.user || null); // Обновляем контекст авторизации
       setUsername('');
       setPassword('');
@@ -321,6 +322,17 @@ function AdminPage() {
               {error && (
                 <div className="text-red-500 text-sm px-1">{error}</div>
               )}
+
+              {/* "Запомнить меня" */}
+              <label className="flex items-center gap-3 select-none text-sm text-gray-700 dark:text-gray-300 px-1">
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                />
+                <span>Запомнить меня</span>
+              </label>
 
               <button
                 type="submit"

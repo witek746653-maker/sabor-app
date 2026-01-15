@@ -7,11 +7,25 @@
 
 import sqlite3
 from pathlib import Path
+import os
 from app import app
 from models import db, FeedbackMessage
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
-DB_PATH = ROOT_DIR / "backend" / "database.db"
+
+def _resolve_db_path() -> Path:
+    """
+    Должен совпадать с логикой в backend/app.py, иначе можно случайно мигрировать "не ту" базу.
+    """
+    raw = (os.getenv("SABOR_DB_PATH") or os.getenv("DB_PATH") or "").strip()
+    if raw:
+        p = Path(raw)
+        if not p.is_absolute():
+            p = (ROOT_DIR / p).resolve()
+        return p
+    return ROOT_DIR / "backend" / "database.db"
+
+DB_PATH = _resolve_db_path()
 
 def migrate_feedback_table():
     """Добавляет колонку type и удаляет email из таблицы feedback_messages"""

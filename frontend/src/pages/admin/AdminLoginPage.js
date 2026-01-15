@@ -13,6 +13,7 @@ function AdminLoginPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(true); // По умолчанию включаем "Запомнить меня"
   const [error, setError] = useState(null);
 
   // Если уже авторизован как админ - перенаправляем в админ-панель
@@ -26,7 +27,7 @@ function AdminLoginPage() {
     e.preventDefault();
     setError(null);
     try {
-      const loginResult = await login(username, password);
+      const loginResult = await login(username, password, rememberMe);
       setAuth(loginResult.user || null);
       setUsername('');
       setPassword('');
@@ -156,6 +157,17 @@ function AdminLoginPage() {
             {error && (
               <div className="text-red-500 text-sm px-1">{error}</div>
             )}
+
+            {/* "Запомнить меня" */}
+            <label className="flex items-center gap-3 select-none text-sm text-gray-700 dark:text-gray-300 px-1">
+              <input
+                type="checkbox"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+              />
+              <span>Запомнить меня</span>
+            </label>
 
             <button
               type="submit"

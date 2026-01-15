@@ -255,18 +255,18 @@ function WineCatalogPage() {
         // Если есть category, загружаем вина по категории, иначе все вина
         const data = category ? await getWinesByCategory(category) : await getWines();
         
-        // Фильтруем только актуальные вина
-        const activeWines = data.filter(wine => wine.status !== 'в архиве');
-        setWines(activeWines);
-        setAllWines(activeWines);
+        // Показываем ВСЕ вина (включая "в архиве") — архивные затемняем в UI
+        // Термин **архив**: позиция неактивна, но мы её не прячем.
+        setWines(data);
+        setAllWines(data);
 
         // Для группировки разделов всегда используем ВСЕ вина (не только из текущей категории)
         // чтобы показать все доступные разделы
-        let allWinesForSections = activeWines;
+        let allWinesForSections = data;
         if (category) {
           // Если выбрана категория, загружаем все вина для определения всех разделов
           const allWinesData = await getWines();
-          allWinesForSections = allWinesData.filter(wine => wine.status !== 'в архиве');
+          allWinesForSections = allWinesData;
         }
 
         // Собираем все уникальные разделы (section) из всех вин
@@ -314,7 +314,7 @@ function WineCatalogPage() {
         });
 
         console.log('Найдено разделов:', sectionsArray.length);
-        console.log('Всего вин (загружено):', activeWines.length);
+        console.log('Всего вин (загружено):', data.length);
         console.log('Всего вин (для разделов):', allWinesForSections.length);
         console.log('Все разделы:', sectionsArray);
         console.log('Текущий category из URL:', category);
@@ -692,6 +692,7 @@ function WineCatalogPage() {
               const lightness = getLightness(wine);
               const acidity = getAcidity(wine);
               const tannin = getTannin(wine);
+              const isArchived = wine.status === 'в архиве';
               
               // Отладка: проверяем, что флаг определяется правильно (только если не найден)
               if (country && (!countryFlag || countryFlag === '\u{1F30D}' || /^[A-Z]{2}$/i.test(countryFlag))) {
@@ -701,172 +702,182 @@ function WineCatalogPage() {
               return (
                 <Link
                   key={wine.id}
-                  to={`/wine-item/${wine.id}`}
-                  className="group flex flex-col rounded-lg overflow-hidden bg-white dark:bg-surface-dark shadow-[0_2px_8px_rgba(0,0,0,0.04)] dark:shadow-none border border-gray-100 dark:border-gray-800 hover:border-primary/30 transition-all"
+                  to={`/wine/${wine.id}`}
+                  className="group relative rounded-lg overflow-hidden bg-white dark:bg-surface-dark shadow-[0_2px_8px_rgba(0,0,0,0.04)] dark:shadow-none border border-gray-100 dark:border-gray-800 hover:border-primary/30 transition-all"
                 >
-                  <div className="relative w-full aspect-[3/4] overflow-hidden bg-gray-100 dark:bg-gray-800">
-                    {imageUrl ? (
-                      <img
-                        src={imageUrl}
-                        alt={wine.title || 'Wine'}
-                        className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-105"
-                      />
-                    ) : (
-                      <div className="absolute inset-0 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-                        <span className="material-symbols-outlined text-gray-400 text-4xl">wine_bar</span>
-                      </div>
-                    )}
-                  </div>
-                  <div className="p-3 flex flex-col flex-grow">
-                    <h3 className="font-bold text-sm leading-[1.2] dark:text-white line-clamp-2 mb-2 group-hover:text-primary transition-colors duration-200">
-                      {shortenTitle(wine.title || (language === 'EN' ? 'No title' : 'Без названия'))}
-                    </h3>
-                    
-                    {/* Страна и регион с флагом */}
-                    {country && (
-                      <div className="flex items-center gap-1.5 mb-1.5">
-                        {countryFlag && countryFlag !== '🌍' && (
-                          <span 
-                            className="text-base leading-none inline-block" 
-                            style={{ 
-                              fontFamily: 'Apple Color Emoji, Segoe UI Emoji, Noto Color Emoji, sans-serif',
-                              minWidth: '20px',
-                              fontSize: '16px',
-                              lineHeight: '1',
-                              display: 'inline-block'
-                            }}
-                            role="img"
-                            aria-label={`Флаг ${country}`}
-                          >
-                            {countryFlag}
-                          </span>
-                        )}
-                        <p className="text-[10px] text-[#896f61] dark:text-gray-400 line-clamp-1 leading-tight">
-                          {country}{region ? `, ${region}` : ''}
+                  {/* Затемняем ТОЛЬКО контент карточки, чтобы бейдж "В АРХИВЕ" был читабельным */}
+                  <div className={`flex flex-col h-full ${isArchived ? 'opacity-50 grayscale' : ''}`}>
+                    <div className="relative w-full aspect-[3/4] overflow-hidden bg-gray-100 dark:bg-gray-800">
+                      {imageUrl ? (
+                        <img
+                          src={imageUrl}
+                          alt={wine.title || 'Wine'}
+                          className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-105"
+                        />
+                      ) : (
+                        <div className="absolute inset-0 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                          <span className="material-symbols-outlined text-gray-400 text-4xl">wine_bar</span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-3 flex flex-col flex-grow">
+                      <h3 className="font-bold text-sm leading-[1.2] dark:text-white line-clamp-2 mb-2 group-hover:text-primary transition-colors duration-200">
+                        {shortenTitle(wine.title || (language === 'EN' ? 'No title' : 'Без названия'))}
+                      </h3>
+                      
+                      {/* Страна и регион с флагом */}
+                      {country && (
+                        <div className="flex items-center gap-1.5 mb-1.5">
+                          {countryFlag && countryFlag !== '🌍' && (
+                            <span 
+                              className="text-base leading-none inline-block" 
+                              style={{ 
+                                fontFamily: 'Apple Color Emoji, Segoe UI Emoji, Noto Color Emoji, sans-serif',
+                                minWidth: '20px',
+                                fontSize: '16px',
+                                lineHeight: '1',
+                                display: 'inline-block'
+                              }}
+                              role="img"
+                              aria-label={`Флаг ${country}`}
+                            >
+                              {countryFlag}
+                            </span>
+                          )}
+                          <p className="text-[10px] text-[#896f61] dark:text-gray-400 line-clamp-1 leading-tight">
+                            {country}{region ? `, ${region}` : ''}
+                          </p>
+                        </div>
+                      )}
+                      
+                      {/* Производитель */}
+                      {wine.producer && (
+                        <p className="text-[9px] text-[#896f61] dark:text-gray-400 line-clamp-1 mb-2 leading-tight opacity-75">
+                          {wine.producer.replace(/\.$/, '')}
                         </p>
-                      </div>
-                    )}
-                    
-                    {/* Производитель */}
-                    {wine.producer && (
-                      <p className="text-[9px] text-[#896f61] dark:text-gray-400 line-clamp-1 mb-2 leading-tight opacity-75">
-                        {wine.producer.replace(/\.$/, '')}
-                      </p>
-                    )}
-                    
-                    {/* Шкала легкость-кислотность (для белых, игристых, розовых) или легкость-танинность (для красных) */}
-                    {wineType === 'white' ? (
-                      <div className="mt-auto pt-2 border-t border-dashed border-gray-100 dark:border-gray-700">
-                        <div className="flex items-center justify-between mb-1.5">
-                          <span className="text-[8px] text-gray-400 uppercase font-semibold">Легкость</span>
-                          <span className="text-[8px] text-gray-400 uppercase font-semibold">Кислотность</span>
-                        </div>
-                        <div className="flex gap-2">
-                          {/* Шкала легкости - сплошная градиентная */}
-                          <div className="flex-1 relative">
-                            <div 
-                              className="w-full h-2.5 rounded-full overflow-hidden border border-gray-200 dark:border-gray-700"
-                              style={{
-                                background: `linear-gradient(to right, 
-                                  rgb(0, 200, 0) 0%, 
-                                  rgb(255, 255, 0) 50%, 
-                                  rgb(255, 0, 0) 100%)`
-                              }}
-                            />
-                            {/* Индикатор текущего значения */}
-                            <div 
-                              className="absolute top-0 h-2.5 rounded-full bg-white dark:bg-gray-800 border-2"
-                              style={{
-                                left: `${lightness}%`,
-                                width: '3px',
-                                marginLeft: '-1.5px',
-                                borderColor: getGradientColor(lightness),
-                                boxShadow: `0 0 4px ${getGradientColor(lightness)}`
-                              }}
-                            />
+                      )}
+                      
+                      {/* Шкала легкость-кислотность (для белых, игристых, розовых) или легкость-танинность (для красных) */}
+                      {wineType === 'white' ? (
+                        <div className="mt-auto pt-2 border-t border-dashed border-gray-100 dark:border-gray-700">
+                          <div className="flex items-center justify-between mb-1.5">
+                            <span className="text-[8px] text-gray-400 uppercase font-semibold">Легкость</span>
+                            <span className="text-[8px] text-gray-400 uppercase font-semibold">Кислотность</span>
                           </div>
-                          {/* Шкала кислотности - сплошная градиентная */}
-                          <div className="flex-1 relative">
-                            <div 
-                              className="w-full h-2.5 rounded-full overflow-hidden border border-gray-200 dark:border-gray-700"
-                              style={{
-                                background: `linear-gradient(to right, 
-                                  rgb(0, 200, 0) 0%, 
-                                  rgb(255, 255, 0) 50%, 
-                                  rgb(255, 0, 0) 100%)`
-                              }}
-                            />
-                            {/* Индикатор текущего значения */}
-                            <div 
-                              className="absolute top-0 h-2.5 rounded-full bg-white dark:bg-gray-800 border-2"
-                              style={{
-                                left: `${acidity}%`,
-                                width: '3px',
-                                marginLeft: '-1.5px',
-                                borderColor: getGradientColor(acidity),
-                                boxShadow: `0 0 4px ${getGradientColor(acidity)}`
-                              }}
-                            />
+                          <div className="flex gap-2">
+                            {/* Шкала легкости - сплошная градиентная */}
+                            <div className="flex-1 relative">
+                              <div 
+                                className="w-full h-2.5 rounded-full overflow-hidden border border-gray-200 dark:border-gray-700"
+                                style={{
+                                  background: `linear-gradient(to right, 
+                                    rgb(0, 200, 0) 0%, 
+                                    rgb(255, 255, 0) 50%, 
+                                    rgb(255, 0, 0) 100%)`
+                                }}
+                              />
+                              {/* Индикатор текущего значения */}
+                              <div 
+                                className="absolute top-0 h-2.5 rounded-full bg-white dark:bg-gray-800 border-2"
+                                style={{
+                                  left: `${lightness}%`,
+                                  width: '3px',
+                                  marginLeft: '-1.5px',
+                                  borderColor: getGradientColor(lightness),
+                                  boxShadow: `0 0 4px ${getGradientColor(lightness)}`
+                                }}
+                              />
+                            </div>
+                            {/* Шкала кислотности - сплошная градиентная */}
+                            <div className="flex-1 relative">
+                              <div 
+                                className="w-full h-2.5 rounded-full overflow-hidden border border-gray-200 dark:border-gray-700"
+                                style={{
+                                  background: `linear-gradient(to right, 
+                                    rgb(0, 200, 0) 0%, 
+                                    rgb(255, 255, 0) 50%, 
+                                    rgb(255, 0, 0) 100%)`
+                                }}
+                              />
+                              {/* Индикатор текущего значения */}
+                              <div 
+                                className="absolute top-0 h-2.5 rounded-full bg-white dark:bg-gray-800 border-2"
+                                style={{
+                                  left: `${acidity}%`,
+                                  width: '3px',
+                                  marginLeft: '-1.5px',
+                                  borderColor: getGradientColor(acidity),
+                                  boxShadow: `0 0 4px ${getGradientColor(acidity)}`
+                                }}
+                              />
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ) : (
-                      <div className="mt-auto pt-2 border-t border-dashed border-gray-100 dark:border-gray-700">
-                        <div className="flex items-center justify-between mb-1.5">
-                          <span className="text-[8px] text-gray-400 uppercase font-semibold">Легкость</span>
-                          <span className="text-[8px] text-gray-400 uppercase font-semibold">Танинность</span>
-                        </div>
-                        <div className="flex gap-2">
-                          {/* Шкала легкости - сплошная градиентная */}
-                          <div className="flex-1 relative">
-                            <div 
-                              className="w-full h-2.5 rounded-full overflow-hidden border border-gray-200 dark:border-gray-700"
-                              style={{
-                                background: `linear-gradient(to right, 
-                                  rgb(0, 200, 0) 0%, 
-                                  rgb(255, 255, 0) 50%, 
-                                  rgb(255, 0, 0) 100%)`
-                              }}
-                            />
-                            {/* Индикатор текущего значения */}
-                            <div 
-                              className="absolute top-0 h-2.5 rounded-full bg-white dark:bg-gray-800 border-2"
-                              style={{
-                                left: `${lightness}%`,
-                                width: '3px',
-                                marginLeft: '-1.5px',
-                                borderColor: getGradientColor(lightness),
-                                boxShadow: `0 0 4px ${getGradientColor(lightness)}`
-                              }}
-                            />
+                      ) : (
+                        <div className="mt-auto pt-2 border-t border-dashed border-gray-100 dark:border-gray-700">
+                          <div className="flex items-center justify-between mb-1.5">
+                            <span className="text-[8px] text-gray-400 uppercase font-semibold">Легкость</span>
+                            <span className="text-[8px] text-gray-400 uppercase font-semibold">Танинность</span>
                           </div>
-                          {/* Шкала танинности - сплошная градиентная */}
-                          <div className="flex-1 relative">
-                            <div 
-                              className="w-full h-2.5 rounded-full overflow-hidden border border-gray-200 dark:border-gray-700"
-                              style={{
-                                background: `linear-gradient(to right, 
-                                  rgb(0, 200, 0) 0%, 
-                                  rgb(255, 255, 0) 50%, 
-                                  rgb(255, 0, 0) 100%)`
-                              }}
-                            />
-                            {/* Индикатор текущего значения */}
-                            <div 
-                              className="absolute top-0 h-2.5 rounded-full bg-white dark:bg-gray-800 border-2"
-                              style={{
-                                left: `${tannin}%`,
-                                width: '3px',
-                                marginLeft: '-1.5px',
-                                borderColor: getGradientColor(tannin),
-                                boxShadow: `0 0 4px ${getGradientColor(tannin)}`
-                              }}
-                            />
+                          <div className="flex gap-2">
+                            {/* Шкала легкости - сплошная градиентная */}
+                            <div className="flex-1 relative">
+                              <div 
+                                className="w-full h-2.5 rounded-full overflow-hidden border border-gray-200 dark:border-gray-700"
+                                style={{
+                                  background: `linear-gradient(to right, 
+                                    rgb(0, 200, 0) 0%, 
+                                    rgb(255, 255, 0) 50%, 
+                                    rgb(255, 0, 0) 100%)`
+                                }}
+                              />
+                              {/* Индикатор текущего значения */}
+                              <div 
+                                className="absolute top-0 h-2.5 rounded-full bg-white dark:bg-gray-800 border-2"
+                                style={{
+                                  left: `${lightness}%`,
+                                  width: '3px',
+                                  marginLeft: '-1.5px',
+                                  borderColor: getGradientColor(lightness),
+                                  boxShadow: `0 0 4px ${getGradientColor(lightness)}`
+                                }}
+                              />
+                            </div>
+                            {/* Шкала танинности - сплошная градиентная */}
+                            <div className="flex-1 relative">
+                              <div 
+                                className="w-full h-2.5 rounded-full overflow-hidden border border-gray-200 dark:border-gray-700"
+                                style={{
+                                  background: `linear-gradient(to right, 
+                                    rgb(0, 200, 0) 0%, 
+                                    rgb(255, 255, 0) 50%, 
+                                    rgb(255, 0, 0) 100%)`
+                                }}
+                              />
+                              {/* Индикатор текущего значения */}
+                              <div 
+                                className="absolute top-0 h-2.5 rounded-full bg-white dark:bg-gray-800 border-2"
+                                style={{
+                                  left: `${tannin}%`,
+                                  width: '3px',
+                                  marginLeft: '-1.5px',
+                                  borderColor: getGradientColor(tannin),
+                                  boxShadow: `0 0 4px ${getGradientColor(tannin)}`
+                                }}
+                              />
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </div>
+
+                  {/* Индикатор архива поверх карточки */}
+                  {isArchived && (
+                    <div className="absolute top-2 right-2 bg-gray-700/90 text-white text-[10px] font-bold px-2 py-1 rounded-md backdrop-blur-sm">
+                      В АРХИВЕ
+                    </div>
+                  )}
                 </Link>
               );
             })

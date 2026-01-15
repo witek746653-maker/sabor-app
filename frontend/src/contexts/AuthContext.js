@@ -4,6 +4,10 @@ import { checkAuth, logout as apiLogout } from '../services/api';
 // Создаём контекст авторизации
 const AuthContext = createContext(null);
 
+// Локальная “страховка” для режима просмотра, когда API временно недоступен.
+// Важно: это НЕ настоящая авторизация на сервере, а только клиентский режим "только читать".
+const OFFLINE_GUEST_KEY = 'sabor.offlineGuest.v1';
+
 // Хук для использования контекста авторизации
 export const useAuth = () => {
   const context = useContext(AuthContext);
@@ -22,14 +26,39 @@ export const AuthProvider = ({ children }) => {
   // Проверка авторизации при загрузке
   useEffect(() => {
     const checkAuthentication = async () => {
+      // 0) Если пользователь включил "гостя офлайн" — не блокируем приложение ожиданием API.
+      // Это нужно, чтобы меню показывалось даже при падении сервера.
+      const offlineGuestEnabled = localStorage.getItem(OFFLINE_GUEST_KEY) === 'true';
+      if (offlineGuestEnabled) {
+        setIsAuthenticated(true);
+        setCurrentUser({
+          id: 'guest',
+          name: 'Гость (офлайн)',
+          username: 'guest',
+          role: 'guest',
+        });
+        setChecking(false);
+        // Параллельно всё равно пробуем проверить реальную авторизацию (если API уже вернулся).
+      }
+
       try {
         const result = await checkAuth();
         setIsAuthenticated(result.authenticated);
         setCurrentUser(result.user || null);
+
+        // Если реальная авторизация доступна — отключаем офлайн-гостя.
+        if (result.authenticated) {
+          localStorage.removeItem(OFFLINE_GUEST_KEY);
+        }
       } catch (error) {
-        setIsAuthenticated(false);
-        setCurrentUser(null);
+        // Если API недоступен, но включен офлайн-гость — оставляем его.
+        const stillOfflineGuest = localStorage.getItem(OFFLINE_GUEST_KEY) === 'true';
+        if (!stillOfflineGuest) {
+          setIsAuthenticated(false);
+          setCurrentUser(null);
+        }
       } finally {
+        // Если мы уже отпустили UI из-за офлайн-гостя — не “перезатираем” checking второй раз.
         setChecking(false);
       }
     };
@@ -43,11 +72,13 @@ export const AuthProvider = ({ children }) => {
       await apiLogout();
       setIsAuthenticated(false);
       setCurrentUser(null);
+      localStorage.removeItem(OFFLINE_GUEST_KEY);
     } catch (error) {
       console.error('Ошибка выхода:', error);
       // Даже если ошибка, сбрасываем состояние на клиенте
       setIsAuthenticated(false);
       setCurrentUser(null);
+      localStorage.removeItem(OFFLINE_GUEST_KEY);
     }
   };
 
@@ -55,6 +86,23 @@ export const AuthProvider = ({ children }) => {
   const setAuth = (user) => {
     setIsAuthenticated(true);
     setCurrentUser(user);
+  };
+
+  // Включить офлайн-гостя (только просмотр меню, без сервера)
+  const enableOfflineGuest = () => {
+    try {
+      localStorage.setItem(OFFLINE_GUEST_KEY, 'true');
+    } catch {
+      // если localStorage недоступен — всё равно можно жить в рамках текущей вкладки
+    }
+    setIsAuthenticated(true);
+    setCurrentUser({
+      id: 'guest',
+      name: 'Гость (офлайн)',
+      username: 'guest',
+      role: 'guest',
+    });
+    setChecking(false);
   };
 
   // Вспомогательные функции для проверки роли пользователя
@@ -68,6 +116,7 @@ export const AuthProvider = ({ children }) => {
     checking,
     logout,
     setAuth,
+    enableOfflineGuest,
     isGuest,
     isAdmin,
     canWrite
