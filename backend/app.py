@@ -892,6 +892,12 @@ def get_latest_private_menu_pdf():
     if not pdf_path.exists():
         return jsonify({"error": "File not found"}), 404
 
+    # Термин **Content-Disposition**: заголовок, который говорит браузеру,
+    # "Открывать в вкладке" (inline) или "Скачать" (attachment).
+    # По умолчанию делаем скачивание (надежнее), а для кнопки "Открыть" передаем ?disposition=inline
+    disposition = (request.args.get("disposition") or "").strip().lower()
+    open_inline = disposition == "inline"
+
     # --- НАЧАЛО ВСТАВКИ: Формирование красивого имени ---
     
     # Исходное имя файла: "latest.pdf" (или любое, если вы решите хранить иначе)
@@ -913,12 +919,22 @@ def get_latest_private_menu_pdf():
         
     # --- КОНЕЦ ВСТАВКИ ---
 
-    return send_file(
+    # Важно: запрещаем кеширование, иначе браузер/прокси могут "залипнуть" на старом PDF,
+    # даже если вы уже заменили файл на сервере.
+    response = send_file(
         str(pdf_path),
         mimetype="application/pdf",
-        as_attachment=True,
-        download_name=final_name, # Подставляем сформированное имя
+        as_attachment=not open_inline,
+        download_name=final_name,  # Подставляем сформированное имя
+        conditional=False,
+        etag=False,
+        max_age=0,
     )
+    response.headers["Cache-Control"] = "private, no-store, no-cache, must-revalidate, max-age=0"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+    response.headers["Vary"] = "Cookie"
+    return response
 
 @app.route('/menus/<path:filename>')
 def serve_menu_html(filename):

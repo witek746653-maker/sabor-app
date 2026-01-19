@@ -24,6 +24,17 @@ function ToolsPage() {
     return window.location.origin;
   };
 
+  // KISS: анти-кэш для PDF. Если URL всегда один и тот же, браузер/прокси могут отдать старый файл.
+  // Термин **cache-buster**: "ломалка кэша" — добавляем к URL уникальный параметр `?v=...`.
+  const getPdfUrl = ({ disposition } = {}) => {
+    const baseUrl = getBaseUrl();
+    const params = new URLSearchParams();
+    if (disposition) params.set('disposition', disposition);
+    params.set('v', String(Date.now()));
+    const delimiter = pdfPath.includes('?') ? '&' : '?';
+    return `${baseUrl}${pdfPath}${delimiter}${params.toString()}`;
+  };
+
   // Функция для получения иконки по названию инструмента
   const getToolIcon = (toolName) => {
     const toolLower = toolName.toLowerCase();
@@ -98,18 +109,15 @@ function ToolsPage() {
 
   // Функции для работы с PDF
   const handlePdfOpen = () => {
-    // Используем полный URL для обхода React Router
-    const baseUrl = getBaseUrl();
-    const fullUrl = baseUrl + pdfPath;
-    window.open(fullUrl, '_blank', 'noopener,noreferrer');
+    // Открываем в новой вкладке (inline), а не скачиваем (attachment)
+    window.open(getPdfUrl({ disposition: 'inline' }), '_blank', 'noopener,noreferrer');
     setShowPdfModal(false);
   };
 
   const handlePdfDownload = () => {
-    // Создаем ссылку для скачивания с полным URL
-    const baseUrl = getBaseUrl();
+    // Создаем ссылку для скачивания с полным URL + анти-кэш
     const link = document.createElement('a');
-    link.href = baseUrl + pdfPath;
+    link.href = getPdfUrl({ disposition: 'attachment' });
     link.download = 'Комплекс для новых сотрудников (актуальный).pdf';
     link.target = '_blank';
     document.body.appendChild(link);
@@ -119,14 +127,13 @@ function ToolsPage() {
   };
 
   const handlePdfShare = async () => {
-    const baseUrl = getBaseUrl();
-    const fullUrl = baseUrl + pdfPath;
+    const fullUrl = getPdfUrl({ disposition: 'attachment' });
     
     if (navigator.share) {
       try {
         // Для Web Share API нужно сначала получить файл
         // Важно: credentials нужны, чтобы отправились cookies авторизации
-        const response = await fetch(fullUrl, { credentials: 'include' });
+        const response = await fetch(fullUrl, { credentials: 'include', cache: 'no-store' });
         const blob = await response.blob();
         const file = new File([blob], 'Комплекс для новых сотрудников (актуальный).pdf', { type: 'application/pdf' });
         

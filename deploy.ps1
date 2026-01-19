@@ -115,6 +115,10 @@ if ($SkipUpload) {
   # 3) Фронтенд build (если не пропущен)
   if (-not $SkipBuild) {
     $buildPath = Join-Path $PSScriptRoot "frontend\build"
+    # Важно: scp НЕ удаляет старые файлы на сервере.
+    # Поэтому "мусор" от прошлых сборок (например, старые PDF в /menus/) может остаться и продолжать открываться.
+    # KISS-решение: перед загрузкой удаляем старую папку build на сервере.
+    Run "ssh" ($CommonSshArgs + @($Remote, "rm -rf $RemoteRoot/frontend/build && mkdir -p $RemoteRoot/frontend"))
     Run "scp" ($CommonSshArgs + @("-r", $buildPath, "${RemoteScpPrefix}/frontend/"))
   }
 }
