@@ -1,8 +1,9 @@
+import re
 from flask import Flask, jsonify, request, send_from_directory, send_file
 from flask_cors import CORS
 from flask_login import LoginManager, login_required, login_user, logout_user, UserMixin
 from pathlib import Path
-from datetime import timedelta
+from datetime import timedelta, datetime
 import json
 import os
 import mimetypes
@@ -13,6 +14,8 @@ import signal
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
 from models import db, Dish, FeedbackMessage, User
+
+
 
 # На некоторых системах (особенно Windows) mimetypes может не знать про .webp
 mimetypes.add_type("image/webp", ".webp")
@@ -874,6 +877,46 @@ def serve_audio(filename):
             return jsonify({'error': f'Audio file not found: {filename}'}), 404
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+@app.route('/api/private/menus/new-employees-complex-from-2026-01-02.pdf', methods=['GET'])
+def get_latest_private_menu_pdf():
+    from flask_login import current_user
+
+    if not current_user.is_authenticated:
+        return jsonify({"error": "Not authenticated"}), 401
+
+    pdf_path = ROOT_DIR / "backend" / "private" / "menus" / "new-employees-complex-from-2026-01-02.pdf"
+    
+    if not pdf_path.exists():
+        return jsonify({"error": "File not found"}), 404
+
+    # --- НАЧАЛО ВСТАВКИ: Формирование красивого имени ---
+    
+    # Исходное имя файла: "new-employees-complex-from-2026-01-02.pdf"
+    filename = pdf_path.name 
+    
+    # 1. Ищем дату (2026-01-02)
+    match = re.search(r'(\d{4}-\d{2}-\d{2})', filename)
+    
+    if match:
+        # 2. Превращаем строку в объект даты
+        date_obj = datetime.strptime(match.group(1), "%Y-%m-%d")
+        # 3. Форматируем в DD.MM.YYYY (02.01.2026)
+        formatted_date = date_obj.strftime("%d.%m.%Y")
+        # 4. Вставляем в название
+        final_name = f"Комплекс для новых сотрудников (актуальный от {formatted_date}).pdf"
+    else:
+        # Запасной вариант, если дата в имени файла вдруг не найдется
+        final_name = "Комплекс для новых сотрудников.pdf"
+        
+    # --- КОНЕЦ ВСТАВКИ ---
+
+    return send_file(
+        str(pdf_path),
+        mimetype="application/pdf",
+        as_attachment=True,
+        download_name=final_name, # Подставляем сформированное имя
+    )
 
 @app.route('/menus/<path:filename>')
 def serve_menu_html(filename):
