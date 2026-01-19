@@ -55,3 +55,6 @@ logs/
 
 # Local deploy config (do not commit)
 deploy.config.ps1
+
+# Private internal files (do not commit)
+backend/private/
