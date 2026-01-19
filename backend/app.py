@@ -878,21 +878,23 @@ def serve_audio(filename):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@app.route('/api/private/menus/new-employees-complex-from-2026-01-02.pdf', methods=['GET'])
+@app.route('/api/private/menus/latest.pdf', methods=['GET'])
 def get_latest_private_menu_pdf():
     from flask_login import current_user
 
     if not current_user.is_authenticated:
         return jsonify({"error": "Not authenticated"}), 401
 
-    pdf_path = ROOT_DIR / "backend" / "private" / "menus" / "new-employees-complex-from-2026-01-02.pdf"
+    # KISS: на сервере всегда хранится один актуальный файл.
+    # Вы просто заменяете его при обновлении.
+    pdf_path = ROOT_DIR / "backend" / "private" / "menus" / "latest.pdf"
     
     if not pdf_path.exists():
         return jsonify({"error": "File not found"}), 404
 
     # --- НАЧАЛО ВСТАВКИ: Формирование красивого имени ---
     
-    # Исходное имя файла: "new-employees-complex-from-2026-01-02.pdf"
+    # Исходное имя файла: "latest.pdf" (или любое, если вы решите хранить иначе)
     filename = pdf_path.name 
     
     # 1. Ищем дату (2026-01-02)
@@ -907,7 +909,7 @@ def get_latest_private_menu_pdf():
         final_name = f"Комплекс для новых сотрудников (актуальный от {formatted_date}).pdf"
     else:
         # Запасной вариант, если дата в имени файла вдруг не найдется
-        final_name = "Комплекс для новых сотрудников.pdf"
+        final_name = "Комплекс для новых сотрудников (актуальный).pdf"
         
     # --- КОНЕЦ ВСТАВКИ ---
 

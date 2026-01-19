@@ -8,7 +8,8 @@ function ToolsPage() {
   const navigate = useNavigate();
   const { isAuthenticated, currentUser } = useAuth();
   const [showPdfModal, setShowPdfModal] = useState(false);
-  const pdfPath = '/menus/kompleks_dlya_novyh_sotrudnikov_01_12_2025.pdf.pdf';
+  // PDF хранится на сервере приватно и отдаётся только авторизованным пользователям
+  const pdfPath = '/api/private/menus/latest.pdf';
   const [language, setLanguage] = useState(() => {
     return localStorage.getItem('menuLanguage') || 'RU';
   });
@@ -109,7 +110,7 @@ function ToolsPage() {
     const baseUrl = getBaseUrl();
     const link = document.createElement('a');
     link.href = baseUrl + pdfPath;
-    link.download = 'Комплекс для новых сотрудников от 01.12.2025.pdf';
+    link.download = 'Комплекс для новых сотрудников (актуальный).pdf';
     link.target = '_blank';
     document.body.appendChild(link);
     link.click();
@@ -124,13 +125,14 @@ function ToolsPage() {
     if (navigator.share) {
       try {
         // Для Web Share API нужно сначала получить файл
-        const response = await fetch(fullUrl);
+        // Важно: credentials нужны, чтобы отправились cookies авторизации
+        const response = await fetch(fullUrl, { credentials: 'include' });
         const blob = await response.blob();
-        const file = new File([blob], 'Комплекс для новых сотрудников от 01.12.2025.pdf', { type: 'application/pdf' });
+        const file = new File([blob], 'Комплекс для новых сотрудников (актуальный).pdf', { type: 'application/pdf' });
         
         await navigator.share({
           title: 'Комплекс для новых сотрудников',
-          text: 'Комплекс для новых сотрудников от 01.12.2025',
+          text: 'Комплекс для новых сотрудников (актуальный)',
           files: [file]
         });
       } catch (err) {
