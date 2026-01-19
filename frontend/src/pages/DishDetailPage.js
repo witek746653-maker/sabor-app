@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { getDish } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../contexts/ToastContext';
 import { getDishImageUrl } from '../utils/imageUtils';
 import './DishDetailPage.css';
 
@@ -9,6 +10,7 @@ function DishDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { isAuthenticated, currentUser, isGuest, canWrite } = useAuth();
+  const toast = useToast();
   const [dish, setDish] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isFeaturesExpanded, setIsFeaturesExpanded] = useState(false);
@@ -62,7 +64,7 @@ function DishDetailPage() {
       // Fallback: копируем в буфер обмена
       try {
         await navigator.clipboard.writeText(shareText);
-        alert(language === 'EN' ? 'Link copied to clipboard!' : 'Ссылка скопирована в буфер обмена!');
+        toast.success(language === 'EN' ? 'Link copied to clipboard!' : 'Ссылка скопирована в буфер обмена!');
       } catch (err) {
         // Если не поддерживается, показываем текст для копирования
         const textArea = document.createElement('textarea');
@@ -71,7 +73,7 @@ function DishDetailPage() {
         textArea.select();
         document.execCommand('copy');
         document.body.removeChild(textArea);
-        alert(language === 'EN' ? 'Link copied to clipboard!' : 'Ссылка скопирована в буфер обмена!');
+        toast.success(language === 'EN' ? 'Link copied to clipboard!' : 'Ссылка скопирована в буфер обмена!');
       }
     }
   };

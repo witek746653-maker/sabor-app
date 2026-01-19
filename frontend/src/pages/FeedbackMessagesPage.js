@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getFeedbackMessages, markFeedbackRead, deleteFeedbackMessage, checkAuth } from '../services/api';
+import { useToast } from '../contexts/ToastContext';
 
 function FeedbackMessagesPage() {
   const navigate = useNavigate();
+  const toast = useToast();
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -36,7 +38,7 @@ function FeedbackMessagesPage() {
       const data = await getFeedbackMessages();
       setMessages(data);
     } catch (error) {
-      alert('Ошибка загрузки сообщений: ' + error.message);
+      toast.error('Ошибка загрузки сообщений: ' + error.message);
     } finally {
       setLoading(false);
     }
@@ -50,7 +52,7 @@ function FeedbackMessagesPage() {
         msg.id === messageId ? { ...msg, read: true } : msg
       ));
     } catch (error) {
-      alert('Ошибка при обновлении сообщения: ' + error.message);
+      toast.error('Ошибка при обновлении сообщения: ' + error.message);
     }
   };
 
@@ -61,9 +63,9 @@ function FeedbackMessagesPage() {
       await deleteFeedbackMessage(messageId);
       // Удаляем сообщение из списка
       setMessages(messages.filter(msg => msg.id !== messageId));
-      alert('✅ Сообщение удалено');
+      toast.success('Сообщение удалено');
     } catch (error) {
-      alert('❌ Ошибка удаления: ' + error.message);
+      toast.error('Ошибка удаления: ' + error.message);
     }
   };
 

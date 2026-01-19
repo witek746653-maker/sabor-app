@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getUsers, createUser, updateUser, deleteUser } from '../../services/api';
 import { useAuth } from '../../contexts/AuthContext';
+import { useToast } from '../../contexts/ToastContext';
 
 /**
  * UsersPage - Страница управления пользователями
@@ -8,6 +9,7 @@ import { useAuth } from '../../contexts/AuthContext';
  */
 function UsersPage() {
   const { currentUser } = useAuth();
+  const toast = useToast();
   const [users, setUsers] = useState([]);
   const [showUserForm, setShowUserForm] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
@@ -38,7 +40,7 @@ function UsersPage() {
       let roleToUse = userForm.role === 'Другое' ? userForm.customRole.trim() : userForm.role;
       
       if (userForm.role === 'Другое' && !roleToUse) {
-        alert('❌ Пожалуйста, введите произвольную роль');
+        toast.warning('Пожалуйста, введите произвольную роль');
         return;
       }
       
@@ -56,9 +58,9 @@ function UsersPage() {
       setEditingUser(null);
       setShowUserForm(false);
       loadUsers();
-      alert('✅ Пользователь создан!');
+      toast.success('Пользователь создан!');
     } catch (error) {
-      alert('❌ Ошибка создания пользователя: ' + (error.response?.data?.error || error.message));
+      toast.error('Ошибка создания пользователя: ' + (error.response?.data?.error || error.message));
     }
   };
 
@@ -84,7 +86,7 @@ function UsersPage() {
       let roleToUse = userForm.role === 'Другое' ? userForm.customRole.trim() : userForm.role;
       
       if (userForm.role === 'Другое' && !roleToUse) {
-        alert('❌ Пожалуйста, введите произвольную роль');
+        toast.warning('Пожалуйста, введите произвольную роль');
         return;
       }
       
@@ -107,9 +109,9 @@ function UsersPage() {
       setEditingUser(null);
       setShowUserForm(false);
       loadUsers();
-      alert('✅ Пользователь обновлён!');
+      toast.success('Пользователь обновлён!');
     } catch (error) {
-      alert('❌ Ошибка обновления пользователя: ' + (error.response?.data?.error || error.message));
+      toast.error('Ошибка обновления пользователя: ' + (error.response?.data?.error || error.message));
     }
   };
 
@@ -119,9 +121,9 @@ function UsersPage() {
     try {
       await deleteUser(userId);
       setUsers(users.filter((u) => u.id !== userId));
-      alert('✅ Пользователь удален');
+      toast.success('Пользователь удален');
     } catch (error) {
-      alert('❌ Ошибка удаления: ' + (error.response?.data?.error || error.message));
+      toast.error('Ошибка удаления: ' + (error.response?.data?.error || error.message));
     }
   };
 

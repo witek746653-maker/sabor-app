@@ -885,6 +885,12 @@ def get_latest_private_menu_pdf():
     if not current_user.is_authenticated:
         return jsonify({"error": "Not authenticated"}), 401
 
+    # Гостевой режим — это тоже "авторизация", но только для чтения публичных данных.
+    # Поэтому гостя сюда НЕ пускаем.
+    guest_check = check_not_guest()
+    if guest_check:
+        return guest_check
+
     # KISS: на сервере всегда хранится один актуальный файл.
     # Вы просто заменяете его при обновлении.
     pdf_path = ROOT_DIR / "backend" / "private" / "menus" / "latest.pdf"

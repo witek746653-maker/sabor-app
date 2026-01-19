@@ -3,6 +3,7 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { getDish, updateDish, addDish, getMenus, getSections } from '../../services/api';
 import { getImageUrl } from '../../utils/imageUtils';
 import HelpPopover from '../../components/HelpPopover';
+import { useToast } from '../../contexts/ToastContext';
 
 /**
  * DishEditPage - Страница редактирования/создания блюда
@@ -13,6 +14,7 @@ function DishEditPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const isNew = !id || id === 'new';
+  const toast = useToast();
   
   const [dish, setDish] = useState({
     title: '',
@@ -206,7 +208,7 @@ function DishEditPage() {
 
       navigate('/admin');
     } catch (error) {
-      alert('Ошибка сохранения: ' + (error.response?.data?.error || error.message));
+      toast.error('Ошибка сохранения: ' + (error.response?.data?.error || error.message));
     } finally {
       setSaving(false);
     }

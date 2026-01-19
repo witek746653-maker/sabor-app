@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { importMenuJson, getDeployJob, getDeployStatus, runDeploy } from '../../services/api';
 import HelpPopover from '../../components/HelpPopover';
+import { useToast } from '../../contexts/ToastContext';
 
 /**
  * DeployPage - "Одна кнопка" для обновлений из админки.
@@ -11,6 +12,7 @@ import HelpPopover from '../../components/HelpPopover';
  * - "Deploy кода" (git pull/build/restart) выключен по умолчанию и включается флагами на сервере.
  */
 function DeployPage() {
+  const toast = useToast();
   const [menuFile, setMenuFile] = useState(null);
   const [importLoading, setImportLoading] = useState(false);
   const [importResult, setImportResult] = useState(null);
@@ -60,7 +62,7 @@ function DeployPage() {
 
   const handleImport = async () => {
     if (!menuFile) {
-      alert('Выберите файл menu-database.json');
+      toast.warning('Выберите файл menu-database.json');
       return;
     }
 
@@ -81,7 +83,7 @@ function DeployPage() {
   const handleDeploy = async () => {
     if (!deployEnabled) return;
     if (!deployToken.trim()) {
-      alert('Введите Deploy Token (секретный ключ)');
+      toast.warning('Введите Deploy Token (секретный ключ)');
       return;
     }
 

@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { getDish } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../contexts/ToastContext';
 import { getDishImageUrl } from '../utils/imageUtils';
 import './DishDetailPage.css';
 
@@ -27,6 +28,7 @@ function BarItemDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { isGuest } = useAuth();
+  const toast = useToast();
 
   const [item, setItem] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -132,7 +134,7 @@ function BarItemDetailPage() {
 
     try {
       await navigator.clipboard.writeText(shareText);
-      alert(language === 'EN' ? 'Link copied to clipboard!' : 'Ссылка скопирована в буфер обмена!');
+      toast.success(language === 'EN' ? 'Link copied to clipboard!' : 'Ссылка скопирована в буфер обмена!');
     } catch {
       const textArea = document.createElement('textarea');
       textArea.value = shareText;
@@ -140,7 +142,7 @@ function BarItemDetailPage() {
       textArea.select();
       document.execCommand('copy');
       document.body.removeChild(textArea);
-      alert(language === 'EN' ? 'Link copied to clipboard!' : 'Ссылка скопирована в буфер обмена!');
+      toast.success(language === 'EN' ? 'Link copied to clipboard!' : 'Ссылка скопирована в буфер обмена!');
     }
   };
 

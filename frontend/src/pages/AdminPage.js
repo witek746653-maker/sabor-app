@@ -13,11 +13,13 @@ import {
   deleteUser,
 } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../contexts/ToastContext';
 import { getDishImageUrl } from '../utils/imageUtils';
 
 function AdminPage() {
   const navigate = useNavigate();
   const { isAuthenticated, currentUser, setAuth, checking: authChecking } = useAuth();
+  const toast = useToast();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -87,7 +89,7 @@ function AdminPage() {
       const data = await getDishes();
       setDishes(data);
     } catch (error) {
-      alert('Ошибка загрузки блюд: ' + error.message);
+      toast.error('Ошибка загрузки блюд: ' + error.message);
     } finally {
       setLoading(false);
     }
@@ -96,9 +98,9 @@ function AdminPage() {
   const handleSave = async () => {
     try {
       await saveDishes(dishes);
-      alert('✅ Данные сохранены!');
+      toast.success('Данные сохранены!');
     } catch (error) {
-      alert('❌ Ошибка сохранения: ' + (error.response?.data?.error || error.message));
+      toast.error('Ошибка сохранения: ' + (error.response?.data?.error || error.message));
     }
   };
 
@@ -108,9 +110,9 @@ function AdminPage() {
     try {
       await deleteDish(id);
       setDishes(dishes.filter((d) => d.id !== id));
-      alert('✅ Блюдо удалено');
+      toast.success('Блюдо удалено');
     } catch (error) {
-      alert('❌ Ошибка удаления: ' + (error.response?.data?.error || error.message));
+      toast.error('Ошибка удаления: ' + (error.response?.data?.error || error.message));
     }
   };
 
@@ -131,7 +133,7 @@ function AdminPage() {
       
       // Проверяем, что если выбрано "Другое", то роль должна быть указана
       if (userForm.role === 'Другое' && !roleToUse) {
-        alert('❌ Пожалуйста, введите произвольную роль');
+        toast.warning('Пожалуйста, введите произвольную роль');
         return;
       }
       
@@ -150,9 +152,9 @@ function AdminPage() {
       setEditingUser(null);
       setShowUserForm(false);
       loadUsers();
-      alert('✅ Пользователь создан!');
+      toast.success('Пользователь создан!');
     } catch (error) {
-      alert('❌ Ошибка создания пользователя: ' + (error.response?.data?.error || error.message));
+      toast.error('Ошибка создания пользователя: ' + (error.response?.data?.error || error.message));
     }
   };
 
@@ -188,7 +190,7 @@ function AdminPage() {
       
       // Проверяем, что если выбрано "Другое", то роль должна быть указана
       if (userForm.role === 'Другое' && !roleToUse) {
-        alert('❌ Пожалуйста, введите произвольную роль');
+        toast.warning('Пожалуйста, введите произвольную роль');
         return;
       }
       
@@ -214,9 +216,9 @@ function AdminPage() {
       setEditingUser(null);
       setShowUserForm(false);
       loadUsers();
-      alert('✅ Пользователь обновлён!');
+      toast.success('Пользователь обновлён!');
     } catch (error) {
-      alert('❌ Ошибка обновления пользователя: ' + (error.response?.data?.error || error.message));
+      toast.error('Ошибка обновления пользователя: ' + (error.response?.data?.error || error.message));
     }
   };
 
@@ -226,9 +228,9 @@ function AdminPage() {
     try {
       await deleteUser(userId);
       setUsers(users.filter((u) => u.id !== userId));
-      alert('✅ Пользователь удален');
+      toast.success('Пользователь удален');
     } catch (error) {
-      alert('❌ Ошибка удаления: ' + (error.response?.data?.error || error.message));
+      toast.error('Ошибка удаления: ' + (error.response?.data?.error || error.message));
     }
   };
 

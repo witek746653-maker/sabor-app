@@ -2,6 +2,7 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { getDishes, deleteDish } from '../../services/api';
 import { useAuth } from '../../contexts/AuthContext';
+import { useToast } from '../../contexts/ToastContext';
 import { getDishImageUrl } from '../../utils/imageUtils';
 import HelpPopover from '../../components/HelpPopover';
 
@@ -12,6 +13,7 @@ import HelpPopover from '../../components/HelpPopover';
 function DishesPage({ mode = 'kitchen' }) {
   const navigate = useNavigate();
   const { isAuthenticated, currentUser } = useAuth();
+  const toast = useToast();
   const [dishes, setDishes] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -28,7 +30,7 @@ function DishesPage({ mode = 'kitchen' }) {
       const data = await getDishes();
       setDishes(data);
     } catch (error) {
-      alert('Ошибка загрузки блюд: ' + error.message);
+      toast.error('Ошибка загрузки блюд: ' + error.message);
     } finally {
       setLoading(false);
     }
@@ -40,9 +42,9 @@ function DishesPage({ mode = 'kitchen' }) {
     try {
       await deleteDish(id);
       setDishes(dishes.filter((d) => d.id !== id));
-      alert('✅ Блюдо удалено');
+      toast.success('Блюдо удалено');
     } catch (error) {
-      alert('❌ Ошибка удаления: ' + (error.response?.data?.error || error.message));
+      toast.error('Ошибка удаления: ' + (error.response?.data?.error || error.message));
     }
   };
 

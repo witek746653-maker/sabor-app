@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { getFeedbackMessages, markFeedbackRead, deleteFeedbackMessage } from '../../services/api';
+import { useToast } from '../../contexts/ToastContext';
 
 /**
  * FeedbackMessagesPage - Страница обратной связи
  * Отображается в центральной области AdminLayout (правая колонка - администрирование)
  */
 function FeedbackMessagesPage() {
+  const toast = useToast();
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [filter, setFilter] = useState('all'); // 'all', 'unread', 'read'
@@ -20,7 +22,7 @@ function FeedbackMessagesPage() {
       const data = await getFeedbackMessages();
       setMessages(data);
     } catch (error) {
-      alert('Ошибка загрузки сообщений: ' + error.message);
+      toast.error('Ошибка загрузки сообщений: ' + error.message);
     } finally {
       setLoading(false);
     }
@@ -33,7 +35,7 @@ function FeedbackMessagesPage() {
         msg.id === messageId ? { ...msg, read: true } : msg
       ));
     } catch (error) {
-      alert('Ошибка при обновлении сообщения: ' + error.message);
+      toast.error('Ошибка при обновлении сообщения: ' + error.message);
     }
   };
 
@@ -43,9 +45,9 @@ function FeedbackMessagesPage() {
     try {
       await deleteFeedbackMessage(messageId);
       setMessages(messages.filter(msg => msg.id !== messageId));
-      alert('✅ Сообщение удалено');
+      toast.success('Сообщение удалено');
     } catch (error) {
-      alert('❌ Ошибка удаления: ' + error.message);
+      toast.error('Ошибка удаления: ' + error.message);
     }
   };
 

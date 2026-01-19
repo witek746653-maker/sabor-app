@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../contexts/ToastContext';
 import ComingSoonWrapper from '../components/ComingSoonWrapper';
 import { isComingSoon } from '../utils/featureStatus';
 
 function ToolsPage() {
   const navigate = useNavigate();
-  const { isAuthenticated, currentUser } = useAuth();
+  const { isAuthenticated, currentUser, isGuest } = useAuth();
+  const toast = useToast();
   const [showPdfModal, setShowPdfModal] = useState(false);
   // PDF хранится на сервере приватно и отдаётся только авторизованным пользователям
   const pdfPath = '/api/private/menus/latest.pdf';
@@ -88,6 +90,11 @@ function ToolsPage() {
     e.stopPropagation();
     
     if (tool.type === 'pdf') {
+      // Гостевой режим — только просмотр меню, без внутренних файлов
+      if (isGuest) {
+        toast.info('Доступно после входа. Гостевой режим поддерживает только просмотр данных.');
+        return;
+      }
       // Показываем модальное окно для PDF
       setShowPdfModal(true);
     } else if (tool.type === 'html') {
@@ -148,7 +155,7 @@ function ToolsPage() {
         // Fallback: копируем ссылку
         try {
           await navigator.clipboard.writeText(fullUrl);
-          alert('Ссылка скопирована в буфер обмена!');
+          toast.success('Ссылка скопирована в буфер обмена!');
         } catch (clipboardErr) {
           console.log('Ошибка копирования:', clipboardErr);
         }
@@ -157,7 +164,7 @@ function ToolsPage() {
       // Fallback: копируем ссылку
       try {
         await navigator.clipboard.writeText(fullUrl);
-        alert('Ссылка скопирована в буфер обмена!');
+        toast.success('Ссылка скопирована в буфер обмена!');
       } catch (err) {
         console.log('Ошибка копирования:', err);
       }

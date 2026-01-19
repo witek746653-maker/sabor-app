@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useToast } from '../contexts/ToastContext';
 
 function NotificationsPage() {
   const navigate = useNavigate();
+  const toast = useToast();
   const [notifications, setNotifications] = useState([]);
   const [drafts, setDrafts] = useState([]);
   const [activeTab, setActiveTab] = useState('active'); // 'active', 'drafts', 'archive'
@@ -103,17 +105,17 @@ function NotificationsPage() {
   const handleSave = () => {
     // Критический фильтр: если срок жизни не задан - сообщение не отправляется
     if (!formData.lifetimeType) {
-      alert('⚠️ Ошибка: Необходимо задать срок жизни уведомления!');
+      toast.warning('Необходимо задать срок жизни уведомления!');
       return;
     }
 
     if (formData.lifetimeType === 'date' && !formData.expiresAt) {
-      alert('⚠️ Ошибка: Необходимо указать дату окончания!');
+      toast.warning('Необходимо указать дату окончания!');
       return;
     }
 
     if (!formData.title || !formData.message) {
-      alert('⚠️ Ошибка: Заполните все обязательные поля!');
+      toast.warning('Заполните все обязательные поля!');
       return;
     }
 
@@ -188,18 +190,18 @@ function NotificationsPage() {
       console.log('Уведомление отправлено пользователям:', userNotification);
     } catch (error) {
       console.error('Ошибка отправки уведомления пользователям:', error);
-      alert('Ошибка отправки уведомления: ' + error.message);
+      toast.error('Ошибка отправки уведомления: ' + error.message);
     }
   };
 
   const handleSendDraft = (draft) => {
     if (!draft.lifetimeType) {
-      alert('⚠️ Ошибка: Необходимо задать срок жизни уведомления!');
+      toast.warning('Необходимо задать срок жизни уведомления!');
       return;
     }
 
     if (draft.lifetimeType === 'date' && !draft.expiresAt) {
-      alert('⚠️ Ошибка: Необходимо указать дату окончания!');
+      toast.warning('Необходимо указать дату окончания!');
       return;
     }
 

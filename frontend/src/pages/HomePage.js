@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { getMenus, getSections, submitFeedback, login as apiLogin, loginAsGuest } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../contexts/ToastContext';
 import GlobalSearch from '../components/GlobalSearch';
 import ComingSoonWrapper from '../components/ComingSoonWrapper';
 import HelpPopover from '../components/HelpPopover';
@@ -10,6 +11,7 @@ import { isComingSoon } from '../utils/featureStatus';
 function HomePage() {
   const navigate = useNavigate();
   const { isAuthenticated, currentUser, checking, logout: authLogout, setAuth, enableOfflineGuest, isGuest, canWrite } = useAuth();
+  const toast = useToast();
   const [menus, setMenus] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -791,7 +793,7 @@ function HomePage() {
                 onClick={() => {
                   if (isGuest) {
                     // Показываем подсказку для гостей
-                    alert('Доступно после входа. Гостевой режим поддерживает только просмотр данных.');
+                    toast.info('Доступно после входа. Гостевой режим поддерживает только просмотр данных.');
                     return;
                   }
                   setShowFeedbackModal(true);
