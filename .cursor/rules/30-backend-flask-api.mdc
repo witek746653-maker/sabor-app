@@ -1,0 +1,20 @@
+---
+alwaysApply: true
+---
+# Sabor-app: backend rules (Flask API)
+
+- Backend is Flask. Keep API endpoints under /api/*.
+- Auth is cookie-based (Flask-Login):
+  - Do not break session cookies / remember-cookie behavior.
+  - Any endpoint that modifies data must require auth/role checks.
+
+Same-domain production:
+- Prefer SAME-ORIGIN requests (no cross-domain).
+- Avoid adding broad CORS rules. If CORS exists, keep it minimal and safe.
+
+Database:
+- SQLite via SQLAlchemy.
+- If changing DB schema, keep changes minimal and include safe upgrade steps.
+
+Errors:
+- Return consistent JSON errors for frontend: { "error": "...", "message": "..." }.

@@ -84,23 +84,28 @@ function WineItemPage() {
       // Преобразуем путь к аудио в правильный URL через API
       // По умолчанию используем "тот же домен", чтобы работало на Beget и при открытии по IP.
       const API_URL = process.env.REACT_APP_API_URL || '';
+      // Нормализуем путь: если в данных вдруг есть пробелы, превращаем их в "-".
+      const normalizedAudioPath = String(audioPath)
+        .trim()
+        .replace(/%20/g, '-')
+        .replace(/\s+/g, '-');
       let audioUrl;
       
-      if (audioPath.startsWith('../audio/')) {
+      if (normalizedAudioPath.startsWith('../audio/')) {
         // Убираем префикс ../audio/ и добавляем к API URL
-        const filename = audioPath.replace('../audio/', '');
+        const filename = normalizedAudioPath.replace('../audio/', '');
         audioUrl = `${API_URL}/audio/${filename}`;
-      } else if (audioPath.startsWith('/audio/')) {
+      } else if (normalizedAudioPath.startsWith('/audio/')) {
         // Убираем префикс /audio/ и добавляем к API URL
-        const filename = audioPath.replace('/audio/', '');
+        const filename = normalizedAudioPath.replace('/audio/', '');
         audioUrl = `${API_URL}/audio/${filename}`;
-      } else if (audioPath.startsWith('audio/')) {
+      } else if (normalizedAudioPath.startsWith('audio/')) {
         // Убираем префикс audio/ и добавляем к API URL
-        const filename = audioPath.replace('audio/', '');
+        const filename = normalizedAudioPath.replace('audio/', '');
         audioUrl = `${API_URL}/audio/${filename}`;
       } else {
         // Для остальных случаев используем как есть
-        audioUrl = audioPath.startsWith('http') ? audioPath : `/${audioPath}`;
+        audioUrl = normalizedAudioPath.startsWith('http') ? normalizedAudioPath : `/${normalizedAudioPath}`;
       }
       
       // Добавляем обработчики событий для диагностики

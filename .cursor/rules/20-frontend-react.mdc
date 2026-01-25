@@ -1,0 +1,18 @@
+---
+alwaysApply: true
+---
+# Sabor-app: frontend rules (React + Router + Tailwind)
+
+- Keep React code simple and readable.
+- Use existing routing structure in frontend/src/App.js (React Router).
+- Prefer new pages in: frontend/src/pages/
+- Prefer reusable UI in: frontend/src/components/
+
+Styling:
+- Use Tailwind utility classes where possible.
+- Reuse existing Tailwind config choices.
+
+API calls:
+- Always use relative paths: /api/...
+- Do NOT hardcode full backend URLs like http://127.0.0.1:5000 in code.
+- If a helper exists (frontend/src/services/api), reuse it instead of writing fetch everywhere.

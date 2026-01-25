@@ -17,12 +17,38 @@ function DishesPage({ mode = 'kitchen' }) {
   const [dishes, setDishes] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const adminFiltersStorageKey = `adminDishesFilters:${mode}`;
+  const [filtersLoaded, setFiltersLoaded] = useState(false);
+
+  // Восстанавливаем фильтр поиска из localStorage (память браузера).
+  useEffect(() => {
+    const saved = localStorage.getItem(adminFiltersStorageKey);
+    if (!saved) {
+      setFiltersLoaded(true);
+      return;
+    }
+    try {
+      const parsed = JSON.parse(saved);
+      setSearchQuery(parsed?.searchQuery ?? '');
+    } catch (error) {
+      console.warn('Не удалось прочитать фильтр админки из localStorage:', error);
+    } finally {
+      setFiltersLoaded(true);
+    }
+  }, [adminFiltersStorageKey]);
 
   useEffect(() => {
     if (isAuthenticated) {
       loadDishes();
     }
   }, [isAuthenticated]);
+
+  // Сохраняем фильтр поиска админки в localStorage.
+  useEffect(() => {
+    if (!filtersLoaded) return;
+    const payload = { searchQuery };
+    localStorage.setItem(adminFiltersStorageKey, JSON.stringify(payload));
+  }, [adminFiltersStorageKey, searchQuery]);
 
   const loadDishes = async () => {
     setLoading(true);

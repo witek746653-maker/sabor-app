@@ -248,6 +248,32 @@ function WineCatalogPage() {
   const [language, setLanguage] = useState(() => {
     return localStorage.getItem('menuLanguage') || 'RU';
   });
+  const wineFiltersStorageKey = `wineFilters:${category || 'all'}`;
+  const [filtersLoaded, setFiltersLoaded] = useState(false);
+
+  // Восстанавливаем фильтры каталога из localStorage (память браузера).
+  useEffect(() => {
+    const saved = localStorage.getItem(wineFiltersStorageKey);
+    if (!saved) {
+      setFiltersLoaded(true);
+      return;
+    }
+    try {
+      const parsed = JSON.parse(saved);
+      setSelectedSection(parsed?.selectedSection ?? 'all');
+      setSearchQuery(parsed?.searchQuery ?? '');
+      setSelectedGrapeVarieties(
+        Array.isArray(parsed?.selectedGrapeVarieties) ? parsed.selectedGrapeVarieties : []
+      );
+      setSelectedPairings(
+        Array.isArray(parsed?.selectedPairings) ? parsed.selectedPairings : []
+      );
+    } catch (error) {
+      console.warn('Не удалось прочитать фильтры вина из localStorage:', error);
+    } finally {
+      setFiltersLoaded(true);
+    }
+  }, [wineFiltersStorageKey]);
 
   useEffect(() => {
     const loadWines = async () => {
@@ -329,6 +355,24 @@ function WineCatalogPage() {
 
     loadWines();
   }, [category]);
+
+  // Сохраняем выбранные фильтры каталога в localStorage.
+  useEffect(() => {
+    if (!filtersLoaded) return;
+    const payload = {
+      selectedSection,
+      searchQuery,
+      selectedGrapeVarieties,
+      selectedPairings,
+    };
+    localStorage.setItem(wineFiltersStorageKey, JSON.stringify(payload));
+  }, [
+    wineFiltersStorageKey,
+    selectedSection,
+    searchQuery,
+    selectedGrapeVarieties,
+    selectedPairings,
+  ]);
 
   // Закрытие выпадающих меню при клике вне их области
   useEffect(() => {

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Outlet, useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { logout } from '../services/api';
@@ -15,6 +15,9 @@ function AdminLayout() {
   const navigate = useNavigate();
   const location = useLocation();
   const { currentUser, logout: authLogout, checking } = useAuth();
+  // Состояния мобильных меню (выдвижные панели)
+  const [isLeftMenuOpen, setIsLeftMenuOpen] = useState(false);
+  const [isRightMenuOpen, setIsRightMenuOpen] = useState(false);
 
   // Проверяем, является ли пользователь администратором
   const isAdmin = currentUser?.role === 'администратор';
@@ -55,91 +58,245 @@ function AdminLayout() {
   };
 
   const activeSection = getActiveSection();
+  const closeMenus = () => {
+    setIsLeftMenuOpen(false);
+    setIsRightMenuOpen(false);
+  };
+  const handleNavClick = () => {
+    closeMenus();
+  };
+
+  const leftMenuContent = (
+    <>
+      {/* Заголовок левой колонки */}
+      <div className="p-4 border-b border-gray-200 dark:border-white/10">
+        <h2 className="text-sm font-bold uppercase tracking-wider text-text-secondary-light dark:text-text-secondary-dark mb-1">
+          Контент
+        </h2>
+        <p className="text-xs text-text-secondary-light dark:text-text-secondary-dark">
+          Меню, блюда, описания
+        </p>
+      </div>
+
+      {/* Меню левой колонки */}
+      <nav className="flex-1 p-2">
+        <Link
+          to="/admin/kitchen"
+          onClick={handleNavClick}
+          className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors ${
+            activeSection === 'kitchen'
+              ? 'bg-primary text-white'
+              : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
+          }`}
+        >
+          <span className="material-symbols-outlined text-xl">restaurant_menu</span>
+          <span className="font-medium">Кухня</span>
+        </Link>
+
+        <Link
+          to="/admin/wine"
+          onClick={handleNavClick}
+          className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors ${
+            activeSection === 'wine'
+              ? 'bg-primary text-white'
+              : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
+          }`}
+        >
+          <span className="material-symbols-outlined text-xl">wine_bar</span>
+          <span className="font-medium">Вино</span>
+        </Link>
+
+        <Link
+          to="/admin/bar"
+          onClick={handleNavClick}
+          className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors ${
+            activeSection === 'bar'
+              ? 'bg-primary text-white'
+              : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
+          }`}
+        >
+          <span className="material-symbols-outlined text-xl">local_bar</span>
+          <span className="font-medium">Бар</span>
+        </Link>
+
+        <button
+          type="button"
+          onClick={() => {
+            handleNavClick();
+            // Подставляем menu для новых позиций, чтобы не выбирать вручную каждый раз
+            const params = new URLSearchParams();
+            if (activeSection === 'wine') params.set('menu', 'Вино');
+            if (activeSection === 'bar') params.set('menu', 'Барное меню');
+            const qs = params.toString();
+            navigate(qs ? `/admin/add?${qs}` : '/admin/add');
+          }}
+          className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors ${
+            activeSection === 'dish-edit'
+              ? 'bg-primary text-white'
+              : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
+          }`}
+        >
+          <span className="material-symbols-outlined text-xl">add_circle</span>
+          <span className="font-medium">
+            {activeSection === 'wine'
+              ? 'Добавить вино'
+              : activeSection === 'bar'
+              ? 'Добавить напиток'
+              : 'Добавить блюдо'}
+          </span>
+        </button>
+      </nav>
+    </>
+  );
+
+  const rightMenuContent = (
+    <>
+      {/* Заголовок правой колонки */}
+      <div className="p-4 border-b border-gray-200 dark:border-white/10">
+        <h2 className="text-sm font-bold uppercase tracking-wider text-text-secondary-light dark:text-text-secondary-dark mb-1">
+          Управление
+        </h2>
+        <p className="text-xs text-text-secondary-light dark:text-text-secondary-dark">
+          Пользователи и процессы
+        </p>
+      </div>
+
+      {/* Меню правой колонки */}
+      <nav className="flex-1 p-2">
+        <Link
+          to="/admin/users"
+          onClick={handleNavClick}
+          className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors ${
+            activeSection === 'users'
+              ? 'bg-primary text-white'
+              : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
+          }`}
+        >
+          <span className="material-symbols-outlined text-xl">people</span>
+          <span className="font-medium">Пользователи</span>
+        </Link>
+
+        <Link
+          to="/admin/feedback"
+          onClick={handleNavClick}
+          className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors relative ${
+            activeSection === 'feedback'
+              ? 'bg-primary text-white'
+              : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
+          }`}
+        >
+          <span className="material-symbols-outlined text-xl">feedback</span>
+          <span className="font-medium">Обратная связь</span>
+        </Link>
+
+        <Link
+          to="/admin/notifications"
+          onClick={handleNavClick}
+          className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors ${
+            activeSection === 'notifications'
+              ? 'bg-primary text-white'
+              : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
+          }`}
+        >
+          <span className="material-symbols-outlined text-xl">notifications</span>
+          <span className="font-medium">Уведомления</span>
+        </Link>
+
+        <Link
+          to="/admin/deploy"
+          onClick={handleNavClick}
+          className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors ${
+            activeSection === 'deploy'
+              ? 'bg-primary text-white'
+              : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
+          }`}
+        >
+          <span className="material-symbols-outlined text-xl">sync</span>
+          <span className="font-medium">Обновление</span>
+        </Link>
+
+        <Link
+          to="/admin/help"
+          onClick={handleNavClick}
+          className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors ${
+            activeSection === 'help'
+              ? 'bg-primary text-white'
+              : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
+          }`}
+        >
+          <span className="material-symbols-outlined text-xl">help</span>
+          <span className="font-medium">Справка</span>
+        </Link>
+      </nav>
+    </>
+  );
 
   return (
     <div className="bg-background-light dark:bg-background-dark font-display antialiased text-text-primary-light dark:text-text-primary-dark transition-colors duration-200 min-h-screen flex">
       {/* Левая колонка - Контент / Меню / Обучение */}
-      <aside className="w-64 bg-surface-light dark:bg-surface-dark border-r border-gray-200 dark:border-white/10 flex flex-col shrink-0">
-        {/* Заголовок левой колонки */}
-        <div className="p-4 border-b border-gray-200 dark:border-white/10">
-          <h2 className="text-sm font-bold uppercase tracking-wider text-text-secondary-light dark:text-text-secondary-dark mb-1">
-            Контент
-          </h2>
-          <p className="text-xs text-text-secondary-light dark:text-text-secondary-dark">
-            Меню, блюда, описания
-          </p>
-        </div>
-
-        {/* Меню левой колонки */}
-        <nav className="flex-1 p-2">
-          <Link
-            to="/admin/kitchen"
-            className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors ${
-              activeSection === 'kitchen'
-                ? 'bg-primary text-white'
-                : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
-            }`}
-          >
-            <span className="material-symbols-outlined text-xl">restaurant_menu</span>
-            <span className="font-medium">Кухня</span>
-          </Link>
-
-          <Link
-            to="/admin/wine"
-            className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors ${
-              activeSection === 'wine'
-                ? 'bg-primary text-white'
-                : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
-            }`}
-          >
-            <span className="material-symbols-outlined text-xl">wine_bar</span>
-            <span className="font-medium">Вино</span>
-          </Link>
-
-          <Link
-            to="/admin/bar"
-            className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors ${
-              activeSection === 'bar'
-                ? 'bg-primary text-white'
-                : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
-            }`}
-          >
-            <span className="material-symbols-outlined text-xl">local_bar</span>
-            <span className="font-medium">Бар</span>
-          </Link>
-
-          <button
-            type="button"
-            onClick={() => {
-              // Подставляем menu для новых позиций, чтобы не выбирать вручную каждый раз
-              const params = new URLSearchParams();
-              if (activeSection === 'wine') params.set('menu', 'Вино');
-              if (activeSection === 'bar') params.set('menu', 'Барное меню');
-              const qs = params.toString();
-              navigate(qs ? `/admin/add?${qs}` : '/admin/add');
-            }}
-            className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors ${
-              activeSection === 'dish-edit'
-                ? 'bg-primary text-white'
-                : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
-            }`}
-          >
-            <span className="material-symbols-outlined text-xl">add_circle</span>
-            <span className="font-medium">
-              {activeSection === 'wine'
-                ? 'Добавить вино'
-                : activeSection === 'bar'
-                ? 'Добавить напиток'
-                : 'Добавить блюдо'}
-            </span>
-          </button>
-        </nav>
+      <aside className="hidden md:flex w-64 bg-surface-light dark:bg-surface-dark border-r border-gray-200 dark:border-white/10 flex-col shrink-0">
+        {leftMenuContent}
       </aside>
 
       {/* Центральная рабочая область */}
-      <main className="flex-1 flex flex-col overflow-hidden">
+      <main className="flex-1 flex flex-col overflow-hidden min-w-0">
+        {/* Мобильная верхняя панель */}
+        <header className="md:hidden bg-surface-light/95 dark:bg-surface-dark/95 backdrop-blur-md border-b border-gray-200 dark:border-white/10">
+          <div className="flex items-center justify-between px-4 h-14">
+            <button
+              type="button"
+              onClick={() => setIsLeftMenuOpen(true)}
+              className="h-9 px-3 rounded-lg bg-gray-100 dark:bg-white/10 text-sm font-medium hover:bg-gray-200 dark:hover:bg-white/20 transition-colors flex items-center gap-2"
+            >
+              <span className="material-symbols-outlined text-[18px]">menu</span>
+              Контент
+            </button>
+            <div className="text-center">
+              <h1 className="text-base font-bold">Админ-панель</h1>
+              {currentUser && (
+                <span className="text-[11px] text-text-secondary-light dark:text-text-secondary-dark">
+                  {currentUser.name}
+                </span>
+              )}
+            </div>
+            {isAdmin ? (
+              <button
+                type="button"
+                onClick={() => setIsRightMenuOpen(true)}
+                className="h-9 px-3 rounded-lg bg-gray-100 dark:bg-white/10 text-sm font-medium hover:bg-gray-200 dark:hover:bg-white/20 transition-colors flex items-center gap-2"
+              >
+                Управление
+                <span className="material-symbols-outlined text-[18px]">tune</span>
+              </button>
+            ) : (
+              <div className="w-[92px]" />
+            )}
+          </div>
+          <div className="px-4 pb-3 flex items-center justify-between gap-3">
+            {currentUser && (
+              <span className="text-xs text-text-secondary-light dark:text-text-secondary-dark">
+                {currentUser.name} ({currentUser.role})
+              </span>
+            )}
+            <div className="flex items-center gap-2">
+              <Link
+                to="/"
+                className="px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition-colors"
+              >
+                На главную
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-white/10 text-xs font-medium hover:bg-gray-200 dark:hover:bg-white/20 transition-colors"
+              >
+                Выйти
+              </button>
+            </div>
+          </div>
+        </header>
+
         {/* Верхняя панель с информацией о пользователе и выходом */}
-        <header className="h-16 bg-surface-light/95 dark:bg-surface-dark/95 backdrop-blur-md border-b border-gray-200 dark:border-white/10 flex items-center justify-between px-6 shrink-0">
+        <header className="hidden md:flex h-16 bg-surface-light/95 dark:bg-surface-dark/95 backdrop-blur-md border-b border-gray-200 dark:border-white/10 items-center justify-between px-6 shrink-0">
           <div className="flex items-center gap-4">
             <h1 className="text-lg font-bold">Админ-панель</h1>
             {currentUser && (
@@ -148,12 +305,20 @@ function AdminLayout() {
               </span>
             )}
           </div>
-          <button
-            onClick={handleLogout}
-            className="px-4 py-2 rounded-lg bg-gray-100 dark:bg-white/10 text-sm font-medium hover:bg-gray-200 dark:hover:bg-white/20 transition-colors"
-          >
-            Выйти
-          </button>
+          <div className="flex items-center gap-2">
+            <Link
+              to="/"
+              className="px-4 py-2 rounded-lg bg-primary/10 text-primary text-sm font-medium hover:bg-primary/20 transition-colors"
+            >
+              На главную
+            </Link>
+            <button
+              onClick={handleLogout}
+              className="px-4 py-2 rounded-lg bg-gray-100 dark:bg-white/10 text-sm font-medium hover:bg-gray-200 dark:hover:bg-white/20 transition-colors"
+            >
+              Выйти
+            </button>
+          </div>
         </header>
 
         {/* Контент (Outlet для вложенных маршрутов) */}
@@ -164,80 +329,63 @@ function AdminLayout() {
 
       {/* Правая колонка - Администрирование / Управление */}
       {isAdmin && (
-        <aside className="w-64 bg-surface-light dark:bg-surface-dark border-l border-gray-200 dark:border-white/10 flex flex-col shrink-0">
-          {/* Заголовок правой колонки */}
-          <div className="p-4 border-b border-gray-200 dark:border-white/10">
-            <h2 className="text-sm font-bold uppercase tracking-wider text-text-secondary-light dark:text-text-secondary-dark mb-1">
-              Управление
-            </h2>
-            <p className="text-xs text-text-secondary-light dark:text-text-secondary-dark">
-              Пользователи и процессы
-            </p>
-          </div>
-
-          {/* Меню правой колонки */}
-          <nav className="flex-1 p-2">
-            <Link
-              to="/admin/users"
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors ${
-                activeSection === 'users'
-                  ? 'bg-primary text-white'
-                  : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
-              }`}
-            >
-              <span className="material-symbols-outlined text-xl">people</span>
-              <span className="font-medium">Пользователи</span>
-            </Link>
-
-            <Link
-              to="/admin/feedback"
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors relative ${
-                activeSection === 'feedback'
-                  ? 'bg-primary text-white'
-                  : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
-              }`}
-            >
-              <span className="material-symbols-outlined text-xl">feedback</span>
-              <span className="font-medium">Обратная связь</span>
-            </Link>
-
-            <Link
-              to="/admin/notifications"
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors ${
-                activeSection === 'notifications'
-                  ? 'bg-primary text-white'
-                  : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
-              }`}
-            >
-              <span className="material-symbols-outlined text-xl">notifications</span>
-              <span className="font-medium">Уведомления</span>
-            </Link>
-
-            <Link
-              to="/admin/deploy"
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors ${
-                activeSection === 'deploy'
-                  ? 'bg-primary text-white'
-                  : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
-              }`}
-            >
-              <span className="material-symbols-outlined text-xl">sync</span>
-              <span className="font-medium">Обновление</span>
-            </Link>
-
-            <Link
-              to="/admin/help"
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors ${
-                activeSection === 'help'
-                  ? 'bg-primary text-white'
-                  : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
-              }`}
-            >
-              <span className="material-symbols-outlined text-xl">help</span>
-              <span className="font-medium">Справка</span>
-            </Link>
-          </nav>
+        <aside className="hidden md:flex w-64 bg-surface-light dark:bg-surface-dark border-l border-gray-200 dark:border-white/10 flex-col shrink-0">
+          {rightMenuContent}
         </aside>
+      )}
+
+      {/* Мобильное левое меню (оверлей) */}
+      {isLeftMenuOpen && (
+        <div className="fixed inset-0 z-50 md:hidden">
+          <button
+            type="button"
+            onClick={closeMenus}
+            className="absolute inset-0 bg-black/40"
+            aria-label="Закрыть меню"
+          />
+          <aside className="absolute left-0 top-0 h-full w-72 bg-surface-light dark:bg-surface-dark border-r border-gray-200 dark:border-white/10 flex flex-col">
+            <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-white/10">
+              <span className="text-sm font-bold uppercase tracking-wider text-text-secondary-light dark:text-text-secondary-dark">
+                Контент
+              </span>
+              <button
+                type="button"
+                onClick={closeMenus}
+                className="h-8 w-8 rounded-lg bg-gray-100 dark:bg-white/10 text-sm font-medium hover:bg-gray-200 dark:hover:bg-white/20 transition-colors flex items-center justify-center"
+              >
+                <span className="material-symbols-outlined text-[18px]">close</span>
+              </button>
+            </div>
+            {leftMenuContent}
+          </aside>
+        </div>
+      )}
+
+      {/* Мобильное правое меню (оверлей) */}
+      {isRightMenuOpen && isAdmin && (
+        <div className="fixed inset-0 z-50 md:hidden">
+          <button
+            type="button"
+            onClick={closeMenus}
+            className="absolute inset-0 bg-black/40"
+            aria-label="Закрыть меню"
+          />
+          <aside className="absolute right-0 top-0 h-full w-72 bg-surface-light dark:bg-surface-dark border-l border-gray-200 dark:border-white/10 flex flex-col">
+            <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-white/10">
+              <span className="text-sm font-bold uppercase tracking-wider text-text-secondary-light dark:text-text-secondary-dark">
+                Управление
+              </span>
+              <button
+                type="button"
+                onClick={closeMenus}
+                className="h-8 w-8 rounded-lg bg-gray-100 dark:bg-white/10 text-sm font-medium hover:bg-gray-200 dark:hover:bg-white/20 transition-colors flex items-center justify-center"
+              >
+                <span className="material-symbols-outlined text-[18px]">close</span>
+              </button>
+            </div>
+            {rightMenuContent}
+          </aside>
+        </div>
       )}
     </div>
   );

@@ -29,6 +29,32 @@ function MenuPage() {
     const saved = localStorage.getItem('favoriteDishes');
     return saved ? JSON.parse(saved) : [];
   });
+  const menuFiltersStorageKey = `menuFilters:${menuName || 'all'}`;
+  const [filtersLoaded, setFiltersLoaded] = useState(false);
+
+  // Восстанавливаем фильтры меню из localStorage (память браузера).
+  useEffect(() => {
+    const saved = localStorage.getItem(menuFiltersStorageKey);
+    if (!saved) {
+      setFiltersLoaded(true);
+      return;
+    }
+    try {
+      const parsed = JSON.parse(saved);
+      const hasGlobalSearch = sessionStorage.getItem('globalSearchQuery');
+      setSelectedSection(parsed?.selectedSection ?? 'all');
+      if (!hasGlobalSearch) {
+        setSearchQuery(parsed?.searchQuery ?? '');
+      }
+      setSelectedAllergens(Array.isArray(parsed?.selectedAllergens) ? parsed.selectedAllergens : []);
+      setSelectedTags(Array.isArray(parsed?.selectedTags) ? parsed.selectedTags : []);
+      setShowFavorites(Boolean(parsed?.showFavorites));
+    } catch (error) {
+      console.warn('Не удалось прочитать фильтры меню из localStorage:', error);
+    } finally {
+      setFiltersLoaded(true);
+    }
+  }, [menuFiltersStorageKey]);
 
   // Определяем “тип” позиции по полям menu/section (KISS: простые проверки по словам).
   const getDetailPathForItem = (it) => {
@@ -129,6 +155,26 @@ function MenuPage() {
       clearInterval(checkInterval);
     };
   }, [favorites]);
+
+  // Сохраняем выбранные фильтры меню в localStorage.
+  useEffect(() => {
+    if (!filtersLoaded) return;
+    const payload = {
+      selectedSection,
+      searchQuery,
+      selectedAllergens,
+      selectedTags,
+      showFavorites,
+    };
+    localStorage.setItem(menuFiltersStorageKey, JSON.stringify(payload));
+  }, [
+    menuFiltersStorageKey,
+    selectedSection,
+    searchQuery,
+    selectedAllergens,
+    selectedTags,
+    showFavorites,
+  ]);
 
   // Закрытие выпадающих меню при клике вне их области
   useEffect(() => {

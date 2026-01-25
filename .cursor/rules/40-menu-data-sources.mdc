@@ -1,0 +1,18 @@
+---
+alwaysApply: true
+---
+# Sabor-app: menu data rules (DB + JSON fallback)
+
+- Menu data can exist in two forms:
+  - SQLite DB (main source for editing/admin)
+  - menu-database.json (fallback and a source of extra fields)
+
+- When changing menu item fields:
+  - Keep DB and JSON fields consistent.
+  - Do not drop extra wine/bar fields that come from JSON.
+
+- If implementing import/rebuild:
+  - Deduplicate items by id.
+  - Preserve stable ordering where the UI expects it.
+
+- Keep fallback behavior working: menu should still show if DB partially fails.

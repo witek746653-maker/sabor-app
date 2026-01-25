@@ -1,0 +1,36 @@
+---
+alwaysApply: true
+---
+# Sabor-app: project structure
+
+This file describes the physical folder structure of the project.
+Use it to place new files in correct locations.
+
+Root structure:
+- frontend/  -> React frontend (UI)
+- backend/   -> Flask backend (API, auth, DB)
+- .cursor/   -> Cursor project rules
+- README.md  -> project documentation
+
+Frontend structure:
+- frontend/src/
+  - pages/        -> React pages used by React Router
+  - components/   -> Reusable UI components
+  - services/     -> API / fetch helpers
+  - assets/       -> Images, icons, static assets
+  - App.js        -> Main app + routing
+  - index.js      -> React entry point
+
+Backend structure:
+- backend/
+  - app.py        -> Flask app entry point
+  - routes/       -> API route definitions
+  - models/       -> Database models (SQLAlchemy)
+  - services/     -> Business logic
+  - static/       -> Uploaded/static files (if any)
+  - templates/    -> HTML templates (if used)
+
+Rules:
+- Do NOT mix frontend and backend code.
+- Do NOT create new top-level folders without a clear reason.
+- Place new files into existing folders whenever possible.

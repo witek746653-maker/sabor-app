@@ -1,0 +1,15 @@
+---
+alwaysApply: true
+---
+# Sabor-app: project context (technical only)
+
+These are PROJECT-SPECIFIC technical constraints.
+Do NOT override global communication/teaching rules.
+
+- This is a fullstack app:
+  - frontend: React (Create React App) + React Router + Tailwind
+  - backend: Flask API + SQLite + Flask-Login (cookie sessions)
+- In production frontend and backend are on the SAME DOMAIN:
+  - frontend calls backend using relative URLs like /api/...
+- In development frontend uses proxy to backend (localhost:5000).
+- Prefer small, safe changes that do not break existing routes or admin features.

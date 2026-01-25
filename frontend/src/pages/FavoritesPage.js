@@ -19,6 +19,25 @@ function FavoritesPage() {
     // Загружаем язык из localStorage или используем 'RU' по умолчанию
     return localStorage.getItem('menuLanguage') || 'RU';
   });
+  const favoritesFiltersStorageKey = 'favoritesFilters';
+  const [filtersLoaded, setFiltersLoaded] = useState(false);
+
+  // Восстанавливаем фильтр поиска из localStorage (память браузера).
+  useEffect(() => {
+    const saved = localStorage.getItem(favoritesFiltersStorageKey);
+    if (!saved) {
+      setFiltersLoaded(true);
+      return;
+    }
+    try {
+      const parsed = JSON.parse(saved);
+      setSearchQuery(parsed?.searchQuery ?? '');
+    } catch (error) {
+      console.warn('Не удалось прочитать фильтр избранного из localStorage:', error);
+    } finally {
+      setFiltersLoaded(true);
+    }
+  }, [favoritesFiltersStorageKey]);
 
   // Избранное может содержать и бар/вино (если их добавляли раньше), поэтому строим правильный путь.
   const getDetailPathForItem = (it) => {
@@ -95,6 +114,13 @@ function FavoritesPage() {
       clearInterval(checkInterval);
     };
   }, [favorites]);
+
+  // Сохраняем фильтр поиска избранного в localStorage.
+  useEffect(() => {
+    if (!filtersLoaded) return;
+    const payload = { searchQuery };
+    localStorage.setItem(favoritesFiltersStorageKey, JSON.stringify(payload));
+  }, [favoritesFiltersStorageKey, searchQuery]);
 
   // Функция для получения значения поля в зависимости от языка
   const getFieldValue = (dish, fieldName) => {

@@ -154,16 +154,21 @@ function WineDetailPage() {
 
     // Термин **API_URL**: “адрес бэкенда”, куда мы ходим за файлами.
     const API_URL = process.env.REACT_APP_API_URL || '';
+    // Нормализуем путь: если в данных вдруг есть пробелы, превращаем их в "-".
+    const normalizedAudioPath = String(audioPath)
+      .trim()
+      .replace(/%20/g, '-')
+      .replace(/\s+/g, '-');
     let audioUrl;
 
-    if (audioPath.startsWith('../audio/')) {
-      audioUrl = `${API_URL}/audio/${audioPath.replace('../audio/', '')}`;
-    } else if (audioPath.startsWith('/audio/')) {
-      audioUrl = `${API_URL}/audio/${audioPath.replace('/audio/', '')}`;
-    } else if (audioPath.startsWith('audio/')) {
-      audioUrl = `${API_URL}/audio/${audioPath.replace('audio/', '')}`;
+    if (normalizedAudioPath.startsWith('../audio/')) {
+      audioUrl = `${API_URL}/audio/${normalizedAudioPath.replace('../audio/', '')}`;
+    } else if (normalizedAudioPath.startsWith('/audio/')) {
+      audioUrl = `${API_URL}/audio/${normalizedAudioPath.replace('/audio/', '')}`;
+    } else if (normalizedAudioPath.startsWith('audio/')) {
+      audioUrl = `${API_URL}/audio/${normalizedAudioPath.replace('audio/', '')}`;
     } else {
-      audioUrl = audioPath.startsWith('http') ? audioPath : `/${audioPath}`;
+      audioUrl = normalizedAudioPath.startsWith('http') ? normalizedAudioPath : `/${normalizedAudioPath}`;
     }
 
     audio.src = audioUrl;
