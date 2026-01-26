@@ -19,9 +19,6 @@ SABOR_DB_PATH — переменная, указывающая путь к ба�
 На сервере (рабочая база):
 /var/lib/sabor-app/database.db
 
-На сервере (старая база, больше не нужна):
-/var/www/sabor-app/backend/database.db
-
 На локальном компьютере (dev-база):
 D:\GitHub\sabor-app\backend\database.dev.db
 

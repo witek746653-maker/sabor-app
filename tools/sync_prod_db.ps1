@@ -25,7 +25,6 @@ if ([string]::IsNullOrWhiteSpace($LocalDbPath)) {
 # --- Defaults (can be overridden by deploy.config.ps1) ---
 $HostName = "85.198.98.16"
 $UserName = "root"
-$RemoteRoot = "/var/www/sabor-app"
 $SshKeyPath = $null
 
 # --- Load local config (not committed) ---
@@ -35,7 +34,7 @@ if (Test-Path $ConfigPath) {
 }
 
 $Remote = "$UserName@$HostName"
-$RemoteDbPath = "$RemoteRoot/backend/database.db"
+$RemoteDbPath = "/var/lib/sabor-app/database.db"
 $RemoteTmpPath = "/tmp/sabor-db-backup.db"
 
 function SshArgs() {

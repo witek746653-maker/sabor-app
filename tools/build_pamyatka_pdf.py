@@ -178,7 +178,6 @@ def build_pdf():
 
     story.append(Paragraph("2) Где лежат базы", styles["h1"]))
     story.append(Paragraph("<b>На сервере (рабочая база):</b> /var/lib/sabor-app/database.db", styles["body"]))
-    story.append(Paragraph("<b>На сервере (старая база):</b> /var/www/sabor-app/backend/database.db", styles["body"]))
     story.append(Paragraph("<b>Локально (dev‑база):</b> D:\\GitHub\\sabor-app\\backend\\database.dev.db", styles["body"]))
     story.append(Paragraph(
         "Важно: серверная база и локальная база — это разные файлы, и они могут отличаться.",
