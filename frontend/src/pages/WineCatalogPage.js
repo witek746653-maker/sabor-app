@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { getWines, getWinesByCategory } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import { getDishImageUrl } from '../utils/imageUtils';
+import { useVisibility } from '../contexts/VisibilityContext';
 
 // Функция для получения эмодзи флага по названию страны или коду страны
 const getCountryFlag = (country) => {
@@ -234,6 +235,7 @@ function WineCatalogPage() {
   const { category } = useParams(); // category опционален
   const navigate = useNavigate();
   const { isAuthenticated, currentUser } = useAuth();
+  const { isVisible } = useVisibility();
   const [wines, setWines] = useState([]);
   const [allWines, setAllWines] = useState([]);
   const [sections, setSections] = useState([]);
@@ -470,7 +472,13 @@ function WineCatalogPage() {
         );
       });
     
-    return matchesSection && matchesSearch && matchesGrapeVarieties && matchesPairings;
+    const isArchived = wine?.status === 'в архиве';
+    if (isArchived && !isVisible({ scope: 'contentItem', target: 'status.archived' })) {
+      return false;
+    }
+    const target = wine?.id ? `wine:${wine.id}` : null;
+    const isItemVisible = target ? isVisible({ scope: 'contentItem', target }) : true;
+    return matchesSection && matchesSearch && matchesGrapeVarieties && matchesPairings && isItemVisible;
   });
 
   // Функция для сокращения названия вина
@@ -503,20 +511,22 @@ function WineCatalogPage() {
             {language === 'EN' ? 'Wine Catalog' : 'Каталог вин'}
           </h2>
           <div className="flex w-12 items-center justify-end">
-            <button 
-              onClick={() => {
-                const newLanguage = language === 'RU' ? 'EN' : 'RU';
-                setLanguage(newLanguage);
-                localStorage.setItem('menuLanguage', newLanguage);
-              }}
-              className={`text-xs font-bold leading-normal tracking-[0.015em] shrink-0 border rounded-lg px-2 py-1 transition-colors ${
-                language === 'EN' 
-                  ? 'bg-primary text-white border-primary' 
-                  : 'text-primary border-primary/30 hover:bg-primary hover:text-white'
-              }`}
-            >
-              {language === 'RU' ? 'EN' : 'RU'}
-            </button>
+            {isVisible({ scope: 'featureAction', target: 'language.switcher' }) && (
+              <button 
+                onClick={() => {
+                  const newLanguage = language === 'RU' ? 'EN' : 'RU';
+                  setLanguage(newLanguage);
+                  localStorage.setItem('menuLanguage', newLanguage);
+                }}
+                className={`text-xs font-bold leading-normal tracking-[0.015em] shrink-0 border rounded-lg px-2 py-1 transition-colors ${
+                  language === 'EN' 
+                    ? 'bg-primary text-white border-primary' 
+                    : 'text-primary border-primary/30 hover:bg-primary hover:text-white'
+                }`}
+              >
+                {language === 'RU' ? 'EN' : 'RU'}
+              </button>
+            )}
           </div>
         </div>
         {/* Breadcrumb */}
@@ -528,19 +538,21 @@ function WineCatalogPage() {
           </nav>
         </div>
         {/* Search */}
-        <div className="px-4 py-2">
-          <div className="flex w-full items-stretch rounded-xl h-10 bg-white dark:bg-surface-dark shadow-sm border border-gray-100 dark:border-gray-700/50 group focus-within:border-primary/50 transition-colors">
-            <div className="text-[#896f61] dark:text-gray-400 flex items-center justify-center pl-3 pr-2 group-focus-within:text-primary transition-colors">
-              <span className="material-symbols-outlined text-[20px]">search</span>
+        {isVisible({ scope: 'pageBlock', target: 'search.input' }) && (
+          <div className="px-4 py-2">
+            <div className="flex w-full items-stretch rounded-xl h-10 bg-white dark:bg-surface-dark shadow-sm border border-gray-100 dark:border-gray-700/50 group focus-within:border-primary/50 transition-colors">
+              <div className="text-[#896f61] dark:text-gray-400 flex items-center justify-center pl-3 pr-2 group-focus-within:text-primary transition-colors">
+                <span className="material-symbols-outlined text-[20px]">search</span>
+              </div>
+              <input
+                className="flex w-full flex-1 bg-transparent border-none text-[#181311] dark:text-white placeholder:text-[#896f61] dark:placeholder:text-gray-500 focus:ring-0 text-sm font-normal h-full p-0 pr-3"
+                placeholder={language === 'EN' ? 'Search wines...' : 'Поиск вина...'}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
             </div>
-            <input
-              className="flex w-full flex-1 bg-transparent border-none text-[#181311] dark:text-white placeholder:text-[#896f61] dark:placeholder:text-gray-500 focus:ring-0 text-sm font-normal h-full p-0 pr-3"
-              placeholder={language === 'EN' ? 'Search wines...' : 'Поиск вина...'}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
           </div>
-        </div>
+        )}
         {/* Filters */}
         <div className="relative">
           <div className="flex gap-2 px-4 py-2 overflow-x-auto no-scrollbar items-center pb-3 border-t border-gray-100/50 dark:border-gray-800/50 mt-1">
@@ -931,33 +943,60 @@ function WineCatalogPage() {
 
       {/* Footer */}
       <div className="fixed bottom-0 z-50 w-full sabor-fixed bg-white/95 dark:bg-surface-dark/95 backdrop-blur-md border-t border-gray-100 dark:border-gray-800 pb-safe">
-        <div className={`grid ${isAuthenticated && currentUser?.role === 'администратор' ? 'grid-cols-4' : 'grid-cols-3'} px-6 items-center h-[60px]`}>
-          <Link to="/" className="flex flex-col items-center justify-center gap-1 text-primary">
-            <span className="material-symbols-outlined text-[24px]">restaurant_menu</span>
-            <span className="text-[10px] font-bold">{language === 'EN' ? 'Menu' : 'Меню'}</span>
-          </Link>
-          <button className="flex flex-col items-center justify-center gap-1 text-gray-400 hover:text-[#181311] dark:hover:text-white transition-colors">
-            <span className="material-symbols-outlined text-[24px]">favorite</span>
-            <span className="text-[10px] font-medium">{language === 'EN' ? 'Favorites' : 'Избранное'}</span>
-          </button>
-          <button 
-            onClick={() => {
-              document.querySelector('input[placeholder*="Search"], input[placeholder*="Поиск"]')?.focus();
-            }}
-            className="flex flex-col items-center justify-center gap-1 text-gray-400 hover:text-[#181311] dark:hover:text-white transition-colors"
-          >
-            <span className="material-symbols-outlined text-[24px]">search</span>
-            <span className="text-[10px] font-medium">{language === 'EN' ? 'Search' : 'Поиск'}</span>
-          </button>
-          {isAuthenticated && currentUser?.role === 'администратор' && (
-            <Link
-              to="/admin"
-              className="flex flex-col items-center justify-center gap-1 text-gray-400 hover:text-[#181311] dark:hover:text-white transition-colors"
-            >
-              <span className="material-symbols-outlined text-[24px]">person</span>
-              <span className="text-[10px] font-medium">{language === 'EN' ? 'Admin' : 'Админ-панель'}</span>
+        <div
+          className={`grid ${
+            (() => {
+              const showFooterMenu = isVisible({ scope: 'menuItem', target: 'footer.menu' });
+              const showFooterFavorites = isVisible({ scope: 'menuItem', target: 'footer.favorites' });
+              const showFooterSearch = isVisible({ scope: 'menuItem', target: 'footer.search' });
+              const showFooterAdmin =
+                isAuthenticated &&
+                currentUser?.role === 'администратор' &&
+                isVisible({ scope: 'menuItem', target: 'footer.admin' });
+              const itemCount =
+                (showFooterMenu ? 1 : 0) +
+                (showFooterFavorites ? 1 : 0) +
+                (showFooterSearch ? 1 : 0) +
+                (showFooterAdmin ? 1 : 0);
+              return itemCount >= 4 ? 'grid-cols-4' : 'grid-cols-3';
+            })()
+          } px-6 items-center h-[60px]`}
+        >
+          {isVisible({ scope: 'menuItem', target: 'footer.menu' }) && (
+            <Link to="/" className="flex flex-col items-center justify-center gap-1 text-primary">
+              <span className="material-symbols-outlined text-[24px]">restaurant_menu</span>
+              <span className="text-[10px] font-bold">{language === 'EN' ? 'Menu' : 'Меню'}</span>
             </Link>
           )}
+          {isVisible({ scope: 'menuItem', target: 'footer.favorites' }) && (
+            <button className="flex flex-col items-center justify-center gap-1 text-gray-400 hover:text-[#181311] dark:hover:text-white transition-colors">
+              <span className="material-symbols-outlined text-[24px]">favorite</span>
+              <span className="text-[10px] font-medium">{language === 'EN' ? 'Favorites' : 'Избранное'}</span>
+            </button>
+          )}
+          {isVisible({ scope: 'menuItem', target: 'footer.search' }) && (
+            <button 
+              onClick={() => {
+                // Открываем глобальный поиск отдельной страницей.
+                navigate('/search');
+              }}
+              className="flex flex-col items-center justify-center gap-1 text-gray-400 hover:text-[#181311] dark:hover:text-white transition-colors"
+            >
+              <span className="material-symbols-outlined text-[24px]">search</span>
+              <span className="text-[10px] font-medium">{language === 'EN' ? 'Search' : 'Поиск'}</span>
+            </button>
+          )}
+          {isAuthenticated &&
+            currentUser?.role === 'администратор' &&
+            isVisible({ scope: 'menuItem', target: 'footer.admin' }) && (
+              <Link
+                to="/admin"
+                className="flex flex-col items-center justify-center gap-1 text-gray-400 hover:text-[#181311] dark:hover:text-white transition-colors"
+              >
+                <span className="material-symbols-outlined text-[24px]">person</span>
+                <span className="text-[10px] font-medium">{language === 'EN' ? 'Admin' : 'Админ-панель'}</span>
+              </Link>
+            )}
         </div>
       </div>
     </div>

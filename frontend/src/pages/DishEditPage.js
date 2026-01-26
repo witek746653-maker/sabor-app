@@ -4,10 +4,11 @@ import { getDish, updateDish, addDish, getMenus, getSections } from '../services
 import { getImageUrl } from '../utils/imageUtils';
 import { useToast } from '../contexts/ToastContext';
 
-function DishEditPage() {
+function DishEditPage({ mode }) {
   const { id } = useParams();
   const navigate = useNavigate();
   const isNew = !id || id === 'new';
+  const isTeaMode = mode === 'tea';
   const toast = useToast();
   
   const [dish, setDish] = useState({
@@ -16,10 +17,18 @@ function DishEditPage() {
     contains: '',
     menu: '',
     section: '',
+    origin: '',
+    brewing: { temperature_c: '', time_minutes: '' },
+    caffeine: '',
     tags: [],
     allergens: [],
+    features: '',
+    comments: [],
+    reference_info: '',
     image: { src: '', alt: '' },
     status: 'актуально', // Статус блюда: 'актуально' или 'в архиве'
+    updated_at: '',
+    update_source: '',
     i18n: { en: {} }, // Английские переводы
   });
   
@@ -51,6 +60,41 @@ function DishEditPage() {
     { id: 'chili pepper', name: 'Перец чили', emoji: '🌶️' },
   ];
 
+  const normalizeTagList = (value) => {
+    if (Array.isArray(value)) return value.filter(Boolean);
+    if (typeof value === 'string') {
+      return value.split(',').map((v) => v.trim()).filter(Boolean);
+    }
+    return [];
+  };
+
+  const normalizeCommentList = (value) => {
+    if (Array.isArray(value)) return value.filter(Boolean);
+    if (typeof value === 'string') {
+      return value.split('\n').map((v) => v.trim()).filter(Boolean);
+    }
+    return [];
+  };
+
+  const normalizeDishData = (data) => ({
+    ...data,
+    origin: data?.origin || '',
+    brewing: {
+      temperature_c: data?.brewing?.temperature_c ?? '',
+      time_minutes: data?.brewing?.time_minutes ?? '',
+    },
+    caffeine: data?.caffeine || '',
+    tags: normalizeTagList(data?.tags),
+    allergens: normalizeTagList(data?.allergens),
+    features: data?.features || '',
+    comments: normalizeCommentList(data?.comments),
+    reference_info: data?.reference_info || '',
+    image: data?.image || { src: '', alt: '' },
+    updated_at: data?.updated_at || '',
+    update_source: data?.update_source || '',
+    i18n: data?.i18n || { en: {} },
+  });
+
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -60,12 +104,10 @@ function DishEditPage() {
         if (!isNew) {
           const dishData = await getDish(id);
           // Инициализируем i18n, если его нет
-          if (!dishData.i18n) {
-            dishData.i18n = { en: {} };
-          }
-          setDish(dishData);
-          if (dishData.allergens) {
-            setSelectedAllergens(dishData.allergens);
+          const normalized = normalizeDishData(dishData);
+          setDish(normalized);
+          if (normalized.allergens) {
+            setSelectedAllergens(normalized.allergens);
           }
         }
       } catch (error) {
@@ -97,6 +139,16 @@ function DishEditPage() {
     setDish((prev) => ({
       ...prev,
       [field]: value,
+    }));
+  };
+
+  const handleNestedChange = (field, nestedField, value) => {
+    setDish((prev) => ({
+      ...prev,
+      [field]: {
+        ...(prev[field] || {}),
+        [nestedField]: value,
+      },
     }));
   };
 
@@ -195,6 +247,9 @@ function DishEditPage() {
         status: dish.status || 'актуально',
         // Убеждаемся, что i18n структура сохранена
         i18n: dish.i18n || { en: {} },
+        // Нормализуем поля чая
+        brewing: dish.brewing || { temperature_c: '', time_minutes: '' },
+        comments: Array.isArray(dish.comments) ? dish.comments : [],
       };
 
       if (isNew) {
@@ -303,6 +358,13 @@ function DishEditPage() {
             onChange={(e) => handleInputChange('image', { src: e.target.value, alt: dish.title })}
             className="w-full rounded-xl border-slate-200 dark:border-white/10 bg-white dark:bg-[#2c2420] text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-primary focus:ring-primary dark:focus:border-primary h-12 px-4"
           />
+          <input
+            type="text"
+            placeholder="Описание картинки (alt)"
+            value={dish.image?.alt || ''}
+            onChange={(e) => handleInputChange('image', { ...dish.image, alt: e.target.value })}
+            className="w-full rounded-xl border-slate-200 dark:border-white/10 bg-white dark:bg-[#2c2420] text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-primary focus:ring-primary dark:focus:border-primary h-12 px-4"
+          />
         </section>
 
         {/* Language Selector */}
@@ -336,8 +398,21 @@ function DishEditPage() {
             </label>
           </div>
 
-          {/* Form Fields */}
+        {/* Form Fields */}
           <div className="space-y-4">
+          {!isNew && (
+            <div className="flex flex-col gap-2">
+              <label className="text-slate-900 dark:text-white text-sm font-bold">
+                ID
+              </label>
+              <input
+                className="w-full rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#2c2420] text-slate-700 dark:text-slate-200 placeholder:text-slate-400 h-12 px-4"
+                type="text"
+                value={dish.id || id}
+                readOnly
+              />
+            </div>
+          )}
             <div className="flex flex-col gap-2">
               <label className="text-slate-900 dark:text-white text-sm font-bold">
                 {language === 'EN' ? 'Название блюда (EN)' : 'Название блюда'}
@@ -425,6 +500,122 @@ function DishEditPage() {
             </div>
           </div>
         </section>
+
+        {/* Tea Fields */}
+        {isTeaMode && (
+          <>
+            <hr className="border-slate-200 dark:border-white/5 my-2" />
+            <section className="space-y-4">
+              <div className="flex flex-col gap-2">
+                <label className="text-slate-900 dark:text-white text-sm font-bold">
+                  Происхождение
+                </label>
+                <input
+                  className="w-full rounded-xl border-slate-200 dark:border-white/10 bg-white dark:bg-[#2c2420] text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-primary focus:ring-primary dark:focus:border-primary h-12 px-4"
+                  placeholder="Например: Япония"
+                  type="text"
+                  value={dish.origin}
+                  onChange={(e) => handleInputChange('origin', e.target.value)}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="flex flex-col gap-2">
+                  <label className="text-slate-900 dark:text-white text-sm font-bold">
+                    Температура (°C)
+                  </label>
+                  <input
+                    className="w-full rounded-xl border-slate-200 dark:border-white/10 bg-white dark:bg-[#2c2420] text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-primary focus:ring-primary dark:focus:border-primary h-12 px-4"
+                    placeholder="Например: 75"
+                    type="number"
+                    value={dish.brewing?.temperature_c ?? ''}
+                    onChange={(e) => handleNestedChange('brewing', 'temperature_c', e.target.value)}
+                  />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <label className="text-slate-900 dark:text-white text-sm font-bold">
+                    Время (мин)
+                  </label>
+                  <input
+                    className="w-full rounded-xl border-slate-200 dark:border-white/10 bg-white dark:bg-[#2c2420] text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-primary focus:ring-primary dark:focus:border-primary h-12 px-4"
+                    placeholder="Например: 2"
+                    type="text"
+                    value={dish.brewing?.time_minutes ?? ''}
+                    onChange={(e) => handleNestedChange('brewing', 'time_minutes', e.target.value)}
+                  />
+                </div>
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-slate-900 dark:text-white text-sm font-bold">
+                  Кофеин
+                </label>
+                <input
+                  className="w-full rounded-xl border-slate-200 dark:border-white/10 bg-white dark:bg-[#2c2420] text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-primary focus:ring-primary dark:focus:border-primary h-12 px-4"
+                  placeholder="Например: среднее"
+                  type="text"
+                  value={dish.caffeine}
+                  onChange={(e) => handleInputChange('caffeine', e.target.value)}
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-slate-900 dark:text-white text-sm font-bold">
+                  Особенности
+                </label>
+                <textarea
+                  className="w-full rounded-xl border-slate-200 dark:border-white/10 bg-white dark:bg-[#2c2420] text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-primary focus:ring-primary dark:focus:border-primary p-4 min-h-[90px] resize-y"
+                  placeholder="Коротко об особенностях чая"
+                  value={dish.features}
+                  onChange={(e) => handleInputChange('features', e.target.value)}
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-slate-900 dark:text-white text-sm font-bold">
+                  Комментарии (по одному на строку)
+                </label>
+                <textarea
+                  className="w-full rounded-xl border-slate-200 dark:border-white/10 bg-white dark:bg-[#2c2420] text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-primary focus:ring-primary dark:focus:border-primary p-4 min-h-[90px] resize-y"
+                  placeholder="Комментарий 1&#10;Комментарий 2"
+                  value={(dish.comments || []).join('\n')}
+                  onChange={(e) => handleInputChange('comments', normalizeCommentList(e.target.value))}
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-slate-900 dark:text-white text-sm font-bold">
+                  Справочная информация
+                </label>
+                <textarea
+                  className="w-full rounded-xl border-slate-200 dark:border-white/10 bg-white dark:bg-[#2c2420] text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-primary focus:ring-primary dark:focus:border-primary p-4 min-h-[90px] resize-y"
+                  placeholder="Дополнительные заметки"
+                  value={dish.reference_info}
+                  onChange={(e) => handleInputChange('reference_info', e.target.value)}
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-slate-900 dark:text-white text-sm font-bold">
+                  Updated at
+                </label>
+                <input
+                  className="w-full rounded-xl border-slate-200 dark:border-white/10 bg-white dark:bg-[#2c2420] text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-primary focus:ring-primary dark:focus:border-primary h-12 px-4"
+                  placeholder="2026-01-26T00:00:00-06:00"
+                  type="text"
+                  value={dish.updated_at}
+                  onChange={(e) => handleInputChange('updated_at', e.target.value)}
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-slate-900 dark:text-white text-sm font-bold">
+                  Update source
+                </label>
+                <input
+                  className="w-full rounded-xl border-slate-200 dark:border-white/10 bg-white dark:bg-[#2c2420] text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-primary focus:ring-primary dark:focus:border-primary h-12 px-4"
+                  placeholder="json"
+                  type="text"
+                  value={dish.update_source}
+                  onChange={(e) => handleInputChange('update_source', e.target.value)}
+                />
+              </div>
+            </section>
+          </>
+        )}
 
         <hr className="border-slate-200 dark:border-white/5 my-2" />
 

@@ -13,7 +13,7 @@ import subprocess
 import signal
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
-from models import db, Dish, FeedbackMessage, User
+from models import db, Dish, FeedbackMessage, User, VisibilityConfig
 
 
 
@@ -38,7 +38,7 @@ ALLOWED_MENUS_ORDER = [
     "Детское меню",
     "Зимнее меню",
     "Летние каникулы",
-    "Основное меню (Sabor de la Vida)",
+    "Основное меню",
     "Постное меню",
     "Специальное меню",
 ]
@@ -59,7 +59,13 @@ def _normalize_menu_value(val) -> str | None:
     if val is None:
         return None
     s = str(val).strip()
-    return s or None
+    if not s:
+        return None
+    # Нормализация (приведение к единому виду): поддерживаем старое имя.
+    s_lower = s.lower()
+    if "основное" in s_lower and "sabor de la vida" in s_lower:
+        return "Основное меню"
+    return s
 
 def _load_menu_db_items() -> list[dict]:
     """
@@ -358,6 +364,123 @@ def _require_admin():
     if not user or user.role != "администратор":
         return jsonify({"error": "Доступ запрещен"}), 403
     return None
+
+
+VISIBILITY_ALLOWED_SCOPES = {
+    "route",
+    "menuItem",
+    "menuSection",
+    "pageBlock",
+    "featureAction",
+    "contentItem",
+}
+
+VISIBILITY_ALLOWED_ACTIONS = {"allow", "deny"}
+
+
+def _get_visibility_actor_label():
+    """
+    Возвращает короткое имя того, кто меняет конфиг.
+    """
+    from flask_login import current_user
+    try:
+        user = User.query.get(current_user.id)
+        if not user:
+            return None
+        username = (user.username or "").strip()
+        name = (user.name or "").strip()
+        if username and name and username != name:
+            return f"{username} ({name})"
+        return username or name or None
+    except Exception:
+        return None
+
+
+def _validate_visibility_config(payload):
+    """
+    Минимальная ручная валидация JSON-конфига видимости.
+    """
+    if not isinstance(payload, dict):
+        return "Payload must be an object"
+    rules = payload.get("rules")
+    if not isinstance(rules, list):
+        return "rules must be an array"
+    for idx, rule in enumerate(rules):
+        if not isinstance(rule, dict):
+            return f"rules[{idx}] must be an object"
+        rule_id = rule.get("id")
+        scope = rule.get("scope")
+        target = rule.get("target")
+        action = rule.get("action")
+        enabled = rule.get("enabled", True)
+        when = rule.get("when") if isinstance(rule.get("when"), dict) else None
+
+        if not isinstance(rule_id, str) or not rule_id.strip():
+            return f"rules[{idx}].id must be a non-empty string"
+        if scope not in VISIBILITY_ALLOWED_SCOPES:
+            return f"rules[{idx}].scope must be one of: {sorted(VISIBILITY_ALLOWED_SCOPES)}"
+        if not isinstance(target, str) or not target.strip():
+            return f"rules[{idx}].target must be a non-empty string"
+        if action not in VISIBILITY_ALLOWED_ACTIONS:
+            return f"rules[{idx}].action must be one of: {sorted(VISIBILITY_ALLOWED_ACTIONS)}"
+        if not isinstance(enabled, bool):
+            return f"rules[{idx}].enabled must be boolean"
+
+        if when is not None:
+            allowed_when_keys = {
+                "roles",
+                "isGuest",
+                "isAdmin",
+                "canWrite",
+                "isAuthenticated",
+                "userIds",
+                "everyone",
+            }
+            for key in when.keys():
+                if key not in allowed_when_keys:
+                    return f"rules[{idx}].when has unknown key: {key}"
+            roles = when.get("roles")
+            user_ids = when.get("userIds")
+            if roles is not None and (not isinstance(roles, list) or not all(isinstance(r, str) for r in roles)):
+                return f"rules[{idx}].when.roles must be array of strings"
+            if user_ids is not None and (not isinstance(user_ids, list) or not all(isinstance(u, (str, int)) for u in user_ids)):
+                return f"rules[{idx}].when.userIds must be array of strings or numbers"
+            for bool_key in ["isGuest", "isAdmin", "canWrite", "isAuthenticated", "everyone"]:
+                if bool_key in when and not isinstance(when.get(bool_key), bool):
+                    return f"rules[{idx}].when.{bool_key} must be boolean"
+    return None
+
+
+def _normalize_visibility_config(payload, version_override=None):
+    """
+    Проставляет дефолты и нормализует конфиг.
+    """
+    config = dict(payload or {})
+    rules = config.get("rules") if isinstance(config.get("rules"), list) else []
+    normalized_rules = []
+    for rule in rules:
+        if not isinstance(rule, dict):
+            continue
+        normalized = dict(rule)
+        normalized["id"] = str(normalized.get("id") or "").strip()
+        normalized["scope"] = str(normalized.get("scope") or "").strip()
+        normalized["target"] = str(normalized.get("target") or "").strip()
+        normalized["action"] = str(normalized.get("action") or "").strip()
+        normalized["enabled"] = bool(normalized.get("enabled", True))
+        when = normalized.get("when")
+        if isinstance(when, dict):
+            normalized["when"] = dict(when)
+        elif when is None:
+            normalized["when"] = None
+        else:
+            normalized["when"] = None
+        normalized_rules.append(normalized)
+    normalized_config = {"rules": normalized_rules}
+    if isinstance(version_override, int):
+        normalized_config["version"] = version_override
+    elif isinstance(config.get("version"), int):
+        normalized_config["version"] = config.get("version")
+    return normalized_config
 
 def _atomic_write_json(path: Path, data_obj):
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -752,6 +875,33 @@ def health_check():
     }
 
     return jsonify(payload), (200 if has_menu_data else 503)
+
+
+@app.route('/api/config/visibility', methods=['GET'])
+def get_visibility_config_public():
+    """
+    Публичный конфиг видимости (минимальная версия для UI).
+    """
+    try:
+        published = (
+            VisibilityConfig.query.filter_by(status="published")
+            .order_by(VisibilityConfig.version.desc(), VisibilityConfig.updated_at.desc())
+            .first()
+        )
+        if not published:
+            response = jsonify({"version": 0, "rules": []})
+        else:
+            payload = published.to_dict()
+            config = payload.get("config") if isinstance(payload.get("config"), dict) else {}
+            response = jsonify({
+                "version": int(payload.get("version") or 0),
+                "rules": config.get("rules") or [],
+                "updatedAt": payload.get("updated_at"),
+            })
+        response.headers["Cache-Control"] = "public, max-age=60"
+        return response
+    except Exception as e:
+        return jsonify({"error": "VISIBILITY_CONFIG_ERROR", "message": str(e)}), 500
 
 @app.route('/api/menu-json', methods=['GET'])
 def get_menu_json():
@@ -1566,6 +1716,202 @@ def delete_user(user_id):
         if _is_readonly_db_error(e):
             return _readonly_db_response()
         return jsonify({'error': str(e)}), 500
+
+
+# ========== АДМИН: ВИДИМОСТЬ / FEATURE FLAGS ==========
+
+@app.route('/api/admin/visibility', methods=['GET'])
+@login_required
+def get_visibility_config_admin():
+    """
+    Возвращает текущие черновики/публикации и историю версий.
+    """
+    admin_check = _require_admin()
+    if admin_check:
+        return admin_check
+    try:
+        published = (
+            VisibilityConfig.query.filter_by(status="published")
+            .order_by(VisibilityConfig.version.desc(), VisibilityConfig.updated_at.desc())
+            .first()
+        )
+        draft = (
+            VisibilityConfig.query.filter_by(status="draft")
+            .order_by(VisibilityConfig.version.desc(), VisibilityConfig.updated_at.desc())
+            .first()
+        )
+        history = (
+            VisibilityConfig.query.order_by(VisibilityConfig.version.desc(), VisibilityConfig.updated_at.desc())
+            .all()
+        )
+        return jsonify({
+            "published": published.to_dict() if published else None,
+            "draft": draft.to_dict() if draft else None,
+            "versions": [
+                {
+                    "id": item.id,
+                    "version": item.version,
+                    "status": item.status,
+                    "updated_at": item.updated_at.isoformat() if item.updated_at else None,
+                    "updated_by": item.updated_by,
+                }
+                for item in history
+            ],
+        })
+    except Exception as e:
+        return jsonify({"error": "VISIBILITY_ADMIN_ERROR", "message": str(e)}), 500
+
+
+@app.route('/api/admin/visibility/draft', methods=['POST'])
+@login_required
+def save_visibility_draft():
+    """
+    Сохраняет черновик конфигурации видимости.
+    """
+    admin_check = _require_admin()
+    if admin_check:
+        return admin_check
+    try:
+        payload = request.json if isinstance(request.json, dict) else {}
+        config = payload.get("config") if isinstance(payload.get("config"), dict) else payload
+
+        error = _validate_visibility_config(config)
+        if error:
+            return jsonify({"error": "INVALID_VISIBILITY_CONFIG", "message": error}), 400
+
+        published = (
+            VisibilityConfig.query.filter_by(status="published")
+            .order_by(VisibilityConfig.version.desc())
+            .first()
+        )
+        draft = (
+            VisibilityConfig.query.filter_by(status="draft")
+            .order_by(VisibilityConfig.version.desc())
+            .first()
+        )
+        next_version = draft.version if draft else ((published.version if published else 0) + 1)
+        normalized = _normalize_visibility_config(config, version_override=next_version)
+        actor = _get_visibility_actor_label()
+
+        if draft:
+            draft.config_json = json.dumps(normalized, ensure_ascii=False)
+            draft.updated_by = actor
+        else:
+            draft = VisibilityConfig(
+                status="draft",
+                version=next_version,
+                config_json=json.dumps(normalized, ensure_ascii=False),
+                updated_by=actor,
+            )
+            db.session.add(draft)
+        db.session.commit()
+
+        return jsonify({
+            "status": "ok",
+            "draft": draft.to_dict(),
+        })
+    except Exception as e:
+        db.session.rollback()
+        if _is_readonly_db_error(e):
+            return _readonly_db_response()
+        return jsonify({"error": "VISIBILITY_DRAFT_ERROR", "message": str(e)}), 500
+
+
+@app.route('/api/admin/visibility/publish', methods=['POST'])
+@login_required
+def publish_visibility_config():
+    """
+    Публикует черновик или версию по номеру.
+    """
+    admin_check = _require_admin()
+    if admin_check:
+        return admin_check
+    try:
+        payload = request.json if isinstance(request.json, dict) else {}
+        version = payload.get("version")
+
+        target = None
+        if isinstance(version, int):
+            target = VisibilityConfig.query.filter_by(version=version).first()
+        if not target:
+            target = (
+                VisibilityConfig.query.filter_by(status="draft")
+                .order_by(VisibilityConfig.version.desc())
+                .first()
+            )
+        if not target:
+            return jsonify({"error": "NO_DRAFT", "message": "Нет черновика для публикации"}), 400
+
+        error = _validate_visibility_config(target.to_dict().get("config"))
+        if error:
+            return jsonify({"error": "INVALID_VISIBILITY_CONFIG", "message": error}), 400
+
+        VisibilityConfig.query.filter_by(status="published").update({"status": "archived"})
+        VisibilityConfig.query.filter_by(status="draft").update({"status": "archived"})
+        target.status = "published"
+        target.updated_by = _get_visibility_actor_label()
+        db.session.commit()
+
+        return jsonify({
+            "status": "ok",
+            "published": target.to_dict(),
+        })
+    except Exception as e:
+        db.session.rollback()
+        if _is_readonly_db_error(e):
+            return _readonly_db_response()
+        return jsonify({"error": "VISIBILITY_PUBLISH_ERROR", "message": str(e)}), 500
+
+
+@app.route('/api/admin/visibility/rollback', methods=['POST'])
+@login_required
+def rollback_visibility_config():
+    """
+    Откат на выбранную версию.
+    """
+    admin_check = _require_admin()
+    if admin_check:
+        return admin_check
+    try:
+        payload = request.json if isinstance(request.json, dict) else {}
+        version = payload.get("version")
+        if not isinstance(version, int):
+            return jsonify({"error": "INVALID_VERSION", "message": "version must be integer"}), 400
+
+        if version == 0:
+            # Версия 0 = "чистое" состояние без правил
+            empty_config = {"version": 0, "rules": []}
+            actor = _get_visibility_actor_label()
+            VisibilityConfig.query.filter_by(status="published").update({"status": "archived"})
+            VisibilityConfig.query.filter_by(status="draft").update({"status": "archived"})
+            target = VisibilityConfig(
+                status="published",
+                version=0,
+                config_json=json.dumps(empty_config, ensure_ascii=False),
+                updated_by=actor,
+            )
+            db.session.add(target)
+            db.session.commit()
+        else:
+            target = VisibilityConfig.query.filter_by(version=version).first()
+            if not target:
+                return jsonify({"error": "NOT_FOUND", "message": "Version not found"}), 404
+
+            VisibilityConfig.query.filter_by(status="published").update({"status": "archived"})
+            VisibilityConfig.query.filter_by(status="draft").update({"status": "archived"})
+            target.status = "published"
+            target.updated_by = _get_visibility_actor_label()
+            db.session.commit()
+
+        return jsonify({
+            "status": "ok",
+            "published": target.to_dict(),
+        })
+    except Exception as e:
+        db.session.rollback()
+        if _is_readonly_db_error(e):
+            return _readonly_db_response()
+        return jsonify({"error": "VISIBILITY_ROLLBACK_ERROR", "message": str(e)}), 500
 
 # ========== АДМИН: ОБНОВЛЕНИЕ МЕНЮ И (ОПЦ.) ДЕПЛОЙ ==========
 

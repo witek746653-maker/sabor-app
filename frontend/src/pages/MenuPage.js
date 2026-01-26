@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { getDishes } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
+import { useVisibility } from '../contexts/VisibilityContext';
 import { getDishImageUrl } from '../utils/imageUtils';
 
-function MenuPage() {
+function MenuPage({ mode }) {
   const { menuName } = useParams();
   const navigate = useNavigate();
   const { isAuthenticated, currentUser, isGuest, canWrite } = useAuth();
+  const { isVisible } = useVisibility();
   const [dishes, setDishes] = useState([]);
   const [allDishes, setAllDishes] = useState([]); // Все блюда из всех меню для избранного
   const [sections, setSections] = useState([]);
@@ -29,8 +31,79 @@ function MenuPage() {
     const saved = localStorage.getItem('favoriteDishes');
     return saved ? JSON.parse(saved) : [];
   });
-  const menuFiltersStorageKey = `menuFilters:${menuName || 'all'}`;
+  const menuFiltersStorageKey = `menuFilters:${mode === 'tea' ? 'tea' : (menuName || 'all')}`;
   const [filtersLoaded, setFiltersLoaded] = useState(false);
+
+  const isTeaItem = (item) => {
+    const menu = String(item?.menu || '').toLowerCase();
+    const section = String(item?.section || '').toLowerCase();
+    const idNumber = Number(String(item?.id || '').replace(/\D/g, ''));
+
+    return (
+      menu.includes('чай') ||
+      menu.includes('tea') ||
+      section.includes('чай') ||
+      section.includes('tea') ||
+      (Number.isFinite(idNumber) && idNumber >= 801)
+    );
+  };
+
+  const isFilled = (value) => {
+    if (value === null || value === undefined) return false;
+    if (Array.isArray(value)) return value.length > 0;
+    if (typeof value === 'number') return Number.isFinite(value);
+    if (typeof value === 'string') return value.trim().length > 0;
+    if (typeof value === 'object') return Object.keys(value).length > 0;
+    return Boolean(value);
+  };
+
+  const normalizeSection = (value) =>
+    String(value ?? '')
+      .normalize('NFKC')
+      // Убираем невидимые символы (например, zero‑width).
+      .replace(/[\u200B-\u200D\uFEFF]/g, '')
+      // Приводим неразрывные пробелы к обычным.
+      .replace(/\u00A0/g, ' ')
+      // Убираем эмодзи и прочие символы, оставляем только буквы и цифры.
+      .replace(/[^\p{L}\p{N}]+/gu, ' ')
+      .trim()
+      .replace(/\s+/g, ' ')
+      .toLowerCase();
+
+  // Нормализуем название меню, чтобы разные варианты совпадали.
+  const normalizeMenuName = (value) => {
+    const normalized = String(value ?? '')
+      .normalize('NFKC')
+      .replace(/[\u200B-\u200D\uFEFF]/g, '')
+      .replace(/\u00A0/g, ' ')
+      .trim()
+      .replace(/\s+/g, ' ')
+      .toLowerCase();
+
+    // Старое имя "Основное меню (Sabor de la Vida)" -> "Основное меню"
+    if (normalized.includes('основное') && normalized.includes('sabor de la vida')) {
+      return 'основное меню';
+    }
+
+    return normalized;
+  };
+
+  const buildSections = (items) => {
+    const map = new Map();
+    items.forEach((dish) => {
+      if (!dish?.section) return;
+      const key = normalizeSection(dish.section);
+      if (!key) return;
+      if (!map.has(key)) {
+        map.set(key, {
+          key,
+          label: String(dish.section).trim(),
+          dish,
+        });
+      }
+    });
+    return Array.from(map.values());
+  };
 
   // Восстанавливаем фильтры меню из localStorage (память браузера).
   useEffect(() => {
@@ -57,54 +130,96 @@ function MenuPage() {
   }, [menuFiltersStorageKey]);
 
   // Определяем “тип” позиции по полям menu/section (KISS: простые проверки по словам).
-  const getDetailPathForItem = (it) => {
+  const isWineItem = (it) => {
     const menu = String(it?.menu || '').toLowerCase();
     const section = String(it?.section || '').toLowerCase();
-
-    const isWine =
+    return (
       menu.includes('вино') ||
       menu.includes('wine') ||
       section.includes('вино') ||
-      section.includes('wine');
+      section.includes('wine')
+    );
+  };
 
-    const isBar =
+  const isBarItem = (it) => {
+    const menu = String(it?.menu || '').toLowerCase();
+    const section = String(it?.section || '').toLowerCase();
+    return (
       menu.includes('бар') ||
       menu.includes('bar') ||
       menu.includes('напит') ||
       menu.includes('drink') ||
       section.includes('коктейл') ||
       section.includes('cocktail') ||
-      section.includes('чай') ||
-      section.includes('tea') ||
       section.includes('пиво') ||
       section.includes('beer') ||
       section.includes('кофе') ||
       section.includes('coffee') ||
       section.includes('напит') ||
-      section.includes('drink');
+      section.includes('drink')
+    );
+  };
 
+  const getContentTarget = (it) => {
+    const id = String(it?.id ?? '').trim();
+    if (!id) return null;
+    if (isWineItem(it)) return `wine:${id}`;
+    if (isBarItem(it)) return `bar:${id}`;
+    return `dish:${id}`;
+  };
+
+  const isContentVisible = (it) => {
+    // Архивные позиции скрываем отдельным правилом.
+    const isArchived = it?.status === 'в архиве';
+    if (isArchived && !isVisible({ scope: 'contentItem', target: 'status.archived' })) {
+      return false;
+    }
+    const target = getContentTarget(it);
+    if (!target) return true;
+    return isVisible({ scope: 'contentItem', target });
+  };
+
+  const getDetailPathForItem = (it) => {
+    const isTea = isTeaItem(it);
+    const isWine = isWineItem(it);
+    const isBar = isBarItem(it);
+
+    if (isTea) return `/tea/${it.id}`;
     if (isWine) return `/wine/${it.id}`;
     if (isBar) return `/bar/${it.id}`;
     return `/dish/${it.id}`;
+  };
+
+  const parseCardIngredients = (value) => {
+    if (typeof value !== 'string' || value.trim().length === 0) return [];
+    // Если есть '/', делим по нему, иначе по запятой.
+    const separator = value.includes('/') ? '/' : ',';
+    return value
+      .split(separator)
+      .map((part) => part.trim())
+      .filter(Boolean);
   };
 
   useEffect(() => {
     const loadDishes = async () => {
       try {
         const allDishesData = await getDishes();
-        const decodedMenuName = decodeURIComponent(menuName);
+        const decodedMenuName = menuName ? decodeURIComponent(menuName) : '';
         
         // Сохраняем все блюда для избранного (включая "в архиве")
         // Термин **архив**: позиция “неактивна”, но мы её показываем затемнённой.
         setAllDishes(allDishesData);
         
         // Фильтруем блюда: только из нужного меню (архивные тоже показываем, но затемняем в UI)
-        const filtered = allDishesData.filter(
-          (dish) => dish.menu === decodedMenuName
-        );
-        setDishes(filtered);
+        const filtered = mode === 'tea'
+          ? allDishesData.filter((dish) => isTeaItem(dish))
+          : allDishesData.filter(
+              (dish) => normalizeMenuName(dish.menu) === normalizeMenuName(decodedMenuName)
+            );
+        const visibleFiltered = filtered.filter((dish) => isContentVisible(dish));
+        setDishes(visibleFiltered);
 
-        const uniqueSections = [...new Set(filtered.map((d) => d.section).filter(Boolean))];
+        const uniqueSections = buildSections(visibleFiltered);
         setSections(uniqueSections);
         
         // Проверяем, есть ли запрос из глобального поиска для автоскролла
@@ -128,7 +243,7 @@ function MenuPage() {
     };
 
     loadDishes();
-  }, [menuName]);
+  }, [menuName, mode, isVisible]);
 
   // Обновляем избранное при изменении localStorage
   useEffect(() => {
@@ -225,20 +340,22 @@ function MenuPage() {
 
   // Получаем все уникальные аллергены и теги из блюд (с учетом языка)
   // Если показываем избранное, используем все блюда, иначе только из текущего меню
-  const dishesForFilters = showFavorites ? allDishes : dishes;
+  const visibleAllDishes = allDishes.filter((dish) => isContentVisible(dish));
+  const dishesForFilters = showFavorites ? visibleAllDishes : dishes;
   const allAllergens = [...new Set(dishesForFilters.flatMap(d => getAllergensForLanguage(d)))].filter(Boolean);
   const allTags = [...new Set(dishesForFilters.flatMap(d => getTagsForLanguage(d)))].filter(Boolean);
 
   // Фильтруем блюда с учетом избранного
   // Если показываем избранное, берем все блюда из всех меню, иначе только из текущего меню
   const dishesToShow = showFavorites 
-    ? allDishes.filter(dish => favorites.includes(dish.id))
+    ? visibleAllDishes.filter(dish => favorites.includes(dish.id))
     : dishes;
 
   const filteredDishes = dishesToShow.filter((dish) => {
     // Фильтр по категории (section)
     const matchesSection =
-      selectedSection === 'all' || dish.section === selectedSection;
+      selectedSection === 'all' ||
+      normalizeSection(dish.section) === selectedSection;
     
     // Фильтр по поисковому запросу (название, описание, категория, аллергены, теги)
     const queryLower = searchQuery.toLowerCase();
@@ -290,6 +407,75 @@ function MenuPage() {
     return 'check_circle';
   };
 
+  // Иконки аллергенов как в карточке блюда (DishDetailPage).
+  const normalizeAllergen = (value) => (value || '').toString().trim().toLowerCase();
+  const ALLERGEN_EMOJI_MAP = {
+    // Русские
+    'орехи': { icon: '🥜', label: 'Орехи' },
+    'лактоза': { icon: '🥛', label: 'Лактоза' },
+    'глютен': { icon: '🌾', label: 'Глютен' },
+    'яйца': { icon: '🥚', label: 'Яйца' },
+    'цитрусы': { icon: '🍋', label: 'Цитрусы' },
+    'морепродукты': { icon: '🍤', label: 'Морепродукты' },
+    'рыба': { icon: '🐟', label: 'Рыба' },
+    'кунжут': { icon: '⚪️', label: 'Кунжут' },
+    'горчица': { icon: '🌭', label: 'Горчица' },
+    'чеснок': { icon: '🧄', label: 'Чеснок' },
+    'лук': { icon: '🧅', label: 'Лук' },
+    'перец чили': { icon: '🌶️', label: 'Перец чили' },
+    'кинза': { icon: '🌿', label: 'Кинза' },
+    'алкоголь': { icon: '🍷', label: 'Алкоголь' },
+    'грибы': { icon: '🍄', label: 'Грибы' },
+    'мёд': { icon: '🍯', label: 'Мёд' },
+    'трюфель': { icon: '🍄', label: 'Трюфель' },
+    'свинина': { icon: '🐖', label: 'Свинина' },
+    'эстрагон': { icon: '🌿', label: 'Эстрагон' },
+    'халапеньо': { icon: '🌶️', label: 'Халапеньо' },
+    'шафран': { icon: '🧡', label: 'Шафран' },
+    'зелень': { icon: '🌿', label: 'Зелень' },
+
+    // Английские / ID из админки
+    'nuts': { icon: '🥜', label: 'Nuts' },
+    'lactose': { icon: '🥛', label: 'Lactose' },
+    'gluten': { icon: '🌾', label: 'Gluten' },
+    'egg': { icon: '🥚', label: 'Eggs' },
+    'eggs': { icon: '🥚', label: 'Eggs' },
+    'citrus': { icon: '🍋', label: 'Citrus' },
+    'seafood': { icon: '🍤', label: 'Seafood' },
+    'fish': { icon: '🐟', label: 'Fish' },
+    'sesame': { icon: '⚪️', label: 'Sesame' },
+    'mustard': { icon: '🌭', label: 'Mustard' },
+    'garlic': { icon: '🧄', label: 'Garlic' },
+    'onion': { icon: '🧅', label: 'Onion' },
+    'chili pepper': { icon: '🌶️', label: 'Chili pepper' },
+    'cilantro': { icon: '🌿', label: 'Cilantro' },
+    'alcohol': { icon: '🍷', label: 'Alcohol' },
+    'mushrooms': { icon: '🍄', label: 'Mushrooms' },
+    'honey': { icon: '🍯', label: 'Honey' },
+    'truffle': { icon: '🍄', label: 'Truffle' },
+    'pork': { icon: '🐖', label: 'Pork' },
+    'tarragon': { icon: '🌿', label: 'Tarragon' },
+    'jalapeño': { icon: '🌶️', label: 'Jalapeño' },
+    'saffron': { icon: '🧡', label: 'Saffron' },
+    'herbs': { icon: '🌿', label: 'Herbs' },
+  };
+
+  const getAllergenDisplay = (raw) => {
+    const normalized = normalizeAllergen(raw);
+    if (ALLERGEN_EMOJI_MAP[normalized]) {
+      return ALLERGEN_EMOJI_MAP[normalized];
+    }
+
+    const matchEntry = Object.entries(ALLERGEN_EMOJI_MAP).find(([key]) =>
+      normalized.includes(key)
+    );
+    if (matchEntry) {
+      return matchEntry[1];
+    }
+
+    return { icon: '⚠️', label: raw || 'Аллерген' };
+  };
+
   // Функция для получения тегов блюда
   const getDishTags = (dish) => {
     const tags = [];
@@ -316,7 +502,14 @@ function MenuPage() {
     );
   }
 
-  const decodedMenuName = decodeURIComponent(menuName);
+  const decodedMenuName = menuName
+    ? decodeURIComponent(menuName)
+    : (mode === 'tea' ? 'Чай' : '');
+
+  const isBarMenu =
+    mode !== 'tea' &&
+    dishes.length > 0 &&
+    dishes.some((dish) => isBarItem(dish));
 
   return (
     <div className="relative flex h-full min-h-screen w-full flex-col bg-background-light dark:bg-background-dark shadow-2xl overflow-hidden border-x border-gray-100 dark:border-gray-800">
@@ -338,20 +531,22 @@ function MenuPage() {
             }
           </h2>
           <div className="flex w-12 items-center justify-end">
-            <button 
-              onClick={() => {
-                const newLanguage = language === 'RU' ? 'EN' : 'RU';
-                setLanguage(newLanguage);
-                localStorage.setItem('menuLanguage', newLanguage);
-              }}
-              className={`text-xs font-bold leading-normal tracking-[0.015em] shrink-0 border rounded-lg px-2 py-1 transition-colors ${
-                language === 'EN' 
-                  ? 'bg-primary text-white border-primary' 
-                  : 'text-primary border-primary/30 hover:bg-primary hover:text-white'
-              }`}
-            >
-              {language === 'RU' ? 'EN' : 'RU'}
-            </button>
+            {isVisible({ scope: 'featureAction', target: 'language.switcher' }) && (
+              <button 
+                onClick={() => {
+                  const newLanguage = language === 'RU' ? 'EN' : 'RU';
+                  setLanguage(newLanguage);
+                  localStorage.setItem('menuLanguage', newLanguage);
+                }}
+                className={`text-xs font-bold leading-normal tracking-[0.015em] shrink-0 border rounded-lg px-2 py-1 transition-colors ${
+                  language === 'EN' 
+                    ? 'bg-primary text-white border-primary' 
+                    : 'text-primary border-primary/30 hover:bg-primary hover:text-white'
+                }`}
+              >
+                {language === 'RU' ? 'EN' : 'RU'}
+              </button>
+            )}
           </div>
         </div>
         {/* Breadcrumb */}
@@ -365,19 +560,27 @@ function MenuPage() {
           </div>
         )}
         {/* Search */}
-        <div className="px-4 py-2">
-          <div className="flex w-full items-stretch rounded-xl h-10 bg-white dark:bg-surface-dark shadow-sm border border-gray-100 dark:border-gray-700/50 group focus-within:border-primary/50 transition-colors">
-            <div className="text-[#896f61] dark:text-gray-400 flex items-center justify-center pl-3 pr-2 group-focus-within:text-primary transition-colors">
-              <span className="material-symbols-outlined text-[20px]">search</span>
+        {isVisible({ scope: 'pageBlock', target: 'search.input' }) && (
+          <div className="px-4 py-2">
+            <div className="flex w-full items-stretch rounded-xl h-10 bg-white dark:bg-surface-dark shadow-sm border border-gray-100 dark:border-gray-700/50 group focus-within:border-primary/50 transition-colors">
+              <div className="text-[#896f61] dark:text-gray-400 flex items-center justify-center pl-3 pr-2 group-focus-within:text-primary transition-colors">
+                <span className="material-symbols-outlined text-[20px]">search</span>
+              </div>
+              <input
+                className="flex w-full flex-1 bg-transparent border-none text-[#181311] dark:text-white placeholder:text-[#896f61] dark:placeholder:text-gray-500 focus:ring-0 text-sm font-normal h-full p-0 pr-3"
+                placeholder={
+                  mode === 'tea'
+                    ? (language === 'EN' ? 'Search tea...' : 'Поиск чая...')
+                    : isBarMenu
+                      ? (language === 'EN' ? 'Search drinks...' : 'Поиск напитка...')
+                      : (language === 'EN' ? 'Search dishes...' : 'Поиск блюд...')
+                }
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
             </div>
-            <input
-              className="flex w-full flex-1 bg-transparent border-none text-[#181311] dark:text-white placeholder:text-[#896f61] dark:placeholder:text-gray-500 focus:ring-0 text-sm font-normal h-full p-0 pr-3"
-              placeholder={language === 'EN' ? 'Search dishes...' : 'Поиск блюд...'}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
           </div>
-        </div>
+        )}
         {/* Filters */}
         <div className="relative">
           <div className="flex gap-2 px-4 py-2 overflow-x-auto no-scrollbar items-center pb-3 border-t border-gray-100/50 dark:border-gray-800/50 mt-1">
@@ -399,38 +602,42 @@ function MenuPage() {
                 <span className={`material-symbols-outlined text-[16px] ${selectedSection !== 'all' ? 'text-white' : 'text-gray-500'} ${showSectionFilter ? 'rotate-180' : ''} transition-transform`}>expand_more</span>
               </button>
             )}
-            <button 
-              onClick={(e) => {
-                e.stopPropagation();
-                setShowAllergenFilter(!showAllergenFilter);
-                setShowSectionFilter(false);
-                setShowTagFilter(false);
-              }}
-              className={`flex h-8 shrink-0 items-center justify-center gap-x-1 rounded-full border px-3 transition-transform active:scale-95 shadow-sm ${
-                selectedAllergens.length > 0 
-                  ? 'bg-primary text-white border-primary' 
-                  : 'bg-white dark:bg-surface-dark border-gray-200 dark:border-gray-700'
-              }`}
-            >
-              <p className={`text-xs font-medium ${selectedAllergens.length > 0 ? 'text-white' : 'text-[#181311] dark:text-gray-200'}`}>{language === 'EN' ? 'Allergens' : 'Аллергены'}</p>
-              <span className={`material-symbols-outlined text-[16px] ${selectedAllergens.length > 0 ? 'text-white' : 'text-gray-500'} ${showAllergenFilter ? 'rotate-180' : ''} transition-transform`}>expand_more</span>
-            </button>
-            <button 
-              onClick={(e) => {
-                e.stopPropagation();
-                setShowTagFilter(!showTagFilter);
-                setShowSectionFilter(false);
-                setShowAllergenFilter(false);
-              }}
-              className={`flex h-8 shrink-0 items-center justify-center gap-x-1 rounded-full border px-3 shadow-sm transition-transform active:scale-95 ${
-                selectedTags.length > 0 
-                  ? 'bg-primary text-white border-primary' 
-                  : 'bg-white dark:bg-surface-dark border-gray-200 dark:border-gray-700'
-              }`}
-            >
-              <p className={`text-xs font-semibold ${selectedTags.length > 0 ? 'text-white' : 'text-[#181311] dark:text-gray-200'}`}>{language === 'EN' ? 'Tags' : 'Теги'}</p>
-              <span className={`material-symbols-outlined text-[16px] ${selectedTags.length > 0 ? 'text-white' : 'text-gray-500'} ${showTagFilter ? 'rotate-180' : ''} transition-transform`}>expand_more</span>
-            </button>
+            {(mode !== 'tea' || allAllergens.length > 0) && (
+              <button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowAllergenFilter(!showAllergenFilter);
+                  setShowSectionFilter(false);
+                  setShowTagFilter(false);
+                }}
+                className={`flex h-8 shrink-0 items-center justify-center gap-x-1 rounded-full border px-3 transition-transform active:scale-95 shadow-sm ${
+                  selectedAllergens.length > 0 
+                    ? 'bg-primary text-white border-primary' 
+                    : 'bg-white dark:bg-surface-dark border-gray-200 dark:border-gray-700'
+                }`}
+              >
+                <p className={`text-xs font-medium ${selectedAllergens.length > 0 ? 'text-white' : 'text-[#181311] dark:text-gray-200'}`}>{language === 'EN' ? 'Allergens' : 'Аллергены'}</p>
+                <span className={`material-symbols-outlined text-[16px] ${selectedAllergens.length > 0 ? 'text-white' : 'text-gray-500'} ${showAllergenFilter ? 'rotate-180' : ''} transition-transform`}>expand_more</span>
+              </button>
+            )}
+            {(mode !== 'tea' || allTags.length > 0) && (
+              <button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowTagFilter(!showTagFilter);
+                  setShowSectionFilter(false);
+                  setShowAllergenFilter(false);
+                }}
+                className={`flex h-8 shrink-0 items-center justify-center gap-x-1 rounded-full border px-3 shadow-sm transition-transform active:scale-95 ${
+                  selectedTags.length > 0 
+                    ? 'bg-primary text-white border-primary' 
+                    : 'bg-white dark:bg-surface-dark border-gray-200 dark:border-gray-700'
+                }`}
+              >
+                <p className={`text-xs font-semibold ${selectedTags.length > 0 ? 'text-white' : 'text-[#181311] dark:text-gray-200'}`}>{language === 'EN' ? 'Tags' : 'Теги'}</p>
+                <span className={`material-symbols-outlined text-[16px] ${selectedTags.length > 0 ? 'text-white' : 'text-gray-500'} ${showTagFilter ? 'rotate-180' : ''} transition-transform`}>expand_more</span>
+              </button>
+            )}
           </div>
           
           {/* Выпадающее меню для категорий */}
@@ -451,20 +658,19 @@ function MenuPage() {
                 {language === 'EN' ? 'All Categories' : 'Все категории'}
               </button>
               {sections.map((section) => {
-                // Пытаемся найти английскую версию категории из первого блюда
-                const firstDish = dishes.find(d => d.section === section);
-                const sectionName = language === 'EN' && firstDish?.i18n?.en?.['section-en'] 
-                  ? firstDish.i18n.en['section-en'] 
-                  : section;
+                const sectionName =
+                  language === 'EN' && section?.dish?.i18n?.en?.['section-en']
+                    ? section.dish.i18n.en['section-en']
+                    : section.label;
                 return (
                   <button
-                    key={section}
+                    key={section.key}
                     onClick={() => {
-                      setSelectedSection(section);
+                      setSelectedSection(section.key);
                       setShowSectionFilter(false);
                     }}
                     className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors ${
-                      selectedSection === section ? 'bg-primary/10 text-primary font-semibold' : ''
+                      selectedSection === section.key ? 'bg-primary/10 text-primary font-semibold' : ''
                     }`}
                   >
                     {sectionName}
@@ -554,7 +760,10 @@ function MenuPage() {
             }
           </h3>
           <span className="text-[10px] text-gray-500 font-medium bg-gray-100 dark:bg-white/5 px-2 py-0.5 rounded-md border border-gray-200 dark:border-gray-700">
-            {filteredDishes.length} {language === 'EN' ? 'items' : 'блюд'}
+            {filteredDishes.length}{' '}
+            {language === 'EN'
+              ? (mode === 'tea' ? 'tea' : (isBarMenu ? 'drinks' : 'dishes'))
+              : (mode === 'tea' ? 'чаёв' : (isBarMenu ? 'напитков' : 'блюд'))}
           </span>
         </div>
         <div className="grid grid-cols-3 gap-2">
@@ -567,6 +776,64 @@ function MenuPage() {
               const tags = getDishTags(dish);
               const imageUrl = getDishImageUrl(dish);
               const isArchived = dish.status === 'в архиве';
+              if (mode === 'tea') {
+                return (
+                  <Link
+                    key={dish.id}
+                    to={getDetailPathForItem(dish)}
+                    className="group relative rounded-lg overflow-hidden bg-white dark:bg-surface-dark shadow-[0_2px_8px_rgba(0,0,0,0.04)] dark:shadow-none border border-gray-100 dark:border-gray-800 hover:border-primary/30 transition-all"
+                  >
+                    <div className={`flex flex-col h-full ${isArchived ? 'opacity-50 grayscale' : ''}`}>
+                      <div className="relative w-full aspect-square overflow-hidden bg-gray-100 dark:bg-gray-800">
+                        {imageUrl ? (
+                          <div
+                            className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
+                            style={{ backgroundImage: `url('${imageUrl}')` }}
+                          />
+                        ) : (
+                          <div className="absolute inset-0 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                            <span className="material-symbols-outlined text-gray-400 text-4xl">emoji_food_beverage</span>
+                          </div>
+                        )}
+                      </div>
+                      <div className="p-2 flex flex-col flex-grow">
+                        <h3 className="font-bold text-[11px] leading-[1.2] dark:text-white line-clamp-2 mb-1 group-hover:text-primary transition-colors duration-200">
+                          {getFieldValue(dish, 'title') || (language === 'EN' ? 'No title' : 'Без названия')}
+                        </h3>
+                        {isFilled(getFieldValue(dish, 'section')) && (
+                          <p className="text-[9px] text-primary/80 uppercase tracking-wide font-semibold mb-1">
+                            {getFieldValue(dish, 'section')}
+                          </p>
+                        )}
+                        <div className="mt-auto space-y-1.5 pt-1.5 border-t border-dashed border-gray-100 dark:border-gray-700">
+                          {isFilled(dish.origin) && (
+                            <p className="text-[9px] text-gray-500 dark:text-gray-400">
+                              <span className="font-semibold">Страна:</span> {dish.origin}
+                            </p>
+                          )}
+                          {isFilled(dish.caffeine) && (
+                            <p className="text-[9px] text-gray-500 dark:text-gray-400">
+                              <span className="font-semibold">Кофеин:</span> {dish.caffeine}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {isArchived && (
+                      <div className="absolute top-2 right-2 bg-gray-700/90 text-white text-[10px] font-bold px-2 py-1 rounded-md backdrop-blur-sm">
+                        В АРХИВЕ
+                      </div>
+                    )}
+                  </Link>
+                );
+              }
+
+              const isWine = isWineItem(dish);
+              const isBar = isBarItem(dish);
+              const isRegularDish = !isWine && !isBar;
+              const allergens = getAllergensForLanguage(dish);
+              const cardIngredients = parseCardIngredients(dish.cardIngredients);
 
               return (
                 <Link
@@ -605,23 +872,58 @@ function MenuPage() {
                       <h3 className="font-bold text-[11px] leading-[1.2] dark:text-white line-clamp-2 mb-1 group-hover:text-primary transition-colors duration-200">
                         {getFieldValue(dish, 'title') || (language === 'EN' ? 'No title' : 'Без названия')}
                       </h3>
-                      {getFieldValue(dish, 'description') && (
-                        <p className="text-[9px] text-[#896f61] dark:text-gray-400 line-clamp-2 mb-2 leading-tight opacity-90">
-                          {getFieldValue(dish, 'description')}
-                        </p>
+                      {isRegularDish && allergens.length > 0 && (
+                        <div className="flex flex-wrap items-center gap-1 mb-2 text-[9px] text-[#896f61] dark:text-gray-400 leading-tight opacity-90">
+                          <span className="font-semibold">
+                            {language === 'EN' ? 'Allergens:' : 'Аллергены:'}
+                          </span>
+                          {allergens.map((allergen, idx) => {
+                            const { icon, label } = getAllergenDisplay(allergen);
+                            return (
+                              <span key={`${dish.id}-allergen-${idx}`} className="inline-flex items-center gap-1">
+                                {idx > 0 && <span className="text-[8px] opacity-60">•</span>}
+                                <span className="text-[10px] leading-none">{icon}</span>
+                                <span className="uppercase font-semibold">{label}</span>
+                              </span>
+                            );
+                          })}
+                        </div>
                       )}
-                      <div className="mt-auto flex items-center justify-between pt-1.5 border-t border-dashed border-gray-100 dark:border-gray-700">
-                        {getAllergensForLanguage(dish).length > 0 && (
-                          <div className="flex items-center gap-1">
-                            <span className="material-symbols-outlined text-gray-400 dark:text-gray-500 text-[12px]">
-                              {getAllergenIcon(getAllergensForLanguage(dish)[0])}
-                            </span>
-                            <span className="text-[8px] text-gray-400 uppercase font-semibold">
-                              {getAllergensForLanguage(dish)[0].substring(0, 5)}
-                            </span>
+                      {isBar ? (
+                        cardIngredients.length > 0 && (
+                          <div className="flex flex-wrap gap-1 mb-2">
+                            {cardIngredients.map((item, idx) => (
+                              <span
+                                key={`${dish.id}-card-${idx}`}
+                                className="text-[8px] uppercase font-semibold px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-600 dark:bg-white/10 dark:text-gray-300"
+                              >
+                                {item}
+                              </span>
+                            ))}
                           </div>
-                        )}
-                      </div>
+                        )
+                      ) : (
+                        isWine &&
+                        getFieldValue(dish, 'description') && (
+                          <p className="text-[9px] text-[#896f61] dark:text-gray-400 line-clamp-2 mb-2 leading-tight opacity-90">
+                            {getFieldValue(dish, 'description')}
+                          </p>
+                        )
+                      )}
+                      {isWine && (
+                        <div className="mt-auto flex items-center justify-between pt-1.5 border-t border-dashed border-gray-100 dark:border-gray-700">
+                          {allergens.length > 0 && (
+                            <div className="flex items-center gap-1">
+                              <span className="material-symbols-outlined text-gray-400 dark:text-gray-500 text-[12px]">
+                                {getAllergenIcon(allergens[0])}
+                              </span>
+                              <span className="text-[8px] text-gray-400 uppercase font-semibold">
+                                {allergens[0].substring(0, 5)}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -640,51 +942,78 @@ function MenuPage() {
 
       {/* Footer */}
       <div className="fixed bottom-0 z-50 w-full sabor-fixed bg-white/95 dark:bg-surface-dark/95 backdrop-blur-md border-t border-gray-100 dark:border-gray-800 pb-safe">
-        <div className={`grid ${isAuthenticated && !isGuest && currentUser?.role === 'администратор' ? 'grid-cols-4' : 'grid-cols-3'} px-6 items-center h-[60px]`}>
-          <Link to="/" className="flex flex-col items-center justify-center gap-1 text-primary">
-            <span className="material-symbols-outlined text-[24px]">restaurant_menu</span>
-            <span className="text-[10px] font-bold">{language === 'EN' ? 'Menu' : 'Меню'}</span>
-          </Link>
-          <button 
-            onClick={() => {
-              if (isGuest) return; // Гости не могут использовать избранное
-              // Переключаем показ избранного (та же логика, что и на DishDetailPage.js)
-              setShowFavorites(!showFavorites);
-            }}
-            disabled={isGuest}
-            title={isGuest ? 'Доступно после входа' : (language === 'EN' ? 'Favorites' : 'Избранное')}
-            className={`flex flex-col items-center justify-center gap-1 transition-colors ${
-              isGuest
-                ? 'opacity-50 cursor-not-allowed text-gray-400'
-                : showFavorites || favorites.length > 0
-                  ? 'text-primary' 
-                  : 'text-gray-400 hover:text-[#181311] dark:hover:text-white'
-            }`}
-          >
-            <span className={`material-symbols-outlined text-[24px] ${showFavorites || favorites.length > 0 ? 'fill-1' : ''}`}>
-              {showFavorites || favorites.length > 0 ? 'favorite' : 'favorite_border'}
-            </span>
-            <span className="text-[10px] font-medium">{language === 'EN' ? 'Favorites' : 'Избранное'}</span>
-          </button>
-          <button 
-            onClick={() => {
-              // Прокручиваем к поиску
-              document.querySelector('input[placeholder*="Search"], input[placeholder*="Поиск"]')?.focus();
-            }}
-            className="flex flex-col items-center justify-center gap-1 text-gray-400 hover:text-[#181311] dark:hover:text-white transition-colors"
-          >
-            <span className="material-symbols-outlined text-[24px]">search</span>
-            <span className="text-[10px] font-medium">{language === 'EN' ? 'Search' : 'Поиск'}</span>
-          </button>
-          {isAuthenticated && currentUser?.role === 'администратор' && (
-            <Link
-              to="/admin"
-              className="flex flex-col items-center justify-center gap-1 text-gray-400 hover:text-[#181311] dark:hover:text-white transition-colors"
-            >
-              <span className="material-symbols-outlined text-[24px]">person</span>
-              <span className="text-[10px] font-medium">{language === 'EN' ? 'Admin' : 'Админ-панель'}</span>
+        <div
+          className={`grid ${
+            (() => {
+              const showFooterMenu = isVisible({ scope: 'menuItem', target: 'footer.menu' });
+              const showFooterFavorites = isVisible({ scope: 'menuItem', target: 'footer.favorites' });
+              const showFooterSearch = isVisible({ scope: 'menuItem', target: 'footer.search' });
+              const showFooterAdmin =
+                isAuthenticated &&
+                !isGuest &&
+                currentUser?.role === 'администратор' &&
+                isVisible({ scope: 'menuItem', target: 'footer.admin' });
+              const itemCount =
+                (showFooterMenu ? 1 : 0) +
+                (showFooterFavorites ? 1 : 0) +
+                (showFooterSearch ? 1 : 0) +
+                (showFooterAdmin ? 1 : 0);
+              return itemCount >= 4 ? 'grid-cols-4' : 'grid-cols-3';
+            })()
+          } px-6 items-center h-[60px]`}
+        >
+          {isVisible({ scope: 'menuItem', target: 'footer.menu' }) && (
+            <Link to="/" className="flex flex-col items-center justify-center gap-1 text-primary">
+              <span className="material-symbols-outlined text-[24px]">restaurant_menu</span>
+              <span className="text-[10px] font-bold">{language === 'EN' ? 'Menu' : 'Меню'}</span>
             </Link>
           )}
+          {isVisible({ scope: 'menuItem', target: 'footer.favorites' }) && (
+            <button 
+              onClick={() => {
+                if (isGuest) return; // Гости не могут использовать избранное
+                // Переключаем показ избранного (та же логика, что и на DishDetailPage.js)
+                setShowFavorites(!showFavorites);
+              }}
+              disabled={isGuest}
+              title={isGuest ? 'Доступно после входа' : (language === 'EN' ? 'Favorites' : 'Избранное')}
+              className={`flex flex-col items-center justify-center gap-1 transition-colors ${
+                isGuest
+                  ? 'opacity-50 cursor-not-allowed text-gray-400'
+                  : showFavorites || favorites.length > 0
+                    ? 'text-primary' 
+                    : 'text-gray-400 hover:text-[#181311] dark:hover:text-white'
+              }`}
+            >
+              <span className={`material-symbols-outlined text-[24px] ${showFavorites || favorites.length > 0 ? 'fill-1' : ''}`}>
+                {showFavorites || favorites.length > 0 ? 'favorite' : 'favorite_border'}
+              </span>
+              <span className="text-[10px] font-medium">{language === 'EN' ? 'Favorites' : 'Избранное'}</span>
+            </button>
+          )}
+          {isVisible({ scope: 'menuItem', target: 'footer.search' }) && (
+            <button 
+              onClick={() => {
+                // Открываем глобальный поиск отдельной страницей.
+                navigate('/search');
+              }}
+              className="flex flex-col items-center justify-center gap-1 text-gray-400 hover:text-[#181311] dark:hover:text-white transition-colors"
+            >
+              <span className="material-symbols-outlined text-[24px]">search</span>
+              <span className="text-[10px] font-medium">{language === 'EN' ? 'Search' : 'Поиск'}</span>
+            </button>
+          )}
+          {isAuthenticated &&
+            currentUser?.role === 'администратор' &&
+            isVisible({ scope: 'menuItem', target: 'footer.admin' }) && (
+              <Link
+                to="/admin"
+                className="flex flex-col items-center justify-center gap-1 text-gray-400 hover:text-[#181311] dark:hover:text-white transition-colors"
+              >
+                <span className="material-symbols-outlined text-[24px]">person</span>
+                <span className="text-[10px] font-medium">{language === 'EN' ? 'Admin' : 'Админ-панель'}</span>
+              </Link>
+            )}
         </div>
       </div>
     </div>

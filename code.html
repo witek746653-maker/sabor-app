@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Modern Art Gallery Prototype</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/history@5/umd/history.development.js"></script>
+    <script src="https://unpkg.com/react-router@6.3.0/umd/react-router.development.js"></script>
+    <script src="https://unpkg.com/react-router-dom@6.3.0/umd/react-router-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#f27f0d",
+                        "background-light": "#f8f7f5",
+                        "background-dark": "#221910",
+                        "gallery-brown": "#3E2723",
+                        "gallery-text": "#5D4037",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Manrope', sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .dark .glass {
+            background: rgba(34, 25, 16, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .masonry-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-auto-rows: 100px;
+            gap: 16px;
+        }
+        .masonry-item-tall { grid-row: span 3; }
+        .masonry-item-square { grid-row: span 2; }
+        .masonry-item-wide { grid-column: span 2; grid-row: span 2; }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .bg-blur-underlay {
+            filter: blur(40px);
+            transform: scale(1.1);
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-[#181411] dark:text-[#f8f7f5] antialiased">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        const { createRoot } = ReactDOM;
+        const { MemoryRouter, Routes, Route, Link, useNavigate, useLocation } = ReactRouterDOM;
+
+        // --- Layout Components ---
+
+        const Layout = ({ children, showNav = true }) => {
+            const location = useLocation();
+            const activePath = location.pathname;
+
+            return (
+                <div className="min-h-screen flex flex-col relative">
+                    {children}
+                    
+                    
+                </div>
+            );
+        };
+
+        // --- Screens ---
+
+        const HomePage = () => {
+            const navigate = useNavigate();
+
+            return (
+                <div className="flex-1">
+                    <header className="fixed top-0 left-0 right-0 z-50 glass">
+                        <div className="flex items-center justify-between px-4 h-16">
+                            <div className="flex items-center gap-4">
+                                <button className="flex items-center justify-center size-10 rounded-full bg-white/20 dark:bg-black/20">
+                                    <span className="material-symbols-outlined text-[#181411] dark:text-white">arrow_back_ios_new</span>
+                                </button>
+                                <h1 className="text-lg font-extrabold tracking-tight">Искусство в Sabor de la Vida</h1>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <button className="flex items-center justify-center size-10">
+                                    <span className="material-symbols-outlined text-primary">search</span>
+                                </button>
+                                
+                            </div>
+                        </div>
+                        <div className="flex overflow-x-auto gap-6 px-6 pb-3 no-scrollbar">
+                            <a className="flex flex-col items-center gap-1 shrink-0 group" href="#">
+                                <span className="text-sm font-bold text-primary">Основной зал</span>
+                                <div className="h-1 w-1 rounded-full bg-primary"></div>
+                            </a>
+                            <a className="flex flex-col items-center gap-1 shrink-0 group" href="#">
+                                <span className="text-sm font-bold text-[#8a7560] group-hover:text-primary transition-colors">Банкетный зал</span>
+                                <div className="h-1 w-1 rounded-full bg-transparent"></div>
+                            </a>
+                            <a className="flex flex-col items-center gap-1 shrink-0 group" href="#">
+                                <span className="text-sm font-bold text-[#8a7560] group-hover:text-primary transition-colors">Каминный зал</span>
+                                <div className="h-1 w-1 rounded-full bg-transparent"></div>
+                            </a>
+                            <a className="flex flex-col items-center gap-1 shrink-0 group" href="#">
+                                <span className="text-sm font-bold text-[#8a7560] group-hover:text-primary transition-colors">Английская библиотека</span>
+                                <div className="h-1 w-1 rounded-full bg-transparent"></div>
+                            </a>
+                            <a className="flex flex-col items-center gap-1 shrink-0 group" href="#">
+                                <span className="text-sm font-bold text-[#8a7560] group-hover:text-primary transition-colors">Корридор</span>
+                                <div className="h-1 w-1 rounded-full bg-transparent"></div>
+                            </a>
+                        </div>
+                    </header>
+
+                    <main className="pt-32 pb-24 px-4">
+                        <div className="masonry-grid">
+                            {/* Tall Item - Link to details */}
+                            <div 
+                                onClick={() => navigate('/details')}
+                                className="masonry-item-tall relative overflow-hidden rounded-xl shadow-lg group cursor-pointer"
+                            >
+                                <div className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110" style={{backgroundImage: 'url("./images/arts/art-gustav-klimt-the-woman-in-gold.webp")'}}></div>
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                                <div className="absolute bottom-3 left-3 right-3 glass p-3 rounded-lg border-none">
+                                    <p className="text-xs font-bold text-[#181411] truncate">"Золотая Адель"</p>
+                                    <p className="text-[10px] text-[#8a7560]">Густав Климт</p>
+                                </div>
+                            </div>
+
+                            {/* Square Item */}
+                            <div className="masonry-item-square relative overflow-hidden rounded-xl shadow-lg group">
+                                <div className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110" style={{backgroundImage: 'url("./images/arts/art-pierre-auguste-renoir-bal-du-moulin-de-la-galette.webp")'}}></div>
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                                <div className="absolute bottom-3 left-3 right-3 glass p-2 rounded-lg border-none">
+                                    <p className="text-xs font-bold text-[#181411] truncate">"Бал в Мулен де ля Галет"</p>
+                                    <p className="text-[10px] text-[#8a7560]">Пьер Огюст Ренуар</p>
+                                </div>
+                            </div>
+
+                            {/* Square Item */}
+                            <div className="masonry-item-square relative overflow-hidden rounded-xl shadow-lg group">
+                                <div className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110" style={{backgroundImage: 'url("./images/arts/art-gustav-klimt-poppy-field.webp")'}}></div>
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                                <div className="absolute bottom-3 left-3 right-3 glass p-2 rounded-lg border-none">
+                                    <p className="text-xs font-bold text-[#181411] truncate">"Маковое поле"</p>
+                                    <p className="text-[10px] text-[#8a7560]">Густав Климт</p>
+                                </div>
+                            </div>
+
+                            {/* Wide Item - Also link to details for interaction */}
+                            <div 
+                                onClick={() => navigate('/details')}
+                                className="masonry-item-wide relative overflow-hidden rounded-xl shadow-lg group cursor-pointer"
+                            >
+                                <div className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110" style={{backgroundImage: 'url("./images/arts/art-gustav-klimt-tree-of-life.webp")'}}></div>
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                                <div className="absolute bottom-4 left-4 right-4 glass p-4 rounded-xl border-none">
+                                    <div className="flex justify-between items-end">
+                                        <div>
+                                            <p className="text-sm font-bold text-[#181411]">"Дерево жизни"</p>
+                                            <p className="text-xs text-[#8a7560]">Густав Климт</p>
+                                        </div>
+                                    
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Tall Item */}
+                            <div className="masonry-item-tall relative overflow-hidden rounded-xl shadow-lg group">
+                                <div className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110" style={{backgroundImage: 'url("./images/arts/art-gustav-klimt-malcesine.webp")'}}></div>
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                                <div className="absolute bottom-3 left-3 right-3 glass p-3 rounded-lg border-none">
+                                    <p className="text-xs font-bold text-[#181411] truncate">"Мальчизене"</p>
+                                    <p className="text-[10px] text-[#8a7560]">Густав Климт</p>
+                                </div>
+                            </div>
+
+                            {/* Square Item */}
+                            <div className="masonry-item-square relative overflow-hidden rounded-xl shadow-lg group">
+                                <div className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110" style={{backgroundImage: 'url("./images/arts/art-pierre-auguste-renoir-the-rowers-lunch.webp")'}}></div>
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                                <div className="absolute bottom-3 left-3 right-3 glass p-2 rounded-lg border-none">
+                                    <p className="text-xs font-bold text-[#181411] truncate">"Обед в ресторане Fournaise"</p>
+                                    <p className="text-[10px] text-[#8a7560]">Пьер Огюст Ренуар</p>
+                                </div>
+                            </div>
+                            {/* Square Item */}
+                            <div className="masonry-item-square relative overflow-hidden rounded-xl shadow-lg group">
+                                <div className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110" style={{backgroundImage: 'url("./images/arts/art-jean-marc-janiatzyk-landscape-theme-7.webp")'}}></div>
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent">"Пейзажная тема №7"</div>
+                                <div className="absolute bottom-3 left-3 right-3 glass p-2 rounded-lg border-none">
+                                    <p className="text-xs font-bold text-[#181411] truncate">"Жан-Марк Жаньячик"</p>
+                                    <p className="text-[10px] text-[#8a7560]"></p>
+                                </div>
+                            </div>
+                            {/* Wide Item - Also link to details for interaction */}
+                            <div 
+                                onClick={() => navigate('/details')}
+                                className="masonry-item-wide relative overflow-hidden rounded-xl shadow-lg group cursor-pointer"
+                            >
+                                <div className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110" style={{backgroundImage: 'url("./images/arts/art-edouard-manet-luncheon-in-the-studio.webp")'}}></div>
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                                <div className="absolute bottom-4 left-4 right-4 glass p-4 rounded-xl border-none">
+                                    <div className="flex justify-between items-end">
+                                        <div>
+                                            <p className="text-sm font-bold text-[#181411]">"Завтрак в мастерской"</p>
+                                            <p className="text-xs text-[#8a7560]">Эдуард Мане</p>
+                                        </div>
+                                    
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </main>
+
+                    
+                </div>
+            );
+        };
+
+        const DetailsPage = () => {
+            const navigate = useNavigate();
+            const [isLiked, setIsLiked] = useState(false);
+
+            return (
+                <div className="relative flex flex-col h-screen w-full max-w-md mx-auto overflow-hidden bg-black/10 backdrop-blur-sm">
+                    {/* Background Content Simulation */}
+                    <div className="fixed inset-0 z-0 bg-blur-underlay opacity-40">
+                        <div className="grid grid-cols-2 gap-4 p-4">
+                            <div className="h-64 bg-primary/20 rounded-xl"></div>
+                            <div className="h-64 bg-primary/10 rounded-xl"></div>
+                            <div className="h-64 bg-primary/30 rounded-xl"></div>
+                            <div className="h-64 bg-primary/20 rounded-xl"></div>
+                        </div>
+                    </div>
+
+                    {/* Top App Bar */}
+                    <div className="absolute top-0 left-0 right-0 z-30 flex items-center justify-between p-6">
+                        <button 
+                            onClick={() => navigate('/')}
+                            className="flex size-10 items-center justify-center bg-white/20 backdrop-blur-md rounded-full text-white"
+                        >
+                            <span className="material-symbols-outlined">arrow_back_ios_new</span>
+                        </button>
+                        <div className="flex gap-3">
+                            <button className="flex size-10 items-center justify-center bg-white/20 backdrop-blur-md rounded-full text-white">
+                                <span className="material-symbols-outlined">share</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Artwork Image Section */}
+                    <div className="relative w-full h-[55%] flex items-center justify-center overflow-hidden">
+                        <div className="w-full h-full bg-center bg-cover" style={{backgroundImage: 'url("Путь до картины")'}}>
+                        </div>
+                        <button 
+                            onClick={() => setIsLiked(!isLiked)}
+                            className="absolute bottom-10 right-6 flex size-14 items-center justify-center bg-primary rounded-full shadow-lg shadow-primary/40 text-white transform hover:scale-105 transition-transform active:scale-95"
+                        >
+                            <span className="material-symbols-outlined" style={{fontVariationSettings: `'FILL' ${isLiked ? 1 : 0}, 'wght' 400, 'GRAD' 0, 'opsz' 24`}}>
+                                {isLiked ? 'heart_check' : 'favorite'}
+                            </span>
+                        </button>
+                    </div>
+
+                    {/* Details Panel */}
+                    <div className="glass-panel flex-1 flex flex-col rounded-t-[2.5rem] mt-[-2rem] relative z-20 overflow-hidden">
+                        <div className="flex w-full items-center justify-center py-4">
+                            <div className="h-1.5 w-12 rounded-full bg-gallery-brown/20"></div>
+                        </div>
+                        
+                        <div className="flex-1 overflow-y-auto px-6 pb-12 pt-2 no-scrollbar">
+                            <div className="mb-2">
+                                <h1 className="text-gallery-brown text-3xl font-extrabold leading-tight tracking-tight">Название картины</h1>
+                                <div className="flex items-center gap-2 mt-1">
+                                    <span className="text-primary font-bold text-lg">Автор картины</span>
+                                    <span className="h-1 w-1 rounded-full bg-gallery-brown/30"></span>
+                                    <span className="text-gallery-text font-medium text-sm">Страна и год </span>
+                                </div>
+                            </div>
+
+                            <div className="flex flex-wrap gap-2 my-6">
+                                <div className="px-3 py-1.5 bg-primary/10 rounded-full border border-primary/20">
+                                    <span className="text-xs font-bold text-primary uppercase tracking-wider">Oil on Canvas</span>
+                                </div>
+                                <div className="px-3 py-1.5 bg-gallery-brown/5 rounded-full border border-gallery-brown/10">
+                                    <span className="text-xs font-bold text-gallery-text uppercase tracking-wider">120 x 180 cm</span>
+                                </div>
+                                <div className="px-3 py-1.5 bg-gallery-brown/5 rounded-full border border-gallery-brown/10">
+                                    <span className="text-xs font-bold text-gallery-text uppercase tracking-wider">Series: Light & Shadows</span>
+                                </div>
+                            </div>
+
+                            <h2 className="text-gallery-brown text-sm font-extrabold uppercase tracking-widest mb-3 opacity-60">About the Artwork</h2>
+                            
+                            <p className="text-gallery-text leading-relaxed text-[15px] mb-6">
+                                In "Shattered Sunsets," Elena Moretti captures the ephemeral transition of twilight over the Tuscan landscape. The bold applications of <span className="text-primary font-semibold">Burnt Sienna</span> and <span className="font-semibold">Deep Umber</span> create a visceral tension between the vanishing light and the encroaching night.
+                            </p>
+                            <p className="text-gallery-text leading-relaxed text-[15px] mb-8">
+                                Moretti's technique involves heavy impasto layers, inviting viewers to explore the three-dimensional texture of the paint. The central orange fracture represents the artist's personal recollection of a summer storm, symbolizing resilience amidst chaos.
+                            </p>
+
+                            
+                        </div>
+                        {/* iOS Home Indicator Space */}
+                        <div className="h-8 glass-panel border-t-0 shrink-0"></div>
+                    </div>
+                </div>
+            );
+        };
+
+        // --- Main App ---
+
+        const App = () => {
+            return (
+                <MemoryRouter>
+                    <Routes>
+                        <Route path="/" element={
+                            <Layout>
+                                <HomePage />
+                            </Layout>
+                        } />
+                        <Route path="/details" element={
+                            <Layout showNav={false}>
+                                <DetailsPage />
+                            </Layout>
+                        } />
+                    </Routes>
+                </MemoryRouter>
+            );
+        };
+
+        const container = document.getElementById('root');
+        const root = createRoot(container);
+        root.render(<App />);
+    </script>
+</body>
+</html>

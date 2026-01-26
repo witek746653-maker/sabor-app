@@ -3,14 +3,16 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { getDish } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
+import { useVisibility } from '../contexts/VisibilityContext';
 import { getDishImageUrl } from '../utils/imageUtils';
 import './DishDetailPage.css';
 
-function DishDetailPage() {
+function DishDetailPage({ mode }) {
   const { id } = useParams();
   const navigate = useNavigate();
   const { isAuthenticated, currentUser, isGuest, canWrite } = useAuth();
   const toast = useToast();
+  const { isVisible } = useVisibility();
   const [dish, setDish] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isFeaturesExpanded, setIsFeaturesExpanded] = useState(false);
@@ -27,6 +29,29 @@ function DishDetailPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isImageExpanded, setIsImageExpanded] = useState(false);
   const searchRefs = useRef({});
+
+  const isTeaItem = (item) => {
+    const menu = String(item?.menu || '').toLowerCase();
+    const section = String(item?.section || '').toLowerCase();
+    const idNumber = Number(String(item?.id || '').replace(/\D/g, ''));
+
+    return (
+      menu.includes('чай') ||
+      menu.includes('tea') ||
+      section.includes('чай') ||
+      section.includes('tea') ||
+      (Number.isFinite(idNumber) && idNumber >= 801)
+    );
+  };
+
+  const isFilled = (value) => {
+    if (value === null || value === undefined) return false;
+    if (Array.isArray(value)) return value.length > 0;
+    if (typeof value === 'number') return Number.isFinite(value);
+    if (typeof value === 'string') return value.trim().length > 0;
+    if (typeof value === 'object') return Object.keys(value).length > 0;
+    return Boolean(value);
+  };
 
   // Проверяем, находится ли блюдо в избранном
   const isFavorite = dish && favorites.includes(dish.id);
@@ -239,8 +264,43 @@ function DishDetailPage() {
     );
   }
 
+  const contentTarget = `dish:${dish.id}`;
+  if (!isVisible({ scope: 'contentItem', target: contentTarget })) {
+    return (
+      <div className="bg-background-light dark:bg-background-dark font-display antialiased text-[#181311] dark:text-[#f4f2f0] min-h-screen flex items-center justify-center">
+        <div className="text-center px-4">
+          <div className="text-red-500 text-lg font-bold mb-4">
+            {language === 'EN' ? 'This item is hidden by visibility settings' : 'Эта позиция скрыта настройками видимости'}
+          </div>
+          <Link to="/" className="text-primary hover:underline">{language === 'EN' ? 'Return to home' : 'Вернуться на главную'}</Link>
+        </div>
+      </div>
+    );
+  }
+
   const imageUrl = getDishImageUrl(dish);
   const isArchived = dish.status === 'в архиве';
+  if (isArchived && !isVisible({ scope: 'contentItem', target: 'status.archived' })) {
+    return (
+      <div className="bg-background-light dark:bg-background-dark font-display antialiased text-[#181311] dark:text-[#f4f2f0] min-h-screen flex items-center justify-center">
+        <div className="text-center px-4">
+          <div className="text-red-500 text-lg font-bold mb-4">
+            {language === 'EN' ? 'This item is hidden by visibility settings' : 'Эта позиция скрыта настройками видимости'}
+          </div>
+          <Link to="/" className="text-primary hover:underline">
+            {language === 'EN' ? 'Return to home' : 'Вернуться на главную'}
+          </Link>
+        </div>
+      </div>
+    );
+  }
+  const isTea = mode === 'tea' || isTeaItem(dish);
+  const brewingTemp = dish?.brewing?.temperature_c;
+  const brewingTime = dish?.brewing?.time_minutes;
+  const brewingParts = [
+    isFilled(brewingTemp) ? `${brewingTemp}°C` : null,
+    isFilled(brewingTime) ? `${brewingTime} мин` : null,
+  ].filter(Boolean);
 
   // Нормализация текста аллергена
   const normalizeAllergen = (value) => (value || '').toString().trim().toLowerCase();
@@ -327,48 +387,54 @@ function DishDetailPage() {
           <span className="material-symbols-outlined text-white group-hover:-translate-x-0.5 transition-transform">arrow_back</span>
         </button>
         <div className="flex gap-3">
-          <button 
-            onClick={() => {
-              const newLanguage = language === 'RU' ? 'EN' : 'RU';
-              setLanguage(newLanguage);
-              localStorage.setItem('menuLanguage', newLanguage);
-            }}
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-black/35 dark:bg-white/15 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-lg shadow-black/20 hover:bg-black/45 dark:hover:bg-white/20 hover:shadow-black/30 transition-all active:scale-95 text-white"
-          >
-            <span className="text-xs font-bold">{language === 'RU' ? 'EN' : 'RU'}</span>
-          </button>
-          <div className="relative">
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={language === 'EN' ? 'Search...' : 'Поиск...'}
-              className="h-10 px-4 pr-10 rounded-full bg-black/35 dark:bg-white/15 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-lg shadow-black/20 text-white placeholder:text-white/70 focus:outline-none focus:ring-2 focus:ring-white/60 text-sm w-40"
-            />
-            <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-white text-[18px] pointer-events-none">
-              search
-            </span>
-          </div>
+          {isVisible({ scope: 'featureAction', target: 'language.switcher' }) && (
+            <button 
+              onClick={() => {
+                const newLanguage = language === 'RU' ? 'EN' : 'RU';
+                setLanguage(newLanguage);
+                localStorage.setItem('menuLanguage', newLanguage);
+              }}
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-black/35 dark:bg-white/15 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-lg shadow-black/20 hover:bg-black/45 dark:hover:bg-white/20 hover:shadow-black/30 transition-all active:scale-95 text-white"
+            >
+              <span className="text-xs font-bold">{language === 'RU' ? 'EN' : 'RU'}</span>
+            </button>
+          )}
+          {isVisible({ scope: 'pageBlock', target: 'search.input' }) && (
+            <div className="relative">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder={language === 'EN' ? 'Search...' : 'Поиск...'}
+                className="h-10 px-4 pr-10 rounded-full bg-black/35 dark:bg-white/15 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-lg shadow-black/20 text-white placeholder:text-white/70 focus:outline-none focus:ring-2 focus:ring-white/60 text-sm w-40"
+              />
+              <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-white text-[18px] pointer-events-none">
+                search
+              </span>
+            </div>
+          )}
           <button 
             onClick={handleShare}
             className="flex h-10 w-10 items-center justify-center rounded-full bg-black/35 dark:bg-white/15 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-lg shadow-black/20 hover:bg-black/45 dark:hover:bg-white/20 hover:shadow-black/30 transition-all active:scale-95"
           >
             <span className="material-symbols-outlined text-white">ios_share</span>
           </button>
-          <button 
-            onClick={toggleFavorite}
-            disabled={isGuest}
-            title={isGuest ? 'Доступно после входа' : (isFavorite ? 'Удалить из избранного' : 'Добавить в избранное')}
-            className={`flex h-10 w-10 items-center justify-center rounded-full bg-black/35 dark:bg-white/15 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-lg shadow-black/20 transition-all ${
-              isGuest 
-                ? 'opacity-50 cursor-not-allowed' 
-                : 'hover:bg-black/45 dark:hover:bg-white/20 hover:shadow-black/30 active:scale-95 cursor-pointer'
-            } ${
-              isFavorite ? 'text-primary' : 'text-white'
-            }`}
-          >
-            <span className={`material-symbols-outlined ${isFavorite ? 'fill-1' : ''}`}>favorite</span>
-          </button>
+          {isVisible({ scope: 'featureAction', target: 'favorite.button' }) && (
+            <button 
+              onClick={toggleFavorite}
+              disabled={isGuest}
+              title={isGuest ? 'Доступно после входа' : (isFavorite ? 'Удалить из избранного' : 'Добавить в избранное')}
+              className={`flex h-10 w-10 items-center justify-center rounded-full bg-black/35 dark:bg-white/15 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-lg shadow-black/20 transition-all ${
+                isGuest 
+                  ? 'opacity-50 cursor-not-allowed' 
+                  : 'hover:bg-black/45 dark:hover:bg-white/20 hover:shadow-black/30 active:scale-95 cursor-pointer'
+              } ${
+                isFavorite ? 'text-primary' : 'text-white'
+              }`}
+            >
+              <span className={`material-symbols-outlined ${isFavorite ? 'fill-1' : ''}`}>favorite</span>
+            </button>
+          )}
         </div>
       </div>
 
@@ -450,7 +516,7 @@ function DishDetailPage() {
           )}
 
         {/* 2. Красочное описание */}
-        {getFieldValue('description') && (
+        {getFieldValue('description') && isVisible({ scope: 'pageBlock', target: 'dishDetail.description' }) && (
           <div 
             ref={(el) => { if (el) searchRefs.current['description'] = el; }}
             className="mb-8"
@@ -474,21 +540,64 @@ function DishDetailPage() {
           </div>
         )}
 
+        {/* 2.1 Поля чая (показываем только заполненные) */}
+        {isTea && (
+          <div className="grid grid-cols-1 gap-4 mb-8">
+            {(isFilled(dish.origin) || isFilled(dish.caffeine)) && (
+              <div className="bg-emerald-50 dark:bg-emerald-900/20 p-5 rounded-xl border border-emerald-200 dark:border-emerald-800/50 shadow-md">
+                <h3 className="flex items-center gap-2 mb-3 text-gray-900 dark:text-white font-bold text-lg">
+                  <div className="p-1.5 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400">
+                    <span className="material-symbols-outlined text-[20px] block">emoji_food_beverage</span>
+                  </div>
+                  {language === 'EN' ? 'Tea Details' : 'Параметры чая'}
+                </h3>
+                <div className="space-y-2 text-sm text-gray-700 dark:text-gray-200">
+                  {isFilled(dish.origin) && (
+                    <div>
+                      <span className="font-semibold">{language === 'EN' ? 'Origin:' : 'Происхождение:'}</span> {dish.origin}
+                    </div>
+                  )}
+                  {isFilled(dish.caffeine) && (
+                    <div>
+                      <span className="font-semibold">{language === 'EN' ? 'Caffeine:' : 'Кофеин:'}</span> {dish.caffeine}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+            {brewingParts.length > 0 && (
+              <div className="bg-amber-50 dark:bg-amber-900/20 p-5 rounded-xl border border-amber-200 dark:border-amber-800/50 shadow-md">
+                <h3 className="flex items-center gap-2 mb-3 text-gray-900 dark:text-white font-bold text-lg">
+                  <div className="p-1.5 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400">
+                    <span className="material-symbols-outlined text-[20px] block">timer</span>
+                  </div>
+                  {language === 'EN' ? 'Brewing' : 'Заваривание'}
+                </h3>
+                <div className="text-sm text-gray-700 dark:text-gray-200">
+                  {brewingParts.join(' • ')}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* 3. Аллергены и особенности */}
         {(() => {
           const allergens = getAllergensForLanguage();
           const hasAllergens = allergens && allergens.length > 0;
           const hasFeatures = dish.features;
-          const hasBoth = hasAllergens && hasFeatures;
+          const showAllergens = isVisible({ scope: 'pageBlock', target: 'dishDetail.allergens' });
+          const showFeatures = isVisible({ scope: 'pageBlock', target: 'dishDetail.features' });
+          const hasBoth = hasAllergens && hasFeatures && showAllergens && showFeatures;
           
-          if (!hasAllergens && !hasFeatures) return null;
+          if ((!hasAllergens || !showAllergens) && (!hasFeatures || !showFeatures)) return null;
           
           // Если есть только один блок, используем grid-cols-1 (на всю ширину)
           // Если оба блока, используем grid-cols-2
           return (
             <div className={`grid ${hasBoth ? 'grid-cols-2' : 'grid-cols-1'} gap-4 mb-8 ${hasBoth ? 'items-stretch' : ''}`}>
               {/* Блок аллергенов */}
-              {hasAllergens && (
+              {hasAllergens && showAllergens && (
                 <div 
                   ref={(el) => { if (el) searchRefs.current['allergens'] = el; }}
                   className="allergens-features-card allergens-card bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20 p-5 rounded-xl shadow-md border-2 border-red-200 dark:border-red-800/50 hover:border-red-300 dark:hover:border-red-700 transition-all duration-300 hover:shadow-xl flex flex-col"
@@ -523,7 +632,7 @@ function DishDetailPage() {
               )}
 
               {/* Блок особенностей */}
-              {hasFeatures && (() => {
+              {hasFeatures && showFeatures && (() => {
                 // Убираем HTML теги для подсчета длины текста
                 const textContent = dish.features.replace(/<[^>]*>/g, '').trim();
                 // Если текст длиннее 100 символов, считаем его длинным
@@ -572,7 +681,8 @@ function DishDetailPage() {
         })()}
 
         {/* 4. Состав блюда */}
-        {(dish.ingredients && dish.ingredients.length > 0) || dish.contains ? (
+        {((dish.ingredients && dish.ingredients.length > 0) || dish.contains) &&
+          isVisible({ scope: 'pageBlock', target: 'dishDetail.composition' }) ? (
           <div 
             ref={(el) => { if (el) searchRefs.current['composition'] = el; }}
             className="grid grid-cols-1 gap-4 mb-4"
@@ -817,53 +927,80 @@ function DishDetailPage() {
 
       {/* Bottom Navigation */}
       <nav className="fixed bottom-0 z-50 w-full sabor-fixed bg-white/95 dark:bg-surface-dark/95 backdrop-blur-md border-t border-gray-100 dark:border-gray-800 pb-safe">
-        <div className={`grid ${isAuthenticated && currentUser?.role === 'администратор' ? 'grid-cols-4' : 'grid-cols-3'} px-6 items-center h-[60px]`}>
-          <Link to="/" className="flex flex-col items-center justify-center gap-1 text-primary">
-            <span className="material-symbols-outlined text-[24px]">restaurant_menu</span>
-            <span className="text-[10px] font-bold">{language === 'EN' ? 'Menu' : 'Меню'}</span>
-          </Link>
-          <button 
-            onClick={() => {
-              if (isGuest) return; // Гости не могут использовать избранное
-              const saved = localStorage.getItem('favoriteDishes');
-              const favoriteIds = saved ? JSON.parse(saved) : [];
-              if (favoriteIds.length > 0 && dish) {
-                // Навигация к меню с фильтром избранного
-                navigate(`/menu/${encodeURIComponent(dish.menu || '')}?favorites=true`);
-              }
-            }}
-            disabled={isGuest}
-            title={isGuest ? 'Доступно после входа' : (language === 'EN' ? 'Favorites' : 'Избранное')}
-            className={`flex flex-col items-center justify-center gap-1 transition-colors ${
-              isGuest 
-                ? 'opacity-50 cursor-not-allowed text-gray-400' 
-                : isFavorite 
-                  ? 'text-primary' 
-                  : 'text-gray-400 hover:text-[#181311] dark:hover:text-white'
-            }`}
-          >
-            <span className="material-symbols-outlined text-[24px]">{isFavorite ? 'favorite' : 'favorite_border'}</span>
-            <span className="text-[10px] font-medium">{language === 'EN' ? 'Favorites' : 'Избранное'}</span>
-          </button>
-          <button 
-            onClick={() => {
-              // Прокручиваем к началу страницы или можно добавить поиск
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
-            className="flex flex-col items-center justify-center gap-1 text-gray-400 hover:text-[#181311] dark:hover:text-white transition-colors"
-          >
-            <span className="material-symbols-outlined text-[24px]">search</span>
-            <span className="text-[10px] font-medium">{language === 'EN' ? 'Search' : 'Поиск'}</span>
-          </button>
-          {isAuthenticated && !isGuest && currentUser?.role === 'администратор' && (
-            <Link
-              to="/admin"
-              className="flex flex-col items-center justify-center gap-1 text-gray-400 hover:text-[#181311] dark:hover:text-white transition-colors"
-            >
-              <span className="material-symbols-outlined text-[24px]">person</span>
-              <span className="text-[10px] font-medium">{language === 'EN' ? 'Admin' : 'Админ-панель'}</span>
+        <div
+          className={`grid ${
+            (() => {
+              const showFooterMenu = isVisible({ scope: 'menuItem', target: 'footer.menu' });
+              const showFooterFavorites = isVisible({ scope: 'menuItem', target: 'footer.favorites' });
+              const showFooterSearch = isVisible({ scope: 'menuItem', target: 'footer.search' });
+              const showFooterAdmin =
+                isAuthenticated &&
+                currentUser?.role === 'администратор' &&
+                isVisible({ scope: 'menuItem', target: 'footer.admin' });
+              const itemCount =
+                (showFooterMenu ? 1 : 0) +
+                (showFooterFavorites ? 1 : 0) +
+                (showFooterSearch ? 1 : 0) +
+                (showFooterAdmin ? 1 : 0);
+              return itemCount >= 4 ? 'grid-cols-4' : 'grid-cols-3';
+            })()
+          } px-6 items-center h-[60px]`}
+        >
+          {isVisible({ scope: 'menuItem', target: 'footer.menu' }) && (
+            <Link to="/" className="flex flex-col items-center justify-center gap-1 text-primary">
+              <span className="material-symbols-outlined text-[24px]">restaurant_menu</span>
+              <span className="text-[10px] font-bold">{language === 'EN' ? 'Menu' : 'Меню'}</span>
             </Link>
           )}
+          {isVisible({ scope: 'menuItem', target: 'footer.favorites' }) && (
+            <button 
+              onClick={() => {
+                if (isGuest) return; // Гости не могут использовать избранное
+                const saved = localStorage.getItem('favoriteDishes');
+                const favoriteIds = saved ? JSON.parse(saved) : [];
+                if (favoriteIds.length > 0 && dish) {
+                  // Навигация к меню с фильтром избранного
+                  navigate(`/menu/${encodeURIComponent(dish.menu || '')}?favorites=true`);
+                }
+              }}
+              disabled={isGuest}
+              title={isGuest ? 'Доступно после входа' : (language === 'EN' ? 'Favorites' : 'Избранное')}
+              className={`flex flex-col items-center justify-center gap-1 transition-colors ${
+                isGuest 
+                  ? 'opacity-50 cursor-not-allowed text-gray-400' 
+                  : isFavorite 
+                    ? 'text-primary' 
+                    : 'text-gray-400 hover:text-[#181311] dark:hover:text-white'
+              }`}
+            >
+              <span className="material-symbols-outlined text-[24px]">{isFavorite ? 'favorite' : 'favorite_border'}</span>
+              <span className="text-[10px] font-medium">{language === 'EN' ? 'Favorites' : 'Избранное'}</span>
+            </button>
+          )}
+          {isVisible({ scope: 'menuItem', target: 'footer.search' }) && (
+            <button 
+              onClick={() => {
+                // Открываем глобальный поиск отдельной страницей.
+                navigate('/search');
+              }}
+              className="flex flex-col items-center justify-center gap-1 text-gray-400 hover:text-[#181311] dark:hover:text-white transition-colors"
+            >
+              <span className="material-symbols-outlined text-[24px]">search</span>
+              <span className="text-[10px] font-medium">{language === 'EN' ? 'Search' : 'Поиск'}</span>
+            </button>
+          )}
+          {isAuthenticated &&
+            !isGuest &&
+            currentUser?.role === 'администратор' &&
+            isVisible({ scope: 'menuItem', target: 'footer.admin' }) && (
+              <Link
+                to="/admin"
+                className="flex flex-col items-center justify-center gap-1 text-gray-400 hover:text-[#181311] dark:hover:text-white transition-colors"
+              >
+                <span className="material-symbols-outlined text-[24px]">person</span>
+                <span className="text-[10px] font-medium">{language === 'EN' ? 'Admin' : 'Админ-панель'}</span>
+              </Link>
+            )}
         </div>
       </nav>
     </div>

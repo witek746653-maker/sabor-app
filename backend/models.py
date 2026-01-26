@@ -185,3 +185,40 @@ class User(db.Model, UserMixin):
     def __repr__(self):
         """Строковое представление объекта (для отладки)"""
         return f'<User {self.id}: {self.username} ({self.role})>'
+
+
+class VisibilityConfig(db.Model):
+    """
+    Модель для конфигурации видимости (feature flags / visibility rules).
+
+    Хранит версии правил, черновики и публикации.
+    """
+
+    __tablename__ = 'visibility_configs'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    status = db.Column(db.String(20), nullable=False, default='draft')  # draft | published | archived
+    version = db.Column(db.Integer, nullable=False, default=1)
+    config_json = db.Column(db.Text, nullable=False)  # JSON строка с правилами
+    updated_by = db.Column(db.String(200))  # кто изменил (username или имя)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def to_dict(self):
+        """
+        Преобразует объект конфигурации в словарь для JSON ответа.
+        """
+        import json
+        try:
+            config = json.loads(self.config_json) if self.config_json else {}
+        except Exception:
+            config = {}
+        return {
+            'id': self.id,
+            'status': self.status,
+            'version': self.version,
+            'config': config,
+            'updated_by': self.updated_by,
+            'updated_at': self.updated_at.isoformat() if self.updated_at else None,
+            'created_at': self.created_at.isoformat() if self.created_at else None,
+        }

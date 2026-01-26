@@ -1,7 +1,7 @@
 [
   {
     "id": "0001",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🐠 Аквариум",
     "section_icon": {
       "type": "icon",
@@ -48,7 +48,7 @@
   },
   {
     "id": "0002",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🐠 Аквариум",
     "section_icon": {
       "type": "icon",
@@ -94,7 +94,7 @@
   },
   {
     "id": "0003",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🐠 Аквариум",
     "section_icon": {
       "type": "icon",
@@ -140,7 +140,7 @@
   },
   {
     "id": "0004",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🐠 Аквариум",
     "section_icon": {
       "type": "icon",
@@ -188,7 +188,7 @@
   },
   {
     "id": "0005",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🧊 Холодные закуски",
     "section_icon": {
       "type": "",
@@ -231,7 +231,7 @@
   },
   {
     "id": "0006",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🧊 Холодные закуски",
     "section_icon": {
       "type": "",
@@ -278,7 +278,7 @@
   },
   {
     "id": "0007",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🧊 Холодные закуски",
     "section_icon": {
       "type": "",
@@ -324,7 +324,7 @@
   },
   {
     "id": "0008",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🧊 Холодные закуски",
     "section_icon": {
       "type": "",
@@ -372,7 +372,7 @@
   },
   {
     "id": "0009",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🧊 Холодные закуски",
     "section_icon": {
       "type": "",
@@ -418,7 +418,7 @@
   },
   {
     "id": "0010",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🧊 Холодные закуски",
     "section_icon": {
       "type": "",
@@ -469,7 +469,7 @@
   },
   {
     "id": "0011",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🧊 Холодные закуски",
     "section_icon": {
       "type": "",
@@ -513,7 +513,7 @@
   },
   {
     "id": "0012",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🧊 Холодные закуски",
     "section_icon": {
       "type": "",
@@ -559,7 +559,7 @@
   },
   {
     "id": "0013",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🧊 Холодные закуски",
     "section_icon": {
       "type": "",
@@ -607,7 +607,7 @@
   },
   {
     "id": "0014",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🧊 Холодные закуски",
     "section_icon": {
       "type": "",
@@ -655,7 +655,7 @@
   },
   {
     "id": "0015",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🧊 Холодные закуски",
     "section_icon": {
       "type": "",
@@ -706,7 +706,7 @@
   },
   {
     "id": "0016",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🧊 Холодные закуски",
     "section_icon": {
       "type": "",
@@ -755,7 +755,7 @@
   },
   {
     "id": "0017",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🧊 Холодные закуски",
     "section_icon": {
       "type": "",
@@ -804,7 +804,7 @@
   },
   {
     "id": "0018",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🧊 Холодные закуски",
     "section_icon": {
       "type": "",
@@ -853,7 +853,7 @@
   },
   {
     "id": "0019",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🧊 Холодные закуски",
     "section_icon": {
       "type": "",
@@ -900,7 +900,7 @@
   },
   {
     "id": "0020",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🔥 Горячие закуски",
     "section_icon": {
       "type": "",
@@ -945,7 +945,7 @@
   },
   {
     "id": "0021",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🔥 Горячие закуски",
     "section_icon": {
       "type": "",
@@ -993,7 +993,7 @@
   },
   {
     "id": "0022",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🔥 Горячие закуски",
     "section_icon": {
       "type": "",
@@ -1039,7 +1039,7 @@
   },
   {
     "id": "0023",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🔥 Горячие закуски",
     "section_icon": {
       "type": "",
@@ -1083,7 +1083,7 @@
   },
   {
     "id": "0024",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🔥 Горячие закуски",
     "section_icon": {
       "type": "",
@@ -1130,7 +1130,7 @@
   },
   {
     "id": "0025",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🔥 Горячие закуски",
     "section_icon": {
       "type": "",
@@ -1179,7 +1179,7 @@
   },
   {
     "id": "0026",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🔥 Горячие закуски",
     "section_icon": {
       "type": "",
@@ -1227,7 +1227,7 @@
   },
   {
     "id": "0027",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🥗 Салаты",
     "section_icon": {
       "type": "",
@@ -1276,7 +1276,7 @@
   },
   {
     "id": "0028",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🥗 Салаты",
     "section_icon": {
       "type": "",
@@ -1327,7 +1327,7 @@
   },
   {
     "id": "0029",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🥗 Салаты",
     "section_icon": {
       "type": "",
@@ -1375,7 +1375,7 @@
   },
   {
     "id": "0030",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🥗 Салаты",
     "section_icon": {
       "type": "",
@@ -1416,7 +1416,7 @@
   },
   {
     "id": "0031",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🥗 Салаты",
     "section_icon": {
       "type": "",
@@ -1465,7 +1465,7 @@
   },
   {
     "id": "0032",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🥗 Салаты",
     "section_icon": {
       "type": "",
@@ -1514,7 +1514,7 @@
   },
   {
     "id": "0033",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🥗 Салаты",
     "section_icon": {
       "type": "",
@@ -1562,7 +1562,7 @@
   },
   {
     "id": "0034",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🥗 Салаты",
     "section_icon": {
       "type": "",
@@ -1609,7 +1609,7 @@
   },
   {
     "id": "0035",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🍲 Супы",
     "section_icon": {
       "type": "",
@@ -1656,7 +1656,7 @@
   },
   {
     "id": "0036",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🍲 Супы",
     "section_icon": {
       "type": "",
@@ -1706,7 +1706,7 @@
   },
   {
     "id": "0037",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🍲 Супы",
     "section_icon": {
       "type": "",
@@ -1753,7 +1753,7 @@
   },
   {
     "id": "0038",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🍲 Супы",
     "section_icon": {
       "type": "",
@@ -1799,7 +1799,7 @@
   },
   {
     "id": "0039",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🍲 Супы",
     "section_icon": {
       "type": "",
@@ -1845,7 +1845,7 @@
   },
   {
     "id": "0040",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🍲 Супы",
     "section_icon": {
       "type": "",
@@ -1894,7 +1894,7 @@
   },
   {
     "id": "0041",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🍝 Паста",
     "section_icon": {
       "type": "icon",
@@ -1942,7 +1942,7 @@
   },
   {
     "id": "0042",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🍝 Паста",
     "section_icon": {
       "type": "icon",
@@ -1990,7 +1990,7 @@
   },
   {
     "id": "0043",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🍝 Паста",
     "section_icon": {
       "type": "icon",
@@ -2036,7 +2036,7 @@
   },
   {
     "id": "0044",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🍝 Паста",
     "section_icon": {
       "type": "icon",
@@ -2082,7 +2082,7 @@
   },
   {
     "id": "0045",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🍝 Паста",
     "section_icon": {
       "type": "icon",
@@ -2130,7 +2130,7 @@
   },
   {
     "id": "0046",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🍝 Паста",
     "section_icon": {
       "type": "icon",
@@ -2177,7 +2177,7 @@
   },
   {
     "id": "0047",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🍖 Горячие блюда из мяса",
     "section_icon": {
       "type": "",
@@ -2225,7 +2225,7 @@
   },
   {
     "id": "0048",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🍖 Горячие блюда из мяса",
     "section_icon": {
       "type": "",
@@ -2273,7 +2273,7 @@
   },
   {
     "id": "0049",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🍖 Горячие блюда из мяса",
     "section_icon": {
       "type": "",
@@ -2319,7 +2319,7 @@
   },
   {
     "id": "0050",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🍖 Горячие блюда из мяса",
     "section_icon": {
       "type": "",
@@ -2370,7 +2370,7 @@
   },
   {
     "id": "0051",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🍖 Горячие блюда из мяса",
     "section_icon": {
       "type": "",
@@ -2417,7 +2417,7 @@
   },
   {
     "id": "0052",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🍖 Горячие блюда из мяса",
     "section_icon": {
       "type": "",
@@ -2461,7 +2461,7 @@
   },
   {
     "id": "0053",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🍖 Горячие блюда из мяса",
     "section_icon": {
       "type": "",
@@ -2509,7 +2509,7 @@
   },
   {
     "id": "0054",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🐟 Горячие блюда из рыбы и морепродуктов",
     "section_icon": {
       "type": "icon",
@@ -2556,7 +2556,7 @@
   },
   {
     "id": "0055",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🐟 Горячие блюда из рыбы и морепродуктов",
     "section_icon": {
       "type": "icon",
@@ -2606,7 +2606,7 @@
   },
   {
     "id": "0056",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🐟 Горячие блюда из рыбы и морепродуктов",
     "section_icon": {
       "type": "icon",
@@ -2652,7 +2652,7 @@
   },
   {
     "id": "0057",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🐟 Горячие блюда из рыбы и морепродуктов",
     "section_icon": {
       "type": "icon",
@@ -2702,7 +2702,7 @@
   },
   {
     "id": "0058",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🐟 Горячие блюда из рыбы и морепродуктов",
     "section_icon": {
       "type": "icon",
@@ -2749,7 +2749,7 @@
   },
   {
     "id": "0059",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🥩 Мясо по весу (Josper/ Пар / Сковорода)",
     "section_icon": {
       "type": "icon",
@@ -2792,7 +2792,7 @@
   },
   {
     "id": "0060",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🥩 Мясо по весу (Josper/ Пар / Сковорода)",
     "section_icon": {
       "type": "icon",
@@ -2835,7 +2835,7 @@
   },
   {
     "id": "0061",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🥩 Мясо по весу (Josper/ Пар / Сковорода)",
     "section_icon": {
       "type": "icon",
@@ -2878,7 +2878,7 @@
   },
   {
     "id": "0062",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🥩 Мясо по весу (Josper/ Пар / Сковорода)",
     "section_icon": {
       "type": "icon",
@@ -2921,7 +2921,7 @@
   },
   {
     "id": "0063",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🐙 Рыба и морепродукты по весу (Josper/ Пар / Сковорода)",
     "section_icon": {
       "type": "icon",
@@ -2964,7 +2964,7 @@
   },
   {
     "id": "0064",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🐙 Рыба и морепродукты по весу (Josper/ Пар / Сковорода)",
     "section_icon": {
       "type": "icon",
@@ -3007,7 +3007,7 @@
   },
   {
     "id": "0065",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🐙 Рыба и морепродукты по весу (Josper/ Пар / Сковорода)",
     "section_icon": {
       "type": "icon",
@@ -3048,7 +3048,7 @@
   },
   {
     "id": "0066",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🐙 Рыба и морепродукты по весу (Josper/ Пар / Сковорода)",
     "section_icon": {
       "type": "icon",
@@ -3089,7 +3089,7 @@
   },
   {
     "id": "0067",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🐙 Рыба и морепродукты по весу (Josper/ Пар / Сковорода)",
     "section_icon": {
       "type": "icon",
@@ -3130,7 +3130,7 @@
   },
   {
     "id": "0068",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🐙 Рыба и морепродукты по весу (Josper/ Пар / Сковорода)",
     "section_icon": {
       "type": "icon",
@@ -3173,7 +3173,7 @@
   },
   {
     "id": "0069",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🐙 Рыба и морепродукты по весу (Josper/ Пар / Сковорода)",
     "section_icon": {
       "type": "icon",
@@ -3216,7 +3216,7 @@
   },
   {
     "id": "0070",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🍚 Гарниры",
     "section_icon": {
       "type": "",
@@ -3263,7 +3263,7 @@
   },
   {
     "id": "0071",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🍚 Гарниры",
     "section_icon": {
       "type": "",
@@ -3310,7 +3310,7 @@
   },
   {
     "id": "0072",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🍚 Гарниры",
     "section_icon": {
       "type": "",
@@ -3356,7 +3356,7 @@
   },
   {
     "id": "0073",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🍚 Гарниры",
     "section_icon": {
       "type": "",
@@ -3399,7 +3399,7 @@
   },
   {
     "id": "0074",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🍚 Гарниры",
     "section_icon": {
       "type": "",
@@ -3444,7 +3444,7 @@
   },
   {
     "id": "0075",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🍚 Гарниры",
     "section_icon": {
       "type": "",
@@ -3485,7 +3485,7 @@
   },
   {
     "id": "0076",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🍚 Гарниры",
     "section_icon": {
       "type": "",
@@ -3526,7 +3526,7 @@
   },
   {
     "id": "0077",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🍚 Гарниры",
     "section_icon": {
       "type": "",
@@ -3567,7 +3567,7 @@
   },
   {
     "id": "0078",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🍚 Гарниры",
     "section_icon": {
       "type": "",
@@ -3608,7 +3608,7 @@
   },
   {
     "id": "0079",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🍚 Гарниры",
     "section_icon": {
       "type": "",
@@ -3653,7 +3653,7 @@
   },
   {
     "id": "0080",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🍚 Гарниры",
     "section_icon": {
       "type": "",
@@ -3694,7 +3694,7 @@
   },
   {
     "id": "0081",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🍚 Гарниры",
     "section_icon": {
       "type": "",
@@ -3735,7 +3735,7 @@
   },
   {
     "id": "0082",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🍚 Гарниры",
     "section_icon": {
       "type": "",
@@ -3776,7 +3776,7 @@
   },
   {
     "id": "0083",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🍚 Гарниры",
     "section_icon": {
       "type": "",
@@ -3817,7 +3817,7 @@
   },
   {
     "id": "0084",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🍰 Десерты",
     "section_icon": {
       "type": "",
@@ -3863,7 +3863,7 @@
   },
   {
     "id": "0085",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🍰 Десерты",
     "section_icon": {
       "type": "",
@@ -3910,7 +3910,7 @@
   },
   {
     "id": "0086",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🍰 Десерты",
     "section_icon": {
       "type": "",
@@ -3954,7 +3954,7 @@
   },
   {
     "id": "0087",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🍰 Десерты",
     "section_icon": {
       "type": "",
@@ -4001,7 +4001,7 @@
   },
   {
     "id": "0088",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🍰 Десерты",
     "section_icon": {
       "type": "",
@@ -4047,7 +4047,7 @@
   },
   {
     "id": "0089",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🍰 Десерты",
     "section_icon": {
       "type": "",
@@ -4092,7 +4092,7 @@
   },
   {
     "id": "0090",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🍰 Десерты",
     "section_icon": {
       "type": "",
@@ -4137,7 +4137,7 @@
   },
   {
     "id": "0091",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🍰 Десерты",
     "section_icon": {
       "type": "",
@@ -4182,7 +4182,7 @@
   },
   {
     "id": "0092",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🍰 Десерты",
     "section_icon": {
       "type": "",
@@ -4226,7 +4226,7 @@
   },
   {
     "id": "0093",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🍰 Десерты",
     "section_icon": {
       "type": "",
@@ -4267,7 +4267,7 @@
   },
   {
     "id": "0094",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🍰 Десерты",
     "section_icon": {
       "type": "",
@@ -4314,7 +4314,7 @@
   },
   {
     "id": "0095",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🍰 Десерты",
     "section_icon": {
       "type": "",
@@ -4355,7 +4355,7 @@
   },
   {
     "id": "0096",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🍰 Десерты",
     "section_icon": {
       "type": "",
@@ -4396,7 +4396,7 @@
   },
   {
     "id": "0097",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🥫 Соусы и хлеб",
     "section_icon": {
       "type": "icon",
@@ -4443,7 +4443,7 @@
   },
   {
     "id": "0098",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🥫 Соусы и хлеб",
     "section_icon": {
       "type": "icon",
@@ -4487,7 +4487,7 @@
   },
   {
     "id": "0099",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🥫 Соусы и хлеб",
     "section_icon": {
       "type": "icon",
@@ -4534,7 +4534,7 @@
   },
   {
     "id": "0100",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🥫 Соусы и хлеб",
     "section_icon": {
       "type": "icon",
@@ -4583,7 +4583,7 @@
   },
   {
     "id": "0101",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🥫 Соусы и хлеб",
     "section_icon": {
       "type": "icon",
@@ -4626,7 +4626,7 @@
   },
   {
     "id": "0102",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🥫 Соусы и хлеб",
     "section_icon": {
       "type": "icon",
@@ -4673,7 +4673,7 @@
   },
   {
     "id": "0103",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🥫 Соусы и хлеб",
     "section_icon": {
       "type": "icon",
@@ -4717,7 +4717,7 @@
   },
   {
     "id": "0104",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🥫 Соусы и хлеб",
     "section_icon": {
       "type": "icon",
@@ -4764,7 +4764,7 @@
   },
   {
     "id": "0105",
-    "menu": "Основное меню (Sabor de la Vida)",
+    "menu": "Основное меню",
     "section": "🥫 Соусы и хлеб",
     "section_icon": {
       "type": "icon",

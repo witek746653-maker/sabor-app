@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { getWine } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
+import { useVisibility } from '../contexts/VisibilityContext';
 import { getDishImageUrl } from '../utils/imageUtils';
 import './DishDetailPage.css';
 
@@ -37,6 +38,7 @@ function WineDetailPage() {
   const navigate = useNavigate();
   const { isGuest } = useAuth();
   const toast = useToast();
+  const { isVisible } = useVisibility();
 
   const [wine, setWine] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -280,6 +282,37 @@ function WineDetailPage() {
     );
   }
 
+  const contentTarget = `wine:${wine.id}`;
+  if (!isVisible({ scope: 'contentItem', target: contentTarget })) {
+    return (
+      <div className="bg-background-light dark:bg-background-dark font-display antialiased text-[#181311] dark:text-[#f4f2f0] min-h-screen flex items-center justify-center">
+        <div className="text-center px-4">
+          <div className="text-red-500 text-lg font-bold mb-4">
+            {language === 'EN' ? 'This item is hidden by visibility settings' : 'Эта позиция скрыта настройками видимости'}
+          </div>
+          <Link to="/wine-catalog" className="text-primary hover:underline">
+            {language === 'EN' ? 'Return to catalog' : 'Вернуться в каталог'}
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (isArchived && !isVisible({ scope: 'contentItem', target: 'status.archived' })) {
+    return (
+      <div className="bg-background-light dark:bg-background-dark font-display antialiased text-[#181311] dark:text-[#f4f2f0] min-h-screen flex items-center justify-center">
+        <div className="text-center px-4">
+          <div className="text-red-500 text-lg font-bold mb-4">
+            {language === 'EN' ? 'This item is hidden by visibility settings' : 'Эта позиция скрыта настройками видимости'}
+          </div>
+          <Link to="/wine-catalog" className="text-primary hover:underline">
+            {language === 'EN' ? 'Return to catalog' : 'Вернуться в каталог'}
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   const imageUrl = getDishImageUrl(wine);
   const { country, region } = parseOrigin(wine.origin || '', wine);
   const grapeVarietiesText = Array.isArray(wine.grapeVarieties)
@@ -307,29 +340,33 @@ function WineDetailPage() {
         </button>
 
         <div className="flex gap-3">
-          <button
-            onClick={() => {
-              const newLanguage = language === 'RU' ? 'EN' : 'RU';
-              setLanguage(newLanguage);
-              localStorage.setItem('menuLanguage', newLanguage);
-            }}
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-black/35 dark:bg-white/15 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-lg shadow-black/20 hover:bg-black/45 dark:hover:bg-white/20 hover:shadow-black/30 transition-all active:scale-95 text-white"
-          >
-            <span className="text-xs font-bold">{language === 'RU' ? 'EN' : 'RU'}</span>
-          </button>
+          {isVisible({ scope: 'featureAction', target: 'language.switcher' }) && (
+            <button
+              onClick={() => {
+                const newLanguage = language === 'RU' ? 'EN' : 'RU';
+                setLanguage(newLanguage);
+                localStorage.setItem('menuLanguage', newLanguage);
+              }}
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-black/35 dark:bg-white/15 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-lg shadow-black/20 hover:bg-black/45 dark:hover:bg-white/20 hover:shadow-black/30 transition-all active:scale-95 text-white"
+            >
+              <span className="text-xs font-bold">{language === 'RU' ? 'EN' : 'RU'}</span>
+            </button>
+          )}
 
-          <div className="relative">
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={language === 'EN' ? 'Search...' : 'Поиск...'}
-              className="h-10 px-4 pr-10 rounded-full bg-black/35 dark:bg-white/15 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-lg shadow-black/20 text-white placeholder:text-white/70 focus:outline-none focus:ring-2 focus:ring-white/60 text-sm w-40"
-            />
-            <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-white text-[18px] pointer-events-none">
-              search
-            </span>
-          </div>
+          {isVisible({ scope: 'pageBlock', target: 'search.input' }) && (
+            <div className="relative">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder={language === 'EN' ? 'Search...' : 'Поиск...'}
+                className="h-10 px-4 pr-10 rounded-full bg-black/35 dark:bg-white/15 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-lg shadow-black/20 text-white placeholder:text-white/70 focus:outline-none focus:ring-2 focus:ring-white/60 text-sm w-40"
+              />
+              <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-white text-[18px] pointer-events-none">
+                search
+              </span>
+            </div>
+          )}
 
           {wine?.i18n?.en?.['audio-en'] && (
             <button
@@ -348,16 +385,18 @@ function WineDetailPage() {
             <span className="material-symbols-outlined text-white">ios_share</span>
           </button>
 
-          <button
-            onClick={toggleFavorite}
-            disabled={isGuest}
-            title={isGuest ? 'Доступно после входа' : isFavorite ? 'Удалить из избранного' : 'Добавить в избранное'}
-            className={`flex h-10 w-10 items-center justify-center rounded-full bg-black/35 dark:bg-white/15 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-lg shadow-black/20 transition-all ${
-              isGuest ? 'opacity-50 cursor-not-allowed' : 'hover:bg-black/45 dark:hover:bg-white/20 hover:shadow-black/30 active:scale-95 cursor-pointer'
-            } ${isFavorite ? 'text-primary' : 'text-white'}`}
-          >
-            <span className={`material-symbols-outlined ${isFavorite ? 'fill-1' : ''}`}>favorite</span>
-          </button>
+          {isVisible({ scope: 'featureAction', target: 'favorite.button' }) && (
+            <button
+              onClick={toggleFavorite}
+              disabled={isGuest}
+              title={isGuest ? 'Доступно после входа' : isFavorite ? 'Удалить из избранного' : 'Добавить в избранное'}
+              className={`flex h-10 w-10 items-center justify-center rounded-full bg-black/35 dark:bg-white/15 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-lg shadow-black/20 transition-all ${
+                isGuest ? 'opacity-50 cursor-not-allowed' : 'hover:bg-black/45 dark:hover:bg-white/20 hover:shadow-black/30 active:scale-95 cursor-pointer'
+              } ${isFavorite ? 'text-primary' : 'text-white'}`}
+            >
+              <span className={`material-symbols-outlined ${isFavorite ? 'fill-1' : ''}`}>favorite</span>
+            </button>
+          )}
         </div>
       </div>
 
@@ -432,7 +471,7 @@ function WineDetailPage() {
             </div>
           )}
 
-          {getFieldValue('description') && (
+          {getFieldValue('description') && isVisible({ scope: 'pageBlock', target: 'wineDetail.description' }) && (
             <div
               ref={(el) => {
                 if (el) searchRefs.current['description'] = el;
@@ -458,7 +497,7 @@ function WineDetailPage() {
             </div>
           )}
 
-          {wine.features && (
+          {wine.features && isVisible({ scope: 'pageBlock', target: 'wineDetail.features' }) && (
             <div
               ref={(el) => {
                 if (el) searchRefs.current['features'] = el;
@@ -475,7 +514,8 @@ function WineDetailPage() {
           )}
 
           {/* Карточки характеристик: показываем только то, что реально заполнено */}
-          {(isNonEmpty(country) || isNonEmpty(region) || isNonEmpty(origin) || isNonEmpty(producer) || isNonEmpty(grapeVarietiesText) || isNonEmpty(sweetness) || isNonEmpty(alcoholContent)) && (
+          {(isNonEmpty(country) || isNonEmpty(region) || isNonEmpty(origin) || isNonEmpty(producer) || isNonEmpty(grapeVarietiesText) || isNonEmpty(sweetness) || isNonEmpty(alcoholContent)) &&
+            isVisible({ scope: 'pageBlock', target: 'wineDetail.characteristics' }) && (
             <div className="grid grid-cols-2 gap-4 mb-8">
               {(country || origin) && (
                 <div className="bg-primary/5 dark:bg-primary/10 p-4 rounded-xl border border-primary/20 dark:border-primary/30 shadow-sm">
@@ -533,7 +573,8 @@ function WineDetailPage() {
           )}
 
           {/* Пэринг */}
-          {(pairingsDishes.length > 0 || pairingsNotes.length > 0) && (
+          {(pairingsDishes.length > 0 || pairingsNotes.length > 0) &&
+            isVisible({ scope: 'pageBlock', target: 'wineDetail.pairings' }) && (
             <div
               ref={(el) => {
                 if (el) searchRefs.current['pairings'] = el;
@@ -658,33 +699,52 @@ function WineDetailPage() {
 
       {/* Нижняя навигация (та же логика, что и на DishDetailPage) */}
       <nav className="fixed bottom-0 z-50 w-full sabor-fixed bg-white/95 dark:bg-surface-dark/95 backdrop-blur-md border-t border-gray-100 dark:border-gray-800 pb-safe">
-        <div className="grid grid-cols-3 px-6 items-center h-[60px]">
-          <Link to="/" className="flex flex-col items-center justify-center gap-1 text-primary">
-            <span className="material-symbols-outlined text-[24px]">restaurant_menu</span>
-            <span className="text-[10px] font-bold">{language === 'EN' ? 'Menu' : 'Меню'}</span>
-          </Link>
-          <Link
-            to={isGuest ? '/' : '/favorites'}
-            title={isGuest ? 'Доступно после входа' : language === 'EN' ? 'Favorites' : 'Избранное'}
-            className={`flex flex-col items-center justify-center gap-1 transition-colors ${
-              isGuest ? 'opacity-50 cursor-not-allowed text-gray-400' : isFavorite ? 'text-primary' : 'text-gray-400 hover:text-[#181311] dark:hover:text-white'
-            }`}
-            onClick={(e) => {
-              if (isGuest) {
-                e.preventDefault();
-              }
-            }}
-          >
-            <span className="material-symbols-outlined text-[24px]">{isFavorite ? 'favorite' : 'favorite_border'}</span>
-            <span className="text-[10px] font-medium">{language === 'EN' ? 'Favorites' : 'Избранное'}</span>
-          </Link>
-          <button
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="flex flex-col items-center justify-center gap-1 text-gray-400 hover:text-[#181311] dark:hover:text-white transition-colors"
-          >
-            <span className="material-symbols-outlined text-[24px]">search</span>
-            <span className="text-[10px] font-medium">{language === 'EN' ? 'Up' : 'Наверх'}</span>
-          </button>
+        <div
+          className={`grid ${
+            (() => {
+              const showFooterMenu = isVisible({ scope: 'menuItem', target: 'footer.menu' });
+              const showFooterFavorites = isVisible({ scope: 'menuItem', target: 'footer.favorites' });
+              const showFooterSearch = isVisible({ scope: 'menuItem', target: 'footer.search' });
+              const itemCount =
+                (showFooterMenu ? 1 : 0) +
+                (showFooterFavorites ? 1 : 0) +
+                (showFooterSearch ? 1 : 0);
+              return itemCount >= 3 ? 'grid-cols-3' : 'grid-cols-2';
+            })()
+          } px-6 items-center h-[60px]`}
+        >
+          {isVisible({ scope: 'menuItem', target: 'footer.menu' }) && (
+            <Link to="/" className="flex flex-col items-center justify-center gap-1 text-primary">
+              <span className="material-symbols-outlined text-[24px]">restaurant_menu</span>
+              <span className="text-[10px] font-bold">{language === 'EN' ? 'Menu' : 'Меню'}</span>
+            </Link>
+          )}
+          {isVisible({ scope: 'menuItem', target: 'footer.favorites' }) && (
+            <Link
+              to={isGuest ? '/' : '/favorites'}
+              title={isGuest ? 'Доступно после входа' : language === 'EN' ? 'Favorites' : 'Избранное'}
+              className={`flex flex-col items-center justify-center gap-1 transition-colors ${
+                isGuest ? 'opacity-50 cursor-not-allowed text-gray-400' : isFavorite ? 'text-primary' : 'text-gray-400 hover:text-[#181311] dark:hover:text-white'
+              }`}
+              onClick={(e) => {
+                if (isGuest) {
+                  e.preventDefault();
+                }
+              }}
+            >
+              <span className="material-symbols-outlined text-[24px]">{isFavorite ? 'favorite' : 'favorite_border'}</span>
+              <span className="text-[10px] font-medium">{language === 'EN' ? 'Favorites' : 'Избранное'}</span>
+            </Link>
+          )}
+          {isVisible({ scope: 'menuItem', target: 'footer.search' }) && (
+            <button
+              onClick={() => navigate('/search')}
+              className="flex flex-col items-center justify-center gap-1 text-gray-400 hover:text-[#181311] dark:hover:text-white transition-colors"
+            >
+              <span className="material-symbols-outlined text-[24px]">search</span>
+              <span className="text-[10px] font-medium">{language === 'EN' ? 'Search' : 'Поиск'}</span>
+            </button>
+          )}
         </div>
       </nav>
     </div>

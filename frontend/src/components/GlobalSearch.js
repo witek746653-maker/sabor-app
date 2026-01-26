@@ -1,13 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { getDishes, getMenus } from '../services/api';
+import { useAuth } from '../contexts/AuthContext';
+import { useVisibility } from '../contexts/VisibilityContext';
 
 /**
  * Глобальный поиск по всему приложению
  * Ищет во всех блюдах, меню и других данных (кроме технических настроек)
  */
 function GlobalSearch({ isOpen, onClose, searchQuery: externalQuery = null }) {
+  const location = useLocation();
   const navigate = useNavigate();
+  const { isAuthenticated, currentUser, isGuest } = useAuth();
+  const { isVisible } = useVisibility();
   const [searchQuery, setSearchQuery] = useState(externalQuery || '');
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -16,6 +21,15 @@ function GlobalSearch({ isOpen, onClose, searchQuery: externalQuery = null }) {
   const [searchIndex, setSearchIndex] = useState([]);
   const inputRef = useRef(null);
   const highlightTimeoutRef = useRef(null);
+  const isSearchRoute = location.pathname === '/search';
+
+  // Кнопка "Стереть": очищаем запрос и, соответственно, результаты.
+  const handleClear = () => {
+    setSearchQuery('');
+    setResults([]);
+    // После очистки удобно сразу вернуть фокус на поле ввода.
+    setTimeout(() => inputRef.current?.focus(), 0);
+  };
 
   // Загружаем данные при открытии
   useEffect(() => {
@@ -64,6 +78,8 @@ function GlobalSearch({ isOpen, onClose, searchQuery: externalQuery = null }) {
   // Строим поисковый индекс из всех данных
   const buildSearchIndex = (dishes, menus) => {
     const index = [];
+    // Если архивные скрыты, не добавляем их в поиск.
+    const allowArchived = isVisible({ scope: 'contentItem', target: 'status.archived' });
 
     // Термин **эвристика**: простая “догадка по словам”, чтобы понять тип позиции.
     const getItemKind = (it) => {
@@ -120,6 +136,9 @@ function GlobalSearch({ isOpen, onClose, searchQuery: externalQuery = null }) {
     // Индексируем блюда (исключаем технические поля)
     dishes.forEach(dish => {
       const isArchived = dish.status === 'в архиве';
+      if (isArchived && !allowArchived) {
+        return;
+      }
       const itemKind = getItemKind(dish);
       const detailPath = getDetailPathForItem(dish);
 
@@ -336,38 +355,44 @@ function GlobalSearch({ isOpen, onClose, searchQuery: externalQuery = null }) {
   };
 
   if (!isOpen) return null;
+  if (!isVisible({ scope: 'pageBlock', target: 'search.input' })) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[200] flex flex-col">
-      {/* Строка поиска */}
-      <div className="bg-white dark:bg-[#181311] border-b border-gray-200 dark:border-gray-800 p-4">
-        <div className="max-w-4xl mx-auto flex items-center gap-3">
-          <div className="flex-1 relative">
-            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xl">
-              search
-            </span>
-            <input
-              ref={inputRef}
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Поиск по всему приложению..."
-              className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#2c2420] text-[#181311] dark:text-white text-base focus:outline-none focus:ring-2 focus:ring-primary"
-              autoFocus
-            />
+    <div
+      className={`fixed inset-0 z-[200] flex flex-col ${
+        // На /search используем общую заливку приложения, без затемнения.
+        // На других страницах (если вдруг откроют как модалку) оставляем затемнение.
+        isSearchRoute
+          ? 'bg-background-light dark:bg-background-dark'
+          : 'bg-black/60 backdrop-blur-sm'
+      }`}
+    >
+      {/* Верхняя панель (как принято на мобильных): назад + заголовок */}
+      {isSearchRoute && (
+        <header className="sticky top-0 z-[205] bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md border-b border-gray-200/50 dark:border-gray-800/50">
+          <div className="sabor-container flex items-center gap-3 px-4 py-3">
+            <button
+              type="button"
+              onClick={onClose}
+              className="text-[#181311] dark:text-white flex size-10 shrink-0 items-center justify-center rounded-full active:bg-black/5 dark:active:bg-white/10 transition-colors"
+              aria-label="Назад"
+            >
+              <span className="material-symbols-outlined">arrow_back</span>
+            </button>
+            <h1 className="text-[#181311] dark:text-white text-base font-bold">
+              Поиск
+            </h1>
           </div>
-          <button
-            onClick={onClose}
-            className="px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors font-semibold"
-          >
-            Закрыть
-          </button>
-        </div>
-      </div>
+        </header>
+      )}
 
       {/* Результаты поиска */}
-      <div className="flex-1 overflow-y-auto bg-white dark:bg-[#181311]">
-        <div className="max-w-4xl mx-auto p-4">
+      <div className="flex-1 overflow-y-auto">
+        {/* 
+          Важно: добавляем нижний отступ, чтобы контент не прятался под
+          нижней панелью ввода + нижним футером.
+        */}
+        <div className="sabor-container p-4 pb-40">
           {loading ? (
             <div className="text-center py-12 text-gray-500 dark:text-gray-400">
               <span className="material-symbols-outlined text-6xl mb-4 block opacity-50 animate-spin">refresh</span>
@@ -429,6 +454,158 @@ function GlobalSearch({ isOpen, onClose, searchQuery: externalQuery = null }) {
               ))}
             </div>
           )}
+        </div>
+      </div>
+
+      {/* Нижняя панель: строка поиска + футер */}
+      <div className="fixed bottom-0 left-0 right-0 z-[210]">
+        {/* Строка поиска (внизу — удобнее на мобильном) */}
+        <div className="bg-white/95 dark:bg-[#181311]/95 backdrop-blur-md border-t border-gray-200 dark:border-gray-800 p-4">
+          <div className="sabor-container flex items-center gap-3">
+            <div className="flex-1 relative">
+              <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xl">
+                search
+              </span>
+              <input
+                ref={inputRef}
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Поиск по всему приложению..."
+                className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#2c2420] text-[#181311] dark:text-white text-base focus:outline-none focus:ring-2 focus:ring-primary"
+                autoFocus
+              />
+            </div>
+            <button
+              type="button"
+              onClick={handleClear}
+              className="px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors font-semibold"
+            >
+              Стереть
+            </button>
+          </div>
+        </div>
+
+        {/* Аналогичный нижний футер (как на остальных страницах) */}
+        <div className="w-full bg-white/95 dark:bg-surface-dark/95 backdrop-blur-md border-t border-gray-100 dark:border-gray-800 pb-safe">
+          <div
+            className={`sabor-container grid ${
+              (() => {
+                const showFooterMenu = isVisible({ scope: 'menuItem', target: 'footer.menu' });
+                const showFooterFavorites = isVisible({ scope: 'menuItem', target: 'footer.favorites' });
+                const showFooterSearch = isVisible({ scope: 'menuItem', target: 'footer.search' });
+                const showFooterTools = isVisible({ scope: 'menuItem', target: 'footer.tools' });
+                const showFooterAdmin =
+                  isAuthenticated &&
+                  currentUser?.role === 'администратор' &&
+                  isVisible({ scope: 'menuItem', target: 'footer.admin' });
+                const itemCount =
+                  (showFooterMenu ? 1 : 0) +
+                  (showFooterFavorites ? 1 : 0) +
+                  (showFooterSearch ? 1 : 0) +
+                  (showFooterTools ? 1 : 0) +
+                  (showFooterAdmin ? 1 : 0);
+                if (itemCount >= 5) return 'grid-cols-5';
+                if (itemCount === 4) return 'grid-cols-4';
+                return 'grid-cols-3';
+              })()
+            } px-6 items-center h-[60px]`}
+          >
+            {isVisible({ scope: 'menuItem', target: 'footer.menu' }) && (
+              <button
+                type="button"
+                onClick={() => {
+                  // На странице /search просто переходим.
+                  // В модальном режиме (на главной) сначала закрываем, потом переходим.
+                  if (!isSearchRoute) onClose?.();
+                  setTimeout(() => navigate('/'), !isSearchRoute ? 50 : 0);
+                }}
+                className={`flex flex-col items-center justify-center gap-1 transition-colors ${
+                  location.pathname === '/'
+                    ? 'text-primary'
+                    : 'text-gray-400 hover:text-[#181311] dark:text-gray-500 dark:hover:text-white'
+                }`}
+              >
+                <span className="material-symbols-outlined text-[24px]">restaurant_menu</span>
+                <span className="text-[10px] font-bold">Меню</span>
+              </button>
+            )}
+
+            {isVisible({ scope: 'menuItem', target: 'footer.favorites' }) && (
+              <button
+                type="button"
+                onClick={() => {
+                  if (isGuest) return;
+                  if (!isSearchRoute) onClose?.();
+                  setTimeout(() => navigate('/favorites'), !isSearchRoute ? 50 : 0);
+                }}
+                disabled={isGuest}
+                title={isGuest ? 'Доступно после входа' : 'Избранное'}
+                className={`flex flex-col items-center justify-center gap-1 transition-colors ${
+                  isGuest
+                    ? 'opacity-50 cursor-not-allowed text-gray-400'
+                    : location.pathname.startsWith('/favorites')
+                      ? 'text-primary'
+                      : 'text-gray-400 hover:text-[#181311] dark:text-gray-500 dark:hover:text-white'
+                }`}
+              >
+                <span className="material-symbols-outlined text-[24px] fill-1">favorite</span>
+                <span className="text-[10px] font-medium">Избранное</span>
+              </button>
+            )}
+
+            {isVisible({ scope: 'menuItem', target: 'footer.search' }) && (
+              <button
+                type="button"
+                onClick={() => {
+                  // Мы уже в поиске — просто фокусим строку ввода.
+                  inputRef.current?.focus();
+                }}
+                className="flex flex-col items-center justify-center gap-1 text-primary transition-colors"
+              >
+                <span className="material-symbols-outlined text-[24px]">search</span>
+                <span className="text-[10px] font-medium">Поиск</span>
+              </button>
+            )}
+
+            {isVisible({ scope: 'menuItem', target: 'footer.tools' }) && (
+              <button
+                type="button"
+                onClick={() => {
+                  if (!isSearchRoute) onClose?.();
+                  setTimeout(() => navigate('/info'), !isSearchRoute ? 50 : 0);
+                }}
+                className={`flex flex-col items-center justify-center gap-1 transition-colors ${
+                  location.pathname.startsWith('/info')
+                    ? 'text-primary'
+                    : 'text-gray-400 hover:text-[#181311] dark:text-gray-500 dark:hover:text-white'
+                }`}
+              >
+                <span className="material-symbols-outlined text-[24px]">new_releases</span>
+                <span className="text-[10px] font-medium">Информация</span>
+              </button>
+            )}
+
+            {isAuthenticated &&
+              currentUser?.role === 'администратор' &&
+              isVisible({ scope: 'menuItem', target: 'footer.admin' }) && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (!isSearchRoute) onClose?.();
+                    setTimeout(() => navigate('/admin'), !isSearchRoute ? 50 : 0);
+                  }}
+                  className={`flex flex-col items-center justify-center gap-1 transition-colors ${
+                    location.pathname.startsWith('/admin')
+                      ? 'text-primary'
+                      : 'text-gray-400 hover:text-[#181311] dark:text-gray-500 dark:hover:text-white'
+                  }`}
+                >
+                  <span className="material-symbols-outlined text-[24px]">person</span>
+                  <span className="text-[10px] font-medium">Админ-панель</span>
+                </button>
+              )}
+          </div>
         </div>
       </div>
     </div>

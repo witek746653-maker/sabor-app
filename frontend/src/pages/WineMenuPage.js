@@ -1,10 +1,12 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useVisibility } from '../contexts/VisibilityContext';
 
 function WineMenuPage() {
   const navigate = useNavigate();
   const { isAuthenticated, currentUser } = useAuth();
+  const { isVisible } = useVisibility();
 
   const categories = [
     {
@@ -108,31 +110,54 @@ function WineMenuPage() {
 
       {/* Footer */}
       <footer className="fixed bottom-0 bg-white dark:bg-[#181311] border-t border-orange-100 dark:border-gray-800 pb-safe z-40 w-full sabor-fixed">
-        <div className={`grid ${isAuthenticated && currentUser?.role === 'администратор' ? 'grid-cols-4' : 'grid-cols-3'} h-16`}>
-          <Link
-            to="/"
-            className="flex flex-col items-center justify-center gap-1 text-primary"
-          >
-            <span className="material-symbols-outlined text-2xl">restaurant_menu</span>
-            <span className="text-[10px] font-medium">Меню</span>
-          </Link>
-          <button className="flex flex-col items-center justify-center gap-1 text-gray-400 dark:text-gray-500 hover:text-primary dark:hover:text-primary transition-colors">
-            <span className="material-symbols-outlined text-2xl">favorite</span>
-            <span className="text-[10px] font-medium">Избранное</span>
-          </button>
+        <div
+          className={`grid ${
+            (() => {
+              const showFooterMenu = isVisible({ scope: 'menuItem', target: 'footer.menu' });
+              const showFooterFavorites = isVisible({ scope: 'menuItem', target: 'footer.favorites' });
+              const showFooterAdmin =
+                isAuthenticated &&
+                currentUser?.role === 'администратор' &&
+                isVisible({ scope: 'menuItem', target: 'footer.admin' });
+              const itemCount =
+                (showFooterMenu ? 1 : 0) +
+                (showFooterFavorites ? 1 : 0) +
+                1 +
+                (showFooterAdmin ? 1 : 0);
+              return itemCount >= 4 ? 'grid-cols-4' : 'grid-cols-3';
+            })()
+          } h-16`}
+        >
+          {isVisible({ scope: 'menuItem', target: 'footer.menu' }) && (
+            <Link
+              to="/"
+              className="flex flex-col items-center justify-center gap-1 text-primary"
+            >
+              <span className="material-symbols-outlined text-2xl">restaurant_menu</span>
+              <span className="text-[10px] font-medium">Меню</span>
+            </Link>
+          )}
+          {isVisible({ scope: 'menuItem', target: 'footer.favorites' }) && (
+            <button className="flex flex-col items-center justify-center gap-1 text-gray-400 dark:text-gray-500 hover:text-primary dark:hover:text-primary transition-colors">
+              <span className="material-symbols-outlined text-2xl">favorite</span>
+              <span className="text-[10px] font-medium">Избранное</span>
+            </button>
+          )}
           <button className="flex flex-col items-center justify-center gap-1 text-gray-400 dark:text-gray-500 hover:text-primary dark:hover:text-primary transition-colors">
             <span className="material-symbols-outlined text-2xl">new_releases</span>
             <span className="text-[10px] font-medium">Новинки</span>
           </button>
-          {isAuthenticated && currentUser?.role === 'администратор' && (
-            <Link
-              to="/admin"
-              className="flex flex-col items-center justify-center gap-1 text-gray-400 dark:text-gray-500 hover:text-primary dark:hover:text-primary transition-colors"
-            >
-              <span className="material-symbols-outlined text-2xl">person</span>
-              <span className="text-[10px] font-medium">Профиль</span>
-            </Link>
-          )}
+          {isAuthenticated &&
+            currentUser?.role === 'администратор' &&
+            isVisible({ scope: 'menuItem', target: 'footer.admin' }) && (
+              <Link
+                to="/admin"
+                className="flex flex-col items-center justify-center gap-1 text-gray-400 dark:text-gray-500 hover:text-primary dark:hover:text-primary transition-colors"
+              >
+                <span className="material-symbols-outlined text-2xl">person</span>
+                <span className="text-[10px] font-medium">Профиль</span>
+              </Link>
+            )}
         </div>
         <div className="h-[env(safe-area-inset-bottom)] bg-white dark:bg-[#181311]" />
       </footer>

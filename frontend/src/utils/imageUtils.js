@@ -10,32 +10,47 @@ const API_URL = process.env.REACT_APP_API_URL || '';
  */
 export const getImageUrl = (imagePath) => {
   if (!imagePath) return null;
+
+  // Если передали объект (например { src, alt }), берём src.
+  if (typeof imagePath === 'object') {
+    const src = imagePath?.src;
+    if (!src || typeof src !== 'string') return null;
+    return getImageUrl(src);
+  }
   
   // Если это уже полный URL (http/https), возвращаем как есть
-  if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+  if (typeof imagePath === 'string' && (imagePath.startsWith('http://') || imagePath.startsWith('https://'))) {
     return imagePath;
+  }
+
+  // Частый кейс в menu-database.json: пути вида "./images/..."
+  // Для браузера корректнее использовать абсолютный путь от корня сайта: "/images/..."
+  if (typeof imagePath === 'string' && imagePath.startsWith('./images/')) {
+    const normalized = imagePath.replace(/^\.\//, '/'); // "./images/..." -> "/images/..."
+    const filename = normalized.replace('/images/', '');
+    return `${API_URL}/images/${filename}`;
   }
   
   // Если путь начинается с ../images/, преобразуем в URL бэкенда
-  if (imagePath.startsWith('../images/')) {
+  if (typeof imagePath === 'string' && imagePath.startsWith('../images/')) {
     const filename = imagePath.replace('../images/', '');
     return `${API_URL}/images/${filename}`;
   }
   
   // Если путь начинается с /images/, используем бэкенд
-  if (imagePath.startsWith('/images/')) {
+  if (typeof imagePath === 'string' && imagePath.startsWith('/images/')) {
     const filename = imagePath.replace('/images/', '');
     return `${API_URL}/images/${filename}`;
   }
   
   // Если путь начинается с images/, используем бэкенд
-  if (imagePath.startsWith('images/')) {
+  if (typeof imagePath === 'string' && imagePath.startsWith('images/')) {
     const filename = imagePath.replace('images/', '');
     return `${API_URL}/images/${filename}`;
   }
   
   // Для остальных случаев возвращаем как есть (может быть относительный путь)
-  return imagePath;
+  return typeof imagePath === 'string' ? imagePath : null;
 };
 
 /**

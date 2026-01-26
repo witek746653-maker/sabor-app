@@ -3,7 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { getMenus, getSections, submitFeedback, login as apiLogin, loginAsGuest } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
-import GlobalSearch from '../components/GlobalSearch';
+import { useTheme } from '../contexts/ThemeContext';
+import { useVisibility } from '../contexts/VisibilityContext';
 import ComingSoonWrapper from '../components/ComingSoonWrapper';
 import HelpPopover from '../components/HelpPopover';
 import { isComingSoon } from '../utils/featureStatus';
@@ -12,6 +13,10 @@ function HomePage() {
   const navigate = useNavigate();
   const { isAuthenticated, currentUser, checking, logout: authLogout, setAuth, enableOfflineGuest, isGuest, canWrite } = useAuth();
   const toast = useToast();
+  // Текущая тема и переключатель.
+  const { theme, toggleTheme } = useTheme();
+  const { isVisible } = useVisibility();
+  const isDarkTheme = theme === 'dark';
   const [menus, setMenus] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -26,7 +31,6 @@ function HomePage() {
     return saved ? parseInt(saved) : 0;
   });
   const [showMenuPanel, setShowMenuPanel] = useState(false);
-  const [showGlobalSearch, setShowGlobalSearch] = useState(false);
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [loginForm, setLoginForm] = useState({
@@ -189,31 +193,65 @@ function HomePage() {
     }
   };
 
+  const TEA_MENU_NAME = 'Чай';
+  const TEA_MENU_DESCRIPTION = 'Полезные напитки';
+  const TEA_MENU_ICON = 'emoji_food_beverage';
+  const TEA_MENU_IMAGE = '/images/tea-head.webp';
+  const MENU_ORDER_MATCHERS = [
+    { key: 'основн', match: (name) => name.includes('основн') },
+    { key: 'завтрак', match: (name) => name.includes('завтрак') },
+    { key: 'зимн', match: (name) => name.includes('зимн') },
+    { key: 'каникул', match: (name) => name.includes('каникул') },
+    { key: 'детск', match: (name) => name.includes('детск') },
+    { key: 'постн', match: (name) => name.includes('постн') },
+    { key: 'специальн', match: (name) => name.includes('специальн') },
+    { key: 'барн', match: (name) => name.includes('барн') },
+    { key: 'вино', match: (name) => name.includes('вино') },
+    { key: 'чай', match: (name) => name.includes('чай') }
+  ];
+
+  const getMenuOrderIndex = (menuName) => {
+    const lowerName = menuName.toLowerCase();
+    // Ищем нужный порядок по ключевым словам.
+    const matchedIndex = MENU_ORDER_MATCHERS.findIndex((item) => item.match(lowerName));
+    return matchedIndex === -1 ? Number.POSITIVE_INFINITY : matchedIndex;
+  };
+
   // Функция для получения иконки по названию меню
   const getMenuIcon = (menuName) => {
     const menuLower = menuName.toLowerCase();
-    if (menuLower.includes('основн') || menuLower.includes('горяч')) return 'restaurant';
+    if (menuLower.includes('основн')) return 'restaurant';
     if (menuLower.includes('завтрак')) return 'bakery_dining';
-    if (menuLower.includes('ланч')) return 'schedule';
     if (menuLower.includes('сезон')) return 'eco';
     if (menuLower.includes('напит') || menuLower.includes('бар')) return 'local_bar';
     if (menuLower.includes('десерт')) return 'icecream';
     if (menuLower.includes('детск')) return 'child_care';
     if (menuLower.includes('веган')) return 'spa';
+    if (menuLower.includes('чай')) return 'emoji_food_beverage';
     return 'restaurant_menu';
   };
 
   // Функция для получения описания меню
   const getMenuDescription = (menuName) => {
     const menuLower = menuName.toLowerCase();
-    if (menuLower.includes('основн')) return 'Горячее • Салаты';
-    if (menuLower.includes('завтрак')) return 'До 16:00';
+    if (menuLower.includes('основн')) return 'Главные позиции ресторана';
+    if (menuLower.includes('завтрак')) return 'Утреннее меню от Шефа';
     if (menuLower.includes('ланч')) return 'Пн-Пт 12-16';
-    if (menuLower.includes('сезон')) return 'Осень 2023';
-    if (menuLower.includes('напит') || menuLower.includes('бар')) return 'Бар & Кофе';
-    if (menuLower.includes('десерт')) return 'Сладкое';
-    if (menuLower.includes('детск')) return 'Для малышей';
-    if (menuLower.includes('веган')) return 'Полезное';
+    if (menuLower.includes('сезон')) return 'Сезонное меню';
+    if (menuLower.includes('детск')) return 'Любимые блюда для детей';
+    if (menuLower.includes('чай')) return 'Полезные напитки';
+    if (menuLower.includes('спец')) return 'Блюда для постоянных гостей';
+    if (menuLower.includes('вино')) return 'Подборка вин от сомелье';
+    if (menuLower.includes('бар')) return 'Коктейли, глинтвейн, горячие напитки';
+    if (menuLower.includes('каникул')) return 'Фестивали';
+    if (menuLower.includes('фест')) return 'Фестивали';
+    if (menuLower.includes('пост')) return 'Блюда с ограничениями';
+    if (menuLower.includes('зимн')) return 'Сезонное меню';
+    if (menuLower.includes('летн')) return 'Сезонное меню';
+    if (menuLower.includes('осен')) return 'Сезонное меню';
+    if (menuLower.includes('весен')) return 'Сезонное меню';
+
+
     return '';
   };
 
@@ -233,7 +271,7 @@ function HomePage() {
       return '/images/winter-menu-head.webp';
     }
     if (menuLower.includes('постн')) {
-      return '/images/post-menu-head.webp';
+      return '/images/plant-based-menu-head.webp';
     }
     if (menuLower.includes('вино')) {
       return '/images/wine-menu-head.webp';
@@ -243,6 +281,12 @@ function HomePage() {
     }
     if (menuLower.includes('каникул')) {
       return '/images/italian-holydais-head.webp';
+    }
+    if (menuLower.includes('чай')) {
+      return '/images/tea-head.webp';
+    }
+    if (menuLower.includes('спец')) {
+      return '/images/special-menu-head.webp';
     }
     return null;
   };
@@ -383,6 +427,27 @@ function HomePage() {
       </div>
     );
   }
+
+  const menuCards = [
+    ...menus
+      .filter((menuName) => menuName.toLowerCase() !== TEA_MENU_NAME.toLowerCase())
+      .map((menuName, originalIndex) => ({
+        type: 'menu',
+        name: menuName,
+        originalIndex,
+        orderIndex: getMenuOrderIndex(menuName)
+      })),
+    {
+      type: 'tea',
+      name: TEA_MENU_NAME,
+      originalIndex: menus.length,
+      orderIndex: getMenuOrderIndex(TEA_MENU_NAME)
+    }
+  ];
+  // Сортируем плашки по заданной логике, остальные — после них.
+  const sortedMenuCards = menuCards
+    .slice()
+    .sort((a, b) => (a.orderIndex !== b.orderIndex ? a.orderIndex - b.orderIndex : a.originalIndex - b.originalIndex));
 
   return (
     <div className="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden pb-20 bg-background-light dark:bg-background-dark text-[#181311] dark:text-white font-display antialiased" style={{ position: 'relative', zIndex: 1 }}>
@@ -593,26 +658,149 @@ function HomePage() {
         {/* Menu Grid */}
         <div className="grid grid-cols-2 gap-3 px-4 pb-4">
           {menus.length === 0 ? (
-            <div className="col-span-2 text-center py-8">
-              <p className="text-[#896f61] dark:text-gray-400 mb-4">Меню пока нет</p>
-              {isAuthenticated && currentUser?.role === 'администратор' && (
-                <Link to="/admin" className="inline-block px-4 py-2 bg-primary text-white rounded-xl font-bold">
-                  Админ-панель
-                </Link>
-              )}
-            </div>
+            <>
+              {sortedMenuCards.map((card) => {
+                if (card.type === 'tea') {
+                  return (
+                    <Link
+                      key={card.name}
+                      to="/tea"
+                      className="group relative overflow-hidden rounded-xl aspect-[4/3] shadow-md shadow-orange-900/5 active:scale-[0.98] transition-all duration-300"
+                    >
+                      <div
+                        className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
+                        style={{ backgroundImage: `url("${TEA_MENU_IMAGE}")` }}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
+                      <div className="absolute bottom-0 left-0 right-0 p-3 flex flex-col justify-end h-full">
+                        <span className="material-symbols-outlined text-white mb-0.5 text-xl opacity-90">
+                          {TEA_MENU_ICON}
+                        </span>
+                        <p className="text-white text-base font-bold leading-tight group-hover:text-primary transition-colors">
+                          {TEA_MENU_NAME}
+                        </p>
+                        <p className="text-white/70 text-[10px] mt-0.5 font-medium uppercase tracking-wide">
+                          {TEA_MENU_DESCRIPTION}
+                        </p>
+                      </div>
+                    </Link>
+                  );
+                }
+
+                const imageUrl = getMenuImage(card.name);
+                const icon = getMenuIcon(card.name);
+                const description = getMenuDescription(card.name);
+                // Если это меню "Вино", переходим на каталог вин, иначе на обычную страницу меню
+                const isWineMenu = card.name.toLowerCase().includes('вино');
+                const linkTo = isWineMenu ? '/wine-catalog' : `/menu/${encodeURIComponent(card.name)}`;
+
+                return (
+                  <Link
+                    key={card.name}
+                    to={linkTo}
+                    className="group relative overflow-hidden rounded-xl aspect-[4/3] shadow-md shadow-orange-900/5 active:scale-[0.98] transition-all duration-300"
+                  >
+                    {imageUrl ? (
+                      <>
+                        <div
+                          className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
+                          style={{ backgroundImage: `url("${imageUrl}")` }}
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
+                      </>
+                    ) : (
+                      <div className="absolute inset-0 bg-orange-100 dark:bg-gray-800 flex items-center justify-center">
+                        <span className="material-symbols-outlined text-primary/40 dark:text-white/10 text-6xl">
+                          {icon}
+                        </span>
+                      </div>
+                    )}
+                    {!imageUrl && (
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                    )}
+                    <div className="absolute bottom-0 left-0 right-0 p-3 flex flex-col justify-end h-full">
+                      <span className="material-symbols-outlined text-white mb-0.5 text-xl opacity-90">
+                        {icon}
+                      </span>
+                      <p className="text-white text-base font-bold leading-tight group-hover:text-primary transition-colors">
+                        {card.name}
+                      </p>
+                      {description && (
+                        <p className="text-white/70 text-[10px] mt-0.5 font-medium uppercase tracking-wide">
+                          {description}
+                        </p>
+                      )}
+                    </div>
+                  </Link>
+                );
+              })}
+              <div className="col-span-2 text-center py-8">
+                <p className="text-[#896f61] dark:text-gray-400 mb-4">Меню пока нет</p>
+                {isAuthenticated && currentUser?.role === 'администратор' && (
+                  <Link to="/admin" className="inline-block px-4 py-2 bg-primary text-white rounded-xl font-bold">
+                    Админ-панель
+                  </Link>
+                )}
+              </div>
+            </>
           ) : (
-            menus.map((menuName) => {
-              const imageUrl = getMenuImage(menuName);
-              const icon = getMenuIcon(menuName);
-              const description = getMenuDescription(menuName);
+            sortedMenuCards.map((card) => {
+              if (card.type === 'tea') {
+                const showTeaTile = isVisible({ scope: 'pageBlock', target: 'home.tile.tea' });
+                if (!showTeaTile) {
+                  return null;
+                }
+                return (
+                  <Link
+                    key={card.name}
+                    to="/tea"
+                    className="group relative overflow-hidden rounded-xl aspect-[4/3] shadow-md shadow-orange-900/5 active:scale-[0.98] transition-all duration-300"
+                  >
+                    <div
+                      className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
+                      style={{ backgroundImage: `url("${TEA_MENU_IMAGE}")` }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
+                    <div className="absolute bottom-0 left-0 right-0 p-3 flex flex-col justify-end h-full">
+                      <span className="material-symbols-outlined text-white mb-0.5 text-xl opacity-90">
+                        {TEA_MENU_ICON}
+                      </span>
+                      <p className="text-white text-base font-bold leading-tight group-hover:text-primary transition-colors">
+                        {TEA_MENU_NAME}
+                      </p>
+                      <p className="text-white/70 text-[10px] mt-0.5 font-medium uppercase tracking-wide">
+                        {TEA_MENU_DESCRIPTION}
+                      </p>
+                    </div>
+                  </Link>
+                );
+              }
+
+              const imageUrl = getMenuImage(card.name);
+              const icon = getMenuIcon(card.name);
+              const description = getMenuDescription(card.name);
               // Если это меню "Вино", переходим на каталог вин, иначе на обычную страницу меню
-              const isWineMenu = menuName.toLowerCase().includes('вино');
-              const linkTo = isWineMenu ? '/wine-catalog' : `/menu/${encodeURIComponent(menuName)}`;
+              const isWineMenu = card.name.toLowerCase().includes('вино');
+              const linkTo = isWineMenu ? '/wine-catalog' : `/menu/${encodeURIComponent(card.name)}`;
+              const menuLower = String(card.name || '').toLowerCase();
+              let tileTarget = null;
+              if (isWineMenu) tileTarget = 'home.tile.wine';
+              else if (menuLower.includes('основ')) tileTarget = 'home.tile.main';
+              else if (menuLower.includes('авторск') && menuLower.includes('завтра')) tileTarget = 'home.tile.breakfast';
+              else if (menuLower.includes('зимн')) tileTarget = 'home.tile.winter';
+              else if (menuLower.includes('детск')) tileTarget = 'home.tile.kids';
+              else if (menuLower.includes('пост')) tileTarget = 'home.tile.plantBased';
+              else if (menuLower.includes('бар')) tileTarget = 'home.tile.bar';
+              else if (menuLower.includes('чай') || menuLower.includes('tea')) tileTarget = 'home.tile.tea';
+              else if (menuLower.includes('специаль')) tileTarget = 'home.tile.special';
+
+              if (tileTarget && !isVisible({ scope: 'pageBlock', target: tileTarget })) {
+                return null;
+              }
 
               return (
                 <Link
-                  key={menuName}
+                  key={card.name}
                   to={linkTo}
                   className="group relative overflow-hidden rounded-xl aspect-[4/3] shadow-md shadow-orange-900/5 active:scale-[0.98] transition-all duration-300"
                 >
@@ -638,7 +826,9 @@ function HomePage() {
                     <span className="material-symbols-outlined text-white mb-0.5 text-xl opacity-90">
                       {icon}
                     </span>
-                    <p className="text-white text-base font-bold leading-tight group-hover:text-primary transition-colors">{menuName}</p>
+                    <p className="text-white text-base font-bold leading-tight group-hover:text-primary transition-colors">
+                      {card.name}
+                    </p>
                     {description && (
                       <p className="text-white/70 text-[10px] mt-0.5 font-medium uppercase tracking-wide">
                         {description}
@@ -654,55 +844,89 @@ function HomePage() {
 
       {/* Footer */}
       <footer className="fixed bottom-0 bg-white dark:bg-[#181311] border-t border-orange-100 dark:border-gray-800 pb-safe z-40 w-full sabor-fixed">
-        <div className={`grid ${isAuthenticated && currentUser?.role === 'администратор' ? 'grid-cols-5' : 'grid-cols-4'} h-16`}>
-          <Link
-            to="/"
-            className="flex flex-col items-center justify-center gap-1 text-primary"
-          >
-            <span className="material-symbols-outlined text-2xl">restaurant_menu</span>
-            <span className="text-[10px] font-medium">Меню</span>
-          </Link>
-          {isGuest ? (
-            <button
-              disabled
-              title="Доступно после входа"
-              className="flex flex-col items-center justify-center gap-1 text-gray-300 dark:text-gray-600 opacity-50 cursor-not-allowed"
+        <div
+          className={`grid ${
+            (() => {
+              const showFooterMenu = isVisible({ scope: 'menuItem', target: 'footer.menu' });
+              const showFooterFavorites = isVisible({ scope: 'menuItem', target: 'footer.favorites' });
+              const showFooterSearch = isVisible({ scope: 'menuItem', target: 'footer.search' });
+              const showFooterTools = isVisible({ scope: 'menuItem', target: 'footer.tools' });
+              const showFooterAdmin =
+                isAuthenticated &&
+                currentUser?.role === 'администратор' &&
+                isVisible({ scope: 'menuItem', target: 'footer.admin' });
+              const itemCount =
+                (showFooterMenu ? 1 : 0) +
+                (showFooterFavorites ? 1 : 0) +
+                (showFooterSearch ? 1 : 0) +
+                (showFooterTools ? 1 : 0) +
+                (showFooterAdmin ? 1 : 0);
+              if (itemCount >= 5) return 'grid-cols-5';
+              if (itemCount === 4) return 'grid-cols-4';
+              return 'grid-cols-3';
+            })()
+          } h-16`}
+        >
+          {isVisible({ scope: 'menuItem', target: 'footer.menu' }) && (
+            <Link
+              to="/"
+              className="flex flex-col items-center justify-center gap-1 text-primary"
             >
-              <span className="material-symbols-outlined text-2xl">favorite</span>
-              <span className="text-[10px] font-medium">Избранное</span>
+              <span className="material-symbols-outlined text-2xl">restaurant_menu</span>
+              <span className="text-[10px] font-medium">Меню</span>
+            </Link>
+          )}
+          {isVisible({ scope: 'menuItem', target: 'footer.favorites' }) && (
+            <>
+              {isGuest ? (
+                <button
+                  disabled
+                  title="Доступно после входа"
+                  className="flex flex-col items-center justify-center gap-1 text-gray-300 dark:text-gray-600 opacity-50 cursor-not-allowed"
+                >
+                  <span className="material-symbols-outlined text-2xl">favorite</span>
+                  <span className="text-[10px] font-medium">Избранное</span>
+                </button>
+              ) : (
+                <Link
+                  to="/favorites"
+                  className="flex flex-col items-center justify-center gap-1 text-gray-400 dark:text-gray-500 hover:text-primary dark:hover:text-primary transition-colors"
+                >
+                  <span className="material-symbols-outlined text-2xl">favorite</span>
+                  <span className="text-[10px] font-medium">Избранное</span>
+                </Link>
+              )}
+            </>
+          )}
+          {isVisible({ scope: 'menuItem', target: 'footer.search' }) && (
+            <button 
+              onClick={() => navigate('/search')}
+              className="flex flex-col items-center justify-center gap-1 text-gray-400 dark:text-gray-500 hover:text-primary dark:hover:text-primary transition-colors"
+            >
+              <span className="material-symbols-outlined text-2xl">search</span>
+              <span className="text-[10px] font-medium">Поиск</span>
             </button>
-          ) : (
+          )}
+          {isVisible({ scope: 'menuItem', target: 'footer.tools' }) && (
             <Link
-              to="/favorites"
+              to="/info"
               className="flex flex-col items-center justify-center gap-1 text-gray-400 dark:text-gray-500 hover:text-primary dark:hover:text-primary transition-colors"
             >
-              <span className="material-symbols-outlined text-2xl">favorite</span>
-              <span className="text-[10px] font-medium">Избранное</span>
+              <span className="material-symbols-outlined text-2xl">new_releases</span>
+              <span className="text-[10px] font-medium">Информация</span>
             </Link>
           )}
-          <button 
-            onClick={() => setShowGlobalSearch(true)}
-            className="flex flex-col items-center justify-center gap-1 text-gray-400 dark:text-gray-500 hover:text-primary dark:hover:text-primary transition-colors"
-          >
-            <span className="material-symbols-outlined text-2xl">search</span>
-            <span className="text-[10px] font-medium">Поиск</span>
-          </button>
-          <Link
-            to="/tools"
-            className="flex flex-col items-center justify-center gap-1 text-gray-400 dark:text-gray-500 hover:text-primary dark:hover:text-primary transition-colors"
-          >
-            <span className="material-symbols-outlined text-2xl">new_releases</span>
-            <span className="text-[10px] font-medium">Инструменты</span>
-          </Link>
-          {isAuthenticated && currentUser?.role === 'администратор' && (
-            <Link
-              to="/admin"
-              className="flex flex-col items-center justify-center gap-1 text-gray-400 dark:text-gray-500 hover:text-primary dark:hover:text-primary transition-colors"
-            >
-              <span className="material-symbols-outlined text-2xl">person</span>
-              <span className="text-[10px] font-medium">Админ-панель</span>
-            </Link>
-          )}
+          {isAuthenticated &&
+            currentUser?.role === 'администратор' &&
+            isVisible({ scope: 'menuItem', target: 'footer.admin' }) && (
+              <Link
+                to="/admin"
+                className="flex flex-col items-center justify-center gap-1 text-gray-400 dark:text-gray-500 hover:text-primary dark:hover:text-primary transition-colors"
+              >
+                <span className="material-symbols-outlined text-2xl">person</span>
+                <span className="text-[10px] font-medium">Админ-панель</span>
+              </Link>
+            )}
         </div>
         <div className="h-[env(safe-area-inset-bottom)] bg-white dark:bg-[#181311]" />
       </footer>
@@ -753,73 +977,99 @@ function HomePage() {
               </div>
             )}
             <div className="p-4 space-y-2">
-              <ComingSoonWrapper isComingSoon={isComingSoon('workSchedule')} language={language} badgePosition="inline">
-                <button className="w-full text-left p-4 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-900/50 transition-colors flex items-center gap-3">
-                  <span className="material-symbols-outlined text-primary text-2xl">work</span>
-                  <span className="text-base font-medium text-[#181311] dark:text-white">Режим работы</span>
+              {isVisible({ scope: 'pageBlock', target: 'home.sidebar.workSchedule' }) && (
+                <ComingSoonWrapper isComingSoon={isComingSoon('workSchedule')} language={language} badgePosition="inline">
+                  <button className="w-full text-left p-4 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-900/50 transition-colors flex items-center gap-3">
+                    <span className="material-symbols-outlined text-primary text-2xl">work</span>
+                    <span className="text-base font-medium text-[#181311] dark:text-white">Режим работы</span>
+                  </button>
+                </ComingSoonWrapper>
+              )}
+              {isVisible({ scope: 'pageBlock', target: 'home.sidebar.banquets' }) && (
+                <ComingSoonWrapper isComingSoon={isComingSoon('banquets')} language={language} badgePosition="inline">
+                  <button className="w-full text-left p-4 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-900/50 transition-colors flex items-center gap-3">
+                    <span className="material-symbols-outlined text-primary text-2xl">celebration</span>
+                    <span className="text-base font-medium text-[#181311] dark:text-white">Банкеты</span>
+                  </button>
+                </ComingSoonWrapper>
+              )}
+              {isVisible({ scope: 'pageBlock', target: 'home.sidebar.guestSituations' }) && (
+                <ComingSoonWrapper isComingSoon={isComingSoon('guestSituations')} language={language} badgePosition="inline">
+                  <button className="w-full text-left p-4 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-900/50 transition-colors flex items-center gap-3">
+                    <span className="material-symbols-outlined text-primary text-2xl">support_agent</span>
+                    <span className="text-base font-medium text-[#181311] dark:text-white">Ситуации с гостем</span>
+                  </button>
+                </ComingSoonWrapper>
+              )}
+              {isVisible({ scope: 'pageBlock', target: 'home.sidebar.faq' }) && (
+                <ComingSoonWrapper isComingSoon={isComingSoon('faq')} language={language} badgePosition="inline">
+                  <button className="w-full text-left p-4 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-900/50 transition-colors flex items-center gap-3">
+                    <span className="material-symbols-outlined text-primary text-2xl">help</span>
+                    <span className="text-base font-medium text-[#181311] dark:text-white">Частые вопросы гостей</span>
+                  </button>
+                </ComingSoonWrapper>
+              )}
+              {isVisible({ scope: 'pageBlock', target: 'home.sidebar.checklists' }) && (
+                <ComingSoonWrapper isComingSoon={isComingSoon('checklists')} language={language} badgePosition="inline">
+                  <button className="w-full text-left p-4 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-900/50 transition-colors flex items-center gap-3">
+                    <span className="material-symbols-outlined text-primary text-2xl">checklist</span>
+                    <span className="text-base font-medium text-[#181311] dark:text-white">Чек-листы</span>
+                  </button>
+                </ComingSoonWrapper>
+              )}
+              {isVisible({ scope: 'pageBlock', target: 'home.sidebar.servicePrinciples' }) && (
+                <ComingSoonWrapper isComingSoon={isComingSoon('servicePrinciples')} language={language} badgePosition="inline">
+                  <button className="w-full text-left p-4 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-900/50 transition-colors flex items-center gap-3">
+                    <span className="material-symbols-outlined text-primary text-2xl">diversity_3</span>
+                    <span className="text-base font-medium text-[#181311] dark:text-white">Принципы сервиса</span>
+                  </button>
+                </ComingSoonWrapper>
+              )}
+              {isVisible({ scope: 'pageBlock', target: 'home.sidebar.feedback' }) && (
+                <button 
+                  onClick={() => {
+                    if (isGuest) {
+                      // Показываем подсказку для гостей
+                      toast.info('Доступно после входа. Гостевой режим поддерживает только просмотр данных.');
+                      return;
+                    }
+                    setShowFeedbackModal(true);
+                    setShowMenuPanel(false);
+                  }}
+                  disabled={isGuest}
+                  title={isGuest ? 'Доступно после входа' : 'Обратная связь'}
+                  className={`w-full text-left p-4 rounded-xl transition-colors flex items-center gap-3 ${
+                    isGuest 
+                      ? 'opacity-50 cursor-not-allowed' 
+                      : 'hover:bg-gray-100 dark:hover:bg-gray-900/50'
+                  }`}
+                >
+                  <span className={`material-symbols-outlined text-2xl ${isGuest ? 'text-gray-400' : 'text-primary'}`}>feedback</span>
+                  <span className={`text-base font-medium ${isGuest ? 'text-gray-400' : 'text-[#181311] dark:text-white'}`}>
+                    Обратная связь
+                    {isGuest && <span className="text-xs text-gray-400 ml-2">(Доступно после входа)</span>}
+                  </span>
                 </button>
-              </ComingSoonWrapper>
-              <ComingSoonWrapper isComingSoon={isComingSoon('banquets')} language={language} badgePosition="inline">
-                <button className="w-full text-left p-4 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-900/50 transition-colors flex items-center gap-3">
-                  <span className="material-symbols-outlined text-primary text-2xl">celebration</span>
-                  <span className="text-base font-medium text-[#181311] dark:text-white">Банкеты</span>
+              )}
+              {isVisible({ scope: 'pageBlock', target: 'home.sidebar.theme' }) && (
+                <button
+                  onClick={toggleTheme}
+                  aria-pressed={isDarkTheme}
+                  aria-label="Переключить тему"
+                  className="w-full text-left p-4 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-900/50 transition-colors flex items-center gap-3"
+                >
+                  <span className="material-symbols-outlined text-primary text-2xl">
+                    {isDarkTheme ? 'dark_mode' : 'light_mode'}
+                  </span>
+                  <span className="flex flex-col">
+                    <span className="text-base font-medium text-[#181311] dark:text-white">Тема</span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                      Сейчас: {isDarkTheme ? 'тёмная' : 'светлая'}
+                    </span>
+                  </span>
                 </button>
-              </ComingSoonWrapper>
-              <ComingSoonWrapper isComingSoon={isComingSoon('guestSituations')} language={language} badgePosition="inline">
-                <button className="w-full text-left p-4 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-900/50 transition-colors flex items-center gap-3">
-                  <span className="material-symbols-outlined text-primary text-2xl">support_agent</span>
-                  <span className="text-base font-medium text-[#181311] dark:text-white">Ситуации с гостем</span>
-                </button>
-              </ComingSoonWrapper>
-              <ComingSoonWrapper isComingSoon={isComingSoon('faq')} language={language} badgePosition="inline">
-                <button className="w-full text-left p-4 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-900/50 transition-colors flex items-center gap-3">
-                  <span className="material-symbols-outlined text-primary text-2xl">help</span>
-                  <span className="text-base font-medium text-[#181311] dark:text-white">Частые вопросы гостей</span>
-                </button>
-              </ComingSoonWrapper>
-              <ComingSoonWrapper isComingSoon={isComingSoon('checklists')} language={language} badgePosition="inline">
-                <button className="w-full text-left p-4 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-900/50 transition-colors flex items-center gap-3">
-                  <span className="material-symbols-outlined text-primary text-2xl">checklist</span>
-                  <span className="text-base font-medium text-[#181311] dark:text-white">Чек-листы</span>
-                </button>
-              </ComingSoonWrapper>
-              <ComingSoonWrapper isComingSoon={isComingSoon('servicePrinciples')} language={language} badgePosition="inline">
-                <button className="w-full text-left p-4 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-900/50 transition-colors flex items-center gap-3">
-                  <span className="material-symbols-outlined text-primary text-2xl">diversity_3</span>
-                  <span className="text-base font-medium text-[#181311] dark:text-white">Принципы сервиса</span>
-                </button>
-              </ComingSoonWrapper>
-              <button 
-                onClick={() => {
-                  if (isGuest) {
-                    // Показываем подсказку для гостей
-                    toast.info('Доступно после входа. Гостевой режим поддерживает только просмотр данных.');
-                    return;
-                  }
-                  setShowFeedbackModal(true);
-                  setShowMenuPanel(false);
-                }}
-                disabled={isGuest}
-                title={isGuest ? 'Доступно после входа' : 'Обратная связь'}
-                className={`w-full text-left p-4 rounded-xl transition-colors flex items-center gap-3 ${
-                  isGuest 
-                    ? 'opacity-50 cursor-not-allowed' 
-                    : 'hover:bg-gray-100 dark:hover:bg-gray-900/50'
-                }`}
-              >
-                <span className={`material-symbols-outlined text-2xl ${isGuest ? 'text-gray-400' : 'text-primary'}`}>feedback</span>
-                <span className={`text-base font-medium ${isGuest ? 'text-gray-400' : 'text-[#181311] dark:text-white'}`}>
-                  Обратная связь
-                  {isGuest && <span className="text-xs text-gray-400 ml-2">(Доступно после входа)</span>}
-                </span>
-              </button>
-              <ComingSoonWrapper isComingSoon={isComingSoon('theme')} language={language} badgePosition="inline">
-                <button className="w-full text-left p-4 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-900/50 transition-colors flex items-center gap-3">
-                  <span className="material-symbols-outlined text-primary text-2xl">palette</span>
-                  <span className="text-base font-medium text-[#181311] dark:text-white">Тема</span>
-                </button>
-              </ComingSoonWrapper>
-              {isAuthenticated && (
+              )}
+              {isAuthenticated && isVisible({ scope: 'pageBlock', target: 'home.sidebar.logout' }) && (
                 <button
                   onClick={() => {
                     setShowLogoutConfirm(true);
@@ -1003,12 +1253,6 @@ function HomePage() {
           </div>
         </>
       )}
-
-      {/* Глобальный поиск */}
-      <GlobalSearch 
-        isOpen={showGlobalSearch} 
-        onClose={() => setShowGlobalSearch(false)} 
-      />
 
       {/* Модальное окно обратной связи */}
       {showFeedbackModal && (

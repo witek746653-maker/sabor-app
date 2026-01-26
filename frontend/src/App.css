@@ -3,3 +3,40 @@
   min-height: 100vh;
 }
 
+/* Стили для галереи картин (masonry grid) */
+.masonry-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-auto-rows: 100px;
+  gap: 16px;
+}
+
+.masonry-item-tall {
+  grid-row: span 3;
+}
+
+.masonry-item-square {
+  grid-row: span 2;
+}
+
+.masonry-item-wide {
+  grid-column: span 2;
+  grid-row: span 2;
+}
+
+/* Скрытие скроллбара */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Эффект размытого фона для детальных страниц */
+.bg-blur-underlay {
+  filter: blur(40px);
+  transform: scale(1.1);
+}
+

@@ -1,17 +1,27 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { getDishes } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import { getDishImageUrl } from '../utils/imageUtils';
+import { useVisibility } from '../contexts/VisibilityContext';
 
 function FavoritesPage() {
   const navigate = useNavigate();
   const { isAuthenticated, currentUser, isGuest } = useAuth();
+  const { isVisible } = useVisibility();
   const [allDishes, setAllDishes] = useState([]);
   const [favorites, setFavorites] = useState(() => {
     // Загружаем избранное из localStorage
+    // В проекте основной ключ: favoriteDishes
+    // Для картин раньше использовался отдельный ключ: art-favorites
+    // Объединяем, чтобы ничего не потерять.
     const saved = localStorage.getItem('favoriteDishes');
-    return saved ? JSON.parse(saved) : [];
+    const artSaved = localStorage.getItem('art-favorites');
+    const ids = [
+      ...(saved ? JSON.parse(saved) : []),
+      ...(artSaved ? JSON.parse(artSaved) : []),
+    ];
+    return Array.from(new Set(ids)).filter(Boolean);
   });
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
@@ -43,6 +53,12 @@ function FavoritesPage() {
   const getDetailPathForItem = (it) => {
     const menu = String(it?.menu || '').toLowerCase();
     const section = String(it?.section || '').toLowerCase();
+    const source = String(it?.source || '').toLowerCase();
+
+    const isArt =
+      source.includes('искусство') ||
+      String(it?.id || '').startsWith('09') ||
+      Boolean(it?.author);
 
     const isWine =
       menu.includes('вино') ||
@@ -66,9 +82,54 @@ function FavoritesPage() {
       section.includes('напит') ||
       section.includes('drink');
 
+    if (isArt) return `/art/${it.id}`;
     if (isWine) return `/wine/${it.id}`;
     if (isBar) return `/bar/${it.id}`;
     return `/dish/${it.id}`;
+  };
+
+  const getContentTarget = (it) => {
+    const id = String(it?.id ?? '').trim();
+    if (!id) return null;
+    const menu = String(it?.menu || '').toLowerCase();
+    const section = String(it?.section || '').toLowerCase();
+    const source = String(it?.source || '').toLowerCase();
+    const isArt =
+      source.includes('искусство') || String(it?.id || '').startsWith('09') || Boolean(it?.author);
+    const isWine =
+      menu.includes('вино') ||
+      menu.includes('wine') ||
+      section.includes('вино') ||
+      section.includes('wine');
+    const isBar =
+      menu.includes('бар') ||
+      menu.includes('bar') ||
+      menu.includes('напит') ||
+      menu.includes('drink') ||
+      section.includes('коктейл') ||
+      section.includes('cocktail') ||
+      section.includes('чай') ||
+      section.includes('tea') ||
+      section.includes('пиво') ||
+      section.includes('beer') ||
+      section.includes('кофе') ||
+      section.includes('coffee') ||
+      section.includes('напит') ||
+      section.includes('drink');
+    if (isArt) return `art:${id}`;
+    if (isWine) return `wine:${id}`;
+    if (isBar) return `bar:${id}`;
+    return `dish:${id}`;
+  };
+
+  const isContentVisible = (it) => {
+    const isArchived = it?.status === 'в архиве';
+    if (isArchived && !isVisible({ scope: 'contentItem', target: 'status.archived' })) {
+      return false;
+    }
+    const target = getContentTarget(it);
+    if (!target) return true;
+    return isVisible({ scope: 'contentItem', target });
   };
 
   useEffect(() => {
@@ -78,7 +139,34 @@ function FavoritesPage() {
         
         // Сохраняем все блюда (включая "в архиве") — архивные просто затемняем в UI
         // Термин **архив**: позиция неактивна, но всё ещё доступна для просмотра.
-        setAllDishes(allDishesData);
+        // Дополнительно грузим картины из статического JSON,
+        // потому что бэкенд/БД могут не отдавать их через /api/dishes.
+        let artworks = [];
+        try {
+          const staticRes = await fetch('/data/menu-database.json', { cache: 'no-store' });
+          if (staticRes.ok) {
+            const staticJson = await staticRes.json();
+            artworks = (staticJson || []).filter(
+              (it) => it?.source === 'Искусство в Sabor de la Vida' && String(it?.id || '').startsWith('09')
+            );
+          }
+        } catch (e) {
+          console.warn('Не удалось загрузить статический список картин для избранного:', e);
+          artworks = [];
+        }
+
+        // Объединяем и дедуплицируем по id
+        const mergedById = new Map();
+        (allDishesData || []).forEach((it) => {
+          if (!it || !it.id) return;
+          mergedById.set(String(it.id), it);
+        });
+        artworks.forEach((it) => {
+          if (!it || !it.id) return;
+          mergedById.set(String(it.id), it);
+        });
+
+        setAllDishes(Array.from(mergedById.values()));
       } catch (error) {
         console.error('Ошибка загрузки блюд:', error);
       } finally {
@@ -92,9 +180,14 @@ function FavoritesPage() {
   // Обновляем избранное при изменении localStorage
   useEffect(() => {
     const handleStorageChange = (e) => {
-      if (e.key === 'favoriteDishes' || e.key === null) {
+      if (e.key === 'favoriteDishes' || e.key === 'art-favorites' || e.key === null) {
         const saved = localStorage.getItem('favoriteDishes');
-        setFavorites(saved ? JSON.parse(saved) : []);
+        const artSaved = localStorage.getItem('art-favorites');
+        const ids = [
+          ...(saved ? JSON.parse(saved) : []),
+          ...(artSaved ? JSON.parse(artSaved) : []),
+        ];
+        setFavorites(Array.from(new Set(ids)).filter(Boolean));
       }
     };
 
@@ -103,7 +196,10 @@ function FavoritesPage() {
     // Также проверяем изменения localStorage в том же окне
     const checkInterval = setInterval(() => {
       const saved = localStorage.getItem('favoriteDishes');
-      const currentFavorites = saved ? JSON.parse(saved) : [];
+      const artSaved = localStorage.getItem('art-favorites');
+      const currentFavorites = Array.from(
+        new Set([...(saved ? JSON.parse(saved) : []), ...(artSaved ? JSON.parse(artSaved) : [])])
+      ).filter(Boolean);
       if (JSON.stringify(currentFavorites) !== JSON.stringify(favorites)) {
         setFavorites(currentFavorites);
       }
@@ -163,7 +259,9 @@ function FavoritesPage() {
   }, [isGuest, navigate]);
 
   // Фильтруем блюда: только избранные
-  const favoriteDishes = allDishes.filter(dish => favorites.includes(dish.id));
+  const favoriteDishes = allDishes
+    .filter(dish => favorites.includes(dish.id))
+    .filter((dish) => isContentVisible(dish));
 
   // Фильтруем по поисковому запросу
   const filteredDishes = favoriteDishes.filter((dish) => {
@@ -211,6 +309,16 @@ function FavoritesPage() {
     return tags;
   };
 
+  // Простое склонение для RU: 1 элемент, 2 элемента, 5 элементов.
+  const formatElementsCountRu = (count) => {
+    const n = Number(count) || 0;
+    const mod10 = n % 10;
+    const mod100 = n % 100;
+    if (mod10 === 1 && mod100 !== 11) return `${n} элемент`;
+    if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return `${n} элемента`;
+    return `${n} элементов`;
+  };
+
   // Если гость, не показываем страницу
   if (isGuest) {
     return null;
@@ -239,62 +347,60 @@ function FavoritesPage() {
             {language === 'EN' ? 'Favorites' : 'Избранное'}
           </h2>
           <div className="flex w-12 items-center justify-end">
-            <button 
-              onClick={() => {
-                const newLanguage = language === 'RU' ? 'EN' : 'RU';
-                setLanguage(newLanguage);
-                localStorage.setItem('menuLanguage', newLanguage);
-              }}
-              className={`text-xs font-bold leading-normal tracking-[0.015em] shrink-0 border rounded-lg px-2 py-1 transition-colors ${
-                language === 'EN' 
-                  ? 'bg-primary text-white border-primary' 
-                  : 'text-primary border-primary/30 hover:bg-primary hover:text-white'
-              }`}
-            >
-              {language === 'RU' ? 'EN' : 'RU'}
-            </button>
+            {isVisible({ scope: 'featureAction', target: 'language.switcher' }) && (
+              <button 
+                onClick={() => {
+                  const newLanguage = language === 'RU' ? 'EN' : 'RU';
+                  setLanguage(newLanguage);
+                  localStorage.setItem('menuLanguage', newLanguage);
+                }}
+                className={`text-xs font-bold leading-normal tracking-[0.015em] shrink-0 border rounded-lg px-2 py-1 transition-colors ${
+                  language === 'EN' 
+                    ? 'bg-primary text-white border-primary' 
+                    : 'text-primary border-primary/30 hover:bg-primary hover:text-white'
+                }`}
+              >
+                {language === 'RU' ? 'EN' : 'RU'}
+              </button>
+            )}
           </div>
-        </div>
-        {/* Breadcrumb */}
-        <div className="px-4 pb-2">
-          <nav className="flex text-xs text-[#896f61] dark:text-gray-400 font-medium whitespace-nowrap overflow-hidden text-ellipsis items-center">
-            <Link to="/" className="hover:text-primary transition-colors cursor-pointer">Menu</Link>
-            <span className="material-symbols-outlined text-[10px] mx-1 opacity-60">chevron_right</span>
-            <span className="text-primary font-semibold">{language === 'EN' ? 'Favorites' : 'Избранное'}</span>
-          </nav>
         </div>
         {/* Search */}
-        <div className="px-4 py-2">
-          <div className="flex w-full items-stretch rounded-xl h-10 bg-white dark:bg-surface-dark shadow-sm border border-gray-100 dark:border-gray-700/50 group focus-within:border-primary/50 transition-colors">
-            <div className="text-[#896f61] dark:text-gray-400 flex items-center justify-center pl-3 pr-2 group-focus-within:text-primary transition-colors">
-              <span className="material-symbols-outlined text-[20px]">search</span>
+        {isVisible({ scope: 'pageBlock', target: 'search.input' }) && (
+          <div className="px-4 py-2">
+            <div className="flex w-full items-stretch rounded-xl h-10 bg-white dark:bg-surface-dark shadow-sm border border-gray-100 dark:border-gray-700/50 group focus-within:border-primary/50 transition-colors">
+              <div className="text-[#896f61] dark:text-gray-400 flex items-center justify-center pl-3 pr-2 group-focus-within:text-primary transition-colors">
+                <span className="material-symbols-outlined text-[20px]">search</span>
+              </div>
+              <input
+                className="flex w-full flex-1 bg-transparent border-none text-[#181311] dark:text-white placeholder:text-[#896f61] dark:placeholder:text-gray-500 focus:ring-0 text-sm font-normal h-full p-0 pr-3"
+                placeholder={language === 'EN' ? 'Search favorites...' : 'Поиск в избранном...'}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
             </div>
-            <input
-              className="flex w-full flex-1 bg-transparent border-none text-[#181311] dark:text-white placeholder:text-[#896f61] dark:placeholder:text-gray-500 focus:ring-0 text-sm font-normal h-full p-0 pr-3"
-              placeholder={language === 'EN' ? 'Search favorites...' : 'Поиск в избранном...'}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
           </div>
-        </div>
+        )}
       </div>
 
       {/* Dishes Grid */}
       <div className="flex-1 overflow-y-auto px-3 pb-24 pt-3">
         <div className="flex justify-between items-center mb-3 px-1">
           <h3 className="font-bold text-base dark:text-white">
-            {language === 'EN' ? 'Favorite Dishes' : 'Избранные блюда'}
+            {language === 'EN' ? 'Favorite items' : 'Избранные карточки'}
           </h3>
           <span className="text-[10px] text-gray-500 font-medium bg-gray-100 dark:bg-white/5 px-2 py-0.5 rounded-md border border-gray-200 dark:border-gray-700">
-            {filteredDishes.length} {language === 'EN' ? 'items' : 'блюд'}
+            {language === 'EN'
+              ? `${filteredDishes.length} items`
+              : formatElementsCountRu(filteredDishes.length)}
           </span>
         </div>
         <div className="grid grid-cols-3 gap-2">
           {filteredDishes.length === 0 ? (
             <div className="col-span-3 text-center py-8 text-[#896f61] dark:text-gray-400">
               {favorites.length === 0 
-                ? (language === 'EN' ? 'No favorites yet' : 'Пока нет избранных блюд')
-                : (language === 'EN' ? 'No dishes found' : 'Блюда не найдены')
+                ? (language === 'EN' ? 'No favorites yet' : 'Пока нет избранных карточек')
+                : (language === 'EN' ? 'Nothing found' : 'Ничего не найдено')
               }
             </div>
           ) : (
@@ -375,37 +481,104 @@ function FavoritesPage() {
 
       {/* Footer */}
       <div className="fixed bottom-0 z-50 w-full sabor-fixed bg-white/95 dark:bg-surface-dark/95 backdrop-blur-md border-t border-gray-100 dark:border-gray-800 pb-safe">
-        <div className={`grid ${isAuthenticated && currentUser?.role === 'администратор' ? 'grid-cols-4' : 'grid-cols-3'} px-6 items-center h-[60px]`}>
-          <Link to="/" className="flex flex-col items-center justify-center gap-1 text-primary">
-            <span className="material-symbols-outlined text-[24px]">restaurant_menu</span>
-            <span className="text-[10px] font-bold">{language === 'EN' ? 'Menu' : 'Меню'}</span>
-          </Link>
-          <Link 
-            to="/favorites"
-            className="flex flex-col items-center justify-center gap-1 text-primary"
-          >
-            <span className="material-symbols-outlined text-[24px] fill-1">favorite</span>
-            <span className="text-[10px] font-medium">{language === 'EN' ? 'Favorites' : 'Избранное'}</span>
-          </Link>
-          <button 
-            onClick={() => {
-              // Прокручиваем к поиску
-              document.querySelector('input[placeholder*="Search"], input[placeholder*="Поиск"]')?.focus();
-            }}
-            className="flex flex-col items-center justify-center gap-1 text-gray-400 hover:text-[#181311] dark:hover:text-white transition-colors"
-          >
-            <span className="material-symbols-outlined text-[24px]">search</span>
-            <span className="text-[10px] font-medium">{language === 'EN' ? 'Search' : 'Поиск'}</span>
-          </button>
-          {isAuthenticated && currentUser?.role === 'администратор' && (
-            <Link
-              to="/admin"
+        <div
+          className={`grid ${
+            (() => {
+              const showFooterMenu = isVisible({ scope: 'menuItem', target: 'footer.menu' });
+              const showFooterFavorites = isVisible({ scope: 'menuItem', target: 'footer.favorites' });
+              const showFooterSearch = isVisible({ scope: 'menuItem', target: 'footer.search' });
+              const showFooterTools = isVisible({ scope: 'menuItem', target: 'footer.tools' });
+              const showFooterAdmin =
+                isAuthenticated &&
+                currentUser?.role === 'администратор' &&
+                isVisible({ scope: 'menuItem', target: 'footer.admin' });
+              const itemCount =
+                (showFooterMenu ? 1 : 0) +
+                (showFooterFavorites ? 1 : 0) +
+                (showFooterSearch ? 1 : 0) +
+                (showFooterTools ? 1 : 0) +
+                (showFooterAdmin ? 1 : 0);
+              if (itemCount >= 5) return 'grid-cols-5';
+              if (itemCount === 4) return 'grid-cols-4';
+              return 'grid-cols-3';
+            })()
+          } px-6 items-center h-[60px]`}
+        >
+          {isVisible({ scope: 'menuItem', target: 'footer.menu' }) && (
+            <NavLink
+              to="/"
+              end
+              className={({ isActive }) =>
+                `flex flex-col items-center justify-center gap-1 transition-colors ${
+                  isActive
+                    ? 'text-primary'
+                    : 'text-gray-400 hover:text-[#181311] dark:text-gray-500 dark:hover:text-white'
+                }`
+              }
+            >
+              <span className="material-symbols-outlined text-[24px]">restaurant_menu</span>
+              <span className="text-[10px] font-bold">{language === 'EN' ? 'Menu' : 'Меню'}</span>
+            </NavLink>
+          )}
+          {isVisible({ scope: 'menuItem', target: 'footer.favorites' }) && (
+            <NavLink 
+              to="/favorites"
+              className={({ isActive }) =>
+                `flex flex-col items-center justify-center gap-1 transition-colors ${
+                  isActive
+                    ? 'text-primary'
+                    : 'text-gray-400 hover:text-[#181311] dark:text-gray-500 dark:hover:text-white'
+                }`
+              }
+            >
+              <span className="material-symbols-outlined text-[24px] fill-1">favorite</span>
+              <span className="text-[10px] font-medium">{language === 'EN' ? 'Favorites' : 'Избранное'}</span>
+            </NavLink>
+          )}
+          {isVisible({ scope: 'menuItem', target: 'footer.search' }) && (
+            <button 
+              onClick={() => {
+                // Открываем глобальный поиск отдельной страницей.
+                navigate('/search');
+              }}
               className="flex flex-col items-center justify-center gap-1 text-gray-400 hover:text-[#181311] dark:hover:text-white transition-colors"
             >
-              <span className="material-symbols-outlined text-[24px]">person</span>
-              <span className="text-[10px] font-medium">{language === 'EN' ? 'Admin' : 'Админ-панель'}</span>
-            </Link>
+              <span className="material-symbols-outlined text-[24px]">search</span>
+              <span className="text-[10px] font-medium">{language === 'EN' ? 'Search' : 'Поиск'}</span>
+            </button>
           )}
+          {isVisible({ scope: 'menuItem', target: 'footer.tools' }) && (
+            <NavLink
+              to="/info"
+              className={({ isActive }) =>
+                `flex flex-col items-center justify-center gap-1 transition-colors ${
+                  isActive
+                    ? 'text-primary'
+                    : 'text-gray-400 hover:text-[#181311] dark:text-gray-500 dark:hover:text-white'
+                }`
+              }
+            >
+              <span className="material-symbols-outlined text-[24px]">new_releases</span>
+              <span className="text-[10px] font-medium">{language === 'EN' ? 'Info' : 'Информация'}</span>
+            </NavLink>
+          )}
+          {isAuthenticated &&
+            currentUser?.role === 'администратор' &&
+            isVisible({ scope: 'menuItem', target: 'footer.admin' }) && (
+              <NavLink
+                to="/admin"
+                className={({ isActive }) =>
+                  `flex flex-col items-center justify-center gap-1 transition-colors ${
+                    isActive
+                      ? 'text-primary'
+                      : 'text-gray-400 hover:text-[#181311] dark:text-gray-500 dark:hover:text-white'
+                  }`
+                }
+              >
+                <span className="material-symbols-outlined text-[24px]">person</span>
+                <span className="text-[10px] font-medium">{language === 'EN' ? 'Admin' : 'Админ-панель'}</span>
+              </NavLink>
+            )}
         </div>
       </div>
     </div>

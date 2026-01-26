@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
+import { useVisibility } from '../contexts/VisibilityContext';
 import ComingSoonWrapper from '../components/ComingSoonWrapper';
 import { isComingSoon } from '../utils/featureStatus';
 
-function ToolsPage() {
+function InfoPage() {
   const navigate = useNavigate();
   const { isAuthenticated, currentUser, isGuest } = useAuth();
+  const { isVisible } = useVisibility();
   const toast = useToast();
   const [showPdfModal, setShowPdfModal] = useState(false);
   // PDF хранится на сервере приватно и отдаётся только авторизованным пользователям
@@ -97,6 +99,9 @@ function ToolsPage() {
       }
       // Показываем модальное окно для PDF
       setShowPdfModal(true);
+    } else if (tool.type === 'react') {
+      // Переход на React-маршрут (например, галерея картин)
+      navigate(tool.path);
     } else if (tool.type === 'html') {
       // Открываем HTML файл напрямую, обходя React Router
       const baseUrl = getBaseUrl();
@@ -190,8 +195,8 @@ function ToolsPage() {
     },
     {
       name: 'Искусство в Sabor de la Vida',
-      path: '/menus/art-menu.html',
-      type: 'html',
+      path: '/art-gallery',
+      type: 'react',
       description: 'Художественные работы',
       comingSoon: false
     },
@@ -222,7 +227,7 @@ function ToolsPage() {
     return (
       <div className="bg-background-light dark:bg-background-dark text-[#181311] dark:text-white font-display antialiased min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="text-primary text-xl font-bold">Инструменты пока нет</div>
+          <div className="text-primary text-xl font-bold">Информация пока недоступна</div>
         </div>
       </div>
     );
@@ -238,7 +243,7 @@ function ToolsPage() {
         >
           <span className="material-symbols-outlined">arrow_back</span>
         </button>
-        <h1 className="text-[#181311] dark:text-white text-lg font-bold">Инструменты</h1>
+        <h1 className="text-[#181311] dark:text-white text-lg font-bold">Информация</h1>
         <div className="w-10"></div>
       </header>
 
@@ -340,16 +345,18 @@ function ToolsPage() {
                   <p className="text-xs text-gray-600 dark:text-gray-400">Скачать файл на устройство</p>
                 </div>
               </button>
-              <button
-                onClick={handlePdfShare}
-                className="w-full flex items-center gap-3 p-4 rounded-xl bg-primary/10 hover:bg-primary/20 dark:bg-primary/20 dark:hover:bg-primary/30 transition-colors text-left"
-              >
-                <span className="material-symbols-outlined text-primary text-2xl">ios_share</span>
-                <div>
-                  <p className="font-semibold text-[#181311] dark:text-white">Отправить</p>
-                  <p className="text-xs text-gray-600 dark:text-gray-400">Отправить файл через мессенджеры</p>
-                </div>
-              </button>
+              {isVisible({ scope: 'featureAction', target: 'tools.pdf.share' }) && (
+                <button
+                  onClick={handlePdfShare}
+                  className="w-full flex items-center gap-3 p-4 rounded-xl bg-primary/10 hover:bg-primary/20 dark:bg-primary/20 dark:hover:bg-primary/30 transition-colors text-left"
+                >
+                  <span className="material-symbols-outlined text-primary text-2xl">ios_share</span>
+                  <div>
+                    <p className="font-semibold text-[#181311] dark:text-white">Отправить</p>
+                    <p className="text-xs text-gray-600 dark:text-gray-400">Отправить файл через мессенджеры</p>
+                  </div>
+                </button>
+              )}
             </div>
             <button
               onClick={() => setShowPdfModal(false)}
@@ -363,41 +370,73 @@ function ToolsPage() {
 
       {/* Footer */}
       <footer className="fixed bottom-0 bg-white dark:bg-[#181311] border-t border-orange-100 dark:border-gray-800 pb-safe z-40 w-full sabor-fixed">
-        <div className={`grid ${isAuthenticated && currentUser?.role === 'администратор' ? 'grid-cols-5' : 'grid-cols-4'} h-16`}>
-          <Link
-            to="/"
-            className="flex flex-col items-center justify-center gap-1 text-gray-400 dark:text-gray-500 hover:text-primary dark:hover:text-primary transition-colors"
-          >
-            <span className="material-symbols-outlined text-2xl">restaurant_menu</span>
-            <span className="text-[10px] font-medium">Меню</span>
-          </Link>
-          <button className="flex flex-col items-center justify-center gap-1 text-gray-400 dark:text-gray-500 hover:text-primary dark:hover:text-primary transition-colors">
-            <span className="material-symbols-outlined text-2xl">favorite</span>
-            <span className="text-[10px] font-medium">База данных</span>
-          </button>
-          <button 
-            onClick={() => {
-              // Можно добавить глобальный поиск
-              navigate('/');
-            }}
-            className="flex flex-col items-center justify-center gap-1 text-gray-400 dark:text-gray-500 hover:text-primary dark:hover:text-primary transition-colors"
-          >
-            <span className="material-symbols-outlined text-2xl">search</span>
-            <span className="text-[10px] font-medium">Поиск</span>
-          </button>
-          <button className="flex flex-col items-center justify-center gap-1 text-primary">
-            <span className="material-symbols-outlined text-2xl">new_releases</span>
-            <span className="text-[10px] font-medium">Инструменты</span>
-          </button>
-          {isAuthenticated && currentUser?.role === 'администратор' && (
+        <div
+          className={`grid ${
+            (() => {
+              const showFooterMenu = isVisible({ scope: 'menuItem', target: 'footer.menu' });
+              const showFooterFavorites = isVisible({ scope: 'menuItem', target: 'footer.favorites' });
+              const showFooterSearch = isVisible({ scope: 'menuItem', target: 'footer.search' });
+              const showFooterTools = isVisible({ scope: 'menuItem', target: 'footer.tools' });
+              const showFooterAdmin =
+                isAuthenticated &&
+                currentUser?.role === 'администратор' &&
+                isVisible({ scope: 'menuItem', target: 'footer.admin' });
+              const itemCount =
+                (showFooterMenu ? 1 : 0) +
+                (showFooterFavorites ? 1 : 0) +
+                (showFooterSearch ? 1 : 0) +
+                (showFooterTools ? 1 : 0) +
+                (showFooterAdmin ? 1 : 0);
+              if (itemCount >= 5) return 'grid-cols-5';
+              if (itemCount === 4) return 'grid-cols-4';
+              return 'grid-cols-3';
+            })()
+          } h-16`}
+        >
+          {isVisible({ scope: 'menuItem', target: 'footer.menu' }) && (
             <Link
-              to="/admin"
+              to="/"
               className="flex flex-col items-center justify-center gap-1 text-gray-400 dark:text-gray-500 hover:text-primary dark:hover:text-primary transition-colors"
             >
-              <span className="material-symbols-outlined text-2xl">person</span>
-              <span className="text-[10px] font-medium">Админ-панель</span>
+              <span className="material-symbols-outlined text-2xl">restaurant_menu</span>
+              <span className="text-[10px] font-medium">Меню</span>
             </Link>
           )}
+          {isVisible({ scope: 'menuItem', target: 'footer.favorites' }) && (
+            <button className="flex flex-col items-center justify-center gap-1 text-gray-400 dark:text-gray-500 hover:text-primary dark:hover:text-primary transition-colors">
+              <span className="material-symbols-outlined text-2xl">favorite</span>
+              <span className="text-[10px] font-medium">Избранное</span>
+            </button>
+          )}
+          {isVisible({ scope: 'menuItem', target: 'footer.search' }) && (
+            <button 
+              onClick={() => {
+                // Открываем глобальный поиск отдельной страницей.
+                navigate('/search');
+              }}
+              className="flex flex-col items-center justify-center gap-1 text-gray-400 dark:text-gray-500 hover:text-primary dark:hover:text-primary transition-colors"
+            >
+              <span className="material-symbols-outlined text-2xl">search</span>
+              <span className="text-[10px] font-medium">Поиск</span>
+            </button>
+          )}
+          {isVisible({ scope: 'menuItem', target: 'footer.tools' }) && (
+            <button className="flex flex-col items-center justify-center gap-1 text-primary">
+              <span className="material-symbols-outlined text-2xl">new_releases</span>
+              <span className="text-[10px] font-medium">Информация</span>
+            </button>
+          )}
+          {isAuthenticated &&
+            currentUser?.role === 'администратор' &&
+            isVisible({ scope: 'menuItem', target: 'footer.admin' }) && (
+              <Link
+                to="/admin"
+                className="flex flex-col items-center justify-center gap-1 text-gray-400 dark:text-gray-500 hover:text-primary dark:hover:text-primary transition-colors"
+              >
+                <span className="material-symbols-outlined text-2xl">person</span>
+                <span className="text-[10px] font-medium">Админ-панель</span>
+              </Link>
+            )}
         </div>
         <div className="h-[env(safe-area-inset-bottom)] bg-white dark:bg-[#181311]" />
       </footer>
@@ -405,4 +444,4 @@ function ToolsPage() {
   );
 }
 
-export default ToolsPage;
+export default InfoPage;
