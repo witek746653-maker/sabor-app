@@ -12,30 +12,51 @@
  * </ComingSoonWrapper>
  */
 
-// Конфигурация статусов функций
-const FEATURE_STATUS = {
-  // Навигация и меню
-  'workSchedule': true,          // Режим работы
-  'banquets': true,              // Банкеты
-  'guestSituations': true,       // Ситуации с гостем
-  'faq': true,                   // Частые вопросы гостей
-  'checklists': true,            // Чек-листы
-  'servicePrinciples': true,     // Принципы сервиса
-  'theme': false,                // Тема (переключение темы)
-  
-  // Информация
-  'cigarEncyclopedia': true,     // Сигарная энциклопедия
-  
-  // Админ-панель (можно добавить конкретные функции)
-  'adminUsers': false,           // Управление пользователями (работает)
-  'adminNotifications': false,   // Уведомления (работает)
-  'adminFeedback': false,        // Обратная связь (работает)
-  
-  // Другие функции
-  'favorites': false,            // Избранное (работает, но только для не-гостей)
-  'barMenu': false,              // Барное меню (работает)
-  'globalSearch': false,         // Глобальный поиск (работает)
+/**
+ * Дефолтные статусы функций (fallback), если конфиг из админки ещё не загружен.
+ *
+ * Важно:
+ * - `comingSoon: true`  => показываем бейдж "В разработке"
+ * - `allowAccess: true` => доступ РАЗРЕШЁН, но бейдж остаётся
+ */
+export const DEFAULT_FEATURE_FLAGS = {
+  // Главная → боковое меню
+  workSchedule: { comingSoon: true, allowAccess: false },
+  banquets: { comingSoon: true, allowAccess: false },
+  guestSituations: { comingSoon: true, allowAccess: false },
+  faq: { comingSoon: true, allowAccess: false },
+  checklists: { comingSoon: true, allowAccess: false },
+  servicePrinciples: { comingSoon: true, allowAccess: false },
+
+  // Прочее
+  theme: { comingSoon: false, allowAccess: true },
+  cigarEncyclopedia: { comingSoon: true, allowAccess: false },
+  waiterTrainer: { comingSoon: true, allowAccess: false }, // Тренажер официанта (Информация)
+
+  // Админка
+  adminUsers: { comingSoon: false, allowAccess: true },
+  adminNotifications: { comingSoon: false, allowAccess: true },
+  adminFeedback: { comingSoon: false, allowAccess: true },
+
+  // Навигация
+  favorites: { comingSoon: false, allowAccess: true },
+  barMenu: { comingSoon: false, allowAccess: true },
+  globalSearch: { comingSoon: false, allowAccess: true },
 };
+
+/**
+ * Метаданные для админ‑интерфейса (чтобы было понятно, что это за фича).
+ */
+export const FEATURE_DEFINITIONS = [
+  { key: 'workSchedule', label: 'Режим работы (Главная → боковое меню)' },
+  { key: 'banquets', label: 'Банкеты (Главная → боковое меню)' },
+  { key: 'guestSituations', label: 'Ситуации с гостем (Главная → боковое меню)' },
+  { key: 'faq', label: 'Частые вопросы гостей (Главная → боковое меню)' },
+  { key: 'checklists', label: 'Чек‑листы (Главная → боковое меню)' },
+  { key: 'servicePrinciples', label: 'Принципы сервиса (Главная → боковое меню)' },
+  { key: 'waiterTrainer', label: 'Тренажер официанта (Информация)' },
+  { key: 'cigarEncyclopedia', label: 'Сигарная энциклопедия (Информация)' },
+];
 
 /**
  * Проверяет, находится ли функция в разработке
@@ -44,7 +65,8 @@ const FEATURE_STATUS = {
  * @returns {boolean} - true, если функция в разработке
  */
 export const isComingSoon = (featureName) => {
-  return FEATURE_STATUS[featureName] === true;
+  const cfg = DEFAULT_FEATURE_FLAGS[featureName];
+  return cfg?.comingSoon === true;
 };
 
 /**
@@ -53,8 +75,8 @@ export const isComingSoon = (featureName) => {
  * @returns {Array<string>} - Массив названий функций в разработке
  */
 export const getComingSoonFeatures = () => {
-  return Object.keys(FEATURE_STATUS).filter(
-    feature => FEATURE_STATUS[feature] === true
+  return Object.keys(DEFAULT_FEATURE_FLAGS).filter(
+    feature => DEFAULT_FEATURE_FLAGS[feature]?.comingSoon === true
   );
 };
 
@@ -64,8 +86,8 @@ export const getComingSoonFeatures = () => {
  * @returns {Array<string>} - Массив названий работающих функций
  */
 export const getAvailableFeatures = () => {
-  return Object.keys(FEATURE_STATUS).filter(
-    feature => FEATURE_STATUS[feature] === false
+  return Object.keys(DEFAULT_FEATURE_FLAGS).filter(
+    feature => DEFAULT_FEATURE_FLAGS[feature]?.comingSoon !== true
   );
 };
 
@@ -73,5 +95,5 @@ export default {
   isComingSoon,
   getComingSoonFeatures,
   getAvailableFeatures,
-  FEATURE_STATUS
+  DEFAULT_FEATURE_FLAGS
 };

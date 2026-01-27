@@ -7,6 +7,11 @@ import * as Sentry from '@sentry/react';
  * Он автоматически собирает информацию об ошибках: стек вызовов,
  * контекст (какая страница, какая роль пользователя), и отправляет
  * их на сервер Sentry, где вы можете их анализировать.
+ *
+ * Важно для бесплатного/простого режима:
+ * - Мы включаем ТОЛЬКО сбор ошибок (Issues).
+ * - НЕ включаем Performance (транзакции/трейсы) и НЕ включаем Replay (запись сессий),
+ *   потому что это может “съедать” лимиты быстрее и усложняет настройку.
  */
 
 // Проверяем, включен ли сбор ошибок для текущего окружения
@@ -27,6 +32,27 @@ const isErrorTrackingEnabled = () => {
 // DSN - это уникальный адрес вашего проекта в Sentry
 const getSentryDsn = () => {
   return process.env.REACT_APP_SENTRY_DSN || '';
+};
+
+/**
+ * Быстрая проверка: можно ли отправлять ошибки в Sentry
+ * (включено + есть DSN).
+ */
+export const isSentryConfigured = () => {
+  return isErrorTrackingEnabled() && Boolean(getSentryDsn());
+};
+
+/**
+ * Безопасная отправка ошибки в Sentry.
+ * Используем, чтобы не завязываться на window.Sentry.
+ */
+export const captureSentryException = (error, options = undefined) => {
+  if (!isSentryConfigured()) return;
+  try {
+    Sentry.captureException(error, options);
+  } catch (e) {
+    // Не ломаем приложение, если Sentry внезапно недоступен
+  }
 };
 
 /**
@@ -58,25 +84,8 @@ export const initSentry = () => {
     
     // Версия приложения (можно указать в package.json или через переменную окружения)
     release: process.env.REACT_APP_VERSION || '1.0.0',
-    
-    // Включаем интеграции для отслеживания
-    integrations: [
-      // Интеграция для отслеживания производительности браузера
-      Sentry.browserTracingIntegration(),
-      // Включаем запись сессий для воспроизведения действий пользователя при ошибке
-      Sentry.replayIntegration({
-        maskAllText: true,  // Скрываем весь текст на странице (безопасность)
-        blockAllMedia: true,  // Блокируем медиа (изображения, видео)
-      }),
-    ],
-    
-    // Процент трафика, для которого включается отслеживание производительности (0-1)
-    tracesSampleRate: process.env.NODE_ENV === 'production' ? 0.1 : 1.0,
-    
-    // Процент сессий, которые будут записаны (0.1 = 10%)
-    replaysSessionSampleRate: 0.1,
-    // Процент сессий для записи, когда происходит ошибка (1.0 = 100%)
-    replaysOnErrorSampleRate: 1.0,
+    // Важно: намеренно НЕ включаем Performance/Replay интеграции.
+    // Так Sentry будет собирать только ошибки (Issues), что проще и дешевле по лимитам.
     
     // Фильтруем чувствительные данные перед отправкой
     beforeSend(event, hint) {

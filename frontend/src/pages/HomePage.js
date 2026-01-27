@@ -15,7 +15,7 @@ function HomePage() {
   const toast = useToast();
   // Текущая тема и переключатель.
   const { theme, toggleTheme } = useTheme();
-  const { isVisible } = useVisibility();
+  const { isVisible, isFeatureComingSoon, isFeatureAccessAllowed } = useVisibility();
   const isDarkTheme = theme === 'dark';
   const [menus, setMenus] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -978,7 +978,12 @@ function HomePage() {
             )}
             <div className="p-4 space-y-2">
               {isVisible({ scope: 'pageBlock', target: 'home.sidebar.workSchedule' }) && (
-                <ComingSoonWrapper isComingSoon={isComingSoon('workSchedule')} language={language} badgePosition="inline">
+                <ComingSoonWrapper
+                  isComingSoon={isFeatureComingSoon('workSchedule') || isComingSoon('workSchedule')}
+                  allowAccess={isFeatureAccessAllowed('workSchedule')}
+                  language={language}
+                  badgePosition="inline"
+                >
                   <button className="w-full text-left p-4 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-900/50 transition-colors flex items-center gap-3">
                     <span className="material-symbols-outlined text-primary text-2xl">work</span>
                     <span className="text-base font-medium text-[#181311] dark:text-white">Режим работы</span>
@@ -986,7 +991,12 @@ function HomePage() {
                 </ComingSoonWrapper>
               )}
               {isVisible({ scope: 'pageBlock', target: 'home.sidebar.banquets' }) && (
-                <ComingSoonWrapper isComingSoon={isComingSoon('banquets')} language={language} badgePosition="inline">
+                <ComingSoonWrapper
+                  isComingSoon={isFeatureComingSoon('banquets') || isComingSoon('banquets')}
+                  allowAccess={isFeatureAccessAllowed('banquets')}
+                  language={language}
+                  badgePosition="inline"
+                >
                   <button className="w-full text-left p-4 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-900/50 transition-colors flex items-center gap-3">
                     <span className="material-symbols-outlined text-primary text-2xl">celebration</span>
                     <span className="text-base font-medium text-[#181311] dark:text-white">Банкеты</span>
@@ -994,7 +1004,12 @@ function HomePage() {
                 </ComingSoonWrapper>
               )}
               {isVisible({ scope: 'pageBlock', target: 'home.sidebar.guestSituations' }) && (
-                <ComingSoonWrapper isComingSoon={isComingSoon('guestSituations')} language={language} badgePosition="inline">
+                <ComingSoonWrapper
+                  isComingSoon={isFeatureComingSoon('guestSituations') || isComingSoon('guestSituations')}
+                  allowAccess={isFeatureAccessAllowed('guestSituations')}
+                  language={language}
+                  badgePosition="inline"
+                >
                   <button className="w-full text-left p-4 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-900/50 transition-colors flex items-center gap-3">
                     <span className="material-symbols-outlined text-primary text-2xl">support_agent</span>
                     <span className="text-base font-medium text-[#181311] dark:text-white">Ситуации с гостем</span>
@@ -1002,7 +1017,12 @@ function HomePage() {
                 </ComingSoonWrapper>
               )}
               {isVisible({ scope: 'pageBlock', target: 'home.sidebar.faq' }) && (
-                <ComingSoonWrapper isComingSoon={isComingSoon('faq')} language={language} badgePosition="inline">
+                <ComingSoonWrapper
+                  isComingSoon={isFeatureComingSoon('faq') || isComingSoon('faq')}
+                  allowAccess={isFeatureAccessAllowed('faq')}
+                  language={language}
+                  badgePosition="inline"
+                >
                   <button className="w-full text-left p-4 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-900/50 transition-colors flex items-center gap-3">
                     <span className="material-symbols-outlined text-primary text-2xl">help</span>
                     <span className="text-base font-medium text-[#181311] dark:text-white">Частые вопросы гостей</span>
@@ -1010,7 +1030,12 @@ function HomePage() {
                 </ComingSoonWrapper>
               )}
               {isVisible({ scope: 'pageBlock', target: 'home.sidebar.checklists' }) && (
-                <ComingSoonWrapper isComingSoon={isComingSoon('checklists')} language={language} badgePosition="inline">
+                <ComingSoonWrapper
+                  isComingSoon={isFeatureComingSoon('checklists') || isComingSoon('checklists')}
+                  allowAccess={isFeatureAccessAllowed('checklists')}
+                  language={language}
+                  badgePosition="inline"
+                >
                   <button className="w-full text-left p-4 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-900/50 transition-colors flex items-center gap-3">
                     <span className="material-symbols-outlined text-primary text-2xl">checklist</span>
                     <span className="text-base font-medium text-[#181311] dark:text-white">Чек-листы</span>
@@ -1018,7 +1043,12 @@ function HomePage() {
                 </ComingSoonWrapper>
               )}
               {isVisible({ scope: 'pageBlock', target: 'home.sidebar.servicePrinciples' }) && (
-                <ComingSoonWrapper isComingSoon={isComingSoon('servicePrinciples')} language={language} badgePosition="inline">
+                <ComingSoonWrapper
+                  isComingSoon={isFeatureComingSoon('servicePrinciples') || isComingSoon('servicePrinciples')}
+                  allowAccess={isFeatureAccessAllowed('servicePrinciples')}
+                  language={language}
+                  badgePosition="inline"
+                >
                   <button className="w-full text-left p-4 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-900/50 transition-colors flex items-center gap-3">
                     <span className="material-symbols-outlined text-primary text-2xl">diversity_3</span>
                     <span className="text-base font-medium text-[#181311] dark:text-white">Принципы сервиса</span>

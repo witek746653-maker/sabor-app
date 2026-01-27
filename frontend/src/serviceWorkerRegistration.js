@@ -21,15 +21,15 @@ export function register() {
   window.addEventListener('load', () => {
     const swUrl = `${process.env.PUBLIC_URL}/service-worker.js`;
 
+    // Всегда проверяем, что SW реально отдается как JS.
+    // Это предотвращает ошибку MIME type (text/html), если сервер отдает index.html.
+    checkValidServiceWorker(swUrl);
+
     if (isLocalhost) {
-      // В localhost проверяем, что SW существует
-      checkValidServiceWorker(swUrl);
       navigator.serviceWorker.ready.then(() => {
         // eslint-disable-next-line no-console
         console.log('Service worker готов (localhost).');
       });
-    } else {
-      registerValidSW(swUrl);
     }
   });
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import * as Sentry from '@sentry/react';
+import { captureSentryException } from '../utils/sentry';
 
 /**
  * Error Boundary - это специальный компонент React, который перехватывает ошибки,
@@ -25,17 +25,15 @@ class ErrorBoundary extends React.Component {
 
   // Этот метод вызывается после того, как ошибка была обработана
   componentDidCatch(error, errorInfo) {
-    // Логируем ошибку в Sentry (если включен)
-    // errorInfo содержит дополнительную информацию об ошибке (например, componentStack)
-    if (window.Sentry) {
-      Sentry.captureException(error, {
-        contexts: {
-          react: {
-            componentStack: errorInfo.componentStack,
-          },
+    // Логируем ошибку в Sentry (если включен).
+    // errorInfo содержит дополнительную информацию (например, componentStack).
+    captureSentryException(error, {
+      contexts: {
+        react: {
+          componentStack: errorInfo.componentStack,
         },
-      });
-    }
+      },
+    });
     
     // Также логируем в консоль для разработки
     console.error('ErrorBoundary caught an error:', error, errorInfo);

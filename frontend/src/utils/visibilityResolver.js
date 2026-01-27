@@ -1,6 +1,7 @@
 export const DEFAULT_VISIBILITY_CONFIG = {
   version: 0,
   rules: [],
+  features: {},
 };
 
 const ALLOWED_ACTIONS = new Set(['allow', 'deny']);
@@ -89,9 +90,22 @@ export const normalizeVisibilityConfig = (rawConfig) => {
   const rules = toArray(rawConfig.rules)
     .map(normalizeRule)
     .filter(Boolean);
+
+  const rawFeatures = rawConfig.features && typeof rawConfig.features === 'object' ? rawConfig.features : {};
+  const features = {};
+  Object.entries(rawFeatures).forEach(([key, value]) => {
+    const featureKey = String(key || '').trim();
+    if (!featureKey) return;
+    const obj = value && typeof value === 'object' ? value : {};
+    features[featureKey] = {
+      comingSoon: obj.comingSoon === true,
+      allowAccess: obj.allowAccess === true,
+    };
+  });
   return {
     version: Number(rawConfig.version || 0),
     rules,
+    features,
   };
 };
 

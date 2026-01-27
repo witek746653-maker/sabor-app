@@ -17,6 +17,9 @@ import ComingSoonBadge from './ComingSoonBadge';
  */
 function ComingSoonWrapper({ 
   isComingSoon = false, 
+  // Если true: бейдж показываем, но клики НЕ блокируем.
+  // Термин **allow access**: "разрешить доступ".
+  allowAccess = false,
   language = 'RU',
   children, 
   className = '',
@@ -45,12 +48,13 @@ function ComingSoonWrapper({
 
   const badgeClasses = badgePositions[badgePosition] || badgePositions['top-right'];
 
-  // Обработчик клика - перехватываем, если элемент в разработке
-  const handleClick = (e) => {
+  // Обработчик клика:
+  // - если доступ НЕ разрешён, блокируем переход и показываем подсказку
+  // - если доступ разрешён, клик не трогаем (можно перейти), подсказку показываем только по hover
+  const handleBlockedClick = (e) => {
     e.preventDefault();
     e.stopPropagation();
     setShowTooltip(true);
-    // Скрываем подсказку через 2 секунды
     setTimeout(() => setShowTooltip(false), 2000);
   };
 
@@ -63,7 +67,7 @@ function ComingSoonWrapper({
     setShowTooltip(false);
   };
 
-  // Клонируем children и добавляем обработчики и disabled, если это интерактивный элемент
+  // Клонируем children и добавляем бейдж/обработчики.
   const wrappedChildren = React.Children.map(children, (child) => {
     if (!React.isValidElement(child)) {
       return child;
@@ -79,16 +83,18 @@ function ComingSoonWrapper({
     if (badgePosition === 'inline' && isInteractive && isComingSoon) {
       return React.cloneElement(child, {
         ...child.props,
-        onClick: handleClick,
+        onClick: allowAccess ? child.props?.onClick : handleBlockedClick,
         onMouseEnter: handleMouseEnter,
         onMouseLeave: handleMouseLeave,
-        disabled: true,
-        className: `${child.props?.className || ''} relative flex items-center justify-between opacity-75 cursor-not-allowed`.trim(),
+        disabled: allowAccess ? child.props?.disabled : true,
+        className: `${child.props?.className || ''} relative flex items-center justify-between ${
+          allowAccess ? '' : 'opacity-75 cursor-not-allowed'
+        }`.trim(),
         style: {
           ...child.props?.style,
-          pointerEvents: 'none'
+          // Важно: pointerEvents не трогаем, иначе даже разрешённый доступ не сработает.
         },
-        'aria-disabled': 'true',
+        'aria-disabled': allowAccess ? child.props?.['aria-disabled'] : 'true',
         children: (
           <>
             <div className="flex items-center gap-3 flex-1">{child.props?.children}</div>
@@ -101,16 +107,18 @@ function ComingSoonWrapper({
     // Для остальных случаев - стандартная обработка
     return React.cloneElement(child, {
       ...child.props,
-      onClick: isComingSoon ? handleClick : child.props?.onClick,
+      onClick: isComingSoon ? (allowAccess ? child.props?.onClick : handleBlockedClick) : child.props?.onClick,
       onMouseEnter: handleMouseEnter,
       onMouseLeave: handleMouseLeave,
-      disabled: isComingSoon && isInteractive ? true : child.props?.disabled,
-      className: `${child.props?.className || ''} ${isComingSoon ? 'relative opacity-75 cursor-not-allowed' : ''}`.trim(),
+      disabled: isComingSoon && isInteractive ? (allowAccess ? child.props?.disabled : true) : child.props?.disabled,
+      className: `${child.props?.className || ''} ${
+        isComingSoon ? `relative ${allowAccess ? '' : 'opacity-75 cursor-not-allowed'}` : ''
+      }`.trim(),
       style: {
         ...child.props?.style,
-        pointerEvents: isComingSoon && isInteractive ? 'none' : child.props?.style?.pointerEvents
+        // Важно: не блокируем pointerEvents, иначе "разрешить доступ" работать не будет.
       },
-      'aria-disabled': isComingSoon ? 'true' : child.props?.['aria-disabled']
+      'aria-disabled': isComingSoon ? (allowAccess ? child.props?.['aria-disabled'] : 'true') : child.props?.['aria-disabled']
     });
   });
 

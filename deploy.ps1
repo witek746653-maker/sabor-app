@@ -39,6 +39,16 @@ $RemoteRoot = "/var/www/sabor-app"
 $ServiceName = "sabor.service"
 $SshKeyPath = $null
 
+# --- Sentry (frontend): опционально, ТОЛЬКО ошибки ---
+# Важно:
+# - Эти значения лучше держать в deploy.config.ps1 (он НЕ коммитится).
+# - Мы подставляем их только на время "npm run build".
+# Пример для deploy.config.ps1:
+#   $FrontendSentryEnabled = "true"
+#   $FrontendSentryDsn = "https://....@....ingest.sentry.io/...."
+$FrontendSentryEnabled = $null
+$FrontendSentryDsn = $null
+
 # --- Подхватываем локальный конфиг (НЕ коммитится) ---
 $ConfigPath = Join-Path $PSScriptRoot "deploy.config.ps1"
 if (Test-Path $ConfigPath) {
@@ -88,7 +98,29 @@ if (-not $SkipBuild) {
   try {
     # npm ci: deterministic install from package-lock.json
     Run "npm" @("ci")
-    Run "npm" @("run", "build")
+
+    # Подставляем Sentry DSN в сборку (если задано в deploy.config.ps1)
+    $prevSentryEnabled = $env:REACT_APP_SENTRY_ENABLED
+    $prevSentryDsn = $env:REACT_APP_SENTRY_DSN
+    try {
+      if (-not [string]::IsNullOrWhiteSpace($FrontendSentryDsn)) {
+        $env:REACT_APP_SENTRY_DSN = $FrontendSentryDsn
+        if ([string]::IsNullOrWhiteSpace($FrontendSentryEnabled)) {
+          $env:REACT_APP_SENTRY_ENABLED = "true"
+        } else {
+          $env:REACT_APP_SENTRY_ENABLED = $FrontendSentryEnabled
+        }
+        Write-Host "Sentry (frontend): enabled for build" -ForegroundColor DarkGray
+      } else {
+        Write-Host "Sentry (frontend): DSN not set, skipping" -ForegroundColor DarkGray
+      }
+
+      Run "npm" @("run", "build")
+    } finally {
+      # Восстанавливаем окружение (чтобы не “залипало” в текущем PowerShell)
+      $env:REACT_APP_SENTRY_ENABLED = $prevSentryEnabled
+      $env:REACT_APP_SENTRY_DSN = $prevSentryDsn
+    }
   } finally {
     Pop-Location
   }

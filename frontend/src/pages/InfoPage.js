@@ -9,7 +9,7 @@ import { isComingSoon } from '../utils/featureStatus';
 function InfoPage() {
   const navigate = useNavigate();
   const { isAuthenticated, currentUser, isGuest } = useAuth();
-  const { isVisible } = useVisibility();
+  const { isVisible, isFeatureComingSoon, isFeatureAccessAllowed } = useVisibility();
   const toast = useToast();
   const [showPdfModal, setShowPdfModal] = useState(false);
   // PDF хранится на сервере приватно и отдаётся только авторизованным пользователям
@@ -45,6 +45,7 @@ function InfoPage() {
     if (toolLower.includes('база данных') || toolLower.includes('официант')) return 'database';
     if (toolLower.includes('справочник')) return 'menu_book';
     if (toolLower.includes('искусство')) return 'palette';
+    if (toolLower.includes('медиа') || toolLower.includes('обучение')) return 'smart_display';
     if (toolLower.includes('тренажер')) return 'fitness_center';
     if (toolLower.includes('сигар') || toolLower.includes('энциклопед')) return 'smoking_rooms';
     if (toolLower.includes('комплекс') || toolLower.includes('сотрудник')) return 'business_center';
@@ -57,6 +58,7 @@ function InfoPage() {
     if (toolLower.includes('база данных')) return 'Полная информация о блюдах';
     if (toolLower.includes('справочник')) return 'Справочные материалы';
     if (toolLower.includes('искусство')) return 'Художественные работы';
+    if (toolLower.includes('медиа') || toolLower.includes('обучение')) return 'Видео и подкасты';
     if (toolLower.includes('тренажер')) return 'Обучение и практика';
     if (toolLower.includes('сигар')) return 'Энциклопедия сигар';
     if (toolLower.includes('комплекс')) return 'Внутренние ресурсы';
@@ -72,8 +74,14 @@ function InfoPage() {
     if (toolLower.includes('искусство')) {
       return '/images/art-head.webp';
     }
+    if (toolLower.includes('медиа') || toolLower.includes('обучение')) {
+      return '/images/media-head.jpg';
+    }
     if (toolLower.includes('сигар')) {
       return '/images/cigars-head.webp';
+    }
+    if (toolLower.includes('база')) {
+      return '/images/data-base-head.webp';
     }
     return null;
   };
@@ -81,7 +89,7 @@ function InfoPage() {
   // Функция для обработки клика по инструменту
   const handleToolClick = (e, tool) => {
     // Если инструмент в разработке, перехватываем клик
-    if (tool.comingSoon) {
+    if (tool.comingSoon && !tool.allowAccess) {
       e.preventDefault();
       e.stopPropagation();
       return;
@@ -180,6 +188,13 @@ function InfoPage() {
   // Список инструментов
   const tools = [
     {
+      name: 'Медиа-обучение',
+      path: '/media',
+      type: 'react',
+      description: 'Видео и подкасты',
+      comingSoon: false
+    },
+    {
       name: 'База данных официанта',
       path: '/menus/waiter-database.html',
       type: 'html',
@@ -205,14 +220,16 @@ function InfoPage() {
       path: '/trainer/menu-trainer.html',
       type: 'html',
       description: 'Обучение и практика',
-      comingSoon: false
+      comingSoon: isFeatureComingSoon('waiterTrainer') || isComingSoon('waiterTrainer'),
+      allowAccess: isFeatureAccessAllowed('waiterTrainer'),
     },
     {
       name: 'Сигарная энциклопедия',
       path: '/cigar-encyclopedia',
       type: 'html',
       description: 'Энциклопедия сигар',
-      comingSoon: isComingSoon('cigarEncyclopedia')
+      comingSoon: isFeatureComingSoon('cigarEncyclopedia') || isComingSoon('cigarEncyclopedia'),
+      allowAccess: isFeatureAccessAllowed('cigarEncyclopedia'),
     },
     {
       name: 'Комплекс для сотрудников',
@@ -268,6 +285,7 @@ function InfoPage() {
               <ComingSoonWrapper 
                 key={tool.name}
                 isComingSoon={tool.comingSoon}
+                allowAccess={Boolean(tool.allowAccess)}
                 language={language}
                 badgePosition="top-right"
               >
@@ -403,10 +421,24 @@ function InfoPage() {
             </Link>
           )}
           {isVisible({ scope: 'menuItem', target: 'footer.favorites' }) && (
-            <button className="flex flex-col items-center justify-center gap-1 text-gray-400 dark:text-gray-500 hover:text-primary dark:hover:text-primary transition-colors">
+            <Link
+              to={isGuest ? '/info' : '/favorites'}
+              title={isGuest ? 'Доступно после входа' : 'Избранное'}
+              onClick={(e) => {
+                if (!isGuest) return;
+                // Гостевой режим: избранное недоступно.
+                e.preventDefault();
+                toast.info('Доступно после входа. Гостевой режим поддерживает только просмотр данных.');
+              }}
+              className={`flex flex-col items-center justify-center gap-1 transition-colors ${
+                isGuest
+                  ? 'opacity-50 cursor-not-allowed text-gray-400 dark:text-gray-600'
+                  : 'text-gray-400 dark:text-gray-500 hover:text-primary dark:hover:text-primary'
+              }`}
+            >
               <span className="material-symbols-outlined text-2xl">favorite</span>
               <span className="text-[10px] font-medium">Избранное</span>
-            </button>
+            </Link>
           )}
           {isVisible({ scope: 'menuItem', target: 'footer.search' }) && (
             <button 

@@ -11,9 +11,19 @@ import threading
 import time
 import subprocess
 import signal
+import logging
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
 from models import db, Dish, FeedbackMessage, User, VisibilityConfig
+
+try:
+    # Sentry — сервис для сбора ошибок с сервера.
+    # Важно: мы включаем ТОЛЬКО ошибки (без performance).
+    import sentry_sdk
+    from sentry_sdk.integrations.flask import FlaskIntegration
+    from sentry_sdk.integrations.logging import LoggingIntegration
+except Exception:  # pragma: no cover (sentry может быть не установлен локально)
+    sentry_sdk = None
 
 
 
@@ -160,6 +170,83 @@ def _get_bar_items_dicts() -> list[dict]:
 
 # Загружаем переменные окружения
 load_dotenv()
+
+# ==========================
+# Sentry (backend): только ошибки
+# ==========================
+# Термины очень просто:
+# - **переменная окружения** — настройка, которую задают на сервере “снаружи кода”.
+# - **DSN** — адрес/идентификатор проекта Sentry, куда отправлять ошибки.
+def _env_bool(name: str, default_val: bool = False) -> bool:
+    raw = (os.getenv(name) or "").strip().lower()
+    if raw == "":
+        return default_val
+    return raw in ("1", "true", "yes", "y", "on")
+
+
+def _sentry_before_send(event, hint):
+    """
+    Убираем потенциально чувствительные поля (на всякий случай).
+    Плюс защищаемся от случайной отправки токенов/паролей.
+    """
+    try:
+        req = event.get("request") if isinstance(event, dict) else None
+        if isinstance(req, dict):
+            headers = req.get("headers")
+            if isinstance(headers, dict):
+                for key in list(headers.keys()):
+                    if str(key).lower() in ("authorization", "cookie", "set-cookie"):
+                        headers[key] = "[REDACTED]"
+
+            data = req.get("data")
+            if isinstance(data, dict):
+                for key in list(data.keys()):
+                    lk = str(key).lower()
+                    if "password" in lk or "token" in lk or "secret" in lk:
+                        data[key] = "[REDACTED]"
+    except Exception:
+        # Никогда не ломаем приложение из-за фильтра Sentry
+        pass
+    return event
+
+
+def init_sentry_for_backend():
+    """
+    Инициализация Sentry для бэкенда.
+    По умолчанию: если задан SENTRY_DSN — включаем.
+    Можно явно выключить: SENTRY_ENABLED=false
+    """
+    if sentry_sdk is None:
+        return
+
+    dsn = (os.getenv("SENTRY_DSN") or "").strip()
+    if not dsn:
+        return
+
+    enabled = _env_bool("SENTRY_ENABLED", True)
+    if not enabled:
+        return
+
+    # Ловим:
+    # - необработанные исключения Flask (500)
+    # - ошибки, которые вы логируете как app.logger.error/exception (уровень ERROR)
+    logging_integration = LoggingIntegration(level=None, event_level=logging.ERROR)
+
+    sentry_sdk.init(
+        dsn=dsn,
+        integrations=[FlaskIntegration(), logging_integration],
+        # Важно: Performance/трейсы выключаем полностью
+        traces_sample_rate=0.0,
+        # Не отправляем PII (личные данные) по умолчанию
+        send_default_pii=False,
+        # Окружение и релиз можно задать на сервере (необязательно)
+        environment=(os.getenv("SENTRY_ENV") or os.getenv("FLASK_ENV") or "production").strip(),
+        release=(os.getenv("SENTRY_RELEASE") or "").strip() or None,
+        before_send=_sentry_before_send,
+    )
+
+
+init_sentry_for_backend()
 
 # Создаём приложение Flask
 app = Flask(__name__)
@@ -320,6 +407,8 @@ AUDIO_DIR = ROOT_DIR / "audio"
 # Добавляем пути к директориям с HTML файлами и PDF
 MENUS_DIR = ROOT_DIR / "frontend" / "public" / "menus"
 TRAINER_DIR = ROOT_DIR / "frontend" / "public" / "trainer"
+# Скрипты для статических HTML (поиск и т.п.)
+SCRIPTS_DIR = ROOT_DIR / "frontend" / "public" / "scripts"
 # Путь к собранному фронтенду (React build)
 FRONTEND_BUILD_DIR = ROOT_DIR / "frontend" / "build"
 FRONTEND_STATIC_DIR = FRONTEND_BUILD_DIR / "static"
@@ -457,6 +546,7 @@ def _normalize_visibility_config(payload, version_override=None):
     """
     config = dict(payload or {})
     rules = config.get("rules") if isinstance(config.get("rules"), list) else []
+    features = config.get("features") if isinstance(config.get("features"), dict) else {}
     normalized_rules = []
     for rule in rules:
         if not isinstance(rule, dict):
@@ -475,7 +565,30 @@ def _normalize_visibility_config(payload, version_override=None):
         else:
             normalized["when"] = None
         normalized_rules.append(normalized)
-    normalized_config = {"rules": normalized_rules}
+    # Нормализуем "фичи" (ярлык "в разработке" + разрешение доступа).
+    # Формат:
+    #   features: {
+    #     workSchedule: { comingSoon: true, allowAccess: false },
+    #     ...
+    #   }
+    normalized_features = {}
+    for key, raw in (features or {}).items():
+        try:
+            feature_key = str(key).strip()
+        except Exception:
+            continue
+        if not feature_key:
+            continue
+        raw_obj = raw if isinstance(raw, dict) else {}
+        normalized_features[feature_key] = {
+            "comingSoon": bool(raw_obj.get("comingSoon", False)),
+            "allowAccess": bool(raw_obj.get("allowAccess", False)),
+        }
+
+    normalized_config = {
+        "rules": normalized_rules,
+        "features": normalized_features,
+    }
     if isinstance(version_override, int):
         normalized_config["version"] = version_override
     elif isinstance(config.get("version"), int):
@@ -889,13 +1002,14 @@ def get_visibility_config_public():
             .first()
         )
         if not published:
-            response = jsonify({"version": 0, "rules": []})
+            response = jsonify({"version": 0, "rules": [], "features": {}})
         else:
             payload = published.to_dict()
             config = payload.get("config") if isinstance(payload.get("config"), dict) else {}
             response = jsonify({
                 "version": int(payload.get("version") or 0),
                 "rules": config.get("rules") or [],
+                "features": config.get("features") or {},
                 "updatedAt": payload.get("updated_at"),
             })
         response.headers["Cache-Control"] = "public, max-age=60"
@@ -1124,6 +1238,17 @@ def serve_trainer_html(filename):
                 return send_from_directory(str(TRAINER_DIR), filename)
         else:
             return jsonify({'error': f'File not found: {filename}'}), 404
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/scripts/<path:filename>')
+def serve_public_scripts(filename):
+    """Отдаёт статические скрипты для HTML страниц"""
+    try:
+        file_path = SCRIPTS_DIR / filename
+        if SCRIPTS_DIR.exists() and file_path.exists() and file_path.is_file():
+            return send_from_directory(str(SCRIPTS_DIR), filename)
+        return jsonify({'error': f'File not found: {filename}'}), 404
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -1880,7 +2005,7 @@ def rollback_visibility_config():
 
         if version == 0:
             # Версия 0 = "чистое" состояние без правил
-            empty_config = {"version": 0, "rules": []}
+            empty_config = {"version": 0, "rules": [], "features": {}}
             actor = _get_visibility_actor_label()
             VisibilityConfig.query.filter_by(status="published").update({"status": "archived"})
             VisibilityConfig.query.filter_by(status="draft").update({"status": "archived"})

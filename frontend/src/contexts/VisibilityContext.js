@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useMemo, useState } from '
 import { getVisibilityConfig } from '../services/visibilityConfig';
 import { DEFAULT_VISIBILITY_CONFIG, normalizeVisibilityConfig, resolveVisibility } from '../utils/visibilityResolver';
 import { useAuth } from './AuthContext';
+import { DEFAULT_FEATURE_FLAGS } from '../utils/featureStatus';
 
 const VisibilityContext = createContext(null);
 const VISIBILITY_STORAGE_KEY = 'sabor.visibilityConfig.v1';
@@ -101,8 +102,28 @@ export const useVisibility = () => {
     });
   };
 
+  // ===== Feature flags: "В разработке" =====
+  // Термин **feature flag**: переключатель, который включает/выключает функцию без переписывания кода.
+  const getFeature = (featureKey) => {
+    const key = String(featureKey || '').trim();
+    if (!key) return { comingSoon: false, allowAccess: true };
+
+    const fromConfig = context.config?.features?.[key];
+    const fallback = DEFAULT_FEATURE_FLAGS?.[key];
+    return {
+      comingSoon: (fromConfig?.comingSoon ?? fallback?.comingSoon) === true,
+      allowAccess: (fromConfig?.allowAccess ?? fallback?.allowAccess) === true,
+    };
+  };
+
+  const isFeatureComingSoon = (featureKey) => getFeature(featureKey).comingSoon;
+  const isFeatureAccessAllowed = (featureKey) => getFeature(featureKey).allowAccess;
+
   return {
     ...context,
     isVisible,
+    getFeature,
+    isFeatureComingSoon,
+    isFeatureAccessAllowed,
   };
 };

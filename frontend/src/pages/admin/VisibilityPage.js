@@ -7,6 +7,7 @@ import {
   saveVisibilityDraft,
 } from '../../services/visibilityConfig';
 import { normalizeVisibilityConfig, resolveVisibility } from '../../utils/visibilityResolver';
+import { DEFAULT_FEATURE_FLAGS, FEATURE_DEFINITIONS } from '../../utils/featureStatus';
 
 const RULE_SCOPES = ['route', 'menuItem', 'menuSection', 'pageBlock', 'featureAction', 'contentItem'];
 const ACTIONS = ['allow', 'deny'];
@@ -268,19 +269,21 @@ function VisibilityPage() {
         setDraftConfig({
           version: data?.draft?.version || draft?.version || 0,
           rules: draft?.rules || [],
+          features: draft?.features || {},
         });
         setPublishedConfig(
           data?.published
             ? {
                 version: data.published.version,
                 rules: published?.rules || [],
+                features: published?.features || {},
                 updatedBy: data.published.updated_by,
                 updatedAt: data.published.updated_at,
               }
             : null
         );
         setVersions(data?.versions || []);
-        setJsonText(JSON.stringify({ rules: draft?.rules || [] }, null, 2));
+        setJsonText(JSON.stringify({ rules: draft?.rules || [], features: draft?.features || {} }, null, 2));
       } catch (err) {
         toast.error('Не удалось загрузить конфиг видимости');
       } finally {
@@ -292,8 +295,10 @@ function VisibilityPage() {
   }, [toast]);
 
   useEffect(() => {
-    setJsonText(JSON.stringify({ rules: normalizedDraft.rules }, null, 2));
-  }, [normalizedDraft.rules]);
+    setJsonText(
+      JSON.stringify({ rules: normalizedDraft.rules, features: normalizedDraft.features || {} }, null, 2)
+    );
+  }, [normalizedDraft.rules, normalizedDraft.features]);
 
   const filteredRules = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
@@ -362,20 +367,42 @@ function VisibilityPage() {
       setDraftConfig((prev) => ({
         ...prev,
         rules: parsed.rules,
+        features: parsed.features && typeof parsed.features === 'object' ? parsed.features : (prev.features || {}),
       }));
     } catch (err) {
       setJsonError('Не удалось разобрать JSON. Проверьте синтаксис.');
     }
   };
 
+  const updateFeature = (featureKey, patch) => {
+    const key = String(featureKey || '').trim();
+    if (!key) return;
+    setDraftConfig((prev) => {
+      const prevFeatures = prev.features && typeof prev.features === 'object' ? prev.features : {};
+      const current = prevFeatures[key] && typeof prevFeatures[key] === 'object' ? prevFeatures[key] : {};
+      const next = { ...current, ...patch };
+      return {
+        ...prev,
+        features: {
+          ...prevFeatures,
+          [key]: next,
+        },
+      };
+    });
+  };
+
   const handleSaveDraft = async () => {
     setSaving(true);
     try {
-      const res = await saveVisibilityDraft({ rules: normalizedDraft.rules });
+      const res = await saveVisibilityDraft({
+        rules: normalizedDraft.rules,
+        features: normalizedDraft.features || {},
+      });
       const draft = res?.draft?.config || { rules: [] };
       setDraftConfig({
         version: res?.draft?.version || normalizedDraft.version || 0,
         rules: draft.rules || [],
+        features: draft.features || {},
       });
       toast.success('Черновик сохранён');
     } catch (err) {
@@ -479,6 +506,64 @@ function VisibilityPage() {
               Откатить
             </button>
           </div>
+        </div>
+      </div>
+
+      {/* ===== Фичи: "В разработке" ===== */}
+      <div className="rounded-xl border border-gray-200 dark:border-white/10 p-4">
+        <h3 className="text-sm font-bold mb-2">Фичи: ярлык «В разработке»</h3>
+        <div className="text-[11px] text-text-secondary-light dark:text-text-secondary-dark mb-3">
+          Здесь можно включать/выключать бейдж «В разработке» и отдельно разрешать доступ к таким разделам.
+        </div>
+        <div className="grid gap-2">
+          {FEATURE_DEFINITIONS.map((feat) => {
+            const current = normalizedDraft.features?.[feat.key] || {};
+            const fallback = DEFAULT_FEATURE_FLAGS?.[feat.key] || {};
+            const comingSoon = (current.comingSoon ?? fallback.comingSoon) === true;
+            const allowAccess = (current.allowAccess ?? fallback.allowAccess) === true;
+            return (
+              <div
+                key={feat.key}
+                className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4 p-3 rounded-lg border border-gray-200 dark:border-white/10 bg-white/60 dark:bg-white/5"
+              >
+                <div className="flex-1">
+                  <div className="text-sm font-semibold">{feat.label}</div>
+                  <div className="text-[11px] text-text-secondary-light dark:text-text-secondary-dark">
+                    key: <span className="font-mono">{feat.key}</span>
+                  </div>
+                </div>
+                <label className="flex items-center gap-2 text-xs">
+                  <input
+                    type="checkbox"
+                    checked={comingSoon}
+                    onChange={(e) => {
+                      const nextComing = e.target.checked;
+                      updateFeature(feat.key, {
+                        comingSoon: nextComing,
+                        // если выключили "в разработке" — снимаем и allowAccess (KISS, чтобы не было сюрпризов)
+                        allowAccess: nextComing ? allowAccess : false,
+                      });
+                    }}
+                  />
+                  <span>В разработке</span>
+                </label>
+                <label className={`flex items-center gap-2 text-xs ${!comingSoon ? 'opacity-50' : ''}`}>
+                  <input
+                    type="checkbox"
+                    checked={allowAccess}
+                    disabled={!comingSoon}
+                    onChange={(e) => updateFeature(feat.key, { allowAccess: e.target.checked })}
+                  />
+                  <span>Разрешить доступ</span>
+                </label>
+              </div>
+            );
+          })}
+          {FEATURE_DEFINITIONS.length === 0 && (
+            <div className="text-xs text-text-secondary-light dark:text-text-secondary-dark">
+              Список фич пуст.
+            </div>
+          )}
         </div>
       </div>
 

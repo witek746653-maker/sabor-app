@@ -30,6 +30,7 @@ import FavoritesPage from './pages/FavoritesPage';
 import ArtGalleryPage from './pages/ArtGalleryPage';
 import ArtDetailPage from './pages/ArtDetailPage';
 import SearchPage from './pages/SearchPage';
+import MediaPage from './pages/MediaPage';
 import './App.css';
 
 // Компонент-защитник для админ-маршрутов
@@ -168,6 +169,7 @@ function App() {
                         </VisibilityRoute>
                       }
                     />
+                    <Route path="/media" element={<MediaPage />} />
                     <Route
                       path="/favorites"
                       element={

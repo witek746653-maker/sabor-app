@@ -25,6 +25,15 @@ $RemoteRoot = "/var/www/sabor-app"
 $ServiceName = "sabor.service"
 ```
 
+Если используете **Sentry для фронтенда** (только ошибки), добавьте туда же:
+```
+$FrontendSentryEnabled = "true"
+$FrontendSentryDsn = "ВАШ_FRONTEND_DSN_ИЗ_SENTRY"
+```
+Важно:
+- `deploy.config.ps1` **не коммитится**, поэтому DSN не попадёт в git.
+- DSN вшивается во frontend **на этапе сборки** (`npm run build`), поэтому после изменения DSN нужен новый deploy.
+
 ---
 
 ## 2) Один раз скачать прод‑базу в локальную dev‑копию
