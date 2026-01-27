@@ -23,6 +23,7 @@ import NotificationsPage from './pages/admin/NotificationsPage';
 import DeployPage from './pages/admin/DeployPage';
 import AdminHelpPage from './pages/admin/AdminHelpPage';
 import VisibilityPage from './pages/admin/VisibilityPage';
+import MediaLikesPage from './pages/admin/MediaLikesPage';
 import WineMenuPage from './pages/WineMenuPage';
 import WineCatalogPage from './pages/WineCatalogPage';
 import InfoPage from './pages/InfoPage';
@@ -221,6 +222,7 @@ function App() {
                       <Route path="users" element={<UsersPage />} />
                       <Route path="feedback" element={<FeedbackMessagesPage />} />
                       <Route path="notifications" element={<NotificationsPage />} />
+                      <Route path="media" element={<MediaLikesPage />} />
                       <Route path="deploy" element={<DeployPage />} />
                       <Route path="visibility" element={<VisibilityPage />} />
                       <Route path="help" element={<AdminHelpPage />} />

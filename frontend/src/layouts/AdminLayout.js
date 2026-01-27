@@ -48,6 +48,7 @@ function AdminLayout() {
     const path = location.pathname;
     if (path.includes('/admin/feedback')) return 'feedback';
     if (path.includes('/admin/notifications')) return 'notifications';
+    if (path.includes('/admin/media')) return 'media';
     if (path.includes('/admin/users')) return 'users';
     if (path.includes('/admin/deploy')) return 'deploy';
     if (path.includes('/admin/visibility')) return 'visibility';
@@ -201,6 +202,19 @@ function AdminLayout() {
         >
           <span className="material-symbols-outlined text-xl">notifications</span>
           <span className="font-medium">Уведомления</span>
+        </Link>
+
+        <Link
+          to="/admin/media"
+          onClick={handleNavClick}
+          className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors ${
+            activeSection === 'media'
+              ? 'bg-primary text-white'
+              : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
+          }`}
+        >
+          <span className="material-symbols-outlined text-xl">favorite</span>
+          <span className="font-medium">Медиа / лайки</span>
         </Link>
 
         <Link

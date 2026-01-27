@@ -475,6 +475,24 @@ export const getBarItems = async () => {
   }
 };
 
+// ========== API ДЛЯ МЕДИА-ЛАЙКОВ ==========
+
+export const getMediaLikes = async (ids = []) => {
+  const list = Array.isArray(ids) ? ids.filter(Boolean) : [];
+  const idsParam = list.join(',');
+  const response = await api.get('/api/media/likes', { params: { ids: idsParam } });
+  return response.data;
+};
+
+export const toggleMediaLike = async (mediaId) => {
+  const id = String(mediaId || '').trim();
+  if (!id) {
+    throw new Error('mediaId is required');
+  }
+  const response = await api.post(`/api/media/${id}/like-toggle`);
+  return response.data;
+};
+
 // ========== АДМИНСКИЕ API ==========
 
 export const login = async (username, password, remember = false) => {
@@ -591,6 +609,15 @@ export const runDeploy = async (deployToken) => {
 
 export const getDeployJob = async () => {
   const response = await api.get('/api/admin/deploy/job');
+  return response.data;
+};
+
+// ========== АДМИН: МЕДИА-ЛАЙКИ ==========
+
+export const getAdminMediaLikesCounts = async (ids = []) => {
+  const list = Array.isArray(ids) ? ids.filter(Boolean) : [];
+  const idsParam = list.join(',');
+  const response = await api.get('/api/admin/media/likes-counts', { params: { ids: idsParam } });
   return response.data;
 };
 

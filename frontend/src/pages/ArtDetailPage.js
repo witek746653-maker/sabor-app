@@ -77,6 +77,11 @@ function ArtDetailPage() {
   // Функция добавления/удаления из избранного
   // localStorage - это хранилище данных в браузере, которое сохраняется даже после закрытия вкладки
   const handleToggleFavorite = () => {
+    if (isGuest) {
+      // Гостю нельзя добавлять в избранное.
+      toast.error('Избранное доступно только после входа');
+      return;
+    }
     try {
       // Получаем текущий список избранного из localStorage
       const favorites = JSON.parse(localStorage.getItem(FAVORITES_KEY) || '[]');
@@ -206,7 +211,9 @@ function ArtDetailPage() {
         {/* Кнопка "Избранное" (сердечко) */}
         <button 
           onClick={handleToggleFavorite}
-          className="absolute bottom-10 right-6 flex size-14 items-center justify-center bg-primary rounded-full shadow-lg shadow-primary/40 text-white transform hover:scale-105 transition-transform active:scale-95"
+          disabled={isGuest}
+          title={isGuest ? 'Доступно после входа' : undefined}
+          className="absolute bottom-10 right-6 flex size-14 items-center justify-center bg-primary rounded-full shadow-lg shadow-primary/40 text-white transform hover:scale-105 transition-transform active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed"
         >
           <span 
             className="material-symbols-outlined" 

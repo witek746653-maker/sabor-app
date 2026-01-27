@@ -4,6 +4,8 @@ from flask_cors import CORS
 from flask_login import LoginManager, login_required, login_user, logout_user, UserMixin
 from pathlib import Path
 from datetime import timedelta, datetime
+from sqlalchemy import func
+from sqlalchemy.exc import IntegrityError
 import json
 import os
 import mimetypes
@@ -14,7 +16,7 @@ import signal
 import logging
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
-from models import db, Dish, FeedbackMessage, User, VisibilityConfig
+from models import db, Dish, FeedbackMessage, User, VisibilityConfig, MediaLike
 
 try:
     # Sentry — сервис для сбора ошибок с сервера.
@@ -1116,15 +1118,15 @@ def serve_image(filename):
     try:
         guessed_mime, _ = mimetypes.guess_type(filename)
 
-        # 1) Основной источник: корневая папка проекта /images (используется для изображений блюд и т.п.)
-        if IMAGES_DIR.exists() and (IMAGES_DIR / filename).exists():
-            return send_from_directory(str(IMAGES_DIR), filename, mimetype=guessed_mime)
-
-        # 2) Фолбэк: изображения из React сборки (frontend/build/images/*)
-        # Это нужно, потому что в UI есть обложки меню (main-menu-head.webp и др.), которые лежат именно там.
+        # 1) Сначала берём из React сборки (frontend/build/images/*).
+        # Так обложки меню обновляются вместе с build и не залипают старые файлы.
         build_images_dir = FRONTEND_BUILD_DIR / "images"
         if build_images_dir.exists() and (build_images_dir / filename).exists():
             return send_from_directory(str(build_images_dir), filename, mimetype=guessed_mime)
+
+        # 2) Фолбэк: корневая папка проекта /images (изображения блюд и т.п.)
+        if IMAGES_DIR.exists() and (IMAGES_DIR / filename).exists():
+            return send_from_directory(str(IMAGES_DIR), filename, mimetype=guessed_mime)
 
         return jsonify({'error': 'Image not found'}), 404
     except Exception as e:
@@ -1304,6 +1306,105 @@ def get_bar_items():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+# ========== ЛАЙКИ ДЛЯ МЕДИА ==========
+
+@app.route('/api/media/likes', methods=['GET'])
+@login_required
+def get_media_likes():
+    """
+    Возвращает лайки по списку media_id.
+
+    Пример: /api/media/likes?ids=media-001,media-002
+    Ответ: { counts: {id: count}, likedByMe: {id: bool} }
+    """
+    try:
+        ids_raw = request.args.get('ids', '')
+        ids = [str(x).strip() for x in ids_raw.split(',') if str(x).strip()]
+        # Сохраняем порядок и убираем дубли
+        seen = set()
+        ids = [x for x in ids if not (x in seen or seen.add(x))]
+
+        if not ids:
+            return jsonify({'counts': {}, 'likedByMe': {}})
+
+        # Считаем лайки по каждому media_id
+        rows = (
+            db.session.query(MediaLike.media_id, func.count(MediaLike.id))
+            .filter(MediaLike.media_id.in_(ids))
+            .group_by(MediaLike.media_id)
+            .all()
+        )
+        counts = {row[0]: int(row[1] or 0) for row in rows}
+
+        # likedByMe для текущего пользователя (если это не гость)
+        from flask_login import current_user
+        user_id = current_user.id
+        liked_by_me = {}
+        if user_id not in (0, 'guest'):
+            liked_rows = (
+                db.session.query(MediaLike.media_id)
+                .filter(MediaLike.media_id.in_(ids), MediaLike.user_id == int(user_id))
+                .all()
+            )
+            liked_ids = {row[0] for row in liked_rows}
+            liked_by_me = {media_id: (media_id in liked_ids) for media_id in ids}
+        else:
+            liked_by_me = {media_id: False for media_id in ids}
+
+        # Заполняем нули для отсутствующих
+        for media_id in ids:
+            counts.setdefault(media_id, 0)
+            liked_by_me.setdefault(media_id, False)
+
+        return jsonify({'counts': counts, 'likedByMe': liked_by_me})
+    except Exception as e:
+        return jsonify({'error': 'MEDIA_LIKES_ERROR', 'message': str(e)}), 500
+
+
+@app.route('/api/media/<media_id>/like-toggle', methods=['POST'])
+@login_required
+def toggle_media_like(media_id):
+    """
+    Переключает лайк текущего пользователя для media_id.
+    Возвращает {count, likedByMe}.
+    """
+    # Запрещаем гостям
+    guest_check = check_not_guest()
+    if guest_check:
+        return guest_check
+
+    media_id_norm = str(media_id or '').strip()
+    if not media_id_norm:
+        return jsonify({'error': 'MEDIA_ID_REQUIRED', 'message': 'media_id обязателен'}), 400
+
+    try:
+        from flask_login import current_user
+        user_id = int(current_user.id)
+
+        existing = MediaLike.query.filter_by(media_id=media_id_norm, user_id=user_id).first()
+        if existing:
+            db.session.delete(existing)
+            db.session.commit()
+            liked_by_me = False
+        else:
+            db.session.add(MediaLike(media_id=media_id_norm, user_id=user_id))
+            try:
+                db.session.commit()
+                liked_by_me = True
+            except IntegrityError:
+                # Если случилась гонка — просто перечитаем состояние
+                db.session.rollback()
+                still_exists = MediaLike.query.filter_by(
+                    media_id=media_id_norm, user_id=user_id
+                ).first()
+                liked_by_me = bool(still_exists)
+
+        count = MediaLike.query.filter_by(media_id=media_id_norm).count()
+        return jsonify({'count': int(count), 'likedByMe': liked_by_me})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': 'MEDIA_LIKE_TOGGLE_ERROR', 'message': str(e)}), 500
+
 # ========== АДМИНСКИЕ API (требуют авторизации) ==========
 
 @app.route('/api/admin/login', methods=['POST'])
@@ -1387,6 +1488,39 @@ def check_auth():
         })
     else:
         return jsonify({'authenticated': False})
+
+@app.route('/api/admin/media/likes-counts', methods=['GET'])
+@login_required
+def admin_media_likes_counts():
+    """
+    Админ: вернуть количество лайков по списку media_id.
+    Пример: /api/admin/media/likes-counts?ids=media-001,media-002
+    """
+    admin_check = _require_admin()
+    if admin_check:
+        return admin_check
+
+    try:
+        ids_raw = request.args.get('ids', '')
+        ids = [str(x).strip() for x in ids_raw.split(',') if str(x).strip()]
+        seen = set()
+        ids = [x for x in ids if not (x in seen or seen.add(x))]
+
+        if not ids:
+            return jsonify({'counts': {}})
+
+        rows = (
+            db.session.query(MediaLike.media_id, func.count(MediaLike.id))
+            .filter(MediaLike.media_id.in_(ids))
+            .group_by(MediaLike.media_id)
+            .all()
+        )
+        counts = {row[0]: int(row[1] or 0) for row in rows}
+        for media_id in ids:
+            counts.setdefault(media_id, 0)
+        return jsonify({'counts': counts})
+    except Exception as e:
+        return jsonify({'error': 'ADMIN_MEDIA_LIKES_ERROR', 'message': str(e)}), 500
 
 @app.route('/api/admin/dishes', methods=['POST'])
 @login_required

@@ -11,10 +11,12 @@ import {
   createUser,
   updateUser,
   deleteUser,
+  getAdminMediaLikesCounts,
 } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { getDishImageUrl } from '../utils/imageUtils';
+import mediaItems from '../data/mediaItems';
 
 function AdminPage() {
   const navigate = useNavigate();
@@ -33,7 +35,9 @@ function AdminPage() {
   const [users, setUsers] = useState([]);
   const [showUserForm, setShowUserForm] = useState(false);
   const [editingUser, setEditingUser] = useState(null); // ID пользователя, которого редактируем (null = создание нового)
-  const [activeTab, setActiveTab] = useState('dishes'); // 'dishes' или 'users'
+  const [activeTab, setActiveTab] = useState('dishes'); // 'dishes', 'users' или 'media'
+  const [mediaLikesCounts, setMediaLikesCounts] = useState({});
+  const [mediaLikesLoading, setMediaLikesLoading] = useState(false);
   const [userForm, setUserForm] = useState({
     name: '',
     username: '',
@@ -41,6 +45,21 @@ function AdminPage() {
     role: 'официант',
     customRole: ''
   });
+  const isAdmin = currentUser?.role === 'администратор';
+
+  const loadMediaLikes = async () => {
+    if (!isAdmin) return;
+    setMediaLikesLoading(true);
+    try {
+      const ids = (mediaItems || []).map((it) => it?.id).filter(Boolean);
+      const data = await getAdminMediaLikesCounts(ids);
+      setMediaLikesCounts(data?.counts || {});
+    } catch (error) {
+      toast.error('Ошибка загрузки лайков медиа: ' + (error.response?.data?.error || error.message));
+    } finally {
+      setMediaLikesLoading(false);
+    }
+  };
 
   useEffect(() => {
     // Проверяем авторизацию и загружаем данные
@@ -57,6 +76,11 @@ function AdminPage() {
     };
     check();
   }, [isAuthenticated, currentUser, authChecking]);
+
+  useEffect(() => {
+    if (activeTab !== 'media' || !isAdmin) return;
+    loadMediaLikes();
+  }, [activeTab, isAdmin]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -244,9 +268,6 @@ function AdminPage() {
       dish.section?.toLowerCase().includes(query)
     );
   });
-
-  // Проверяем, является ли текущий пользователь администратором
-  const isAdmin = currentUser?.role === 'администратор';
 
   if (authChecking || checking) {
     return (
@@ -451,6 +472,18 @@ function AdminPage() {
                 Пользователи
               </button>
             )}
+            {isAdmin && (
+              <button
+                onClick={() => setActiveTab('media')}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  activeTab === 'media'
+                    ? 'bg-primary text-white'
+                    : 'bg-gray-100 dark:bg-white/10 text-text-secondary-light dark:text-text-secondary-dark hover:bg-gray-200 dark:hover:bg-white/20'
+                }`}
+              >
+                Медиа
+              </button>
+            )}
           </div>
         </header>
 
@@ -559,6 +592,50 @@ function AdminPage() {
               )}
             </div>
           </>
+        )}
+
+        {/* Вкладка "Медиа" (только для администраторов) */}
+        {activeTab === 'media' && isAdmin && (
+          <div className="px-4 pb-24">
+            <div className="flex justify-between items-center mb-4 mt-4">
+              <h2 className="text-lg font-bold text-text-primary-light dark:text-text-primary-dark">
+                Медиа и лайки
+              </h2>
+              <button
+                onClick={loadMediaLikes}
+                className="px-4 py-2 rounded-lg bg-primary/10 text-primary text-sm font-medium hover:bg-primary/20 transition-colors"
+              >
+                Обновить
+              </button>
+            </div>
+
+            {mediaLikesLoading ? (
+              <div className="text-center py-8 text-text-secondary-light">Загрузка...</div>
+            ) : (mediaItems || []).length === 0 ? (
+              <div className="text-center py-8 text-text-secondary-light">Медиа пока нет</div>
+            ) : (
+              <div className="flex flex-col gap-3">
+                {mediaItems.map((item) => (
+                  <div
+                    key={item.id}
+                    className="flex items-center justify-between bg-surface-light dark:bg-surface-dark rounded-2xl p-3 shadow-sm border border-gray-100 dark:border-white/5"
+                  >
+                    <div className="flex flex-col">
+                      <p className="text-text-primary-light dark:text-text-primary-dark text-base font-bold">
+                        {item.title || 'Без названия'}
+                      </p>
+                      <p className="text-text-secondary-light dark:text-text-secondary-dark text-xs mt-0.5">
+                        {item.description || 'Нет описания'}
+                      </p>
+                    </div>
+                    <div className="text-sm font-semibold text-rose-600">
+                      {Number(mediaLikesCounts[item.id] || 0)}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         )}
 
         {/* Вкладка "Пользователи" (только для администраторов) */}

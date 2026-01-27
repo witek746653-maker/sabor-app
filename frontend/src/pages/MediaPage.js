@@ -19,31 +19,39 @@ import {
 } from 'lucide-react';
 import mediaItems from '../data/mediaItems';
 import { getJSON, setJSON, toggleInArray } from '../utils/storage';
+import { useAuth } from '../contexts/AuthContext';
+import { getMediaLikes, toggleMediaLike } from '../services/api';
 
 const PLAYBACK_RATES = [0.5, 1, 1.25, 1.5];
 
 const STORAGE_KEYS = {
-  likes: 'media.likes',
   favorites: 'media.favorites',
   history: 'media.history',
-  durations: 'media.durations'
+  durations: 'media.durations',
+  progress: 'media.progress',
+  playerState: 'media.playerState'
 };
 
 const MediaPage = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [items, setItems] = useState([]);
-  const [likes, setLikes] = useState(() => getJSON(STORAGE_KEYS.likes, []));
+  const [likeCounts, setLikeCounts] = useState({});
+  const [likedByMe, setLikedByMe] = useState({});
   const [favorites, setFavorites] = useState(() => getJSON(STORAGE_KEYS.favorites, []));
   const [history, setHistory] = useState(() => getJSON(STORAGE_KEYS.history, []));
   const [durations, setDurations] = useState(() => getJSON(STORAGE_KEYS.durations, {}));
-  const [currentId, setCurrentId] = useState(null);
+  const savedPlayerState = getJSON(STORAGE_KEYS.playerState, {});
+  const [currentId, setCurrentId] = useState(savedPlayerState.currentId || null);
   const [isPlayerOpen, setIsPlayerOpen] = useState(false);
-  const [isMiniPlayerVisible, setIsMiniPlayerVisible] = useState(true);
+  const [isMiniPlayerVisible, setIsMiniPlayerVisible] = useState(
+    savedPlayerState.isMiniPlayerVisible ?? true
+  );
   const [notice, setNotice] = useState('');
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
-  const [playbackRate, setPlaybackRate] = useState(1);
+  const [playbackRate, setPlaybackRate] = useState(savedPlayerState.playbackRate || 1);
+  const [progressById, setProgressById] = useState(() => getJSON(STORAGE_KEYS.progress, {}));
   const [isSpeedMenuOpenMini, setIsSpeedMenuOpenMini] = useState(false);
   const [isSpeedMenuOpenFull, setIsSpeedMenuOpenFull] = useState(false);
   const [isDraggingProgress, setIsDraggingProgress] = useState(false);
@@ -56,6 +64,10 @@ const MediaPage = () => {
   const fullProgressRef = useRef(null);
   const fullPlayerRef = useRef(null);
 
+  const { isAuthenticated, isGuest, canWrite } = useAuth();
+  // В гостевом режиме скрываем маркер "в избранном", даже если он есть в хранилище.
+  const effectiveFavorites = isGuest ? [] : favorites;
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setItems(mediaItems);
@@ -63,10 +75,6 @@ const MediaPage = () => {
     }, 600);
     return () => clearTimeout(timer);
   }, []);
-
-  useEffect(() => {
-    setJSON(STORAGE_KEYS.likes, likes);
-  }, [likes]);
 
   useEffect(() => {
     setJSON(STORAGE_KEYS.favorites, favorites);
@@ -79,6 +87,38 @@ const MediaPage = () => {
   useEffect(() => {
     setJSON(STORAGE_KEYS.durations, durations);
   }, [durations]);
+
+  useEffect(() => {
+    setJSON(STORAGE_KEYS.progress, progressById);
+  }, [progressById]);
+
+  useEffect(() => {
+    setJSON(STORAGE_KEYS.playerState, {
+      currentId,
+      isMiniPlayerVisible,
+      playbackRate
+    });
+  }, [currentId, isMiniPlayerVisible, playbackRate]);
+
+  useEffect(() => {
+    const loadLikes = async () => {
+      if (!isAuthenticated) {
+        setLikeCounts({});
+        setLikedByMe({});
+        return;
+      }
+      const ids = (items || []).map((it) => it?.id).filter(Boolean);
+      if (!ids.length) return;
+      try {
+        const data = await getMediaLikes(ids);
+        setLikeCounts(data?.counts || {});
+        setLikedByMe(data?.likedByMe || {});
+      } catch (error) {
+        console.warn('Не удалось загрузить лайки медиа:', error);
+      }
+    };
+    loadLikes();
+  }, [isAuthenticated, items]);
 
   useEffect(() => {
     if (!currentId && history.length > 0) {
@@ -99,8 +139,18 @@ const MediaPage = () => {
     // Применяем выбранную скорость при смене трека.
     player.playbackRate = playbackRate;
     setIsPlaying(false);
-    setCurrentTime(0);
-  }, [currentId]);
+    if (!currentId) {
+      setCurrentTime(0);
+      return;
+    }
+    const savedProgress = progressById[currentId];
+    const safeProgress = clampProgress(savedProgress, player.duration);
+    // Восстанавливаем позицию воспроизведения из localStorage.
+    if (Number.isFinite(player.duration) && player.duration > 0) {
+      player.currentTime = safeProgress;
+    }
+    setCurrentTime(safeProgress);
+  }, [currentId, playbackRate]);
 
   useEffect(() => {
     const player = audioRef.current;
@@ -159,21 +209,64 @@ const MediaPage = () => {
     setIsPlayerOpen(true);
     setIsMiniPlayerVisible(true);
     setIsPlaying(false);
-    setCurrentTime(0);
     setIsSpeedMenuOpenMini(false);
     setIsSpeedMenuOpenFull(false);
   };
 
-  const handleToggleLike = (itemId) => {
-    setLikes((prev) => toggleInArray(prev, itemId));
+  const handleToggleLike = async (itemId) => {
+    if (!canWrite) {
+      setNotice('Лайки доступны только после входа (не гость).');
+      return;
+    }
+    const prevLiked = Boolean(likedByMe[itemId]);
+    const prevCount = Number(likeCounts[itemId] || 0);
+    const nextLiked = !prevLiked;
+    const nextCount = Math.max(0, prevCount + (nextLiked ? 1 : -1));
+
+    // Optimistic UI: обновляем сразу
+    setLikedByMe((prev) => ({ ...prev, [itemId]: nextLiked }));
+    setLikeCounts((prev) => ({ ...prev, [itemId]: nextCount }));
+
+    try {
+      const result = await toggleMediaLike(itemId);
+      setLikedByMe((prev) => ({ ...prev, [itemId]: Boolean(result?.likedByMe) }));
+      setLikeCounts((prev) => ({ ...prev, [itemId]: Number(result?.count || 0) }));
+    } catch (error) {
+      // Откат при ошибке
+      setLikedByMe((prev) => ({ ...prev, [itemId]: prevLiked }));
+      setLikeCounts((prev) => ({ ...prev, [itemId]: prevCount }));
+      setNotice('Не удалось обновить лайк. Попробуйте ещё раз.');
+    }
   };
 
   const handleToggleFavorite = (itemId) => {
+    if (isGuest) {
+      // Гостю нельзя добавлять в избранное.
+      setNotice('Избранное доступно только после входа.');
+      return;
+    }
     setFavorites((prev) => toggleInArray(prev, itemId));
   };
 
-  const handleDownload = () => {
-    setNotice('Скачивание будет доступно позже.');
+  const handleDownload = (item) => {
+    if (!item) return;
+    if (!isAuthenticated || isGuest) {
+      setNotice('Скачивание доступно только после входа.');
+      return;
+    }
+    const fileUrl = item.audioUrl || item.videoUrl;
+    if (!fileUrl) {
+      setNotice('Файл для скачивания не найден.');
+      return;
+    }
+    // Создаём скрытую ссылку и запускаем скачивание.
+    const link = document.createElement('a');
+    link.href = fileUrl;
+    link.download = '';
+    link.rel = 'noopener';
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
   };
 
   const handleShare = async (item) => {
@@ -201,6 +294,13 @@ const MediaPage = () => {
     }
   };
 
+  const clampProgress = (progress, duration) => {
+    if (!Number.isFinite(progress) || progress < 0) return 0;
+    if (!Number.isFinite(duration) || duration <= 0) return progress;
+    const maxTime = Math.max(duration - 0.5, 0);
+    return progress > maxTime ? 0 : Math.min(progress, maxTime);
+  };
+
   const formatDuration = (seconds) => {
     if (!Number.isFinite(seconds) || seconds <= 0) return null;
     const totalSeconds = Math.round(seconds);
@@ -213,15 +313,27 @@ const MediaPage = () => {
   const handleDurationLoaded = (itemId, event) => {
     const rawDuration = event.currentTarget.duration;
     if (!Number.isFinite(rawDuration) || rawDuration <= 0) return;
-    setCurrentTime(event.currentTarget.currentTime || 0);
+    const savedProgress = progressById[itemId];
+    const safeProgress = clampProgress(savedProgress, rawDuration);
+    event.currentTarget.currentTime = safeProgress;
+    setCurrentTime(safeProgress);
     setDurations((prev) => ({
       ...prev,
       [itemId]: Math.round(rawDuration)
     }));
+    if (safeProgress !== (Number.isFinite(savedProgress) ? savedProgress : 0)) {
+      // Подстраховка: сохраняем скорректированную позицию.
+      setProgressById((prev) => ({ ...prev, [itemId]: safeProgress }));
+    }
   };
 
   const handleTimeUpdate = (event) => {
-    setCurrentTime(event.currentTarget.currentTime || 0);
+    const nextTime = event.currentTarget.currentTime || 0;
+    setCurrentTime(nextTime);
+    if (currentId) {
+      // Сохраняем прогресс, чтобы продолжить с того же места после перезагрузки.
+      setProgressById((prev) => ({ ...prev, [currentId]: nextTime }));
+    }
   };
 
   const handlePlayPause = () => {
@@ -252,11 +364,9 @@ const MediaPage = () => {
   const handleCloseMiniPlayer = () => {
     const player = audioRef.current;
     if (!player) return;
-    // Останавливаем звук и сбрасываем время, затем прячем мини‑плеер.
+    // Останавливаем звук и прячем мини‑плеер.
     player.pause();
-    player.currentTime = 0;
     setIsPlaying(false);
-    setCurrentTime(0);
     setIsMiniPlayerVisible(false);
   };
 
@@ -439,8 +549,9 @@ const MediaPage = () => {
           <section className="space-y-3">
             {items.map((item) => {
               const Icon = getTypeIcon(item.type);
-              const isLiked = likes.includes(item.id);
-              const isFavorite = favorites.includes(item.id);
+              const isLiked = Boolean(likedByMe[item.id]);
+              const likeCount = Number(likeCounts[item.id] || 0);
+              const isFavorite = effectiveFavorites.includes(item.id);
               const durationLabel =
                 formatDuration(durations[item.id]) ||
                 item.duration ||
@@ -486,7 +597,8 @@ const MediaPage = () => {
                     <button
                       type="button"
                       onClick={() => handleToggleLike(item.id)}
-                      className={`inline-flex items-center gap-2 rounded-full border px-3 py-2 text-xs font-semibold transition-colors ${
+                      disabled={!canWrite}
+                      className={`inline-flex items-center gap-2 rounded-full border px-3 py-2 text-xs font-semibold transition-colors disabled:opacity-60 disabled:cursor-not-allowed ${
                         isLiked
                           ? 'border-rose-200 bg-rose-50 text-rose-600'
                           : 'border-gray-200 text-gray-600 hover:bg-gray-100'
@@ -494,11 +606,16 @@ const MediaPage = () => {
                     >
                       <Heart className="h-4 w-4" />
                       {isLiked ? 'Лайк' : 'Лайкнуть'}
+                      {isAuthenticated && (
+                        <span className="text-[11px] text-gray-500">· {likeCount}</span>
+                      )}
                     </button>
                     <button
                       type="button"
                       onClick={() => handleToggleFavorite(item.id)}
-                      className={`inline-flex items-center gap-2 rounded-full border px-3 py-2 text-xs font-semibold transition-colors ${
+                      disabled={isGuest}
+                      title={isGuest ? 'Доступно после входа' : undefined}
+                      className={`inline-flex items-center gap-2 rounded-full border px-3 py-2 text-xs font-semibold transition-colors disabled:opacity-60 disabled:cursor-not-allowed ${
                         isFavorite
                           ? 'border-yellow-200 bg-yellow-50 text-yellow-600'
                           : 'border-gray-200 text-gray-600 hover:bg-gray-100'
@@ -509,7 +626,7 @@ const MediaPage = () => {
                     </button>
                     <button
                       type="button"
-                      onClick={handleDownload}
+                      onClick={() => handleDownload(item)}
                       className="inline-flex items-center gap-2 rounded-full border border-gray-200 px-3 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-100 transition-colors"
                     >
                       <Download className="h-4 w-4" />
@@ -535,11 +652,20 @@ const MediaPage = () => {
         <div className="fixed bottom-0 left-0 right-0 pb-3 px-4 z-40 animate-fadeInUp">
           <div className="rounded-2xl bg-black/80 text-white backdrop-blur-md border border-white/20 shadow-[0_-4px_24px_rgba(0,0,0,0.3)]">
             {/* Кликабельная область для разворачивания плеера */}
-            <button
-              type="button"
+            <div
+              role="button"
+              tabIndex={0}
               onClick={() => {
                 if (currentItem) {
                   setIsPlayerOpen(true);
+                }
+              }}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                  event.preventDefault();
+                  if (currentItem) {
+                    setIsPlayerOpen(true);
+                  }
                 }
               }}
               className="w-full px-4 pt-3 pb-2 text-left hover:bg-white/5 transition-all duration-200 rounded-t-2xl active:scale-[0.99]"
@@ -579,7 +705,7 @@ const MediaPage = () => {
                   </button>
                 </div>
               </div>
-            </button>
+            </div>
 
             {/* Полоса воспроизведения с поддержкой перетаскивания */}
             <div
@@ -617,6 +743,7 @@ const MediaPage = () => {
         onLoadedMetadata={(event) => handleDurationLoaded(currentItem?.id, event)}
         onTimeUpdate={handleTimeUpdate}
         onEnded={() => setIsPlaying(false)}
+        onError={() => setNotice('Не удалось загрузить аудио. Проверьте файл.')}
         className="hidden"
       />
 
@@ -717,14 +844,16 @@ const MediaPage = () => {
                       <button
                         type="button"
                         onClick={() => handleToggleFavorite(currentItem.id)}
-                        className={`inline-flex items-center justify-center h-14 w-14 rounded-full border transition-all active:scale-95 touch-manipulation ${
-                          favorites.includes(currentItem.id)
+                        disabled={isGuest}
+                        title={isGuest ? 'Доступно после входа' : undefined}
+                        className={`inline-flex items-center justify-center h-14 w-14 rounded-full border transition-all active:scale-95 touch-manipulation disabled:opacity-60 disabled:cursor-not-allowed ${
+                          effectiveFavorites.includes(currentItem.id)
                             ? 'border-yellow-400 bg-yellow-500/20 text-yellow-400'
                             : 'border-white/20 text-white/70 hover:text-white hover:bg-white/10'
                         }`}
                         aria-label="Добавить в избранное"
                       >
-                        <Heart className={`h-5 w-5 ${favorites.includes(currentItem.id) ? 'fill-current' : ''}`} />
+                        <Heart className={`h-5 w-5 ${effectiveFavorites.includes(currentItem.id) ? 'fill-current' : ''}`} />
                       </button>
 
                       {/* Кнопка Перемотка назад */}
@@ -802,18 +931,24 @@ const MediaPage = () => {
                   <button
                     type="button"
                     onClick={() => handleToggleLike(currentItem.id)}
-                    className={`inline-flex items-center gap-2 rounded-full border px-4 py-2.5 text-xs font-semibold transition-all active:scale-95 touch-manipulation ${
-                      likes.includes(currentItem.id)
+                    disabled={!canWrite}
+                    className={`inline-flex items-center gap-2 rounded-full border px-4 py-2.5 text-xs font-semibold transition-all active:scale-95 touch-manipulation disabled:opacity-60 disabled:cursor-not-allowed ${
+                      likedByMe[currentItem.id]
                         ? 'border-rose-400 bg-rose-500/20 text-rose-400'
                         : 'border-white/20 text-white/80 hover:bg-white/10'
                     }`}
                   >
-                    <Heart className={`h-4 w-4 ${likes.includes(currentItem.id) ? 'fill-current' : ''}`} />
+                    <Heart className={`h-4 w-4 ${likedByMe[currentItem.id] ? 'fill-current' : ''}`} />
                     Лайк
+                    {isAuthenticated && (
+                      <span className="text-[11px] text-white/70">
+                        · {Number(likeCounts[currentItem.id] || 0)}
+                      </span>
+                    )}
                   </button>
                   <button
                     type="button"
-                    onClick={handleDownload}
+                    onClick={() => handleDownload(currentItem)}
                     className="inline-flex items-center gap-2 rounded-full border border-white/20 px-4 py-2.5 text-xs font-semibold text-white/80 hover:bg-white/10 active:scale-95 transition-all touch-manipulation"
                   >
                     <Download className="h-4 w-4" />

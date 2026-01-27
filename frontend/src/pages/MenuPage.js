@@ -34,17 +34,33 @@ function MenuPage({ mode }) {
   const menuFiltersStorageKey = `menuFilters:${mode === 'tea' ? 'tea' : (menuName || 'all')}`;
   const [filtersLoaded, setFiltersLoaded] = useState(false);
 
+  const isArtItem = (item) => {
+    const idNumber = Number(String(item?.id || '').replace(/\D/g, ''));
+    const source = String(item?.source || '').toLowerCase();
+    const hasAuthor = Boolean(item?.author);
+    // Картины: ID 901–999 + источник про "искусство".
+    return (
+      Number.isFinite(idNumber) &&
+      idNumber >= 901 &&
+      idNumber <= 999 &&
+      (source.includes('искусство') || hasAuthor)
+    );
+  };
+
   const isTeaItem = (item) => {
+    if (isArtItem(item)) return false;
     const menu = String(item?.menu || '').toLowerCase();
     const section = String(item?.section || '').toLowerCase();
     const idNumber = Number(String(item?.id || '').replace(/\D/g, ''));
+
+    const isTeaById = Number.isFinite(idNumber) && idNumber >= 801 && idNumber <= 899;
 
     return (
       menu.includes('чай') ||
       menu.includes('tea') ||
       section.includes('чай') ||
       section.includes('tea') ||
-      (Number.isFinite(idNumber) && idNumber >= 801)
+      isTeaById
     );
   };
 

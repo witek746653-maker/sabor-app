@@ -4,6 +4,7 @@ import { getDishes } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import { getDishImageUrl } from '../utils/imageUtils';
 import { useVisibility } from '../contexts/VisibilityContext';
+import mediaItems from '../data/mediaItems';
 
 function FavoritesPage() {
   const navigate = useNavigate();
@@ -22,6 +23,10 @@ function FavoritesPage() {
       ...(artSaved ? JSON.parse(artSaved) : []),
     ];
     return Array.from(new Set(ids)).filter(Boolean);
+  });
+  const [mediaFavorites, setMediaFavorites] = useState(() => {
+    const saved = localStorage.getItem('media.favorites');
+    return saved ? JSON.parse(saved) : [];
   });
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
@@ -189,6 +194,10 @@ function FavoritesPage() {
         ];
         setFavorites(Array.from(new Set(ids)).filter(Boolean));
       }
+      if (e.key === 'media.favorites' || e.key === null) {
+        const savedMedia = localStorage.getItem('media.favorites');
+        setMediaFavorites(savedMedia ? JSON.parse(savedMedia) : []);
+      }
     };
 
     window.addEventListener('storage', handleStorageChange);
@@ -203,13 +212,19 @@ function FavoritesPage() {
       if (JSON.stringify(currentFavorites) !== JSON.stringify(favorites)) {
         setFavorites(currentFavorites);
       }
+
+      const savedMedia = localStorage.getItem('media.favorites');
+      const currentMediaFavorites = savedMedia ? JSON.parse(savedMedia) : [];
+      if (JSON.stringify(currentMediaFavorites) !== JSON.stringify(mediaFavorites)) {
+        setMediaFavorites(currentMediaFavorites);
+      }
     }, 500);
 
     return () => {
       window.removeEventListener('storage', handleStorageChange);
       clearInterval(checkInterval);
     };
-  }, [favorites]);
+  }, [favorites, mediaFavorites]);
 
   // Сохраняем фильтр поиска избранного в localStorage.
   useEffect(() => {
@@ -262,6 +277,9 @@ function FavoritesPage() {
   const favoriteDishes = allDishes
     .filter(dish => favorites.includes(dish.id))
     .filter((dish) => isContentVisible(dish));
+
+  // Избранные медиа по id (берем из статического списка).
+  const favoriteMediaItems = mediaItems.filter((item) => mediaFavorites.includes(item.id));
 
   // Фильтруем по поисковому запросу
   const filteredDishes = favoriteDishes.filter((dish) => {
@@ -317,6 +335,27 @@ function FavoritesPage() {
     if (mod10 === 1 && mod100 !== 11) return `${n} элемент`;
     if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return `${n} элемента`;
     return `${n} элементов`;
+  };
+
+  const handleOpenMedia = (item) => {
+    if (!item) return;
+    // Запоминаем выбранное медиа, чтобы на странице /media открылся нужный файл.
+    const raw = localStorage.getItem('media.playerState');
+    let savedState = {};
+    try {
+      savedState = raw ? JSON.parse(raw) : {};
+    } catch {
+      savedState = {};
+    }
+    localStorage.setItem(
+      'media.playerState',
+      JSON.stringify({
+        ...savedState,
+        currentId: item.id,
+        isMiniPlayerVisible: true
+      })
+    );
+    navigate('/media');
   };
 
   // Если гость, не показываем страницу
@@ -385,6 +424,41 @@ function FavoritesPage() {
 
       {/* Dishes Grid */}
       <div className="flex-1 overflow-y-auto px-3 pb-24 pt-3">
+        {favoriteMediaItems.length > 0 && (
+          <div className="mb-5">
+            <h3 className="font-bold text-base dark:text-white px-1 mb-2">
+              {language === 'EN' ? 'Favorite media' : 'Избранные медиа'}
+            </h3>
+            <div className="grid grid-cols-2 gap-2">
+              {favoriteMediaItems.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => handleOpenMedia(item)}
+                  className="text-left rounded-lg overflow-hidden bg-white dark:bg-surface-dark shadow-[0_2px_8px_rgba(0,0,0,0.04)] dark:shadow-none border border-gray-100 dark:border-gray-800 hover:border-primary/30 transition-all"
+                >
+                  <div className="relative w-full aspect-square overflow-hidden bg-gray-100 dark:bg-gray-800">
+                    <img
+                      src={item.coverUrl || '/media/cover-placeholder.svg'}
+                      alt=""
+                      className="absolute inset-0 h-full w-full object-cover"
+                      loading="lazy"
+                    />
+                  </div>
+                  <div className="p-2">
+                    <p className="font-bold text-[11px] leading-[1.2] dark:text-white line-clamp-2 mb-1">
+                      {item.title}
+                    </p>
+                    <p className="text-[9px] text-[#896f61] dark:text-gray-400 line-clamp-2 leading-tight opacity-90">
+                      {item.description}
+                    </p>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         <div className="flex justify-between items-center mb-3 px-1">
           <h3 className="font-bold text-base dark:text-white">
             {language === 'EN' ? 'Favorite items' : 'Избранные карточки'}
