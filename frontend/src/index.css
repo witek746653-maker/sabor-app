@@ -112,3 +112,55 @@ ol[type="1"] li {
   line-height: 1.6 !important;
 }
 
+/* ==========================================================================
+   Анимации для медиа-плеера
+   ========================================================================== */
+
+/* Плавное появление полноэкранного плеера снизу вверх */
+@keyframes slideUp {
+  from {
+    transform: translateY(100%) scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-slideUp {
+  animation: slideUp 0.4s ease-out;
+}
+
+/* Плавное появление мини-плеера */
+@keyframes fadeInUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-fadeInUp {
+  animation: fadeInUp 0.3s ease-out;
+}
+
+/* Плавное появление меню скорости (снизу вверх) */
+@keyframes menuFadeIn {
+  from {
+    transform: scale(0.95) translateY(8px);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-menuFadeIn {
+  animation: menuFadeIn 0.2s ease-out;
+}
+
