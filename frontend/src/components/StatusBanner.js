@@ -59,6 +59,7 @@ export default function StatusBanner() {
   const { isAdmin } = useAuth();
   const [expanded, setExpanded] = useState(false);
   const [autoShownAt, setAutoShownAt] = useState(null);
+  const [suppressAutoShow, setSuppressAutoShow] = useState(false);
 
   const [health, setHealth] = useState({
     state: 'checking', // checking | ok | degraded | down
@@ -190,11 +191,12 @@ export default function StatusBanner() {
     if (isAdmin) return;
 
     // Если есть проблема — можно авто-показать детали 1 раз.
-    if (hasIssue && !expanded) {
+    // suppressAutoShow = пользователь сам свернул, поэтому не раскрываем снова.
+    if (hasIssue && !expanded && !suppressAutoShow) {
       setExpanded(true);
       setAutoShownAt(Date.now());
     }
-  }, [expanded, hasIssue, isAdmin, shouldShow]);
+  }, [expanded, hasIssue, isAdmin, shouldShow, suppressAutoShow]);
 
   useEffect(() => {
     if (!expanded) return;
@@ -208,6 +210,13 @@ export default function StatusBanner() {
     }, 6000);
     return () => clearTimeout(t);
   }, [autoShownAt, expanded, isAdmin]);
+
+  useEffect(() => {
+    // Если проблема исчезла — разрешаем авто-показ снова.
+    if (!hasIssue) {
+      setSuppressAutoShow(false);
+    }
+  }, [hasIssue]);
 
   const details = useMemo(() => {
     const parts = [];
@@ -469,8 +478,15 @@ export default function StatusBanner() {
           style={iconButtonStyle}
           title={expanded ? 'Скрыть детали' : 'Показать детали'}
           onClick={() => {
-            setExpanded((v) => !v);
-            setAutoShownAt(null); // пользователь кликнул сам — не считаем авто-показом
+            const nextExpanded = !expanded;
+            setExpanded(nextExpanded);
+            // Пользователь сам управляет окном — авто-показ выключаем.
+            setAutoShownAt(null);
+            if (!nextExpanded && hasIssue) {
+              setSuppressAutoShow(true);
+            } else {
+              setSuppressAutoShow(false);
+            }
           }}
         >
           <span style={iconDotStyle} aria-hidden="true" />

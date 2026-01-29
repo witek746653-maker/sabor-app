@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { getMenus, getSections, submitFeedback, login as apiLogin, loginAsGuest } from '../services/api';
+import { getMenus, getSections, submitFeedback, login as apiLogin, loginAsGuest, getPublicNotifications } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -21,15 +21,8 @@ function HomePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showNotifications, setShowNotifications] = useState(false);
-  const [notifications, setNotifications] = useState(() => {
-    // Загружаем уведомления из localStorage
-    const saved = localStorage.getItem('notifications');
-    return saved ? JSON.parse(saved) : [];
-  });
-  const [unreadCount, setUnreadCount] = useState(() => {
-    const saved = localStorage.getItem('unreadNotifications');
-    return saved ? parseInt(saved) : 0;
-  });
+  const [notifications, setNotifications] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
   const [showMenuPanel, setShowMenuPanel] = useState(false);
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -56,42 +49,41 @@ function HomePage() {
     return localStorage.getItem('menuLanguage') || 'RU';
   });
 
+  // Ключ для списка прочитанных уведомлений (храним локально на устройстве)
+  const NOTIFICATIONS_READ_KEY = 'sabor.notificationsReadIds.v1';
+
+  const readNotificationIds = () => {
+    try {
+      const raw = localStorage.getItem(NOTIFICATIONS_READ_KEY);
+      const parsed = JSON.parse(raw || '[]');
+      return Array.isArray(parsed) ? parsed.map(String) : [];
+    } catch (error) {
+      return [];
+    }
+  };
+
+  const writeNotificationIds = (ids) => {
+    try {
+      localStorage.setItem(NOTIFICATIONS_READ_KEY, JSON.stringify(ids));
+    } catch (error) {
+      // Если localStorage недоступен — просто молча пропускаем.
+    }
+  };
+
   // Функция для загрузки уведомлений
-  const loadNotifications = () => {
-    const savedNotifications = localStorage.getItem('notifications');
-    if (savedNotifications) {
-      try {
-        const parsed = JSON.parse(savedNotifications);
-        // Фильтруем только активные уведомления (не истекшие)
-        // ВРЕМЕННО: показываем все уведомления для отладки
-        const activeNotifications = parsed.filter(n => {
-          // Если есть expiresAt, проверяем, не истекло ли
-          if (n.expiresAt && n.expiresAt !== null) {
-            try {
-              const expiresDate = new Date(n.expiresAt);
-              const now = new Date();
-              const isActive = expiresDate > now;
-              // ВРЕМЕННО: показываем все для отладки
-              // return isActive;
-              return true;
-            } catch (error) {
-              console.error('Ошибка парсинга даты expiresAt:', error, n);
-              return true; // Если ошибка, показываем уведомление
-            }
-          }
-          // Если expiresAt нет, считаем активным
-          return true;
-        });
-        setNotifications(activeNotifications);
-        const unread = activeNotifications.filter(n => !n.read).length;
-        setUnreadCount(unread);
-        localStorage.setItem('unreadNotifications', unread.toString());
-      } catch (error) {
-        console.error('Ошибка парсинга уведомлений:', error);
-        setNotifications([]);
-        setUnreadCount(0);
-      }
-    } else {
+  const loadNotifications = async () => {
+    try {
+      const data = await getPublicNotifications();
+      const readIds = readNotificationIds();
+      const normalized = data.map((item) => ({
+        ...item,
+        // Прочитано ли уведомление на этом устройстве
+        read: readIds.includes(String(item.id)),
+      }));
+      setNotifications(normalized);
+      setUnreadCount(normalized.filter((n) => !n.read).length);
+    } catch (error) {
+      console.error('Ошибка загрузки уведомлений:', error);
       setNotifications([]);
       setUnreadCount(0);
     }
@@ -126,11 +118,10 @@ function HomePage() {
     }
   }, [checking, isAuthenticated]);
 
-  // useEffect для обработки уведомлений и изменений localStorage
+  // Обновляем уведомления, если в другой вкладке поменялись "прочитанные"
   useEffect(() => {
-    // Слушаем изменения в localStorage для обновления уведомлений в реальном времени
     const handleStorageChange = (e) => {
-      if (e.key === 'notifications' || e.key === null) {
+      if (e.key === NOTIFICATIONS_READ_KEY || e.key === null) {
         loadNotifications();
       }
     };
@@ -531,11 +522,12 @@ function HomePage() {
                   {unreadCount > 0 && (
                     <button
                       onClick={() => {
-                        setUnreadCount(0);
-                        localStorage.setItem('unreadNotifications', '0');
-                        const updated = notifications.map(n => ({ ...n, read: true }));
+                        const allIds = notifications.map((n) => String(n.id)).filter(Boolean);
+                        const mergedIds = Array.from(new Set([...readNotificationIds(), ...allIds]));
+                        writeNotificationIds(mergedIds);
+                        const updated = notifications.map((n) => ({ ...n, read: true }));
                         setNotifications(updated);
-                        localStorage.setItem('notifications', JSON.stringify(updated));
+                        setUnreadCount(0);
                       }}
                       className="text-sm text-primary hover:underline"
                     >
@@ -566,6 +558,7 @@ function HomePage() {
                           console.warn('Уведомление без title и message:', notification);
                           return null;
                         }
+                        const displayDate = notification.createdAt || notification.date || notification.created_at;
                         return (
                       <div
                         key={idx}
@@ -575,14 +568,15 @@ function HomePage() {
                             : 'bg-gray-50 dark:bg-gray-900/50'
                         }`}
                         onClick={() => {
-                          const updated = notifications.map((n, i) => 
+                          const readIds = new Set(readNotificationIds());
+                          readIds.add(String(notification.id));
+                          writeNotificationIds(Array.from(readIds));
+                          const updated = notifications.map((n, i) =>
                             i === idx ? { ...n, read: true } : n
                           );
                           setNotifications(updated);
-                          localStorage.setItem('notifications', JSON.stringify(updated));
-                          const newUnread = updated.filter(n => !n.read).length;
+                          const newUnread = updated.filter((n) => !n.read).length;
                           setUnreadCount(newUnread);
-                          localStorage.setItem('unreadNotifications', newUnread.toString());
                         }}
                       >
                         <div className="flex items-start gap-3">
@@ -604,9 +598,9 @@ function HomePage() {
                               {notification.message || 'Нет сообщения'}
                             </p>
                             <div className="flex items-center gap-3 text-xs text-gray-400 dark:text-gray-500">
-                              {notification.date && (
+                              {displayDate && (
                                 <span>
-                                  {new Date(notification.date).toLocaleDateString('ru-RU', {
+                                  {new Date(displayDate).toLocaleDateString('ru-RU', {
                                     day: 'numeric',
                                     month: 'short',
                                     hour: '2-digit',

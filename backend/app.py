@@ -16,7 +16,7 @@ import signal
 import logging
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
-from models import db, Dish, FeedbackMessage, User, VisibilityConfig, MediaLike
+from models import db, Dish, FeedbackMessage, Notification, User, VisibilityConfig, MediaLike
 
 try:
     # Sentry — сервис для сбора ошибок с сервера.
@@ -942,6 +942,29 @@ def check_not_guest():
         return jsonify({'error': 'Доступ запрещён. Гостевой режим поддерживает только просмотр данных.'}), 403
     return None
 
+def check_admin_role():
+    """
+    Проверяет, что текущий пользователь - администратор.
+    """
+    from flask_login import current_user
+    current_user_obj = User.query.get(current_user.id)
+    if not current_user_obj or current_user_obj.role != 'администратор':
+        return jsonify({'error': 'Доступ запрещен', 'message': 'Только администратор'}), 403
+    return None
+
+def _parse_datetime_local(value):
+    """
+    Преобразует строку вида '2026-01-28T10:30' в datetime.
+    """
+    if not value:
+        return None
+    if not isinstance(value, str):
+        return None
+    try:
+        return datetime.fromisoformat(value.replace('Z', '+00:00'))
+    except ValueError:
+        return None
+
 # ========== ПУБЛИЧНЫЕ API (для посетителей) ==========
 
 @app.route('/api/health', methods=['GET'])
@@ -1790,6 +1813,174 @@ def delete_feedback_message(message_id):
         db.session.delete(message)
         db.session.commit()
         
+        return jsonify({'status': 'ok'})
+    except Exception as e:
+        db.session.rollback()
+        if _is_readonly_db_error(e):
+            return _readonly_db_response()
+        return jsonify({'error': str(e)}), 500
+
+# ========== API ДЛЯ УВЕДОМЛЕНИЙ ==========
+
+@app.route('/api/notifications', methods=['GET'])
+def get_public_notifications():
+    """
+    Получение активных уведомлений для всех пользователей и гостей.
+    """
+    try:
+        now = datetime.now()
+        items = Notification.query.filter_by(status='active').order_by(Notification.created_at.desc()).all()
+        result = []
+        for item in items:
+            # Если уведомление с датой истекло — не показываем
+            if item.lifetime_type == 'date' and item.expires_at and item.expires_at <= now:
+                continue
+            result.append(item.to_dict())
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({'error': 'Failed to load notifications', 'message': str(e)}), 500
+
+
+@app.route('/api/admin/notifications', methods=['GET'])
+@login_required
+def get_admin_notifications():
+    """
+    Получение всех уведомлений (только для админа).
+    """
+    guest_check = check_not_guest()
+    if guest_check:
+        return guest_check
+    admin_check = check_admin_role()
+    if admin_check:
+        return admin_check
+    try:
+        items = Notification.query.order_by(Notification.created_at.desc()).all()
+        return jsonify([item.to_dict() for item in items])
+    except Exception as e:
+        return jsonify({'error': 'Failed to load notifications', 'message': str(e)}), 500
+
+
+@app.route('/api/admin/notifications', methods=['POST'])
+@login_required
+def create_admin_notification():
+    """
+    Создание уведомления (только для админа).
+    """
+    guest_check = check_not_guest()
+    if guest_check:
+        return guest_check
+    admin_check = check_admin_role()
+    if admin_check:
+        return admin_check
+    try:
+        data = request.json or {}
+        title = data.get('title')
+        message = data.get('message')
+        lifetime_type = data.get('lifetimeType') or data.get('lifetime_type')
+        expires_raw = data.get('expiresAt') or data.get('expires_at')
+        status = data.get('status') or 'draft'
+
+        if not title or not message:
+            return jsonify({'error': 'Title and message are required', 'message': 'Заполните заголовок и текст'}), 400
+        if not lifetime_type:
+            return jsonify({'error': 'Lifetime type is required', 'message': 'Нужен срок жизни'}), 400
+        if lifetime_type == 'date' and not expires_raw:
+            return jsonify({'error': 'Expires date is required for date lifetime', 'message': 'Нужна дата окончания'}), 400
+
+        expires_at = _parse_datetime_local(expires_raw) if lifetime_type == 'date' else None
+        if lifetime_type == 'date' and not expires_at:
+            return jsonify({'error': 'Invalid expiresAt format', 'message': 'Неверный формат даты'}), 400
+
+        notification = Notification(
+            title=title,
+            message=message,
+            category=data.get('category') or '',
+            type=data.get('type') or 'announcement',
+            lifetime_type=lifetime_type,
+            expires_at=expires_at,
+            author=data.get('author') or '',
+            status=status
+        )
+        db.session.add(notification)
+        db.session.commit()
+        return jsonify({'status': 'ok', 'notification': notification.to_dict()})
+    except Exception as e:
+        db.session.rollback()
+        if _is_readonly_db_error(e):
+            return _readonly_db_response()
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/admin/notifications/<int:notification_id>', methods=['PUT'])
+@login_required
+def update_admin_notification(notification_id):
+    """
+    Обновление уведомления (только для админа).
+    """
+    guest_check = check_not_guest()
+    if guest_check:
+        return guest_check
+    admin_check = check_admin_role()
+    if admin_check:
+        return admin_check
+    try:
+        data = request.json or {}
+        notification = Notification.query.get(notification_id)
+        if not notification:
+            return jsonify({'error': 'Notification not found', 'message': 'Уведомление не найдено'}), 404
+
+        if 'title' in data:
+            notification.title = data.get('title') or ''
+        if 'message' in data:
+            notification.message = data.get('message') or ''
+        if 'category' in data:
+            notification.category = data.get('category') or ''
+        if 'type' in data:
+            notification.type = data.get('type') or 'announcement'
+        if 'author' in data:
+            notification.author = data.get('author') or ''
+        if 'status' in data:
+            notification.status = data.get('status') or 'draft'
+
+        if 'lifetimeType' in data or 'lifetime_type' in data:
+            notification.lifetime_type = data.get('lifetimeType') or data.get('lifetime_type')
+
+        if 'expiresAt' in data or 'expires_at' in data:
+            expires_raw = data.get('expiresAt') or data.get('expires_at')
+            notification.expires_at = _parse_datetime_local(expires_raw)
+
+        if notification.lifetime_type == 'date' and not notification.expires_at:
+            return jsonify({'error': 'Expires date is required for date lifetime', 'message': 'Нужна дата окончания'}), 400
+        if notification.lifetime_type != 'date':
+            notification.expires_at = None
+
+        db.session.commit()
+        return jsonify({'status': 'ok', 'notification': notification.to_dict()})
+    except Exception as e:
+        db.session.rollback()
+        if _is_readonly_db_error(e):
+            return _readonly_db_response()
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/admin/notifications/<int:notification_id>', methods=['DELETE'])
+@login_required
+def delete_admin_notification(notification_id):
+    """
+    Удаление уведомления (только для админа).
+    """
+    guest_check = check_not_guest()
+    if guest_check:
+        return guest_check
+    admin_check = check_admin_role()
+    if admin_check:
+        return admin_check
+    try:
+        notification = Notification.query.get(notification_id)
+        if not notification:
+            return jsonify({'error': 'Notification not found', 'message': 'Уведомление не найдено'}), 404
+        db.session.delete(notification)
+        db.session.commit()
         return jsonify({'status': 'ok'})
     except Exception as e:
         db.session.rollback()

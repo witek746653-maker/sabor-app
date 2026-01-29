@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useToast } from '../../contexts/ToastContext';
+import {
+  getAdminNotifications,
+  createAdminNotification,
+  updateAdminNotification,
+  deleteAdminNotification
+} from '../../services/api';
 
 /**
  * NotificationsPage - Страница управления уведомлениями
@@ -41,27 +47,34 @@ function NotificationsPage() {
     loadNotifications();
   }, []);
 
-  const loadNotifications = () => {
-    const saved = localStorage.getItem('adminNotifications');
-    const savedDrafts = localStorage.getItem('notificationDrafts');
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      setNotifications(parsed);
-    }
-    if (savedDrafts) {
-      const parsed = JSON.parse(savedDrafts);
-      setDrafts(parsed);
+  const loadNotifications = async () => {
+    try {
+      const data = await getAdminNotifications();
+      const draftsList = data.filter((item) => item.status === 'draft');
+      const activeList = data.filter((item) => item.status !== 'draft');
+      setDrafts(draftsList);
+      setNotifications(activeList);
+    } catch (error) {
+      toast.error('Не удалось загрузить уведомления');
     }
   };
 
-  const saveNotifications = (notifs) => {
-    localStorage.setItem('adminNotifications', JSON.stringify(notifs));
-    setNotifications(notifs);
-  };
-
-  const saveDrafts = (draftsList) => {
-    localStorage.setItem('notificationDrafts', JSON.stringify(draftsList));
-    setDrafts(draftsList);
+  const buildNotificationPayload = (data, overrides = {}) => {
+    const payload = {
+      title: data.title || '',
+      message: data.message || '',
+      category: data.category || '',
+      type: data.type || 'announcement',
+      lifetimeType: data.lifetimeType || '',
+      expiresAt: data.lifetimeType === 'date' ? data.expiresAt : null,
+      author: data.author || '',
+      status: data.status || 'draft',
+      ...overrides
+    };
+    if (payload.lifetimeType !== 'date') {
+      payload.expiresAt = null;
+    }
+    return payload;
   };
 
   // Получаем активные уведомления (не архив)
@@ -104,7 +117,7 @@ function NotificationsPage() {
     setShowCreateModal(true);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     // Критический фильтр: если срок жизни не задан - сообщение не отправляется
     if (!formData.lifetimeType) {
       toast.warning('Необходимо задать срок жизни уведомления!');
@@ -121,82 +134,22 @@ function NotificationsPage() {
       return;
     }
 
-    const notification = {
-      ...formData,
-      id: editingNotification?.id || `notif-${Date.now()}`,
-      createdAt: editingNotification?.createdAt || new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
+    const payload = buildNotificationPayload(formData);
 
-    if (editingNotification) {
-      // Обновляем существующее
-      if (notification.status === 'draft') {
-        const updatedDrafts = drafts.map(d => 
-          d.id === notification.id ? notification : d
-        );
-        saveDrafts(updatedDrafts);
-      } else {
-        const updated = notifications.map(n => 
-          n.id === notification.id ? notification : n
-        );
-        saveNotifications(updated);
-      }
-    } else {
-      // Создаем новое
-      if (notification.status === 'draft') {
-        saveDrafts([...drafts, notification]);
-      } else {
-        // Отправляем активное уведомление
-        notification.status = 'active';
-        saveNotifications([...notifications, notification]);
-        // Отправляем в систему уведомлений для пользователей
-        sendToUsers(notification);
-      }
-    }
-
-    setShowCreateModal(false);
-    loadNotifications();
-  };
-
-  const sendToUsers = (notification) => {
     try {
-      // Получаем все уведомления пользователей
-      const userNotifications = JSON.parse(localStorage.getItem('notifications') || '[]');
-      
-      // Создаем уведомление для пользователей (упрощенная версия без технических полей)
-      const userNotification = {
-        id: notification.id || `notif-${Date.now()}`,
-        title: notification.title,
-        message: notification.message,
-        type: notification.type || 'announcement',
-        category: notification.category || '',
-        read: false,
-        date: new Date().toISOString(),
-        author: notification.author || '',
-        expiresAt: notification.expiresAt || null
-      };
-      
-      // Добавляем в начало списка
-      userNotifications.unshift(userNotification);
-      
-      // Сохраняем в localStorage
-      localStorage.setItem('notifications', JSON.stringify(userNotifications));
-      
-      // Обновляем счетчик непрочитанных
-      const unread = userNotifications.filter(n => !n.read).length;
-      localStorage.setItem('unreadNotifications', unread.toString());
-      
-      // Триггерим событие для обновления в других компонентах
-      window.dispatchEvent(new Event('storage'));
-      
-      console.log('Уведомление отправлено пользователям:', userNotification);
+      if (editingNotification) {
+        await updateAdminNotification(editingNotification.id, payload);
+      } else {
+        await createAdminNotification(payload);
+      }
+      setShowCreateModal(false);
+      loadNotifications();
     } catch (error) {
-      console.error('Ошибка отправки уведомления пользователям:', error);
-      toast.error('Ошибка отправки уведомления: ' + error.message);
+      toast.error('Не удалось сохранить уведомление');
     }
   };
 
-  const handleSendDraft = (draft) => {
+  const handleSendDraft = async (draft) => {
     if (!draft.lifetimeType) {
       toast.warning('Необходимо задать срок жизни уведомления!');
       return;
@@ -208,38 +161,33 @@ function NotificationsPage() {
     }
 
     // Переводим черновик в активные
-    const activeNotification = {
-      ...draft,
-      status: 'active',
-      updatedAt: new Date().toISOString()
-    };
-
-    const updatedDrafts = drafts.filter(d => d.id !== draft.id);
-    saveDrafts(updatedDrafts);
-    saveNotifications([...notifications, activeNotification]);
-    sendToUsers(activeNotification);
-    loadNotifications();
-  };
-
-  const handleArchive = (notification) => {
-    const updated = notifications.map(n => 
-      n.id === notification.id ? { ...n, status: 'archived' } : n
-    );
-    saveNotifications(updated);
-    loadNotifications();
-  };
-
-  const handleDelete = (notification, isDraft = false) => {
-    if (!window.confirm('Удалить это уведомление?')) return;
-    
-    if (isDraft) {
-      const updated = drafts.filter(d => d.id !== notification.id);
-      saveDrafts(updated);
-    } else {
-      const updated = notifications.filter(n => n.id !== notification.id);
-      saveNotifications(updated);
+    const payload = buildNotificationPayload(draft, { status: 'active' });
+    try {
+      await updateAdminNotification(draft.id, payload);
+      loadNotifications();
+    } catch (error) {
+      toast.error('Не удалось отправить черновик');
     }
-    loadNotifications();
+  };
+
+  const handleArchive = async (notification) => {
+    const payload = buildNotificationPayload(notification, { status: 'archived' });
+    try {
+      await updateAdminNotification(notification.id, payload);
+      loadNotifications();
+    } catch (error) {
+      toast.error('Не удалось отправить в архив');
+    }
+  };
+
+  const handleDelete = async (notification) => {
+    if (!window.confirm('Удалить это уведомление?')) return;
+    try {
+      await deleteAdminNotification(notification.id);
+      loadNotifications();
+    } catch (error) {
+      toast.error('Не удалось удалить уведомление');
+    }
   };
 
   const getCategoryIcon = (category) => {
@@ -454,7 +402,7 @@ function NotificationsPage() {
                           Отправить
                         </button>
                         <button
-                          onClick={() => handleDelete(draft, true)}
+                          onClick={() => handleDelete(draft)}
                           className="text-gray-500 hover:text-red-600"
                         >
                           <span className="material-symbols-outlined">delete</span>

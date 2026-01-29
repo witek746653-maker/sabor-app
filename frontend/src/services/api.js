@@ -558,6 +558,33 @@ export const deleteFeedbackMessage = async (messageId) => {
   return response.data;
 };
 
+// ========== API ДЛЯ УВЕДОМЛЕНИЙ ==========
+
+export const getPublicNotifications = async () => {
+  const response = await api.get('/api/notifications');
+  return response.data;
+};
+
+export const getAdminNotifications = async () => {
+  const response = await api.get('/api/admin/notifications');
+  return response.data;
+};
+
+export const createAdminNotification = async (notificationData) => {
+  const response = await api.post('/api/admin/notifications', notificationData);
+  return response.data;
+};
+
+export const updateAdminNotification = async (notificationId, notificationData) => {
+  const response = await api.put(`/api/admin/notifications/${notificationId}`, notificationData);
+  return response.data;
+};
+
+export const deleteAdminNotification = async (notificationId) => {
+  const response = await api.delete(`/api/admin/notifications/${notificationId}`);
+  return response.data;
+};
+
 // ========== API ДЛЯ УПРАВЛЕНИЯ ПОЛЬЗОВАТЕЛЯМИ ==========
 
 export const getUsers = async () => {
