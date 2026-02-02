@@ -25,6 +25,7 @@ export default function ArticleReaderPage() {
     const [htmlContent, setHtmlContent] = useState('');
     const [loadingState, setLoadingState] = useState('loading'); // loading, success, error
     const [errorHeader, setErrorHeader] = useState('');
+    const [manifestUpdate, setManifestUpdate] = useState(null);
 
     // Settings
     const [fontSize, setFontSize] = useState(() => localStorage.getItem('reader-font-size') || 'base');
@@ -77,6 +78,7 @@ export default function ArticleReaderPage() {
                 const manifestResponse = await fetch('/content/manifest.json');
                 if (!manifestResponse.ok) throw new Error('Не удалось загрузить манифест статей');
                 const manifest = await manifestResponse.json();
+                setManifestUpdate(manifest.updated_at);
 
                 const article = manifest.articles.find(a => a.key === articleKey);
                 if (!article) throw new Error('Статья не найдена');
@@ -237,7 +239,12 @@ export default function ArticleReaderPage() {
                                 <span className="px-2 py-0.5 bg-primary/10 text-primary rounded-md">
                                     {articleData?.category || 'Статья'}
                                 </span>
-                                <span className="flex items-center gap-1">
+                                {manifestUpdate && (
+                                    <span className="px-2 py-0.5 border border-gray-100 dark:border-gray-800 text-gray-400 dark:text-gray-500 rounded-md bg-white/50 dark:bg-black/50">
+                                        Обновлено: {new Date(manifestUpdate).toLocaleDateString('ru-RU')}
+                                    </span>
+                                )}
+                                <span className="flex items-center gap-1 opacity-50">
                                     <Clock className="h-3 w-3" />
                                     {articleData?.readingTime || '5 мин'}
                                 </span>
@@ -258,8 +265,20 @@ export default function ArticleReaderPage() {
                             searchIndex={currentIndex}
                         />
 
+                        {/* Технический 'принт' (метаданные) */}
+                        <div className="max-w-reader mx-auto w-full px-6 mt-16 pb-12">
+                            <div className="pt-8 border-t border-dashed border-gray-200 dark:border-gray-800 flex flex-col items-end gap-2 text-[10px] font-mono uppercase tracking-widest">
+                                <div className="opacity-50 text-right">
+                                    <span className="text-primary font-bold">Синхронизировано:</span> {new Date().toLocaleDateString('ru-RU')} {new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}
+                                </div>
+                                <div className="opacity-50 text-right">
+                                    <span className="text-primary font-bold">Обновлено:</span> {new Date('2026-02-02T22:15:00Z').toLocaleDateString('ru-RU')}
+                                </div>
+                            </div>
+                        </div>
+
                         {/* Кнопка "В начало" */}
-                        <div className="max-w-reader mx-auto w-full px-6 mt-12 mb-8 flex justify-center">
+                        <div className="max-w-reader mx-auto w-full px-6 mt-8 mb-8 flex justify-center">
                             <button
                                 onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                                 className="flex items-center gap-2 px-6 py-3 rounded-full bg-primary/10 text-primary font-medium hover:bg-primary/20 transition-all active:scale-[0.98]"

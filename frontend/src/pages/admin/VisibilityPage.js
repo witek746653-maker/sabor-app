@@ -22,15 +22,16 @@ const selectStyles = `
     background-position: right 0.7rem center;
     background-size: 1em;
     padding-right: 2.5rem !important;
+    background-color: rgba(255, 255, 255, 0.05);
+    color: inherit;
   }
   select option {
-    background-color: #1a1a1a;
-    color: white;
-    padding: 10px;
+    background-color: #1a1a1a !important;
+    color: #ffffff !important;
   }
   .dark select option {
-    background-color: #111111;
-    color: white;
+    background-color: #0f0f0f !important;
+    color: #e5e7eb !important;
   }
 `;
 
