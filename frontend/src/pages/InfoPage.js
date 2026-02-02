@@ -83,6 +83,9 @@ function InfoPage() {
     if (toolLower.includes('база')) {
       return '/images/data-base-head.webp';
     }
+    if (toolLower.includes('гайды') || toolLower.includes('памятки')) {
+      return '/images/cheat-sheet.webp';
+    }
     return null;
   };
 
@@ -232,7 +235,7 @@ function InfoPage() {
     },
     {
       name: 'Гайды/Инструкции/Памятки',
-      path: '/cheat-sheet.webp',
+      path: '/useful',
       type: 'react',
       description: 'Самое важное, что нужно помнить',
       comingSoon: false
