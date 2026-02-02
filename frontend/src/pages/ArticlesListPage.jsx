@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, BookOpen, Clock, ArrowRight } from 'lucide-react';
+import { ChevronLeft, BookOpen, Clock, ArrowRight, Search, X } from 'lucide-react';
 import { cn } from '../utils/readerUtils';
 
 // Вспомогательный компонент карточки статьи
@@ -68,8 +68,11 @@ export default function ArticlesListPage() {
     const [articles, setArticles] = useState([]);
     const [loading, setLoading] = useState(true);
 
+    // Состояния для поиска и фильтров
+    const [searchQuery, setSearchQuery] = useState('');
+    const [selectedCategory, setSelectedCategory] = useState('Все');
+
     useEffect(() => {
-        // Загружаем манифест
         const fetchManifest = async () => {
             try {
                 const response = await fetch('/content/manifest.json');
@@ -85,11 +88,26 @@ export default function ArticlesListPage() {
         fetchManifest();
     }, []);
 
+    // Получаем уникальные категории для фильтров
+    const categories = useMemo(() => {
+        const cats = articles.map(a => a.category || 'Статья');
+        return ['Все', ...new Set(cats)];
+    }, [articles]);
+
+    // Логика фильтрации
+    const filteredArticles = useMemo(() => {
+        return articles.filter(article => {
+            const matchesSearch = article.title.toLowerCase().includes(searchQuery.toLowerCase());
+            const matchesCategory = selectedCategory === 'Все' || article.category === selectedCategory;
+            return matchesSearch && matchesCategory;
+        });
+    }, [articles, searchQuery, selectedCategory]);
+
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-[#0a0a0a] pb-20">
             {/* Header */}
             <header className="sticky top-0 z-40 bg-white/80 dark:bg-black/80 backdrop-blur-lg border-b border-gray-100 dark:border-gray-900 px-4 py-4">
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 mb-4">
                     <button
                         onClick={() => navigate(-1)}
                         className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
@@ -98,11 +116,49 @@ export default function ArticlesListPage() {
                     </button>
                     <h1 className="text-xl font-bold tracking-tight">Статьи и гайды</h1>
                 </div>
+
+                {/* Поисковая строка */}
+                <div className="relative group">
+                    <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-gray-400 group-focus-within:text-primary transition-colors">
+                        <Search size={18} />
+                    </div>
+                    <input
+                        type="text"
+                        placeholder="Поиск по названию..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="w-full bg-gray-100 dark:bg-white/5 border-none rounded-xl py-3 pl-10 pr-10 text-sm focus:ring-2 focus:ring-primary/50 transition-all outline-none"
+                    />
+                    {searchQuery && (
+                        <button
+                            onClick={() => setSearchQuery('')}
+                            className="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+                        >
+                            <X size={18} />
+                        </button>
+                    )}
+                </div>
+
+                {/* Фильтры по категориям */}
+                <div className="flex items-center gap-2 mt-4 overflow-x-auto pb-2 no-scrollbar">
+                    {categories.map((cat) => (
+                        <button
+                            key={cat}
+                            onClick={() => setSelectedCategory(cat)}
+                            className={cn(
+                                "px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all border",
+                                selectedCategory === cat
+                                    ? "bg-primary border-primary text-white shadow-sm shadow-primary/20"
+                                    : "bg-white dark:bg-black/20 border-gray-100 dark:border-gray-800 text-gray-500 dark:text-gray-400 hover:border-gray-300"
+                            )}
+                        >
+                            {cat}
+                        </button>
+                    ))}
+                </div>
             </header>
 
             <main className="px-4 pt-6">
-
-
                 {loading ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {[...Array(4)].map((_, i) => (
@@ -110,22 +166,35 @@ export default function ArticlesListPage() {
                         ))}
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {articles.map((article) => (
-                            <ArticleCard
-                                key={article.key}
-                                article={article}
-                                onClick={(key) => navigate(`/article/${key}`)}
-                            />
-                        ))}
-
-                        {articles.length === 0 && (
-                            <div className="col-span-full py-20 text-center">
-                                <BookOpen className="mx-auto h-12 w-12 text-gray-300 mb-4" />
-                                <p className="text-gray-500">Статей пока нет, но они скоро появятся!</p>
+                    <>
+                        {filteredArticles.length > 0 ? (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {filteredArticles.map((article) => (
+                                    <ArticleCard
+                                        key={article.key}
+                                        article={article}
+                                        onClick={(key) => navigate(`/article/${key}`)}
+                                    />
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="py-20 text-center animate-fade-in">
+                                <div className="bg-gray-100 dark:bg-gray-900 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <Search className="h-8 w-8 text-gray-400" />
+                                </div>
+                                <h3 className="text-lg font-bold text-gray-900 dark:text-white">Ничего не нашли</h3>
+                                <p className="text-gray-500 text-sm max-w-[240px] mx-auto mt-2">
+                                    Попробуйте изменить запрос или выбрать другую категорию
+                                </p>
+                                <button
+                                    onClick={() => { setSearchQuery(''); setSelectedCategory('Все'); }}
+                                    className="mt-6 text-primary font-bold text-sm underline"
+                                >
+                                    Сбросить фильтры
+                                </button>
                             </div>
                         )}
-                    </div>
+                    </>
                 )}
             </main>
         </div>

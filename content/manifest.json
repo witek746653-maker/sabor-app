@@ -6,7 +6,7 @@
             "title": "Москва со вкусом",
             "url": "https://cdn.sabor-dlv.ru/resources/taste-of-moscow.md",
             "image": "/images/taste-of-moscow.webp",
-            "category": "Инструкция",
+            "category": "Памятка",
             "readingTime": "4 мин",
             "version": 1
         },
@@ -24,7 +24,7 @@
             "title": "Сет-завтраки для отеля",
             "url": "https://cdn.sabor-dlv.ru/resources/hotel-breakfast-set.md",
             "image": "/images/hotel-breakfast-set.webp",
-            "category": "Инструкция",
+            "category": "График",
             "readingTime": "1 мин",
             "version": 1
         },
@@ -33,8 +33,8 @@
             "title": "Сеты для сигарной дегустации",
             "url": "https://cdn.sabor-dlv.ru/resources/cigar-tasting-set.md",
             "image": "/images/cigar-tasting-set.webp",
-            "category": "Инструкция",
-            "readingTime": "1 мин",
+            "category": "Сет-меню",
+            "readingTime": "2 мин",
             "version": 1
         }
     ]
