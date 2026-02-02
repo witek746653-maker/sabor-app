@@ -1,11 +1,20 @@
 {
-    "updated_at": "2026-02-03T01:10:00Z",
+    "updated_at": "2026-02-03T01:15:00Z",
     "articles": [
+        {
+            "key": "vip-deposits",
+            "title": "Депозиты VIP-комнат",
+            "url": "/content/resources/vip-deposits.md",
+            "image": "/images/vip-deposits.webp",
+            "category": "Памятка",
+            "readingTime": "1 мин",
+            "version": 1
+        },
         {
             "key": "cork-fee",
             "title": "Пробковый сбор",
             "url": "/content/resources/cork-fee.md",
-            "image": "/images/corkage fee.webp",
+            "image": "/images/corkage-fee.webp",
             "category": "Памятка",
             "readingTime": "1 мин",
             "version": 1
