@@ -2,10 +2,12 @@
   "updated_at": "2026-02-02T00:00:00Z",
   "items": [
     {
-      "key": "legal/privacy",
-      "title": "Политика конфиденциальности",
-      "url": "https://cdn.sabo.app/content/legal/privacy.md",
+      "key": "guide/taste-of-moscow",
+      "title": "Москва со вкусом",
+      "url": "https://cdn.sabo.app/guide/taste-of-moscow.md",
+
       "version": 1
     }
   ]
 }
+ 
