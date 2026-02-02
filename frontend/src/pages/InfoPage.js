@@ -224,14 +224,6 @@ function InfoPage() {
       allowAccess: isFeatureAccessAllowed('waiterTrainer'),
     },
     {
-      name: 'Сигарная энциклопедия',
-      path: '/cigar-encyclopedia',
-      type: 'html',
-      description: 'Энциклопедия сигар',
-      comingSoon: isFeatureComingSoon('cigarEncyclopedia') || isComingSoon('cigarEncyclopedia'),
-      allowAccess: isFeatureAccessAllowed('cigarEncyclopedia'),
-    },
-    {
       name: 'Комплекс для сотрудников',
       path: pdfPath,
       type: 'pdf',
@@ -239,10 +231,10 @@ function InfoPage() {
       comingSoon: false
     },
     {
-      name: 'Статьи и гайды',
-      path: '/useful',
+      name: 'Гайды/Инструкции/Памятки',
+      path: '/cheat-sheet.webp',
       type: 'react',
-      description: 'Полезные материалы',
+      description: 'Самое важное, что нужно помнить',
       comingSoon: false
     }
   ];
@@ -397,24 +389,24 @@ function InfoPage() {
       <footer className="fixed bottom-0 bg-white dark:bg-[#181311] border-t border-orange-100 dark:border-gray-800 pb-safe z-40 w-full sabor-fixed">
         <div
           className={`grid ${(() => {
-              const showFooterMenu = isVisible({ scope: 'menuItem', target: 'footer.menu' });
-              const showFooterFavorites = isVisible({ scope: 'menuItem', target: 'footer.favorites' });
-              const showFooterSearch = isVisible({ scope: 'menuItem', target: 'footer.search' });
-              const showFooterTools = isVisible({ scope: 'menuItem', target: 'footer.tools' });
-              const showFooterAdmin =
-                isAuthenticated &&
-                currentUser?.role === 'администратор' &&
-                isVisible({ scope: 'menuItem', target: 'footer.admin' });
-              const itemCount =
-                (showFooterMenu ? 1 : 0) +
-                (showFooterFavorites ? 1 : 0) +
-                (showFooterSearch ? 1 : 0) +
-                (showFooterTools ? 1 : 0) +
-                (showFooterAdmin ? 1 : 0);
-              if (itemCount >= 5) return 'grid-cols-5';
-              if (itemCount === 4) return 'grid-cols-4';
-              return 'grid-cols-3';
-            })()
+            const showFooterMenu = isVisible({ scope: 'menuItem', target: 'footer.menu' });
+            const showFooterFavorites = isVisible({ scope: 'menuItem', target: 'footer.favorites' });
+            const showFooterSearch = isVisible({ scope: 'menuItem', target: 'footer.search' });
+            const showFooterTools = isVisible({ scope: 'menuItem', target: 'footer.tools' });
+            const showFooterAdmin =
+              isAuthenticated &&
+              currentUser?.role === 'администратор' &&
+              isVisible({ scope: 'menuItem', target: 'footer.admin' });
+            const itemCount =
+              (showFooterMenu ? 1 : 0) +
+              (showFooterFavorites ? 1 : 0) +
+              (showFooterSearch ? 1 : 0) +
+              (showFooterTools ? 1 : 0) +
+              (showFooterAdmin ? 1 : 0);
+            if (itemCount >= 5) return 'grid-cols-5';
+            if (itemCount === 4) return 'grid-cols-4';
+            return 'grid-cols-3';
+          })()
             } h-16`}
         >
           {isVisible({ scope: 'menuItem', target: 'footer.menu' }) && (
@@ -437,8 +429,8 @@ function InfoPage() {
                 toast.info('Доступно после входа. Гостевой режим поддерживает только просмотр данных.');
               }}
               className={`flex flex-col items-center justify-center gap-1 transition-colors ${isGuest
-                  ? 'opacity-50 cursor-not-allowed text-gray-400 dark:text-gray-600'
-                  : 'text-gray-400 dark:text-gray-500 hover:text-primary dark:hover:text-primary'
+                ? 'opacity-50 cursor-not-allowed text-gray-400 dark:text-gray-600'
+                : 'text-gray-400 dark:text-gray-500 hover:text-primary dark:hover:text-primary'
                 }`}
             >
               <span className="material-symbols-outlined text-2xl">favorite</span>

@@ -114,7 +114,7 @@ export default function ArticlesListPage() {
                     >
                         <ChevronLeft size={24} />
                     </button>
-                    <h1 className="text-xl font-bold tracking-tight">Статьи и гайды</h1>
+                    <h1 className="text-xl font-bold tracking-tight">Гайды/Инструкции/Памятки</h1>
                 </div>
 
                 {/* Поисковая строка */}
