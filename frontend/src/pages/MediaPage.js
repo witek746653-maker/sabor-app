@@ -144,13 +144,23 @@ const MediaPage = () => {
       return;
     }
     const savedProgress = progressById[currentId];
-    const safeProgress = clampProgress(savedProgress, player.duration);
+    // Функция clampProgress должна быть определена или мы используем Math.min/max
+    const safeProgress = Math.min(Math.max(savedProgress || 0, 0), player.duration || 0);
     // Восстанавливаем позицию воспроизведения из localStorage.
     if (Number.isFinite(player.duration) && player.duration > 0) {
       player.currentTime = safeProgress;
     }
     setCurrentTime(safeProgress);
-  }, [currentId, playbackRate]);
+  }, [currentId, playbackRate, progressById]);
+
+  const handleBack = () => {
+    if (sessionStorage.getItem('fromSearch') === 'true') {
+      sessionStorage.removeItem('fromSearch');
+      navigate('/search');
+    } else {
+      navigate('/info', { replace: true });
+    }
+  };
 
   useEffect(() => {
     const player = audioRef.current;
@@ -373,11 +383,11 @@ const MediaPage = () => {
   const handleSeek = (event, targetElement) => {
     const player = audioRef.current;
     if (!player) return;
-    
+
     // Используем переданный элемент или ищем через ref
     const element = targetElement || event.currentTarget || progressRef.current;
     if (!element) return;
-    
+
     const rect = element.getBoundingClientRect();
     const clientX = event.clientX || (event.touches && event.touches[0]?.clientX);
     if (!clientX) return;
@@ -439,13 +449,13 @@ const MediaPage = () => {
       setSwipeCurrentY(null);
       return;
     }
-    
+
     const deltaY = swipeCurrentY - swipeStartY;
     // Если свайп вниз больше 100px, сворачиваем плеер
     if (deltaY > 100) {
       setIsPlayerOpen(false);
     }
-    
+
     setSwipeStartY(null);
     setSwipeCurrentY(null);
   };
@@ -477,10 +487,8 @@ const MediaPage = () => {
         <div className="flex items-center gap-3 px-4 py-3">
           <button
             type="button"
-            onClick={() => {
-              // replace = не добавляем новую запись в историю, чтобы не было цикла
-              navigate('/info', { replace: true });
-            }}
+            onClick={handleBack}
+
             className="flex items-center justify-center size-10 rounded-full hover:bg-orange-50 dark:hover:bg-white/10 transition-colors"
           >
             <ArrowLeft className="h-5 w-5" />
@@ -508,10 +516,10 @@ const MediaPage = () => {
               Учимся быстро и просто
             </div>
             <h2 className="text-2xl font-bold leading-tight">
-            Медиабиблиотека для обучения
+              Медиабиблиотека для обучения
             </h2>
             <p className="text-sm text-gray-600 dark:text-gray-400">
-              Здесь собраны видео и аудио‑заметки. 
+              Здесь собраны видео и аудио‑заметки.
             </p>
           </div>
         </section>
@@ -598,11 +606,10 @@ const MediaPage = () => {
                       type="button"
                       onClick={() => handleToggleLike(item.id)}
                       disabled={!canWrite}
-                      className={`inline-flex items-center gap-2 rounded-full border px-3 py-2 text-xs font-semibold transition-colors disabled:opacity-60 disabled:cursor-not-allowed ${
-                        isLiked
-                          ? 'border-rose-200 bg-rose-50 text-rose-600'
-                          : 'border-gray-200 text-gray-600 hover:bg-gray-100'
-                      }`}
+                      className={`inline-flex items-center gap-2 rounded-full border px-3 py-2 text-xs font-semibold transition-colors disabled:opacity-60 disabled:cursor-not-allowed ${isLiked
+                        ? 'border-rose-200 bg-rose-50 text-rose-600'
+                        : 'border-gray-200 text-gray-600 hover:bg-gray-100'
+                        }`}
                     >
                       <Heart className="h-4 w-4" />
                       {isLiked ? 'Лайк' : 'Лайкнуть'}
@@ -615,11 +622,10 @@ const MediaPage = () => {
                       onClick={() => handleToggleFavorite(item.id)}
                       disabled={isGuest}
                       title={isGuest ? 'Доступно после входа' : undefined}
-                      className={`inline-flex items-center gap-2 rounded-full border px-3 py-2 text-xs font-semibold transition-colors disabled:opacity-60 disabled:cursor-not-allowed ${
-                        isFavorite
-                          ? 'border-yellow-200 bg-yellow-50 text-yellow-600'
-                          : 'border-gray-200 text-gray-600 hover:bg-gray-100'
-                      }`}
+                      className={`inline-flex items-center gap-2 rounded-full border px-3 py-2 text-xs font-semibold transition-colors disabled:opacity-60 disabled:cursor-not-allowed ${isFavorite
+                        ? 'border-yellow-200 bg-yellow-50 text-yellow-600'
+                        : 'border-gray-200 text-gray-600 hover:bg-gray-100'
+                        }`}
                     >
                       <Star className="h-4 w-4" />
                       {isFavorite ? 'В избранном' : 'В избранное'}
@@ -748,7 +754,7 @@ const MediaPage = () => {
       />
 
       {isPlayerOpen && currentItem && (
-        <div 
+        <div
           className="fixed inset-0 z-50 bg-[#0b0b0b] text-white animate-slideUp"
           ref={fullPlayerRef}
           onMouseDown={handleSwipeStart}
@@ -758,8 +764,8 @@ const MediaPage = () => {
           onTouchMove={handleSwipeMove}
           onTouchEnd={handleSwipeEnd}
           style={{
-            transform: swipeStartY !== null && swipeCurrentY !== null && swipeCurrentY > swipeStartY 
-              ? `translateY(${Math.min(swipeCurrentY - swipeStartY, 300)}px)` 
+            transform: swipeStartY !== null && swipeCurrentY !== null && swipeCurrentY > swipeStartY
+              ? `translateY(${Math.min(swipeCurrentY - swipeStartY, 300)}px)`
               : 'translateY(0)',
             transition: swipeStartY === null ? 'transform 0.3s ease-out' : 'none'
           }}
@@ -846,11 +852,10 @@ const MediaPage = () => {
                         onClick={() => handleToggleFavorite(currentItem.id)}
                         disabled={isGuest}
                         title={isGuest ? 'Доступно после входа' : undefined}
-                        className={`inline-flex items-center justify-center h-14 w-14 rounded-full border transition-all active:scale-95 touch-manipulation disabled:opacity-60 disabled:cursor-not-allowed ${
-                          effectiveFavorites.includes(currentItem.id)
-                            ? 'border-yellow-400 bg-yellow-500/20 text-yellow-400'
-                            : 'border-white/20 text-white/70 hover:text-white hover:bg-white/10'
-                        }`}
+                        className={`inline-flex items-center justify-center h-14 w-14 rounded-full border transition-all active:scale-95 touch-manipulation disabled:opacity-60 disabled:cursor-not-allowed ${effectiveFavorites.includes(currentItem.id)
+                          ? 'border-yellow-400 bg-yellow-500/20 text-yellow-400'
+                          : 'border-white/20 text-white/70 hover:text-white hover:bg-white/10'
+                          }`}
                         aria-label="Добавить в избранное"
                       >
                         <Heart className={`h-5 w-5 ${effectiveFavorites.includes(currentItem.id) ? 'fill-current' : ''}`} />
@@ -909,11 +914,10 @@ const MediaPage = () => {
                                   key={rate}
                                   type="button"
                                   onClick={() => handleSetPlaybackRate(rate)}
-                                  className={`w-full rounded-lg px-3 py-2.5 text-left transition-all active:scale-95 ${
-                                    isActive
-                                      ? 'bg-orange-500/20 text-orange-400 font-semibold'
-                                      : 'hover:bg-white/10 text-white/80'
-                                  }`}
+                                  className={`w-full rounded-lg px-3 py-2.5 text-left transition-all active:scale-95 ${isActive
+                                    ? 'bg-orange-500/20 text-orange-400 font-semibold'
+                                    : 'hover:bg-white/10 text-white/80'
+                                    }`}
                                 >
                                   {label}
                                 </button>
@@ -932,11 +936,10 @@ const MediaPage = () => {
                     type="button"
                     onClick={() => handleToggleLike(currentItem.id)}
                     disabled={!canWrite}
-                    className={`inline-flex items-center gap-2 rounded-full border px-4 py-2.5 text-xs font-semibold transition-all active:scale-95 touch-manipulation disabled:opacity-60 disabled:cursor-not-allowed ${
-                      likedByMe[currentItem.id]
-                        ? 'border-rose-400 bg-rose-500/20 text-rose-400'
-                        : 'border-white/20 text-white/80 hover:bg-white/10'
-                    }`}
+                    className={`inline-flex items-center gap-2 rounded-full border px-4 py-2.5 text-xs font-semibold transition-all active:scale-95 touch-manipulation disabled:opacity-60 disabled:cursor-not-allowed ${likedByMe[currentItem.id]
+                      ? 'border-rose-400 bg-rose-500/20 text-rose-400'
+                      : 'border-white/20 text-white/80 hover:bg-white/10'
+                      }`}
                   >
                     <Heart className={`h-4 w-4 ${likedByMe[currentItem.id] ? 'fill-current' : ''}`} />
                     Лайк

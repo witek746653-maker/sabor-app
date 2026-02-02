@@ -3,6 +3,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { getDishes, getMenus } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import { useVisibility } from '../contexts/VisibilityContext';
+import mediaItems from '../data/mediaItems';
+
 
 /**
  * Глобальный поиск по всему приложению
@@ -13,13 +15,22 @@ function GlobalSearch({ isOpen, onClose, searchQuery: externalQuery = null }) {
   const navigate = useNavigate();
   const { isAuthenticated, currentUser, isGuest } = useAuth();
   const { isVisible } = useVisibility();
-  const [searchQuery, setSearchQuery] = useState(externalQuery || '');
+  const [searchQuery, setSearchQuery] = useState(() => {
+    // KISS + Термин **sessionStorage**: "временная память" вкладки. 
+    // Если пользователь уже что-то искал, мы это вспомним.
+    return externalQuery || sessionStorage.getItem('globalSearchQuery') || '';
+  });
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [allDishes, setAllDishes] = useState([]);
   const [allMenus, setAllMenus] = useState([]);
   const [searchIndex, setSearchIndex] = useState([]);
+  const [activeFilter, setActiveFilter] = useState(() => {
+    return sessionStorage.getItem('globalSearchFilter') || 'all';
+  });
   const inputRef = useRef(null);
+
+
   const highlightTimeoutRef = useRef(null);
   const isSearchRoute = location.pathname === '/search';
 
@@ -27,9 +38,12 @@ function GlobalSearch({ isOpen, onClose, searchQuery: externalQuery = null }) {
   const handleClear = () => {
     setSearchQuery('');
     setResults([]);
+    // Удаляем из памяти при полной очистке
+    sessionStorage.removeItem('globalSearchQuery');
     // После очистки удобно сразу вернуть фокус на поле ввода.
     setTimeout(() => inputRef.current?.focus(), 0);
   };
+
 
   // Загружаем данные при открытии
   useEffect(() => {
@@ -44,45 +58,56 @@ function GlobalSearch({ isOpen, onClose, searchQuery: externalQuery = null }) {
     }
   }, [isOpen]);
 
-  // Обновляем поиск при изменении запроса
+  // Обновляем поиск при изменении запроса или фильтра
   useEffect(() => {
     if (isOpen && searchQuery.trim()) {
       performSearch(searchQuery.trim());
     } else {
       setResults([]);
     }
-  }, [searchQuery, isOpen, searchIndex]);
+
+    // Сохраняем значения в память при каждом изменении
+    if (isOpen) {
+      sessionStorage.setItem('globalSearchQuery', searchQuery);
+      sessionStorage.setItem('globalSearchFilter', activeFilter);
+    }
+  }, [searchQuery, isOpen, searchIndex, activeFilter]);
+
+
 
   // Загружаем все данные для индексации
   const loadData = async () => {
     setLoading(true);
     try {
-      const [dishes, menus] = await Promise.all([
+      const [dishes, menus, manifestResponse] = await Promise.all([
         getDishes(),
-        getMenus()
+        getMenus(),
+        fetch('/content/manifest.json').then(r => r.json()).catch(() => ({ articles: [] }))
       ]);
 
       setAllDishes(dishes);
       setAllMenus(menus);
 
       // Создаем поисковый индекс
-      const index = buildSearchIndex(dishes, menus);
+      const index = buildSearchIndex(dishes, menus, manifestResponse.articles || []);
       setSearchIndex(index);
     } catch (error) {
       console.error('Ошибка загрузки данных для поиска:', error);
     } finally {
       setLoading(false);
     }
+
   };
 
   // Строим поисковый индекс из всех данных
-  const buildSearchIndex = (dishes, menus) => {
+  const buildSearchIndex = (dishes, menus, articles) => {
     const index = [];
-    // Если архивные скрыты, не добавляем их в поиск.
     const allowArchived = isVisible({ scope: 'contentItem', target: 'status.archived' });
 
-    // Термин **эвристика**: простая “догадка по словам”, чтобы понять тип позиции.
     const getItemKind = (it) => {
+      // Проверка на картину (ID начинается с 09)
+      if (String(it?.id || '').startsWith('09')) return 'art';
+
       const menu = String(it?.menu || '').toLowerCase();
       const section = String(it?.section || '').toLowerCase();
 
@@ -115,6 +140,7 @@ function GlobalSearch({ isOpen, onClose, searchQuery: externalQuery = null }) {
 
     const getDetailPathForItem = (it) => {
       const kind = getItemKind(it);
+      if (kind === 'art') return `/art/${it.id}`;
       if (kind === 'wine') return `/wine/${it.id}`;
       if (kind === 'bar') return `/bar/${it.id}`;
       return `/dish/${it.id}`;
@@ -129,93 +155,112 @@ function GlobalSearch({ isOpen, onClose, searchQuery: externalQuery = null }) {
         text: menuName,
         location: 'Главная страница',
         path: `/menu/${encodeURIComponent(menuName)}`,
-        menu: menuName
+        menu: menuName,
+        category: 'dish'
       });
     });
 
-    // Индексируем блюда (исключаем технические поля)
+    // Индексируем блюда, напитки и картины
     dishes.forEach(dish => {
       const isArchived = dish.status === 'в архиве';
-      if (isArchived && !allowArchived) {
-        return;
-      }
+      if (isArchived && !allowArchived) return;
+
       const itemKind = getItemKind(dish);
       const detailPath = getDetailPathForItem(dish);
+
+      // Определяем категорию для фильтрации
+      let searchCategory = 'dish';
+      if (itemKind === 'wine' || itemKind === 'bar') searchCategory = 'drink';
+      if (itemKind === 'art') searchCategory = 'art';
 
       const searchableFields = {
         title: dish.title || '',
         description: dish.description || '',
+        author: dish.author || '', // Для картин
         section: dish.section || '',
         menu: dish.menu || '',
         contains: dish.contains ? stripHtml(dish.contains) : '',
         features: dish.features || '',
         reference_info: dish.reference_info ? stripHtml(dish.reference_info) : '',
         ingredients: Array.isArray(dish.ingredients) ? dish.ingredients.join(' ') : '',
-        comments: Array.isArray(dish.comments) ? dish.comments.join(' ') : '',
         tags: Array.isArray(dish.tags) ? dish.tags.join(' ') : '',
-        allergens: Array.isArray(dish.allergens) ? dish.allergens.join(' ') : ''
       };
 
-      // Создаем записи для каждого поля
       Object.entries(searchableFields).forEach(([field, value]) => {
         if (value && value.trim()) {
           index.push({
-            type: 'dish',
+            type: itemKind === 'art' ? 'art' : 'dish',
+            category: searchCategory,
             field: field,
             id: dish.id,
             dishId: dish.id,
             title: dish.title || 'Без названия',
             text: value,
-            location: `${dish.menu || 'Без меню'} / ${dish.section || 'Без раздела'}`,
+            location: itemKind === 'art'
+              ? `Галерея / ${dish.location || 'Зал'}`
+              : `${dish.menu || 'Без меню'} / ${dish.section || 'Без раздела'}`,
             path: detailPath,
-            menu: dish.menu,
-            section: dish.section,
             dish: dish,
             isArchived: isArchived,
             itemKind: itemKind,
           });
         }
       });
+    });
 
-      // Английские версии (если есть)
-      if (dish.i18n?.en) {
-        const enFields = {
-          'title-en': dish.i18n.en['title-en'] || '',
-          'description-en': dish.i18n.en['description-en'] || '',
-          'section-en': dish.i18n.en['section-en'] || '',
-          'contains-en': dish.i18n.en['contains-en'] ? stripHtml(dish.i18n.en['contains-en']) : '',
-          'comments-en': Array.isArray(dish.i18n.en['comments-en']) 
-            ? dish.i18n.en['comments-en'].join(' ') 
-            : (dish.i18n.en['comments-en'] || ''),
-          'tags-en': dish.i18n.en['tags-en'] || '',
-          'allergens-en': dish.i18n.en['allergens-en'] || ''
-        };
+    // Индексируем статьи
+    articles.forEach(article => {
+      const searchableFields = {
+        title: article.title || '',
+        description: article.description || '',
+        category: article.category || '',
+      };
 
-        Object.entries(enFields).forEach(([field, value]) => {
-          if (value && value.trim()) {
-            index.push({
-              type: 'dish',
-              field: field,
-              id: `${dish.id}-en`,
-              dishId: dish.id,
-              title: dish.i18n.en['title-en'] || dish.title || 'Без названия',
-              text: value,
-              location: `${dish.i18n.en['menu-en'] || dish.menu || 'Без меню'} / ${dish.i18n.en['section-en'] || dish.section || 'Без раздела'}`,
-              path: detailPath,
-              menu: dish.i18n.en['menu-en'] || dish.menu,
-              section: dish.i18n.en['section-en'] || dish.section,
-              dish: dish,
-              isEnglish: true,
-              isArchived: isArchived,
-              itemKind: itemKind,
-            });
-          }
-        });
-      }
+      Object.entries(searchableFields).forEach(([field, value]) => {
+        if (value && value.trim()) {
+          index.push({
+            type: 'article',
+            category: 'article',
+            field: field,
+            id: `article-${article.key}`,
+            title: article.title || 'Статья',
+            text: value,
+            location: `Статьи / ${article.category || 'Общее'}`,
+            path: `/article/${article.key}`,
+            image: article.image
+          });
+        }
+      });
+    });
+
+    // Индексируем медиа
+    mediaItems.forEach(media => {
+      const searchableFields = {
+        title: media.title || '',
+        description: media.description || '',
+        category: media.category || '',
+      };
+
+      Object.entries(searchableFields).forEach(([field, value]) => {
+        if (value && value.trim()) {
+          index.push({
+            type: 'media',
+            category: 'media',
+            field: field,
+            id: media.id,
+            title: media.title || 'Медиа',
+            text: value,
+            location: `Медиа / ${media.category || 'Обучение'}`,
+            path: '/media', // Переход в медиа-раздел (т.к. нет отдельной страницы)
+            image: media.coverUrl
+          });
+        }
+      });
     });
 
     return index;
   };
+
 
   // Удаляем HTML теги из текста
   const stripHtml = (html) => {
@@ -235,15 +280,21 @@ function GlobalSearch({ isOpen, onClose, searchQuery: externalQuery = null }) {
     const matches = [];
 
     searchIndex.forEach(item => {
+      // Прямой фильтр по категории
+      if (activeFilter !== 'all' && item.category !== activeFilter) {
+        return;
+      }
+
       const textLower = item.text.toLowerCase();
       if (textLower.includes(queryLower)) {
+
         // Находим позицию совпадения для подсветки
         const index = textLower.indexOf(queryLower);
         const start = Math.max(0, index - 50);
         const end = Math.min(item.text.length, index + query.length + 50);
         const snippet = item.text.substring(start, end);
         const snippetIndex = snippet.toLowerCase().indexOf(queryLower);
-        
+
         matches.push({
           ...item,
           snippet: snippet,
@@ -260,7 +311,7 @@ function GlobalSearch({ isOpen, onClose, searchQuery: externalQuery = null }) {
       const aPriority = priority[a.field] || 0;
       const bPriority = priority[b.field] || 0;
       if (aPriority !== bPriority) return bPriority - aPriority;
-      
+
       // Если приоритет одинаковый, сортируем по позиции совпадения (раньше = лучше)
       return a.matchIndex - b.matchIndex;
     });
@@ -271,17 +322,17 @@ function GlobalSearch({ isOpen, onClose, searchQuery: externalQuery = null }) {
   // Подсветка текста в сниппете
   const highlightSnippet = (snippet, query, matchIndex) => {
     if (!snippet || !query) return snippet;
-    
+
     const queryLower = query.toLowerCase();
     const snippetLower = snippet.toLowerCase();
     const index = snippetLower.indexOf(queryLower);
-    
+
     if (index === -1) return snippet;
-    
+
     const before = snippet.substring(0, index);
     const match = snippet.substring(index, index + query.length);
     const after = snippet.substring(index + query.length);
-    
+
     return (
       <>
         {before}
@@ -300,10 +351,12 @@ function GlobalSearch({ isOpen, onClose, searchQuery: externalQuery = null }) {
     sessionStorage.setItem('globalSearchField', result.field || '');
     sessionStorage.setItem('globalSearchDishId', result.dishId || result.id || '');
     sessionStorage.setItem('globalSearchType', result.type || '');
-    
+    sessionStorage.setItem('fromSearch', 'true');
+
     // Закрываем поиск
+
     onClose();
-    
+
     // Небольшая задержка для плавного перехода
     setTimeout(() => {
       navigate(result.path);
@@ -313,6 +366,9 @@ function GlobalSearch({ isOpen, onClose, searchQuery: externalQuery = null }) {
   // Получаем иконку для типа результата
   const getResultIcon = (type, field, itemKind) => {
     if (type === 'menu') return 'restaurant_menu';
+    if (type === 'article') return 'article';
+    if (type === 'media') return 'play_circle';
+    if (type === 'art') return 'palette';
     if (type === 'dish') {
       if (itemKind === 'wine') return 'wine_bar';
       if (itemKind === 'bar') return 'local_bar';
@@ -329,6 +385,31 @@ function GlobalSearch({ isOpen, onClose, searchQuery: externalQuery = null }) {
     }
     return 'search';
   };
+
+  const getFilterIcon = (filter) => {
+    switch (filter) {
+      case 'all': return 'all_inclusive';
+      case 'dish': return 'restaurant';
+      case 'drink': return 'local_bar';
+      case 'media': return 'play_circle';
+      case 'article': return 'article';
+      case 'art': return 'palette';
+      default: return 'search';
+    }
+  };
+
+  const getFilterLabel = (filter) => {
+    switch (filter) {
+      case 'all': return 'Всё';
+      case 'dish': return 'Блюда';
+      case 'drink': return 'Напитки';
+      case 'media': return 'Медиа';
+      case 'article': return 'Статьи';
+      case 'art': return 'Картины';
+      default: return filter;
+    }
+  };
+
 
   // Получаем название поля на русском
   const getFieldName = (field) => {
@@ -349,8 +430,11 @@ function GlobalSearch({ isOpen, onClose, searchQuery: externalQuery = null }) {
       'allergens': 'Аллергены',
       'allergens-en': 'Аллергены (EN)',
       'features': 'Особенности',
-      'reference_info': 'Справочная информация'
+      'reference_info': 'Справочная информация',
+      'author': 'Автор',
+      'category': 'Категория'
     };
+
     return fieldNames[field] || field;
   };
 
@@ -365,7 +449,7 @@ function GlobalSearch({ isOpen, onClose, searchQuery: externalQuery = null }) {
         isSearchRoute
           ? 'bg-background-light dark:bg-background-dark'
           : 'bg-black/60 backdrop-blur-sm'
-      }`}
+        }`}
     >
       {/* Верхняя панель (как принято на мобильных): назад + заголовок */}
       {isSearchRoute && (
@@ -388,11 +472,29 @@ function GlobalSearch({ isOpen, onClose, searchQuery: externalQuery = null }) {
 
       {/* Результаты поиска */}
       <div className="flex-1 overflow-y-auto">
-        {/* 
-          Важно: добавляем нижний отступ, чтобы контент не прятался под
-          нижней панелью ввода + нижним футером.
-        */}
+        {/* Фильтры */}
+        <div className="sticky top-0 z-[206] bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md px-4 py-3 border-b border-gray-100 dark:border-gray-800/50">
+          <div className="sabor-container flex gap-2 overflow-x-auto no-scrollbar">
+            {['all', 'dish', 'drink', 'media', 'article', 'art'].map(filter => (
+              <button
+                key={filter}
+                onClick={() => setActiveFilter(filter)}
+                className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold transition-all whitespace-nowrap border ${activeFilter === filter
+                  ? 'bg-primary border-primary text-white shadow-sm'
+                  : 'bg-white/50 dark:bg-white/5 border-gray-200 dark:border-gray-800 text-gray-500 dark:text-gray-400'
+                  }`}
+              >
+                <span className="material-symbols-outlined text-lg">
+                  {getFilterIcon(filter)}
+                </span>
+                {getFilterLabel(filter)}
+              </button>
+            ))}
+          </div>
+        </div>
+
         <div className="sabor-container p-4 pb-40">
+
           {loading ? (
             <div className="text-center py-12 text-gray-500 dark:text-gray-400">
               <span className="material-symbols-outlined text-6xl mb-4 block opacity-50 animate-spin">refresh</span>
@@ -427,9 +529,31 @@ function GlobalSearch({ isOpen, onClose, searchQuery: externalQuery = null }) {
                     </span>
                   )}
                   <div className={`flex items-start gap-3 ${result.isArchived ? 'opacity-60 grayscale' : ''}`}>
-                    <span className="material-symbols-outlined text-primary text-2xl mt-0.5 flex-shrink-0">
-                      {getResultIcon(result.type, result.field, result.itemKind)}
-                    </span>
+                    {/* 
+                      KISS: Решаем, показывать ли картинку.
+                      Правило: есть изображение И совпадение именно в названии.
+                    */}
+                    {(result.field === 'title' || result.field === 'title-en') && (result.image || result.dish?.image?.src) ? (
+                      <div className="size-12 rounded-lg overflow-hidden flex-shrink-0 border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900">
+                        <img
+                          src={result.image || (result.dish?.image?.src ? result.dish.image.src.replace(/^\.\//, '/') : '')}
+                          alt=""
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            // Если картинка не загрузилась (битая ссылка), прячем её и показываем иконку
+                            if (e.target.parentElement) {
+                              e.target.parentElement.innerHTML = `<div class="flex size-full items-center justify-center text-primary"><span class="material-symbols-outlined">search</span></div>`;
+                            }
+                          }}
+                        />
+                      </div>
+                    ) : (
+                      <div className="size-12 rounded-lg flex items-center justify-center flex-shrink-0 bg-gray-50 dark:bg-gray-900 border border-transparent">
+                        <span className="material-symbols-outlined text-primary text-2xl">
+                          {getResultIcon(result.type, result.field, result.itemKind)}
+                        </span>
+                      </div>
+                    )}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2 mb-1">
                         <h3 className="font-bold text-base text-[#181311] dark:text-white">
@@ -450,6 +574,7 @@ function GlobalSearch({ isOpen, onClose, searchQuery: externalQuery = null }) {
                       </p>
                     </div>
                   </div>
+
                 </button>
               ))}
             </div>
@@ -489,27 +614,26 @@ function GlobalSearch({ isOpen, onClose, searchQuery: externalQuery = null }) {
         {/* Аналогичный нижний футер (как на остальных страницах) */}
         <div className="w-full bg-white/95 dark:bg-surface-dark/95 backdrop-blur-md border-t border-gray-100 dark:border-gray-800 pb-safe">
           <div
-            className={`sabor-container grid ${
-              (() => {
-                const showFooterMenu = isVisible({ scope: 'menuItem', target: 'footer.menu' });
-                const showFooterFavorites = isVisible({ scope: 'menuItem', target: 'footer.favorites' });
-                const showFooterSearch = isVisible({ scope: 'menuItem', target: 'footer.search' });
-                const showFooterTools = isVisible({ scope: 'menuItem', target: 'footer.tools' });
-                const showFooterAdmin =
-                  isAuthenticated &&
-                  currentUser?.role === 'администратор' &&
-                  isVisible({ scope: 'menuItem', target: 'footer.admin' });
-                const itemCount =
-                  (showFooterMenu ? 1 : 0) +
-                  (showFooterFavorites ? 1 : 0) +
-                  (showFooterSearch ? 1 : 0) +
-                  (showFooterTools ? 1 : 0) +
-                  (showFooterAdmin ? 1 : 0);
-                if (itemCount >= 5) return 'grid-cols-5';
-                if (itemCount === 4) return 'grid-cols-4';
-                return 'grid-cols-3';
-              })()
-            } px-6 items-center h-[60px]`}
+            className={`sabor-container grid ${(() => {
+              const showFooterMenu = isVisible({ scope: 'menuItem', target: 'footer.menu' });
+              const showFooterFavorites = isVisible({ scope: 'menuItem', target: 'footer.favorites' });
+              const showFooterSearch = isVisible({ scope: 'menuItem', target: 'footer.search' });
+              const showFooterTools = isVisible({ scope: 'menuItem', target: 'footer.tools' });
+              const showFooterAdmin =
+                isAuthenticated &&
+                currentUser?.role === 'администратор' &&
+                isVisible({ scope: 'menuItem', target: 'footer.admin' });
+              const itemCount =
+                (showFooterMenu ? 1 : 0) +
+                (showFooterFavorites ? 1 : 0) +
+                (showFooterSearch ? 1 : 0) +
+                (showFooterTools ? 1 : 0) +
+                (showFooterAdmin ? 1 : 0);
+              if (itemCount >= 5) return 'grid-cols-5';
+              if (itemCount === 4) return 'grid-cols-4';
+              return 'grid-cols-3';
+            })()
+              } px-6 items-center h-[60px]`}
           >
             {isVisible({ scope: 'menuItem', target: 'footer.menu' }) && (
               <button
@@ -520,11 +644,10 @@ function GlobalSearch({ isOpen, onClose, searchQuery: externalQuery = null }) {
                   if (!isSearchRoute) onClose?.();
                   setTimeout(() => navigate('/'), !isSearchRoute ? 50 : 0);
                 }}
-                className={`flex flex-col items-center justify-center gap-1 transition-colors ${
-                  location.pathname === '/'
-                    ? 'text-primary'
-                    : 'text-gray-400 hover:text-[#181311] dark:text-gray-500 dark:hover:text-white'
-                }`}
+                className={`flex flex-col items-center justify-center gap-1 transition-colors ${location.pathname === '/'
+                  ? 'text-primary'
+                  : 'text-gray-400 hover:text-[#181311] dark:text-gray-500 dark:hover:text-white'
+                  }`}
               >
                 <span className="material-symbols-outlined text-[24px]">restaurant_menu</span>
                 <span className="text-[10px] font-bold">Меню</span>
@@ -541,13 +664,12 @@ function GlobalSearch({ isOpen, onClose, searchQuery: externalQuery = null }) {
                 }}
                 disabled={isGuest}
                 title={isGuest ? 'Доступно после входа' : 'Избранное'}
-                className={`flex flex-col items-center justify-center gap-1 transition-colors ${
-                  isGuest
-                    ? 'opacity-50 cursor-not-allowed text-gray-400'
-                    : location.pathname.startsWith('/favorites')
-                      ? 'text-primary'
-                      : 'text-gray-400 hover:text-[#181311] dark:text-gray-500 dark:hover:text-white'
-                }`}
+                className={`flex flex-col items-center justify-center gap-1 transition-colors ${isGuest
+                  ? 'opacity-50 cursor-not-allowed text-gray-400'
+                  : location.pathname.startsWith('/favorites')
+                    ? 'text-primary'
+                    : 'text-gray-400 hover:text-[#181311] dark:text-gray-500 dark:hover:text-white'
+                  }`}
               >
                 <span className="material-symbols-outlined text-[24px] fill-1">favorite</span>
                 <span className="text-[10px] font-medium">Избранное</span>
@@ -575,11 +697,10 @@ function GlobalSearch({ isOpen, onClose, searchQuery: externalQuery = null }) {
                   if (!isSearchRoute) onClose?.();
                   setTimeout(() => navigate('/info'), !isSearchRoute ? 50 : 0);
                 }}
-                className={`flex flex-col items-center justify-center gap-1 transition-colors ${
-                  location.pathname.startsWith('/info')
-                    ? 'text-primary'
-                    : 'text-gray-400 hover:text-[#181311] dark:text-gray-500 dark:hover:text-white'
-                }`}
+                className={`flex flex-col items-center justify-center gap-1 transition-colors ${location.pathname.startsWith('/info')
+                  ? 'text-primary'
+                  : 'text-gray-400 hover:text-[#181311] dark:text-gray-500 dark:hover:text-white'
+                  }`}
               >
                 <span className="material-symbols-outlined text-[24px]">new_releases</span>
                 <span className="text-[10px] font-medium">Информация</span>
@@ -595,11 +716,10 @@ function GlobalSearch({ isOpen, onClose, searchQuery: externalQuery = null }) {
                     if (!isSearchRoute) onClose?.();
                     setTimeout(() => navigate('/admin'), !isSearchRoute ? 50 : 0);
                   }}
-                  className={`flex flex-col items-center justify-center gap-1 transition-colors ${
-                    location.pathname.startsWith('/admin')
-                      ? 'text-primary'
-                      : 'text-gray-400 hover:text-[#181311] dark:text-gray-500 dark:hover:text-white'
-                  }`}
+                  className={`flex flex-col items-center justify-center gap-1 transition-colors ${location.pathname.startsWith('/admin')
+                    ? 'text-primary'
+                    : 'text-gray-400 hover:text-[#181311] dark:text-gray-500 dark:hover:text-white'
+                    }`}
                 >
                   <span className="material-symbols-outlined text-[24px]">person</span>
                   <span className="text-[10px] font-medium">Админ-панель</span>

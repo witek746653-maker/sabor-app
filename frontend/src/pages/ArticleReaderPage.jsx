@@ -185,6 +185,17 @@ export default function ArticleReaderPage() {
         }
     };
 
+    const handleBack = () => {
+        if (sessionStorage.getItem('fromSearch') === 'true') {
+            sessionStorage.removeItem('fromSearch');
+            navigate('/search');
+        } else {
+            navigate(-1);
+        }
+    };
+
+
+
     const handleToggleBookmark = () => {
         const nextState = !isBookmarked;
         setIsBookmarked(nextState);
@@ -215,7 +226,8 @@ export default function ArticleReaderPage() {
             <ReaderHeader
                 title={articleData?.title || 'Чтение статьи'}
                 isBookmarked={isBookmarked}
-                onBack={() => navigate(-1)}
+                onBack={handleBack}
+
                 onToggleBookmark={handleToggleBookmark}
                 onShare={handleShare}
                 onSettingsClick={() => setIsSettingsOpen(true)}

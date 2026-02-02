@@ -206,7 +206,17 @@ function MenuPage({ mode }) {
     return `/dish/${it.id}`;
   };
 
+  const handleBack = () => {
+    if (sessionStorage.getItem('fromSearch') === 'true') {
+      sessionStorage.removeItem('fromSearch');
+      navigate('/search');
+    } else {
+      navigate(-1);
+    }
+  };
+
   const parseCardIngredients = (value) => {
+
     if (typeof value !== 'string' || value.trim().length === 0) return [];
     // Если есть '/', делим по нему, иначе по запятой.
     const separator = value.includes('/') ? '/' : ',';
@@ -221,29 +231,29 @@ function MenuPage({ mode }) {
       try {
         const allDishesData = await getDishes();
         const decodedMenuName = menuName ? decodeURIComponent(menuName) : '';
-        
+
         // Сохраняем все блюда для избранного (включая "в архиве")
         // Термин **архив**: позиция “неактивна”, но мы её показываем затемнённой.
         setAllDishes(allDishesData);
-        
+
         // Фильтруем блюда: только из нужного меню (архивные тоже показываем, но затемняем в UI)
         const filtered = mode === 'tea'
           ? allDishesData.filter((dish) => isTeaItem(dish))
           : allDishesData.filter(
-              (dish) => normalizeMenuName(dish.menu) === normalizeMenuName(decodedMenuName)
-            );
+            (dish) => normalizeMenuName(dish.menu) === normalizeMenuName(decodedMenuName)
+          );
         const visibleFiltered = filtered.filter((dish) => isContentVisible(dish));
         setDishes(visibleFiltered);
 
         const uniqueSections = buildSections(visibleFiltered);
         setSections(uniqueSections);
-        
+
         // Проверяем, есть ли запрос из глобального поиска для автоскролла
         const globalSearchQuery = sessionStorage.getItem('globalSearchQuery');
         if (globalSearchQuery) {
           // Устанавливаем поисковый запрос
           setSearchQuery(globalSearchQuery);
-          
+
           // Очищаем sessionStorage после использования
           setTimeout(() => {
             sessionStorage.removeItem('globalSearchQuery');
@@ -271,7 +281,7 @@ function MenuPage({ mode }) {
     };
 
     window.addEventListener('storage', handleStorageChange);
-    
+
     // Также проверяем изменения localStorage в том же окне
     const checkInterval = setInterval(() => {
       const saved = localStorage.getItem('favoriteDishes');
@@ -314,7 +324,7 @@ function MenuPage({ mode }) {
       setShowAllergenFilter(false);
       setShowTagFilter(false);
     };
-    
+
     if (showSectionFilter || showAllergenFilter || showTagFilter) {
       document.addEventListener('click', handleClickOutside);
       return () => document.removeEventListener('click', handleClickOutside);
@@ -363,7 +373,7 @@ function MenuPage({ mode }) {
 
   // Фильтруем блюда с учетом избранного
   // Если показываем избранное, берем все блюда из всех меню, иначе только из текущего меню
-  const dishesToShow = showFavorites 
+  const dishesToShow = showFavorites
     ? visibleAllDishes.filter(dish => favorites.includes(dish.id))
     : dishes;
 
@@ -372,7 +382,7 @@ function MenuPage({ mode }) {
     const matchesSection =
       selectedSection === 'all' ||
       normalizeSection(dish.section) === selectedSection;
-    
+
     // Фильтр по поисковому запросу (название, описание, категория, аллергены, теги)
     const queryLower = searchQuery.toLowerCase();
     const dishTitle = getFieldValue(dish, 'title');
@@ -380,7 +390,7 @@ function MenuPage({ mode }) {
     const dishSection = getFieldValue(dish, 'section');
     const dishAllergens = getAllergensForLanguage(dish);
     const dishTags = getTagsForLanguage(dish);
-    
+
     const matchesSearch =
       !searchQuery ||
       dishTitle?.toLowerCase().includes(queryLower) ||
@@ -388,27 +398,27 @@ function MenuPage({ mode }) {
       dishSection?.toLowerCase().includes(queryLower) ||
       dishAllergens.some(a => a.toLowerCase().includes(queryLower)) ||
       dishTags.some(t => t.toLowerCase().includes(queryLower));
-    
+
     // Фильтр по аллергенам
     const matchesAllergens =
       selectedAllergens.length === 0 ||
-      selectedAllergens.some(selected => 
-        dishAllergens.some(a => 
+      selectedAllergens.some(selected =>
+        dishAllergens.some(a =>
           a.toLowerCase().includes(selected.toLowerCase()) ||
           selected.toLowerCase().includes(a.toLowerCase())
         )
       );
-    
+
     // Фильтр по тегам
     const matchesTags =
       selectedTags.length === 0 ||
-      selectedTags.some(selected => 
-        dishTags.some(t => 
+      selectedTags.some(selected =>
+        dishTags.some(t =>
           t.toLowerCase().includes(selected.toLowerCase()) ||
           selected.toLowerCase().includes(t.toLowerCase())
         )
       );
-    
+
     return matchesSection && matchesSearch && matchesAllergens && matchesTags;
   });
 
@@ -533,32 +543,32 @@ function MenuPage({ mode }) {
       <div className="sticky top-0 z-40 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md border-b border-gray-200/50 dark:border-gray-800/50">
         <div className="flex items-center px-4 pt-4 pb-2 justify-between">
           <button
-            onClick={() => navigate(-1)}
+            onClick={handleBack}
             className="text-[#181311] dark:text-white flex size-10 shrink-0 items-center justify-center rounded-full active:bg-black/5 dark:active:bg-white/10 transition-colors"
           >
             <span className="material-symbols-outlined">arrow_back</span>
           </button>
+
           <h2 className="text-[#181311] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center">
-            {showFavorites 
+            {showFavorites
               ? (language === 'EN' ? 'Favorites' : 'Избранное')
-              : (language === 'EN' && dishes.length > 0 && dishes[0].i18n?.en?.['menu-en'] 
-                  ? dishes[0].i18n.en['menu-en'] 
-                  : decodedMenuName)
+              : (language === 'EN' && dishes.length > 0 && dishes[0].i18n?.en?.['menu-en']
+                ? dishes[0].i18n.en['menu-en']
+                : decodedMenuName)
             }
           </h2>
           <div className="flex w-12 items-center justify-end">
             {isVisible({ scope: 'featureAction', target: 'language.switcher' }) && (
-              <button 
+              <button
                 onClick={() => {
                   const newLanguage = language === 'RU' ? 'EN' : 'RU';
                   setLanguage(newLanguage);
                   localStorage.setItem('menuLanguage', newLanguage);
                 }}
-                className={`text-xs font-bold leading-normal tracking-[0.015em] shrink-0 border rounded-lg px-2 py-1 transition-colors ${
-                  language === 'EN' 
-                    ? 'bg-primary text-white border-primary' 
+                className={`text-xs font-bold leading-normal tracking-[0.015em] shrink-0 border rounded-lg px-2 py-1 transition-colors ${language === 'EN'
+                    ? 'bg-primary text-white border-primary'
                     : 'text-primary border-primary/30 hover:bg-primary hover:text-white'
-                }`}
+                  }`}
               >
                 {language === 'RU' ? 'EN' : 'RU'}
               </button>
@@ -601,64 +611,61 @@ function MenuPage({ mode }) {
         <div className="relative">
           <div className="flex gap-2 px-4 py-2 overflow-x-auto no-scrollbar items-center pb-3 border-t border-gray-100/50 dark:border-gray-800/50 mt-1">
             {sections.length > 0 && (
-              <button 
+              <button
                 onClick={(e) => {
                   e.stopPropagation();
                   setShowSectionFilter(!showSectionFilter);
                   setShowAllergenFilter(false);
                   setShowTagFilter(false);
                 }}
-                className={`flex h-8 shrink-0 items-center justify-center gap-x-1 rounded-full border px-3 transition-transform active:scale-95 shadow-sm ${
-                  selectedSection !== 'all' 
-                    ? 'bg-primary text-white border-primary' 
+                className={`flex h-8 shrink-0 items-center justify-center gap-x-1 rounded-full border px-3 transition-transform active:scale-95 shadow-sm ${selectedSection !== 'all'
+                    ? 'bg-primary text-white border-primary'
                     : 'bg-white dark:bg-surface-dark border-gray-200 dark:border-gray-700'
-                }`}
+                  }`}
               >
                 <p className={`text-xs font-medium ${selectedSection !== 'all' ? 'text-white' : 'text-[#181311] dark:text-gray-200'}`}>{language === 'EN' ? 'Category' : 'Раздел'}</p>
                 <span className={`material-symbols-outlined text-[16px] ${selectedSection !== 'all' ? 'text-white' : 'text-gray-500'} ${showSectionFilter ? 'rotate-180' : ''} transition-transform`}>expand_more</span>
               </button>
             )}
             {(mode !== 'tea' || allAllergens.length > 0) && (
-              <button 
+              <button
                 onClick={(e) => {
                   e.stopPropagation();
                   setShowAllergenFilter(!showAllergenFilter);
                   setShowSectionFilter(false);
                   setShowTagFilter(false);
                 }}
-                className={`flex h-8 shrink-0 items-center justify-center gap-x-1 rounded-full border px-3 transition-transform active:scale-95 shadow-sm ${
-                  selectedAllergens.length > 0 
-                    ? 'bg-primary text-white border-primary' 
+                className={`flex h-8 shrink-0 items-center justify-center gap-x-1 rounded-full border px-3 transition-transform active:scale-95 shadow-sm ${selectedAllergens.length > 0
+                    ? 'bg-primary text-white border-primary'
                     : 'bg-white dark:bg-surface-dark border-gray-200 dark:border-gray-700'
-                }`}
+                  }`}
               >
                 <p className={`text-xs font-medium ${selectedAllergens.length > 0 ? 'text-white' : 'text-[#181311] dark:text-gray-200'}`}>{language === 'EN' ? 'Allergens' : 'Аллергены'}</p>
                 <span className={`material-symbols-outlined text-[16px] ${selectedAllergens.length > 0 ? 'text-white' : 'text-gray-500'} ${showAllergenFilter ? 'rotate-180' : ''} transition-transform`}>expand_more</span>
               </button>
             )}
             {(mode !== 'tea' || allTags.length > 0) && (
-              <button 
+              <button
                 onClick={(e) => {
                   e.stopPropagation();
                   setShowTagFilter(!showTagFilter);
                   setShowSectionFilter(false);
                   setShowAllergenFilter(false);
                 }}
-                className={`flex h-8 shrink-0 items-center justify-center gap-x-1 rounded-full border px-3 shadow-sm transition-transform active:scale-95 ${
-                  selectedTags.length > 0 
-                    ? 'bg-primary text-white border-primary' 
+                className={`flex h-8 shrink-0 items-center justify-center gap-x-1 rounded-full border px-3 shadow-sm transition-transform active:scale-95 ${selectedTags.length > 0
+                    ? 'bg-primary text-white border-primary'
                     : 'bg-white dark:bg-surface-dark border-gray-200 dark:border-gray-700'
-                }`}
+                  }`}
               >
                 <p className={`text-xs font-semibold ${selectedTags.length > 0 ? 'text-white' : 'text-[#181311] dark:text-gray-200'}`}>{language === 'EN' ? 'Tags' : 'Теги'}</p>
                 <span className={`material-symbols-outlined text-[16px] ${selectedTags.length > 0 ? 'text-white' : 'text-gray-500'} ${showTagFilter ? 'rotate-180' : ''} transition-transform`}>expand_more</span>
               </button>
             )}
           </div>
-          
+
           {/* Выпадающее меню для категорий */}
           {showSectionFilter && sections.length > 0 && (
-            <div 
+            <div
               className="absolute top-full left-4 right-4 mt-1 bg-white dark:bg-surface-dark rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 z-50 max-h-64 overflow-y-auto"
               onClick={(e) => e.stopPropagation()}
             >
@@ -667,9 +674,8 @@ function MenuPage({ mode }) {
                   setSelectedSection('all');
                   setShowSectionFilter(false);
                 }}
-                className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors ${
-                  selectedSection === 'all' ? 'bg-primary/10 text-primary font-semibold' : ''
-                }`}
+                className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors ${selectedSection === 'all' ? 'bg-primary/10 text-primary font-semibold' : ''
+                  }`}
               >
                 {language === 'EN' ? 'All Categories' : 'Все категории'}
               </button>
@@ -685,9 +691,8 @@ function MenuPage({ mode }) {
                       setSelectedSection(section.key);
                       setShowSectionFilter(false);
                     }}
-                    className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors ${
-                      selectedSection === section.key ? 'bg-primary/10 text-primary font-semibold' : ''
-                    }`}
+                    className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors ${selectedSection === section.key ? 'bg-primary/10 text-primary font-semibold' : ''
+                      }`}
                   >
                     {sectionName}
                   </button>
@@ -695,10 +700,10 @@ function MenuPage({ mode }) {
               })}
             </div>
           )}
-          
+
           {/* Выпадающее меню для аллергенов */}
           {showAllergenFilter && (
-            <div 
+            <div
               className="absolute top-full left-4 right-4 mt-1 bg-white dark:bg-surface-dark rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 z-50 max-h-64 overflow-y-auto p-2"
               onClick={(e) => e.stopPropagation()}
             >
@@ -715,9 +720,8 @@ function MenuPage({ mode }) {
                           setSelectedAllergens([...selectedAllergens, allergen]);
                         }
                       }}
-                      className={`text-left px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors flex items-center gap-2 rounded-lg ${
-                        isSelected ? 'bg-primary/10 text-primary font-semibold' : ''
-                      }`}
+                      className={`text-left px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors flex items-center gap-2 rounded-lg ${isSelected ? 'bg-primary/10 text-primary font-semibold' : ''
+                        }`}
                     >
                       <span className={`material-symbols-outlined text-[14px] flex-shrink-0 ${isSelected ? 'text-primary' : 'text-gray-400'}`}>
                         {isSelected ? 'check_box' : 'check_box_outline_blank'}
@@ -729,10 +733,10 @@ function MenuPage({ mode }) {
               </div>
             </div>
           )}
-          
+
           {/* Выпадающее меню для тегов */}
           {showTagFilter && (
-            <div 
+            <div
               className="absolute top-full left-4 right-4 mt-1 bg-white dark:bg-surface-dark rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 z-50 max-h-64 overflow-y-auto p-2"
               onClick={(e) => e.stopPropagation()}
             >
@@ -749,9 +753,8 @@ function MenuPage({ mode }) {
                           setSelectedTags([...selectedTags, tag]);
                         }
                       }}
-                      className={`text-left px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors flex items-center gap-2 rounded-lg ${
-                        isSelected ? 'bg-primary/10 text-primary font-semibold' : ''
-                      }`}
+                      className={`text-left px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors flex items-center gap-2 rounded-lg ${isSelected ? 'bg-primary/10 text-primary font-semibold' : ''
+                        }`}
                     >
                       <span className={`material-symbols-outlined text-[14px] flex-shrink-0 ${isSelected ? 'text-primary' : 'text-gray-400'}`}>
                         {isSelected ? 'check_box' : 'check_box_outline_blank'}
@@ -770,7 +773,7 @@ function MenuPage({ mode }) {
       <div className="flex-1 overflow-y-auto px-3 pb-24 pt-3">
         <div className="flex justify-between items-center mb-3 px-1">
           <h3 className="font-bold text-base dark:text-white">
-            {showFavorites 
+            {showFavorites
               ? (language === 'EN' ? 'Favorite Dishes' : 'Избранные блюда')
               : (language === 'EN' ? 'All Dishes' : 'Все блюда')
             }
@@ -959,8 +962,7 @@ function MenuPage({ mode }) {
       {/* Footer */}
       <div className="fixed bottom-0 z-50 w-full sabor-fixed bg-white/95 dark:bg-surface-dark/95 backdrop-blur-md border-t border-gray-100 dark:border-gray-800 pb-safe">
         <div
-          className={`grid ${
-            (() => {
+          className={`grid ${(() => {
               const showFooterMenu = isVisible({ scope: 'menuItem', target: 'footer.menu' });
               const showFooterFavorites = isVisible({ scope: 'menuItem', target: 'footer.favorites' });
               const showFooterSearch = isVisible({ scope: 'menuItem', target: 'footer.search' });
@@ -976,7 +978,7 @@ function MenuPage({ mode }) {
                 (showFooterAdmin ? 1 : 0);
               return itemCount >= 4 ? 'grid-cols-4' : 'grid-cols-3';
             })()
-          } px-6 items-center h-[60px]`}
+            } px-6 items-center h-[60px]`}
         >
           {isVisible({ scope: 'menuItem', target: 'footer.menu' }) && (
             <Link to="/" className="flex flex-col items-center justify-center gap-1 text-primary">
@@ -985,7 +987,7 @@ function MenuPage({ mode }) {
             </Link>
           )}
           {isVisible({ scope: 'menuItem', target: 'footer.favorites' }) && (
-            <button 
+            <button
               onClick={() => {
                 if (isGuest) return; // Гости не могут использовать избранное
                 // Переключаем показ избранного (та же логика, что и на DishDetailPage.js)
@@ -993,13 +995,12 @@ function MenuPage({ mode }) {
               }}
               disabled={isGuest}
               title={isGuest ? 'Доступно после входа' : (language === 'EN' ? 'Favorites' : 'Избранное')}
-              className={`flex flex-col items-center justify-center gap-1 transition-colors ${
-                isGuest
+              className={`flex flex-col items-center justify-center gap-1 transition-colors ${isGuest
                   ? 'opacity-50 cursor-not-allowed text-gray-400'
                   : showFavorites || favorites.length > 0
-                    ? 'text-primary' 
+                    ? 'text-primary'
                     : 'text-gray-400 hover:text-[#181311] dark:hover:text-white'
-              }`}
+                }`}
             >
               <span className={`material-symbols-outlined text-[24px] ${showFavorites || favorites.length > 0 ? 'fill-1' : ''}`}>
                 {showFavorites || favorites.length > 0 ? 'favorite' : 'favorite_border'}
@@ -1008,7 +1009,7 @@ function MenuPage({ mode }) {
             </button>
           )}
           {isVisible({ scope: 'menuItem', target: 'footer.search' }) && (
-            <button 
+            <button
               onClick={() => {
                 // Открываем глобальный поиск отдельной страницей.
                 navigate('/search');

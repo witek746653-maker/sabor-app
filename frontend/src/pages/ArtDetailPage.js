@@ -17,11 +17,11 @@ function ArtDetailPage() {
   const navigate = useNavigate();
   const toast = useToast();
   const { isAuthenticated, isGuest } = useAuth();
-  
+
   // State для данных картины
   const [artwork, setArtwork] = useState(null);
   const [loading, setLoading] = useState(true);
-  
+
   // State для избранного
   const [isLiked, setIsLiked] = useState(false);
 
@@ -44,22 +44,22 @@ function ArtDetailPage() {
         // Загружаем JSON с данными меню
         const response = await fetch('/data/menu-database.json');
         const data = await response.json();
-        
+
         // Находим нужную картину по id
         const artItem = data.find(item => item.id === id);
-        
+
         if (!artItem) {
           console.log('Картина не найдена, id:', id);
           toast.error('Картина не найдена');
           navigate('/art-gallery');
           return;
         }
-        
+
         console.log('Загружена картина:', artItem);
-        
+
         setArtwork(artItem);
         setLoading(false);
-        
+
         // Проверяем, есть ли картина в избранном (localStorage)
         const favorites = JSON.parse(localStorage.getItem(FAVORITES_KEY) || '[]');
         const artFavorites = JSON.parse(localStorage.getItem(ART_FAVORITES_KEY) || '[]');
@@ -86,7 +86,7 @@ function ArtDetailPage() {
       // Получаем текущий список избранного из localStorage
       const favorites = JSON.parse(localStorage.getItem(FAVORITES_KEY) || '[]');
       const artFavorites = JSON.parse(localStorage.getItem(ART_FAVORITES_KEY) || '[]');
-      
+
       let newFavorites;
       let newArtFavorites;
       if (isLiked) {
@@ -100,7 +100,7 @@ function ArtDetailPage() {
         newArtFavorites = Array.from(new Set([...(artFavorites || []), id]));
         toast.success('Картина добавлена в избранное');
       }
-      
+
       // Сохраняем обновленный список
       localStorage.setItem(FAVORITES_KEY, JSON.stringify(newFavorites));
       localStorage.setItem(ART_FAVORITES_KEY, JSON.stringify(newArtFavorites));
@@ -156,6 +156,17 @@ function ArtDetailPage() {
     }
   };
 
+  const handleBack = () => {
+    if (sessionStorage.getItem('fromSearch') === 'true') {
+      sessionStorage.removeItem('fromSearch');
+      navigate('/search');
+    } else {
+      navigate('/art-gallery');
+    }
+  };
+
+
+
   if (loading) {
     return (
       <div className="bg-background-light dark:bg-background-dark min-h-screen flex items-center justify-center">
@@ -183,16 +194,17 @@ function ArtDetailPage() {
       {/* Верхняя панель с кнопками */}
       <div className="absolute top-0 left-0 right-0 z-30 flex items-center justify-between p-6">
         {/* Кнопка "Назад" - возврат в галерею */}
-        <button 
-          onClick={() => navigate('/art-gallery')}
+        <button
+          onClick={handleBack}
           className="flex size-10 items-center justify-center bg-white/20 backdrop-blur-md rounded-full text-white hover:bg-white/30 transition-colors"
         >
           <span className="material-symbols-outlined">arrow_back_ios_new</span>
         </button>
-        
+
+
         {/* Кнопка "Поделиться" */}
         <div className="flex gap-3">
-          <button 
+          <button
             onClick={handleShare}
             className="flex size-10 items-center justify-center bg-white/20 backdrop-blur-md rounded-full text-white hover:bg-white/30 transition-colors"
           >
@@ -203,20 +215,20 @@ function ArtDetailPage() {
 
       {/* Секция с изображением картины */}
       <div className="relative w-full h-[55%] flex items-center justify-center overflow-hidden">
-        <div 
+        <div
           className="w-full h-full bg-center bg-cover"
           style={{ backgroundImage: `url("${fixImagePath(artwork.image?.src)}")` }}
         />
-        
+
         {/* Кнопка "Избранное" (сердечко) */}
-        <button 
+        <button
           onClick={handleToggleFavorite}
           disabled={isGuest}
           title={isGuest ? 'Доступно после входа' : undefined}
           className="absolute bottom-10 right-6 flex size-14 items-center justify-center bg-primary rounded-full shadow-lg shadow-primary/40 text-white transform hover:scale-105 transition-transform active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed"
         >
-          <span 
-            className="material-symbols-outlined" 
+          <span
+            className="material-symbols-outlined"
             style={{
               fontVariationSettings: `'FILL' ${isLiked ? 1 : 0}, 'wght' 400, 'GRAD' 0, 'opsz' 24`
             }}
@@ -232,7 +244,7 @@ function ArtDetailPage() {
         <div className="flex w-full items-center justify-center py-4">
           <div className="h-1.5 w-12 rounded-full bg-[#3E2723]/20"></div>
         </div>
-        
+
         {/* Скроллируемый контент */}
         <div className="flex-1 overflow-y-auto px-6 pb-12 pt-2 no-scrollbar">
           {/* Заголовок - название картины */}
@@ -240,7 +252,7 @@ function ArtDetailPage() {
             <h1 className="text-[#3E2723] dark:text-white text-3xl font-extrabold leading-tight tracking-tight">
               {artwork.title}
             </h1>
-            
+
             {/* Информация об авторе, стране и годе */}
             <div className="flex items-center gap-2 mt-1 flex-wrap">
               <span className="text-primary font-bold text-lg">{artwork.author}</span>
@@ -312,7 +324,7 @@ function ArtDetailPage() {
             </>
           )}
         </div>
-        
+
         {/* Отступ для безопасной зоны iOS (home indicator) */}
         <div className="h-8 bg-white/40 dark:bg-[#181311]/40 backdrop-blur-xl border-t-0 shrink-0"></div>
       </div>

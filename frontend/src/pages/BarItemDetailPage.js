@@ -119,6 +119,16 @@ function BarItemDetailPage() {
     localStorage.setItem('favoriteDishes', JSON.stringify(newFavorites));
   };
 
+  const handleBack = () => {
+    if (sessionStorage.getItem('fromSearch') === 'true') {
+      sessionStorage.removeItem('fromSearch');
+      navigate('/search');
+    } else {
+      navigate(-1);
+    }
+  };
+
+
   const handleShare = async () => {
     if (!item) return;
     const title = getFieldValue('title') || (language === 'EN' ? 'Drink' : 'Напиток');
@@ -281,11 +291,12 @@ function BarItemDetailPage() {
       {/* Верхняя панель */}
       <div className="fixed top-0 p-4 pt-12 flex justify-between items-center z-50 sabor-fixed">
         <button
-          onClick={() => navigate(-1)}
+          onClick={handleBack}
           className="flex h-10 w-10 items-center justify-center rounded-full bg-black/35 dark:bg-white/15 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-lg shadow-black/20 hover:bg-black/45 dark:hover:bg-white/20 hover:shadow-black/30 transition-all active:scale-95 group"
         >
           <span className="material-symbols-outlined text-white group-hover:-translate-x-0.5 transition-transform">arrow_back</span>
         </button>
+
 
         <div className="flex gap-3">
           {isVisible({ scope: 'featureAction', target: 'language.switcher' }) && (
@@ -328,9 +339,8 @@ function BarItemDetailPage() {
               onClick={toggleFavorite}
               disabled={isGuest}
               title={isGuest ? 'Доступно после входа' : isFavorite ? 'Удалить из избранного' : 'Добавить в избранное'}
-              className={`flex h-10 w-10 items-center justify-center rounded-full bg-black/35 dark:bg-white/15 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-lg shadow-black/20 transition-all ${
-                isGuest ? 'opacity-50 cursor-not-allowed' : 'hover:bg-black/45 dark:hover:bg-white/20 hover:shadow-black/30 active:scale-95 cursor-pointer'
-              } ${isFavorite ? 'text-primary' : 'text-white'}`}
+              className={`flex h-10 w-10 items-center justify-center rounded-full bg-black/35 dark:bg-white/15 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-lg shadow-black/20 transition-all ${isGuest ? 'opacity-50 cursor-not-allowed' : 'hover:bg-black/45 dark:hover:bg-white/20 hover:shadow-black/30 active:scale-95 cursor-pointer'
+                } ${isFavorite ? 'text-primary' : 'text-white'}`}
             >
               <span className={`material-symbols-outlined ${isFavorite ? 'fill-1' : ''}`}>favorite</span>
             </button>
@@ -417,9 +427,9 @@ function BarItemDetailPage() {
                 dangerouslySetInnerHTML={{
                   __html: searchQuery
                     ? normalizeNewlines(getFieldValue('description')).replace(
-                        new RegExp(`(${searchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi'),
-                        '<mark class="bg-yellow-300 dark:bg-yellow-600/50 px-0.5 rounded">$1</mark>'
-                      )
+                      new RegExp(`(${searchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi'),
+                      '<mark class="bg-yellow-300 dark:bg-yellow-600/50 px-0.5 rounded">$1</mark>'
+                    )
                     : normalizeNewlines(getFieldValue('description')),
                 }}
               />
@@ -488,9 +498,9 @@ function BarItemDetailPage() {
                   dangerouslySetInnerHTML={{
                     __html: searchQuery
                       ? normalizeNewlines(getFieldValue('contains')).replace(
-                          new RegExp(`(${searchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi'),
-                          '<mark class="bg-yellow-300 dark:bg-yellow-600/50 px-0.5 rounded">$1</mark>'
-                        )
+                        new RegExp(`(${searchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi'),
+                        '<mark class="bg-yellow-300 dark:bg-yellow-600/50 px-0.5 rounded">$1</mark>'
+                      )
                       : normalizeNewlines(getFieldValue('contains')),
                   }}
                 />
@@ -540,9 +550,9 @@ function BarItemDetailPage() {
                 dangerouslySetInnerHTML={{
                   __html: searchQuery
                     ? normalizeNewlines(item.features).replace(
-                        new RegExp(`(${searchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi'),
-                        '<mark class="bg-yellow-300 dark:bg-yellow-600/50 px-0.5 rounded">$1</mark>'
-                      )
+                      new RegExp(`(${searchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi'),
+                      '<mark class="bg-yellow-300 dark:bg-yellow-600/50 px-0.5 rounded">$1</mark>'
+                    )
                     : normalizeNewlines(item.features),
                 }}
               />
@@ -600,9 +610,9 @@ function BarItemDetailPage() {
                   dangerouslySetInnerHTML={{
                     __html: searchQuery
                       ? normalizeNewlines(getFieldValue('reference_info')).replace(
-                          new RegExp(`(${searchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi'),
-                          '<mark class="bg-yellow-300 dark:bg-yellow-600/50 px-0.5 rounded">$1</mark>'
-                        )
+                        new RegExp(`(${searchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi'),
+                        '<mark class="bg-yellow-300 dark:bg-yellow-600/50 px-0.5 rounded">$1</mark>'
+                      )
                       : normalizeNewlines(getFieldValue('reference_info')),
                   }}
                 />
@@ -626,8 +636,7 @@ function BarItemDetailPage() {
       {/* Нижняя навигация */}
       <nav className="fixed bottom-0 z-50 w-full sabor-fixed bg-white/95 dark:bg-surface-dark/95 backdrop-blur-md border-t border-gray-100 dark:border-gray-800 pb-safe">
         <div
-          className={`grid ${
-            (() => {
+          className={`grid ${(() => {
               const showFooterMenu = isVisible({ scope: 'menuItem', target: 'footer.menu' });
               const showFooterFavorites = isVisible({ scope: 'menuItem', target: 'footer.favorites' });
               const showFooterSearch = isVisible({ scope: 'menuItem', target: 'footer.search' });
@@ -637,7 +646,7 @@ function BarItemDetailPage() {
                 (showFooterSearch ? 1 : 0);
               return itemCount >= 3 ? 'grid-cols-3' : 'grid-cols-2';
             })()
-          } px-6 items-center h-[60px]`}
+            } px-6 items-center h-[60px]`}
         >
           {isVisible({ scope: 'menuItem', target: 'footer.menu' }) && (
             <Link to="/" className="flex flex-col items-center justify-center gap-1 text-primary">
@@ -649,9 +658,8 @@ function BarItemDetailPage() {
             <Link
               to={isGuest ? '/' : '/favorites'}
               title={isGuest ? 'Доступно после входа' : language === 'EN' ? 'Favorites' : 'Избранное'}
-              className={`flex flex-col items-center justify-center gap-1 transition-colors ${
-                isGuest ? 'opacity-50 cursor-not-allowed text-gray-400' : isFavorite ? 'text-primary' : 'text-gray-400 hover:text-[#181311] dark:hover:text-white'
-              }`}
+              className={`flex flex-col items-center justify-center gap-1 transition-colors ${isGuest ? 'opacity-50 cursor-not-allowed text-gray-400' : isFavorite ? 'text-primary' : 'text-gray-400 hover:text-[#181311] dark:hover:text-white'
+                }`}
               onClick={(e) => {
                 if (isGuest) e.preventDefault();
               }}

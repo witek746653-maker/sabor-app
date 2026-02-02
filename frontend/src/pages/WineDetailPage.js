@@ -114,6 +114,16 @@ function WineDetailPage() {
     localStorage.setItem('favoriteDishes', JSON.stringify(newFavorites));
   };
 
+  const handleBack = () => {
+    if (sessionStorage.getItem('fromSearch') === 'true') {
+      sessionStorage.removeItem('fromSearch');
+      navigate('/search');
+    } else {
+      navigate(-1);
+    }
+  };
+
+
   const handleShare = async () => {
     if (!wine) return;
     const title = getFieldValue('title') || (language === 'EN' ? 'Wine' : 'Вино');
@@ -331,15 +341,16 @@ function WineDetailPage() {
   return (
     <div className="relative z-20 min-h-[100dvh] overflow-hidden bg-background-light dark:bg-background-dark">
       {/* Верхняя панель */}
-      <div className="fixed top-0 p-4 pt-12 flex justify-between items-center z-50 sabor-fixed">
+      <div className="fixed top-0 w-full p-4 pt-14 flex justify-between items-center z-50 sabor-fixed">
         <button
-          onClick={() => navigate(-1)}
+          onClick={handleBack}
           className="flex h-10 w-10 items-center justify-center rounded-full bg-black/35 dark:bg-white/15 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-lg shadow-black/20 hover:bg-black/45 dark:hover:bg-white/20 hover:shadow-black/30 transition-all active:scale-95 group"
         >
           <span className="material-symbols-outlined text-white group-hover:-translate-x-0.5 transition-transform">arrow_back</span>
         </button>
 
-        <div className="flex gap-3">
+
+        <div className="flex gap-2 sm:gap-3">
           {isVisible({ scope: 'featureAction', target: 'language.switcher' }) && (
             <button
               onClick={() => {
@@ -360,7 +371,7 @@ function WineDetailPage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder={language === 'EN' ? 'Search...' : 'Поиск...'}
-                className="h-10 px-4 pr-10 rounded-full bg-black/35 dark:bg-white/15 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-lg shadow-black/20 text-white placeholder:text-white/70 focus:outline-none focus:ring-2 focus:ring-white/60 text-sm w-40"
+                className="h-10 px-4 pr-10 rounded-full bg-black/35 dark:bg-white/15 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-lg shadow-black/20 text-white placeholder:text-white/70 focus:outline-none focus:ring-2 focus:ring-white/60 text-sm w-28 sm:w-40 transition-all focus:w-40"
               />
               <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-white text-[18px] pointer-events-none">
                 search
@@ -390,9 +401,8 @@ function WineDetailPage() {
               onClick={toggleFavorite}
               disabled={isGuest}
               title={isGuest ? 'Доступно после входа' : isFavorite ? 'Удалить из избранного' : 'Добавить в избранное'}
-              className={`flex h-10 w-10 items-center justify-center rounded-full bg-black/35 dark:bg-white/15 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-lg shadow-black/20 transition-all ${
-                isGuest ? 'opacity-50 cursor-not-allowed' : 'hover:bg-black/45 dark:hover:bg-white/20 hover:shadow-black/30 active:scale-95 cursor-pointer'
-              } ${isFavorite ? 'text-primary' : 'text-white'}`}
+              className={`flex h-10 w-10 items-center justify-center rounded-full bg-black/35 dark:bg-white/15 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-lg shadow-black/20 transition-all ${isGuest ? 'opacity-50 cursor-not-allowed' : 'hover:bg-black/45 dark:hover:bg-white/20 hover:shadow-black/30 active:scale-95 cursor-pointer'
+                } ${isFavorite ? 'text-primary' : 'text-white'}`}
             >
               <span className={`material-symbols-outlined ${isFavorite ? 'fill-1' : ''}`}>favorite</span>
             </button>
@@ -488,9 +498,9 @@ function WineDetailPage() {
                 dangerouslySetInnerHTML={{
                   __html: searchQuery
                     ? normalizeNewlines(getFieldValue('description')).replace(
-                        new RegExp(`(${searchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi'),
-                        '<mark class="bg-yellow-300 dark:bg-yellow-600/50 px-0.5 rounded">$1</mark>'
-                      )
+                      new RegExp(`(${searchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi'),
+                      '<mark class="bg-yellow-300 dark:bg-yellow-600/50 px-0.5 rounded">$1</mark>'
+                    )
                     : normalizeNewlines(getFieldValue('description')),
                 }}
               />
@@ -516,111 +526,111 @@ function WineDetailPage() {
           {/* Карточки характеристик: показываем только то, что реально заполнено */}
           {(isNonEmpty(country) || isNonEmpty(region) || isNonEmpty(origin) || isNonEmpty(producer) || isNonEmpty(grapeVarietiesText) || isNonEmpty(sweetness) || isNonEmpty(alcoholContent)) &&
             isVisible({ scope: 'pageBlock', target: 'wineDetail.characteristics' }) && (
-            <div className="grid grid-cols-2 gap-4 mb-8">
-              {(country || origin) && (
-                <div className="bg-primary/5 dark:bg-primary/10 p-4 rounded-xl border border-primary/20 dark:border-primary/30 shadow-sm">
-                  <div className="text-xs font-bold text-gray-900 dark:text-white mb-1 opacity-80">
-                    {language === 'EN' ? 'Country' : 'Страна'}
+              <div className="grid grid-cols-2 gap-4 mb-8">
+                {(country || origin) && (
+                  <div className="bg-primary/5 dark:bg-primary/10 p-4 rounded-xl border border-primary/20 dark:border-primary/30 shadow-sm">
+                    <div className="text-xs font-bold text-gray-900 dark:text-white mb-1 opacity-80">
+                      {language === 'EN' ? 'Country' : 'Страна'}
+                    </div>
+                    <div className="text-gray-700 dark:text-gray-200 text-sm">
+                      {searchQuery ? highlightText(country || origin, searchQuery) : country || origin}
+                    </div>
                   </div>
-                  <div className="text-gray-700 dark:text-gray-200 text-sm">
-                    {searchQuery ? highlightText(country || origin, searchQuery) : country || origin}
+                )}
+                {region && (
+                  <div className="bg-primary/5 dark:bg-primary/10 p-4 rounded-xl border border-primary/20 dark:border-primary/30 shadow-sm">
+                    <div className="text-xs font-bold text-gray-900 dark:text-white mb-1 opacity-80">
+                      {language === 'EN' ? 'Region' : 'Регион'}
+                    </div>
+                    <div className="text-gray-700 dark:text-gray-200 text-sm">{searchQuery ? highlightText(region, searchQuery) : region}</div>
                   </div>
-                </div>
-              )}
-              {region && (
-                <div className="bg-primary/5 dark:bg-primary/10 p-4 rounded-xl border border-primary/20 dark:border-primary/30 shadow-sm">
-                  <div className="text-xs font-bold text-gray-900 dark:text-white mb-1 opacity-80">
-                    {language === 'EN' ? 'Region' : 'Регион'}
+                )}
+                {producer && (
+                  <div className="bg-primary/5 dark:bg-primary/10 p-4 rounded-xl border border-primary/20 dark:border-primary/30 shadow-sm">
+                    <div className="text-xs font-bold text-gray-900 dark:text-white mb-1 opacity-80">
+                      {language === 'EN' ? 'Producer' : 'Производитель'}
+                    </div>
+                    <div className="text-gray-700 dark:text-gray-200 text-sm">{searchQuery ? highlightText(producer, searchQuery) : producer}</div>
                   </div>
-                  <div className="text-gray-700 dark:text-gray-200 text-sm">{searchQuery ? highlightText(region, searchQuery) : region}</div>
-                </div>
-              )}
-              {producer && (
-                <div className="bg-primary/5 dark:bg-primary/10 p-4 rounded-xl border border-primary/20 dark:border-primary/30 shadow-sm">
-                  <div className="text-xs font-bold text-gray-900 dark:text-white mb-1 opacity-80">
-                    {language === 'EN' ? 'Producer' : 'Производитель'}
+                )}
+                {grapeVarietiesText && (
+                  <div className="bg-primary/5 dark:bg-primary/10 p-4 rounded-xl border border-primary/20 dark:border-primary/30 shadow-sm">
+                    <div className="text-xs font-bold text-gray-900 dark:text-white mb-1 opacity-80">
+                      {language === 'EN' ? 'Grapes' : 'Сорт винограда'}
+                    </div>
+                    <div className="text-gray-700 dark:text-gray-200 text-sm">
+                      {searchQuery ? highlightText(grapeVarietiesText, searchQuery) : grapeVarietiesText}
+                    </div>
                   </div>
-                  <div className="text-gray-700 dark:text-gray-200 text-sm">{searchQuery ? highlightText(producer, searchQuery) : producer}</div>
-                </div>
-              )}
-              {grapeVarietiesText && (
-                <div className="bg-primary/5 dark:bg-primary/10 p-4 rounded-xl border border-primary/20 dark:border-primary/30 shadow-sm">
-                  <div className="text-xs font-bold text-gray-900 dark:text-white mb-1 opacity-80">
-                    {language === 'EN' ? 'Grapes' : 'Сорт винограда'}
+                )}
+                {sweetness && (
+                  <div className="bg-primary/5 dark:bg-primary/10 p-4 rounded-xl border border-primary/20 dark:border-primary/30 shadow-sm">
+                    <div className="text-xs font-bold text-gray-900 dark:text-white mb-1 opacity-80">
+                      {language === 'EN' ? 'Sweetness' : 'Сладость'}
+                    </div>
+                    <div className="text-gray-700 dark:text-gray-200 text-sm">{searchQuery ? highlightText(sweetness, searchQuery) : sweetness}</div>
                   </div>
-                  <div className="text-gray-700 dark:text-gray-200 text-sm">
-                    {searchQuery ? highlightText(grapeVarietiesText, searchQuery) : grapeVarietiesText}
+                )}
+                {alcoholContent && (
+                  <div className="bg-primary/5 dark:bg-primary/10 p-4 rounded-xl border border-primary/20 dark:border-primary/30 shadow-sm">
+                    <div className="text-xs font-bold text-gray-900 dark:text-white mb-1 opacity-80">
+                      {language === 'EN' ? 'Alcohol' : 'Алкоголь'}
+                    </div>
+                    <div className="text-gray-700 dark:text-gray-200 text-sm">{searchQuery ? highlightText(alcoholContent, searchQuery) : alcoholContent}</div>
                   </div>
-                </div>
-              )}
-              {sweetness && (
-                <div className="bg-primary/5 dark:bg-primary/10 p-4 rounded-xl border border-primary/20 dark:border-primary/30 shadow-sm">
-                  <div className="text-xs font-bold text-gray-900 dark:text-white mb-1 opacity-80">
-                    {language === 'EN' ? 'Sweetness' : 'Сладость'}
-                  </div>
-                  <div className="text-gray-700 dark:text-gray-200 text-sm">{searchQuery ? highlightText(sweetness, searchQuery) : sweetness}</div>
-                </div>
-              )}
-              {alcoholContent && (
-                <div className="bg-primary/5 dark:bg-primary/10 p-4 rounded-xl border border-primary/20 dark:border-primary/30 shadow-sm">
-                  <div className="text-xs font-bold text-gray-900 dark:text-white mb-1 opacity-80">
-                    {language === 'EN' ? 'Alcohol' : 'Алкоголь'}
-                  </div>
-                  <div className="text-gray-700 dark:text-gray-200 text-sm">{searchQuery ? highlightText(alcoholContent, searchQuery) : alcoholContent}</div>
-                </div>
-              )}
-            </div>
-          )}
+                )}
+              </div>
+            )}
 
           {/* Пэринг */}
           {(pairingsDishes.length > 0 || pairingsNotes.length > 0) &&
             isVisible({ scope: 'pageBlock', target: 'wineDetail.pairings' }) && (
-            <div
-              ref={(el) => {
-                if (el) searchRefs.current['pairings'] = el;
-              }}
-              className="mb-8"
-            >
-              <div className="bg-primary/5 dark:bg-primary/10 p-5 rounded-xl border border-primary/20 dark:border-primary/30 shadow-md">
-                <h3 className="flex items-center gap-2 mb-3 text-gray-900 dark:text-white font-bold text-lg">
-                  <div className="p-1.5 rounded-full bg-primary/20 dark:bg-primary/30 text-primary">
-                    <span className="material-symbols-outlined text-[20px] block">wine_bar</span>
-                  </div>
-                  {language === 'EN' ? 'Pairing' : 'Пэринг'}
-                </h3>
-
-                {pairingsDishes.length > 0 && (
-                  <div className="mb-4">
-                    <div className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">
-                      {language === 'EN' ? 'Dishes' : 'Блюда'}
+              <div
+                ref={(el) => {
+                  if (el) searchRefs.current['pairings'] = el;
+                }}
+                className="mb-8"
+              >
+                <div className="bg-primary/5 dark:bg-primary/10 p-5 rounded-xl border border-primary/20 dark:border-primary/30 shadow-md">
+                  <h3 className="flex items-center gap-2 mb-3 text-gray-900 dark:text-white font-bold text-lg">
+                    <div className="p-1.5 rounded-full bg-primary/20 dark:bg-primary/30 text-primary">
+                      <span className="material-symbols-outlined text-[20px] block">wine_bar</span>
                     </div>
-                    <ul className="flex flex-wrap gap-2">
-                      {pairingsDishes.map((p, idx) => (
-                        <li key={idx} className="text-sm bg-primary/10 dark:bg-primary/20 px-3 py-1.5 rounded-md text-gray-800 dark:text-gray-100 font-medium">
-                          {searchQuery ? highlightText(p, searchQuery) : p}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
+                    {language === 'EN' ? 'Pairing' : 'Пэринг'}
+                  </h3>
 
-                {pairingsNotes.length > 0 && (
-                  <div>
-                    <div className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">
-                      {language === 'EN' ? 'Notes' : 'Заметки'}
+                  {pairingsDishes.length > 0 && (
+                    <div className="mb-4">
+                      <div className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">
+                        {language === 'EN' ? 'Dishes' : 'Блюда'}
+                      </div>
+                      <ul className="flex flex-wrap gap-2">
+                        {pairingsDishes.map((p, idx) => (
+                          <li key={idx} className="text-sm bg-primary/10 dark:bg-primary/20 px-3 py-1.5 rounded-md text-gray-800 dark:text-gray-100 font-medium">
+                            {searchQuery ? highlightText(p, searchQuery) : p}
+                          </li>
+                        ))}
+                      </ul>
                     </div>
-                    <ul className="space-y-2">
-                      {pairingsNotes.map((note, idx) => (
-                        <li key={idx} className="text-gray-700 dark:text-gray-200 text-sm leading-relaxed">
-                          {searchQuery ? highlightText(note, searchQuery) : note}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
+                  )}
+
+                  {pairingsNotes.length > 0 && (
+                    <div>
+                      <div className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">
+                        {language === 'EN' ? 'Notes' : 'Заметки'}
+                      </div>
+                      <ul className="space-y-2">
+                        {pairingsNotes.map((note, idx) => (
+                          <li key={idx} className="text-gray-700 dark:text-gray-200 text-sm leading-relaxed">
+                            {searchQuery ? highlightText(note, searchQuery) : note}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
           {/* Комментарии */}
           {comments.length > 0 && (
@@ -674,9 +684,9 @@ function WineDetailPage() {
                   dangerouslySetInnerHTML={{
                     __html: searchQuery
                       ? normalizeNewlines(getFieldValue('reference_info')).replace(
-                          new RegExp(`(${searchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi'),
-                          '<mark class="bg-yellow-300 dark:bg-yellow-600/50 px-0.5 rounded">$1</mark>'
-                        )
+                        new RegExp(`(${searchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi'),
+                        '<mark class="bg-yellow-300 dark:bg-yellow-600/50 px-0.5 rounded">$1</mark>'
+                      )
                       : normalizeNewlines(getFieldValue('reference_info')),
                   }}
                 />
@@ -700,18 +710,17 @@ function WineDetailPage() {
       {/* Нижняя навигация (та же логика, что и на DishDetailPage) */}
       <nav className="fixed bottom-0 z-50 w-full sabor-fixed bg-white/95 dark:bg-surface-dark/95 backdrop-blur-md border-t border-gray-100 dark:border-gray-800 pb-safe">
         <div
-          className={`grid ${
-            (() => {
-              const showFooterMenu = isVisible({ scope: 'menuItem', target: 'footer.menu' });
-              const showFooterFavorites = isVisible({ scope: 'menuItem', target: 'footer.favorites' });
-              const showFooterSearch = isVisible({ scope: 'menuItem', target: 'footer.search' });
-              const itemCount =
-                (showFooterMenu ? 1 : 0) +
-                (showFooterFavorites ? 1 : 0) +
-                (showFooterSearch ? 1 : 0);
-              return itemCount >= 3 ? 'grid-cols-3' : 'grid-cols-2';
-            })()
-          } px-6 items-center h-[60px]`}
+          className={`grid ${(() => {
+            const showFooterMenu = isVisible({ scope: 'menuItem', target: 'footer.menu' });
+            const showFooterFavorites = isVisible({ scope: 'menuItem', target: 'footer.favorites' });
+            const showFooterSearch = isVisible({ scope: 'menuItem', target: 'footer.search' });
+            const itemCount =
+              (showFooterMenu ? 1 : 0) +
+              (showFooterFavorites ? 1 : 0) +
+              (showFooterSearch ? 1 : 0);
+            return itemCount >= 3 ? 'grid-cols-3' : 'grid-cols-2';
+          })()
+            } px-6 items-center h-[60px]`}
         >
           {isVisible({ scope: 'menuItem', target: 'footer.menu' }) && (
             <Link to="/" className="flex flex-col items-center justify-center gap-1 text-primary">
@@ -723,9 +732,8 @@ function WineDetailPage() {
             <Link
               to={isGuest ? '/' : '/favorites'}
               title={isGuest ? 'Доступно после входа' : language === 'EN' ? 'Favorites' : 'Избранное'}
-              className={`flex flex-col items-center justify-center gap-1 transition-colors ${
-                isGuest ? 'opacity-50 cursor-not-allowed text-gray-400' : isFavorite ? 'text-primary' : 'text-gray-400 hover:text-[#181311] dark:hover:text-white'
-              }`}
+              className={`flex flex-col items-center justify-center gap-1 transition-colors ${isGuest ? 'opacity-50 cursor-not-allowed text-gray-400' : isFavorite ? 'text-primary' : 'text-gray-400 hover:text-[#181311] dark:hover:text-white'
+                }`}
               onClick={(e) => {
                 if (isGuest) {
                   e.preventDefault();

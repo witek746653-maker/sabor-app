@@ -1,6 +1,15 @@
 {
-    "updated_at": "2026-02-02T22:15:00Z",
+    "updated_at": "2026-02-03T01:10:00Z",
     "articles": [
+        {
+            "key": "cork-fee",
+            "title": "Пробковый сбор",
+            "url": "/content/resources/cork-fee.md",
+            "image": "/images/corkage fee.webp",
+            "category": "Памятка",
+            "readingTime": "1 мин",
+            "version": 1
+        },
         {
             "key": "taste-of-moscow",
             "title": "Москва со вкусом",

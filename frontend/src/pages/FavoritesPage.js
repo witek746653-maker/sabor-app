@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { getDishes } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
@@ -10,12 +10,12 @@ function FavoritesPage() {
   const navigate = useNavigate();
   const { isAuthenticated, currentUser, isGuest } = useAuth();
   const { isVisible } = useVisibility();
-  const [allDishes, setAllDishes] = useState([]);
+
+  // Состояние для всех загруженных "товаров" (блюда, напитки, картины)
+  const [allCatalogItems, setAllCatalogItems] = useState([]);
+
+  // Состояние избранного (ID)
   const [favorites, setFavorites] = useState(() => {
-    // Загружаем избранное из localStorage
-    // В проекте основной ключ: favoriteDishes
-    // Для картин раньше использовался отдельный ключ: art-favorites
-    // Объединяем, чтобы ничего не потерять.
     const saved = localStorage.getItem('favoriteDishes');
     const artSaved = localStorage.getItem('art-favorites');
     const ids = [
@@ -24,25 +24,29 @@ function FavoritesPage() {
     ];
     return Array.from(new Set(ids)).filter(Boolean);
   });
+
   const [mediaFavorites, setMediaFavorites] = useState(() => {
     const saved = localStorage.getItem('media.favorites');
     return saved ? JSON.parse(saved) : [];
   });
+
   const [articleFavorites, setArticleFavorites] = useState(() => {
     const saved = localStorage.getItem('article-favorites');
     return saved ? JSON.parse(saved) : [];
   });
+
   const [articles, setArticles] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
-  const [language, setLanguage] = useState(() => {
-    // Загружаем язык из localStorage или используем 'RU' по умолчанию
-    return localStorage.getItem('menuLanguage') || 'RU';
-  });
+  const [language, setLanguage] = useState(() => localStorage.getItem('menuLanguage') || 'RU');
+
+  // Текущий активный фильтр (вкладка)
+  const [activeFilter, setActiveFilter] = useState('all'); // all, dishes, drinks, paintings, media, articles
+
   const favoritesFiltersStorageKey = 'favoritesFilters';
   const [filtersLoaded, setFiltersLoaded] = useState(false);
 
-  // Восстанавливаем фильтр поиска из localStorage (память браузера).
+  // Восстанавливаем строку поиска
   useEffect(() => {
     const saved = localStorage.getItem(favoritesFiltersStorageKey);
     if (!saved) {
@@ -53,83 +57,65 @@ function FavoritesPage() {
       const parsed = JSON.parse(saved);
       setSearchQuery(parsed?.searchQuery ?? '');
     } catch (error) {
-      console.warn('Не удалось прочитать фильтр избранного из localStorage:', error);
+      console.warn('Не удалось прочитать фильтр избранного:', error);
     } finally {
       setFiltersLoaded(true);
     }
-  }, [favoritesFiltersStorageKey]);
+  }, []);
 
-  // Избранное может содержать и бар/вино (если их добавляли раньше), поэтому строим правильный путь.
-  const getDetailPathForItem = (it) => {
+  // Сохраняем строку поиска
+  useEffect(() => {
+    if (!filtersLoaded) return;
+    localStorage.setItem(favoritesFiltersStorageKey, JSON.stringify({ searchQuery }));
+  }, [searchQuery, filtersLoaded]);
+
+  // Хелпер для определения типа элемента (Блюдо, Напиток, Картина)
+  const getItemType = (it) => {
     const menu = String(it?.menu || '').toLowerCase();
     const section = String(it?.section || '').toLowerCase();
     const source = String(it?.source || '').toLowerCase();
+    const title = String(it?.title || '').toLowerCase();
+    const id = String(it?.id || '');
 
+    // 1. Картины
     const isArt =
       source.includes('искусство') ||
-      String(it?.id || '').startsWith('09') ||
+      id.startsWith('09') ||
       Boolean(it?.author);
+    if (isArt) return 'painting';
 
-    const isWine =
-      menu.includes('вино') ||
-      menu.includes('wine') ||
-      section.includes('вино') ||
-      section.includes('wine');
+    // 2. Напитки (Вино + Бар + Чай/Кофе)
+    const isDrink =
+      menu.includes('вино') || menu.includes('wine') ||
+      menu.includes('бар') || menu.includes('bar') ||
+      menu.includes('напит') || menu.includes('drink') ||
+      menu.includes('чай') || menu.includes('tea') ||
+      menu.includes('кофе') || menu.includes('coffee') ||
+      section.includes('коктейл') || section.includes('cocktail') ||
+      section.includes('чай') || section.includes('tea') ||
+      section.includes('пиво') || section.includes('beer') ||
+      section.includes('кофе') || section.includes('coffee') ||
+      section.includes('напит') || section.includes('drink') ||
+      title.includes(' чай ') || title.startsWith('чай ') || title === 'чай' ||
+      title.includes(' tea ') || title.startsWith('tea ') || title === 'tea' ||
+      title.includes('кофе') || title.includes('coffee');
 
-    const isBar =
-      menu.includes('бар') ||
-      menu.includes('bar') ||
-      menu.includes('напит') ||
-      menu.includes('drink') ||
-      section.includes('коктейл') ||
-      section.includes('cocktail') ||
-      section.includes('чай') ||
-      section.includes('tea') ||
-      section.includes('пиво') ||
-      section.includes('beer') ||
-      section.includes('кофе') ||
-      section.includes('coffee') ||
-      section.includes('напит') ||
-      section.includes('drink');
+    if (isDrink) return 'drink';
 
-    if (isArt) return `/art/${it.id}`;
-    if (isWine) return `/wine/${it.id}`;
-    if (isBar) return `/bar/${it.id}`;
-    return `/dish/${it.id}`;
+    // 3. Остальное - Еда
+    return 'dish';
   };
 
-  const getContentTarget = (it) => {
-    const id = String(it?.id ?? '').trim();
-    if (!id) return null;
-    const menu = String(it?.menu || '').toLowerCase();
-    const section = String(it?.section || '').toLowerCase();
-    const source = String(it?.source || '').toLowerCase();
-    const isArt =
-      source.includes('искусство') || String(it?.id || '').startsWith('09') || Boolean(it?.author);
-    const isWine =
-      menu.includes('вино') ||
-      menu.includes('wine') ||
-      section.includes('вино') ||
-      section.includes('wine');
-    const isBar =
-      menu.includes('бар') ||
-      menu.includes('bar') ||
-      menu.includes('напит') ||
-      menu.includes('drink') ||
-      section.includes('коктейл') ||
-      section.includes('cocktail') ||
-      section.includes('чай') ||
-      section.includes('tea') ||
-      section.includes('пиво') ||
-      section.includes('beer') ||
-      section.includes('кофе') ||
-      section.includes('coffee') ||
-      section.includes('напит') ||
-      section.includes('drink');
-    if (isArt) return `art:${id}`;
-    if (isWine) return `wine:${id}`;
-    if (isBar) return `bar:${id}`;
-    return `dish:${id}`;
+  // Хелпер для формирования правильной ссылки на детальную страницу
+  const getDetailPath = (it, type) => {
+    if (type === 'painting') return `/art/${it.id}`;
+    if (type === 'drink') {
+      const menu = String(it?.menu || '').toLowerCase();
+      const section = String(it?.section || '').toLowerCase();
+      const isWine = menu.includes('вино') || menu.includes('wine') || section.includes('вино');
+      return isWine ? `/wine/${it.id}` : `/bar/${it.id}`;
+    }
+    return `/dish/${it.id}`;
   };
 
   const isContentVisible = (it) => {
@@ -137,577 +123,453 @@ function FavoritesPage() {
     if (isArchived && !isVisible({ scope: 'contentItem', target: 'status.archived' })) {
       return false;
     }
-    const target = getContentTarget(it);
-    if (!target) return true;
-    return isVisible({ scope: 'contentItem', target });
+    return true;
   };
 
+  // Загрузка данных
   useEffect(() => {
-    const loadDishes = async () => {
+    const loadData = async () => {
       try {
-        const allDishesData = await getDishes();
+        setLoading(true);
+        // 1. Блюда и Напитки
+        const dishesData = await getDishes();
 
-        // Сохраняем все блюда (включая "в архиве") — архивные просто затемняем в UI
-        // Термин **архив**: позиция неактивна, но всё ещё доступна для просмотра.
-        // Дополнительно грузим картины из статического JSON,
-        // потому что бэкенд/БД могут не отдавать их через /api/dishes.
+        // 2. Картины (из JSON)
         let artworks = [];
         try {
-          const staticRes = await fetch('/data/menu-database.json', { cache: 'no-store' });
-          if (staticRes.ok) {
-            const staticJson = await staticRes.json();
-            artworks = (staticJson || []).filter(
-              (it) => it?.source === 'Искусство в Sabor de la Vida' && String(it?.id || '').startsWith('09')
+          const res = await fetch('/data/menu-database.json', { cache: 'no-store' });
+          if (res.ok) {
+            const data = await res.json();
+            artworks = (data || []).filter(it =>
+              it?.source === 'Искусство в Sabor de la Vida' && String(it?.id || '').startsWith('09')
             );
           }
-        } catch (e) {
-          console.warn('Не удалось загрузить статический список картин для избранного:', e);
-          artworks = [];
-        }
+        } catch (e) { console.warn('Ошибка загрузки картин:', e); }
 
-        // Грузим манифест статей
+        // 3. Статьи (из манифеста)
         try {
-          const manifestRes = await fetch('/content/manifest.json', { cache: 'no-store' });
-          if (manifestRes.ok) {
-            const manifest = await manifestRes.json();
-            setArticles(manifest.articles || []);
+          const res = await fetch('/content/manifest.json', { cache: 'no-store' });
+          if (res.ok) {
+            const data = await res.json();
+            setArticles(data.articles || []);
           }
-        } catch (e) {
-          console.warn('Не удалось загрузить манифест статей для избранного:', e);
-        }
+        } catch (e) { console.warn('Ошибка загрузки статей:', e); }
 
-        // Объединяем и дедуплицируем по id
-        const mergedById = new Map();
-        (allDishesData || []).forEach((it) => {
-          if (!it || !it.id) return;
-          mergedById.set(String(it.id), it);
-        });
-        artworks.forEach((it) => {
-          if (!it || !it.id) return;
-          mergedById.set(String(it.id), it);
-        });
+        // Объединяем "каталожные" элементы
+        const merged = new Map();
+        (dishesData || []).forEach(it => it.id && merged.set(String(it.id), it));
+        artworks.forEach(it => it.id && merged.set(String(it.id), it));
 
-        setAllDishes(Array.from(mergedById.values()));
-      } catch (error) {
-        console.error('Ошибка загрузки блюд:', error);
+        setAllCatalogItems(Array.from(merged.values()));
+
+      } catch (err) {
+        console.error('Global data load error:', err);
       } finally {
         setLoading(false);
       }
     };
-
-    loadDishes();
+    loadData();
   }, []);
 
-  // Обновляем избранное при изменении localStorage
+  // Следим за изменениями localStorage (синхронизация вкладок)
   useEffect(() => {
-    const handleStorageChange = (e) => {
-      if (e.key === 'favoriteDishes' || e.key === 'art-favorites' || e.key === null) {
-        const saved = localStorage.getItem('favoriteDishes');
-        const artSaved = localStorage.getItem('art-favorites');
-        const ids = [
-          ...(saved ? JSON.parse(saved) : []),
-          ...(artSaved ? JSON.parse(artSaved) : []),
-        ];
-        setFavorites(Array.from(new Set(ids)).filter(Boolean));
+    const handleStorage = (e) => {
+      // 1. FAVORITE PRODUCTS
+      if (!e.key || ['favoriteDishes', 'art-favorites'].includes(e.key)) {
+        const d = localStorage.getItem('favoriteDishes');
+        const a = localStorage.getItem('art-favorites');
+        const ids = [...(d ? JSON.parse(d) : []), ...(a ? JSON.parse(a) : [])];
+        const newSet = Array.from(new Set(ids)).filter(Boolean);
+
+        setFavorites(prev => {
+          if (JSON.stringify(prev) === JSON.stringify(newSet)) return prev;
+          return newSet;
+        });
       }
-      if (e.key === 'media.favorites' || e.key === null) {
-        const savedMedia = localStorage.getItem('media.favorites');
-        setMediaFavorites(savedMedia ? JSON.parse(savedMedia) : []);
+      // 2. FAVORITE MEDIA
+      if (!e.key || e.key === 'media.favorites') {
+        const m = localStorage.getItem('media.favorites');
+        const newMedia = m ? JSON.parse(m) : [];
+
+        setMediaFavorites(prev => {
+          if (JSON.stringify(prev) === JSON.stringify(newMedia)) return prev;
+          return newMedia;
+        });
       }
-      if (e.key === 'article-favorites' || e.key === null) {
-        const savedArticles = localStorage.getItem('article-favorites');
-        setArticleFavorites(savedArticles ? JSON.parse(savedArticles) : []);
+      // 3. FAVORITE ARTICLES
+      if (!e.key || e.key === 'article-favorites') {
+        const ar = localStorage.getItem('article-favorites');
+        const newArticles = ar ? JSON.parse(ar) : [];
+
+        setArticleFavorites(prev => {
+          if (JSON.stringify(prev) === JSON.stringify(newArticles)) return prev;
+          return newArticles;
+        });
       }
     };
 
-    window.addEventListener('storage', handleStorageChange);
-
-    // Также проверяем изменения localStorage в том же окне
-    const checkInterval = setInterval(() => {
-      const saved = localStorage.getItem('favoriteDishes');
-      const artSaved = localStorage.getItem('art-favorites');
-      const currentFavorites = Array.from(
-        new Set([...(saved ? JSON.parse(saved) : []), ...(artSaved ? JSON.parse(artSaved) : [])])
-      ).filter(Boolean);
-      if (JSON.stringify(currentFavorites) !== JSON.stringify(favorites)) {
-        setFavorites(currentFavorites);
-      }
-
-      const savedMedia = localStorage.getItem('media.favorites');
-      const currentMediaFavorites = savedMedia ? JSON.parse(savedMedia) : [];
-      if (JSON.stringify(currentMediaFavorites) !== JSON.stringify(mediaFavorites)) {
-        setMediaFavorites(currentMediaFavorites);
-      }
-
-      const savedArticles = localStorage.getItem('article-favorites');
-      const currentArticleFavorites = savedArticles ? JSON.parse(savedArticles) : [];
-      if (JSON.stringify(currentArticleFavorites) !== JSON.stringify(articleFavorites)) {
-        setArticleFavorites(currentArticleFavorites);
-      }
-    }, 500);
+    window.addEventListener('storage', handleStorage);
+    // Интервал для надежности (polling)
+    const interval = setInterval(() => handleStorage({ key: null }), 1000);
 
     return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      clearInterval(checkInterval);
+      window.removeEventListener('storage', handleStorage);
+      clearInterval(interval);
     };
-  }, [favorites, mediaFavorites]);
+  }, []);
 
-  // Сохраняем фильтр поиска избранного в localStorage.
-  useEffect(() => {
-    if (!filtersLoaded) return;
-    const payload = { searchQuery };
-    localStorage.setItem(favoritesFiltersStorageKey, JSON.stringify(payload));
-  }, [favoritesFiltersStorageKey, searchQuery]);
+  // === ЛОГИКА ФИЛЬТРАЦИИ И ПОИСКА ===
 
-  // Функция для получения значения поля в зависимости от языка
-  const getFieldValue = (dish, fieldName) => {
-    if (language === 'EN' && dish.i18n?.en) {
-      const enField = `${fieldName}-en`;
-      return dish.i18n.en[enField] || dish[fieldName] || '';
-    }
-    return dish[fieldName] || '';
-  };
+  // 1. Разбиваем избранное на "сырые" группы
+  const categorizedData = useMemo(() => {
+    const groups = {
+      dishes: [],
+      drinks: [],
+      paintings: [],
+      media: [],
+      articles: []
+    };
 
-  // Функция для получения тегов в зависимости от языка
-  const getTagsForLanguage = (dish) => {
-    if (language === 'EN' && dish.i18n?.en?.['tags-en']) {
-      const tagsEn = dish.i18n.en['tags-en'];
-      if (typeof tagsEn === 'string') {
-        return tagsEn.split(',').map(t => t.trim()).filter(Boolean);
+    // Проходим по каталогу (еда, напитки, картины)
+    allCatalogItems.forEach(item => {
+      if (favorites.includes(item.id) && isContentVisible(item)) {
+        const type = getItemType(item); // 'dish', 'drink', 'painting'
+        if (type === 'dish') groups.dishes.push(item);
+        if (type === 'drink') groups.drinks.push(item);
+        if (type === 'painting') groups.paintings.push(item);
       }
-      return Array.isArray(tagsEn) ? tagsEn : [];
-    }
-    return dish.tags || [];
+    });
+
+    // Медиа
+    groups.media = mediaItems.filter(m => mediaFavorites.includes(m.id));
+
+    // Статьи
+    groups.articles = articles.filter(a => articleFavorites.includes(a.key));
+
+    return groups;
+  }, [allCatalogItems, favorites, mediaItems, mediaFavorites, articles, articleFavorites]);
+
+  // 2. Применяем поиск к каждой группе
+  const filteredData = useMemo(() => {
+    const q = searchQuery.toLowerCase().trim();
+    if (!q) return categorizedData;
+
+    const matches = (txt) => String(txt || '').toLowerCase().includes(q);
+
+    return {
+      dishes: categorizedData.dishes.filter(d =>
+        matches(d.title) || matches(d.description) || matches(d.section)
+      ),
+      drinks: categorizedData.drinks.filter(d =>
+        matches(d.title) || matches(d.description) || matches(d.section)
+      ),
+      paintings: categorizedData.paintings.filter(p =>
+        matches(p.title) || matches(p.description) || matches(p.author)
+      ),
+      media: categorizedData.media.filter(m =>
+        matches(m.title) || matches(m.description) || matches(m.category)
+      ),
+      articles: categorizedData.articles.filter(a =>
+        matches(a.title) || matches(a.description) || matches(a.tags)
+      )
+    };
+  }, [categorizedData, searchQuery]);
+
+  // Счетчики (общее количество в избранном, независимо от поиска, чтобы показывать на табах)
+  const counts = {
+    all: Object.values(categorizedData).reduce((acc, output) => acc + output.length, 0),
+    dishes: categorizedData.dishes.length,
+    drinks: categorizedData.drinks.length,
+    paintings: categorizedData.paintings.length,
+    media: categorizedData.media.length,
+    articles: categorizedData.articles.length
   };
 
-  // Функция для получения аллергенов в зависимости от языка
-  const getAllergensForLanguage = (dish) => {
-    if (language === 'EN' && dish.i18n?.en?.['allergens-en']) {
-      const allergensEn = dish.i18n.en['allergens-en'];
-      if (typeof allergensEn === 'string') {
-        return allergensEn.split(',').map(a => a.trim()).filter(Boolean);
-      }
-      return Array.isArray(allergensEn) ? allergensEn : [];
-    }
-    return dish.allergens || [];
-  };
-
-  // Если гость пытается зайти на страницу избранного, перенаправляем на главную
-  useEffect(() => {
-    if (isGuest) {
-      navigate('/');
-    }
-  }, [isGuest, navigate]);
-
-  // Фильтруем блюда: только избранные
-  const favoriteDishes = allDishes
-    .filter(dish => favorites.includes(dish.id))
-    .filter((dish) => isContentVisible(dish));
-
-  // Избранные медиа по id (берем из статического списка).
-  const favoriteMediaItems = mediaItems.filter((item) => mediaFavorites.includes(item.id));
-
-  // Фильтруем по поисковому запросу
-  const filteredDishes = favoriteDishes.filter((dish) => {
-    const queryLower = searchQuery.toLowerCase();
-    const dishTitle = getFieldValue(dish, 'title');
-    const dishDescription = getFieldValue(dish, 'description');
-    const dishSection = getFieldValue(dish, 'section');
-    const dishAllergens = getAllergensForLanguage(dish);
-    const dishTags = getTagsForLanguage(dish);
-
-    return !searchQuery ||
-      dishTitle?.toLowerCase().includes(queryLower) ||
-      dishDescription?.toLowerCase().includes(queryLower) ||
-      dishSection?.toLowerCase().includes(queryLower) ||
-      dishAllergens.some(a => a.toLowerCase().includes(queryLower)) ||
-      dishTags.some(t => t.toLowerCase().includes(queryLower));
-  });
-
-  // Функция для получения иконки аллергена
-  const getAllergenIcon = (allergen) => {
-    const allergenLower = allergen?.toLowerCase() || '';
-    if (allergenLower.includes('глютен') || allergenLower.includes('gluten')) return 'bakery_dining';
-    if (allergenLower.includes('яйц') || allergenLower.includes('egg')) return 'egg';
-    if (allergenLower.includes('молоч') || allergenLower.includes('dairy')) return 'water_drop';
-    if (allergenLower.includes('рыб') || allergenLower.includes('fish')) return 'set_meal';
-    if (allergenLower.includes('орех') || allergenLower.includes('nut')) return 'check_circle';
-    return 'check_circle';
-  };
-
-  // Функция для получения тегов блюда
-  const getDishTags = (dish) => {
-    const tags = [];
-    const dishTags = getTagsForLanguage(dish);
-    if (dishTags.length > 0) {
-      if (dishTags.some(t => t.toLowerCase().includes('остр') || t.toLowerCase().includes('spicy'))) {
-        tags.push({ type: 'spicy', icon: 'local_fire_department', color: 'red' });
-      }
-      if (dishTags.some(t => t.toLowerCase().includes('веган') || t.toLowerCase().includes('vegan'))) {
-        tags.push({ type: 'vegan', icon: 'eco', color: 'green' });
-      }
-      if (dishTags.some(t => t.toLowerCase().includes('вегетариан') || t.toLowerCase().includes('vegetarian'))) {
-        tags.push({ type: 'vegetarian', icon: 'eco', color: 'green' });
-      }
-    }
-    return tags;
-  };
-
-  // Простое склонение для RU: 1 элемент, 2 элемента, 5 элементов.
-  const formatElementsCountRu = (count) => {
-    const n = Number(count) || 0;
-    const mod10 = n % 10;
-    const mod100 = n % 100;
-    if (mod10 === 1 && mod100 !== 11) return `${n} элемент`;
-    if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return `${n} элемента`;
-    return `${n} элементов`;
-  };
-
+  // Хелпер: переход к медиа
   const handleOpenMedia = (item) => {
     if (!item) return;
-    // Запоминаем выбранное медиа, чтобы на странице /media открылся нужный файл.
     const raw = localStorage.getItem('media.playerState');
-    let savedState = {};
-    try {
-      savedState = raw ? JSON.parse(raw) : {};
-    } catch {
-      savedState = {};
-    }
-    localStorage.setItem(
-      'media.playerState',
-      JSON.stringify({
-        ...savedState,
-        currentId: item.id,
-        isMiniPlayerVisible: true
-      })
-    );
+    const saved = raw ? JSON.parse(raw) : {};
+    localStorage.setItem('media.playerState', JSON.stringify({
+      ...saved,
+      currentId: item.id,
+      isMiniPlayerVisible: true
+    }));
     navigate('/media');
   };
 
-  // Если гость, не показываем страницу
-  if (isGuest) {
-    return null;
-  }
+  // Хелпер: Получение данных для отрисовки полей (язык)
+  const getLoc = (obj, field) => {
+    if (language === 'EN' && obj?.i18n?.en) {
+      return obj.i18n.en[`${field}-en`] || obj[field] || '';
+    }
+    return obj?.[field] || '';
+  };
 
+  if (isGuest) return null; // Защита
   if (loading) {
     return (
-      <div className="bg-background-light dark:bg-background-dark font-display antialiased text-[#181311] dark:text-[#f4f2f0] min-h-screen flex items-center justify-center">
-        <div className="text-primary text-xl font-bold">Загрузка...</div>
+      <div className="bg-background-light dark:bg-background-dark min-h-screen flex items-center justify-center">
+        <div className="text-primary text-xl font-bold animate-pulse">
+          {language === 'EN' ? 'Loading favorites...' : 'Загружаем избранное...'}
+        </div>
       </div>
     );
   }
 
+  // === UI RENDER COMPONENTS ===
+
+  // Компонент Таба фильтра
+  const FilterTab = ({ id, label, count, icon }) => (
+    <button
+      onClick={() => setActiveFilter(id)}
+      className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold whitespace-nowrap transition-all border ${activeFilter === id
+        ? 'bg-[#181311] text-white border-[#181311] dark:bg-white dark:text-black dark:border-white shadow-md'
+        : 'bg-white text-gray-500 border-gray-200 dark:bg-surface-dark dark:text-gray-400 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
+        }`}
+    >
+      {icon && <span className="material-symbols-outlined text-[18px]">{icon}</span>}
+      <span>{label}</span>
+      {count > 0 && (
+        <span className={`ml-1 text-[10px] px-1.5 py-0.5 rounded-md ${activeFilter === id
+          ? 'bg-white/20 text-white dark:bg-black/10 dark:text-black'
+          : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300'
+          }`}>
+          {count}
+        </span>
+      )}
+    </button>
+  );
+
+  // Секция списка
+  const Section = ({ title, items, type }) => {
+    if (!items || items.length === 0) return null;
+    return (
+      <div className="mb-6 animate-fadeIn">
+        <h3 className="font-bold text-lg text-[#181311] dark:text-white mb-2 px-1 flex items-center gap-2">
+          {title} <span className="text-gray-400 text-sm font-normal">({items.length})</span>
+        </h3>
+        {/* Compact Grid: 3 columns */}
+        <div className="grid grid-cols-3 gap-2">
+          {items.map(item => {
+            // Рендер для разных типов
+            if (type === 'media') {
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => handleOpenMedia(item)}
+                  className="text-left rounded-lg overflow-hidden bg-white dark:bg-surface-dark shadow-sm border border-gray-100 dark:border-gray-800 hover:border-primary/50 transition-all group"
+                >
+                  <div className="relative w-full aspect-square bg-gray-100 dark:bg-gray-800">
+                    <img
+                      src={item.coverUrl}
+                      alt=""
+                      className="w-full h-full object-cover"
+                      onError={(e) => e.target.style.display = 'none'}
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <span className="material-symbols-outlined text-white text-3xl drop-shadow-md">play_circle</span>
+                    </div>
+                  </div>
+                  <div className="p-2">
+                    <p className="font-bold text-[10px] dark:text-white line-clamp-2 mb-0.5 leading-tight">{item.title}</p>
+                    <p className="text-[9px] text-gray-400 line-clamp-1">{item.duration}</p>
+                  </div>
+                </button>
+              );
+            }
+
+            if (type === 'article') {
+              return (
+                <Link
+                  key={item.key}
+                  to={`/article/${item.key}`}
+                  className="block rounded-lg overflow-hidden bg-white dark:bg-surface-dark shadow-sm border border-gray-100 dark:border-gray-800 hover:border-primary/50 transition-all"
+                >
+                  <div className="relative w-full aspect-square bg-gray-100 dark:bg-gray-800">
+                    <div
+                      className="absolute inset-0 bg-cover bg-center"
+                      style={{ backgroundImage: `url('${item.image || '/articles/placeholder.jpg'}')` }}
+                    />
+                  </div>
+                  <div className="p-2">
+                    <p className="font-bold text-[10px] dark:text-white line-clamp-2 mb-0.5 leading-tight">{item.title}</p>
+                    <p className="text-[9px] text-gray-400">{item.readingTime}</p>
+                  </div>
+                </Link>
+              );
+            }
+
+            // Dish, Drink, Painting
+            const path = getDetailPath(item, type);
+            const titleVal = getLoc(item, 'title');
+            const imgUrl = getDishImageUrl(item);
+            const isArchived = item.status === 'в архиве';
+
+            return (
+              <Link
+                key={item.id}
+                to={path}
+                className={`block rounded-lg overflow-hidden bg-white dark:bg-surface-dark shadow-sm border border-gray-100 dark:border-gray-800 hover:border-primary/50 transition-all ${isArchived ? 'opacity-70 grayscale' : ''}`}
+              >
+                <div className="relative w-full aspect-square bg-gray-100 dark:bg-gray-800 group">
+                  {imgUrl ? (
+                    <div
+                      className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
+                      style={{ backgroundImage: `url('${imgUrl}')` }}
+                    />
+                  ) : (
+                    <div className="absolute inset-0 flex items-center justify-center text-gray-300">
+                      <span className="material-symbols-outlined text-3xl">image_not_supported</span>
+                    </div>
+                  )}
+                  {isArchived && (
+                    <div className="absolute top-1 right-1 bg-black/70 text-white text-[8px] px-1.5 py-0.5 rounded backdrop-blur">АРХИВ</div>
+                  )}
+                </div>
+                <div className="p-2">
+                  <p className="font-bold text-[10px] dark:text-white line-clamp-2 mb-0 leading-tight group-hover:text-primary transition-colors">{titleVal}</p>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
+
+  const isEmpty = Object.values(filteredData).every(arr => arr.length === 0);
+
   return (
-    <div className="relative flex h-full min-h-screen w-full flex-col bg-background-light dark:bg-background-dark shadow-2xl overflow-hidden border-x border-gray-100 dark:border-gray-800">
-      {/* Header */}
-      <div className="sticky top-0 z-40 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md border-b border-gray-200/50 dark:border-gray-800/50">
+    <div className="flex bg-background-light dark:bg-background-dark min-h-screen w-full flex-col pb-24">
+
+      {/* HEADER */}
+      <div className="sticky top-0 z-30 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-lg border-b border-gray-200/50 dark:border-gray-800/50">
         <div className="flex items-center px-4 pt-4 pb-2 justify-between">
-          <button
-            onClick={() => navigate(-1)}
-            className="text-[#181311] dark:text-white flex size-10 shrink-0 items-center justify-center rounded-full active:bg-black/5 dark:active:bg-white/10 transition-colors"
-          >
-            <span className="material-symbols-outlined">arrow_back</span>
+          <button onClick={() => navigate(-1)} className="size-10 flex items-center justify-center rounded-full active:bg-gray-100 dark:active:bg-gray-800">
+            <span className="material-symbols-outlined text-[#181311] dark:text-white">arrow_back</span>
           </button>
-          <h2 className="text-[#181311] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center">
+          <h2 className="text-lg font-bold text-[#181311] dark:text-white">
             {language === 'EN' ? 'Favorites' : 'Избранное'}
           </h2>
-          <div className="flex w-12 items-center justify-end">
-            {isVisible({ scope: 'featureAction', target: 'language.switcher' }) && (
+          <div className="w-10"></div>
+        </div>
+
+        {/* SEARCH */}
+        <div className="px-4 pb-3">
+          <div className="relative group">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors material-symbols-outlined">search</span>
+            <input
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder={language === 'EN' ? 'Search details...' : 'Поиск по избранному...'}
+              className="w-full bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-700 rounded-xl h-10 pl-10 pr-4 text-sm outline-none focus:border-primary transition-all text-[#181311] dark:text-white placeholder:text-gray-400"
+            />
+            {searchQuery && (
               <button
-                onClick={() => {
-                  const newLanguage = language === 'RU' ? 'EN' : 'RU';
-                  setLanguage(newLanguage);
-                  localStorage.setItem('menuLanguage', newLanguage);
-                }}
-                className={`text-xs font-bold leading-normal tracking-[0.015em] shrink-0 border rounded-lg px-2 py-1 transition-colors ${language === 'EN'
-                  ? 'bg-primary text-white border-primary'
-                  : 'text-primary border-primary/30 hover:bg-primary hover:text-white'
-                  }`}
+                onClick={() => setSearchQuery('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-red-500"
               >
-                {language === 'RU' ? 'EN' : 'RU'}
+                <span className="material-symbols-outlined text-[18px]">close</span>
               </button>
             )}
           </div>
         </div>
-        {/* Search */}
-        {isVisible({ scope: 'pageBlock', target: 'search.input' }) && (
-          <div className="px-4 py-2">
-            <div className="flex w-full items-stretch rounded-xl h-10 bg-white dark:bg-surface-dark shadow-sm border border-gray-100 dark:border-gray-700/50 group focus-within:border-primary/50 transition-colors">
-              <div className="text-[#896f61] dark:text-gray-400 flex items-center justify-center pl-3 pr-2 group-focus-within:text-primary transition-colors">
-                <span className="material-symbols-outlined text-[20px]">search</span>
-              </div>
-              <input
-                className="flex w-full flex-1 bg-transparent border-none text-[#181311] dark:text-white placeholder:text-[#896f61] dark:placeholder:text-gray-500 focus:ring-0 text-sm font-normal h-full p-0 pr-3"
-                placeholder={language === 'EN' ? 'Search favorites...' : 'Поиск в избранном...'}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
+
+        {/* FILTER TABS */}
+        <div className="px-4 pb-4 overflow-x-auto no-scrollbar">
+          <div className="flex gap-2">
+            <FilterTab id="all" label={language === 'EN' ? 'All' : 'Все'} count={counts.all} />
+            {counts.media > 0 && <FilterTab id="media" label={language === 'EN' ? 'Media' : 'Медиа'} count={counts.media} icon="play_circle" />}
+            {counts.articles > 0 && <FilterTab id="articles" label={language === 'EN' ? 'Articles' : 'Статьи'} count={counts.articles} icon="article" />}
+            {counts.dishes > 0 && <FilterTab id="dishes" label={language === 'EN' ? 'Dishes' : 'Блюда'} count={counts.dishes} icon="restaurant" />}
+            {counts.drinks > 0 && <FilterTab id="drinks" label={language === 'EN' ? 'Drinks' : 'Напитки'} count={counts.drinks} icon="wine_bar" />}
+            {counts.paintings > 0 && <FilterTab id="paintings" label={language === 'EN' ? 'Art' : 'Картины'} count={counts.paintings} icon="palette" />}
           </div>
-        )}
+        </div>
       </div>
 
-      {/* Dishes Grid */}
-      <div className="flex-1 overflow-y-auto px-3 pb-24 pt-3">
-        {favoriteMediaItems.length > 0 && (
-          <div className="mb-5">
-            <h3 className="font-bold text-base dark:text-white px-1 mb-2">
-              {language === 'EN' ? 'Favorite media' : 'Избранные медиа'}
-            </h3>
-            <div className="grid grid-cols-2 gap-2">
-              {favoriteMediaItems.map((item) => (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => handleOpenMedia(item)}
-                  className="text-left rounded-lg overflow-hidden bg-white dark:bg-surface-dark shadow-[0_2px_8px_rgba(0,0,0,0.04)] dark:shadow-none border border-gray-100 dark:border-gray-800 hover:border-primary/30 transition-all"
-                >
-                  <div className="relative w-full aspect-square overflow-hidden bg-gray-100 dark:bg-gray-800">
-                    <img
-                      src={item.coverUrl || '/media/cover-placeholder.svg'}
-                      alt=""
-                      className="absolute inset-0 h-full w-full object-cover"
-                      loading="lazy"
-                    />
-                  </div>
-                  <div className="p-2">
-                    <p className="font-bold text-[11px] leading-[1.2] dark:text-white line-clamp-2 mb-1">
-                      {item.title}
-                    </p>
-                    <p className="text-[9px] text-[#896f61] dark:text-gray-400 line-clamp-2 leading-tight opacity-90">
-                      {item.description}
-                    </p>
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        <div className="flex justify-between items-center mb-3 px-1">
-          <h3 className="font-bold text-base dark:text-white">
-            {language === 'EN' ? 'Favorite items' : 'Избранные карточки'}
-          </h3>
-          <span className="text-[10px] text-gray-500 font-medium bg-gray-100 dark:bg-white/5 px-2 py-0.5 rounded-md border border-gray-200 dark:border-gray-700">
-            {language === 'EN'
-              ? `${filteredDishes.length} items`
-              : formatElementsCountRu(filteredDishes.length)}
-          </span>
-        </div>
-
-        {articles.filter(a => articleFavorites.includes(a.key)).length > 0 && (
-          <div className="mb-5">
-            <h3 className="font-bold text-base dark:text-white px-1 mb-2">
-              {language === 'EN' ? 'Favorite articles' : 'Избранные статьи'}
-            </h3>
-            <div className="grid grid-cols-2 gap-2">
-              {articles
-                .filter(a => articleFavorites.includes(a.key))
-                .map((article) => (
-                  <Link
-                    key={article.key}
-                    to={`/article/${article.key}`}
-                    className="text-left rounded-lg overflow-hidden bg-white dark:bg-surface-dark shadow-[0_2px_8px_rgba(0,0,0,0.04)] dark:shadow-none border border-gray-100 dark:border-gray-800 hover:border-primary/30 transition-all"
-                  >
-                    <div className="relative w-full aspect-[16/9] overflow-hidden bg-gray-100 dark:bg-gray-800">
-                      <div
-                        className="absolute inset-0 bg-cover bg-center transition-transform hover:scale-105"
-                        style={{ backgroundImage: `url('${article.thumbnail || '/articles/placeholder.jpg'}')` }}
-                        onError={(e) => { e.target.style.backgroundImage = 'url("/articles/placeholder.jpg")'; }}
-                      />
-                    </div>
-                    <div className="p-2">
-                      <p className="font-bold text-[11px] leading-[1.2] dark:text-white line-clamp-2 mb-1">
-                        {article.title}
-                      </p>
-                      <p className="text-[9px] text-[#896f61] dark:text-gray-400 line-clamp-1 leading-tight opacity-90">
-                        {article.date} • {article.readingTime}
-                      </p>
-                    </div>
-                  </Link>
-                ))}
-            </div>
-          </div>
-        )}
-        <div className="grid grid-cols-3 gap-2">
-          {filteredDishes.length === 0 ? (
-            <div className="col-span-3 text-center py-8 text-[#896f61] dark:text-gray-400">
-              {favorites.length === 0
-                ? (language === 'EN' ? 'No favorites yet' : 'Пока нет избранных карточек')
-                : (language === 'EN' ? 'Nothing found' : 'Ничего не найдено')
+      {/* CONTENT AREA */}
+      <div className="flex-1 px-3 pt-3">
+        {isEmpty ? (
+          <div className="flex flex-col items-center justify-center py-20 text-center opacity-60">
+            <span className="material-symbols-outlined text-6xl mb-4 text-gray-300">favorite_border</span>
+            <p className="text-gray-500 dark:text-gray-400 text-sm">
+              {searchQuery
+                ? (language === 'EN' ? 'No matches found' : 'Ничего не найдено по запросу')
+                : (language === 'EN' ? 'Your favorites list is empty' : 'Вы еще ничего не добавили в избранное')
               }
-            </div>
-          ) : (
-            filteredDishes.map((dish) => {
-              const tags = getDishTags(dish);
-              const imageUrl = getDishImageUrl(dish);
-              const isArchived = dish.status === 'в архиве';
+            </p>
+          </div>
+        ) : (
+          <>
+            {/* Logic: Show specific or stack all non-empty filtered sections in PRIORITY order */}
+            {/* 1. DISHES */}
+            {(activeFilter === 'all' || activeFilter === 'dishes') && <Section title={language === 'EN' ? 'Dishes' : 'Блюда'} items={filteredData.dishes} type="dish" />}
 
-              return (
-                <Link
-                  key={dish.id}
-                  to={getDetailPathForItem(dish)}
-                  className="group relative rounded-lg overflow-hidden bg-white dark:bg-surface-dark shadow-[0_2px_8px_rgba(0,0,0,0.04)] dark:shadow-none border border-gray-100 dark:border-gray-800 hover:border-primary/30 transition-all"
-                >
-                  {/* Затемняем ТОЛЬКО контент карточки, чтобы бейдж "В АРХИВЕ" был читабельным */}
-                  <div className={`flex flex-col h-full ${isArchived ? 'opacity-50 grayscale' : ''}`}>
-                    <div className="relative w-full aspect-square overflow-hidden bg-gray-100 dark:bg-gray-800">
-                      {imageUrl ? (
-                        <div
-                          className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
-                          style={{ backgroundImage: `url('${imageUrl}')` }}
-                        />
-                      ) : (
-                        <div className="absolute inset-0 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-                          <span className="material-symbols-outlined text-gray-400 text-4xl">restaurant</span>
-                        </div>
-                      )}
-                      {tags.length > 0 && (
-                        <div className="absolute top-1.5 left-1.5 flex flex-wrap gap-1">
-                          {tags.map((tag, idx) => (
-                            <span
-                              key={idx}
-                              className={`bg-white/95 dark:bg-black/60 backdrop-blur-[2px] p-0.5 rounded-md ${tag.color === 'red' ? 'text-red-500' : 'text-green-600'} shadow-sm ring-1 ring-black/5`}
-                              title={tag.type}
-                            >
-                              <span className="material-symbols-outlined text-[12px] block">{tag.icon}</span>
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                    <div className="p-2 flex flex-col flex-grow">
-                      <h3 className="font-bold text-[11px] leading-[1.2] dark:text-white line-clamp-2 mb-1 group-hover:text-primary transition-colors">
-                        {getFieldValue(dish, 'title') || (language === 'EN' ? 'No title' : 'Без названия')}
-                      </h3>
-                      {getFieldValue(dish, 'description') && (
-                        <p className="text-[9px] text-[#896f61] dark:text-gray-400 line-clamp-2 mb-2 leading-tight opacity-90">
-                          {getFieldValue(dish, 'description')}
-                        </p>
-                      )}
-                      <div className="mt-auto flex items-center justify-between pt-1.5 border-t border-dashed border-gray-100 dark:border-gray-700">
-                        {getAllergensForLanguage(dish).length > 0 && (
-                          <div className="flex items-center gap-1">
-                            <span className="material-symbols-outlined text-gray-400 dark:text-gray-500 text-[12px]">
-                              {getAllergenIcon(getAllergensForLanguage(dish)[0])}
-                            </span>
-                            <span className="text-[8px] text-gray-400 uppercase font-semibold">
-                              {getAllergensForLanguage(dish)[0].substring(0, 5)}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
+            {/* 2. DRINKS */}
+            {(activeFilter === 'all' || activeFilter === 'drinks') && <Section title={language === 'EN' ? 'Drinks' : 'Напитки'} items={filteredData.drinks} type="drink" />}
 
-                  {/* Индикатор архива поверх карточки */}
-                  {isArchived && (
-                    <div className="absolute top-2 right-2 bg-gray-700/90 text-white text-[10px] font-bold px-2 py-1 rounded-md backdrop-blur-sm">
-                      В АРХИВЕ
-                    </div>
-                  )}
-                </Link>
-              );
-            })
-          )}
-        </div>
+            {/* 3. ARTICLES */}
+            {(activeFilter === 'all' || activeFilter === 'articles') && <Section title={language === 'EN' ? 'Articles' : 'Статьи'} items={filteredData.articles} type="article" />}
+
+            {/* 4. MEDIA */}
+            {(activeFilter === 'all' || activeFilter === 'media') && <Section title={language === 'EN' ? 'Media' : 'Медиа'} items={filteredData.media} type="media" />}
+
+            {/* 5. PAINTINGS */}
+            {(activeFilter === 'all' || activeFilter === 'paintings') && <Section title={language === 'EN' ? 'Art' : 'Картины'} items={filteredData.paintings} type="painting" />}
+          </>
+        )}
       </div>
 
-      {/* Footer */}
+      {/* FOOTER (Navigation) */}
       <div className="fixed bottom-0 z-50 w-full sabor-fixed bg-white/95 dark:bg-surface-dark/95 backdrop-blur-md border-t border-gray-100 dark:border-gray-800 pb-safe">
         <div
           className={`grid ${(() => {
             const showFooterMenu = isVisible({ scope: 'menuItem', target: 'footer.menu' });
-            const showFooterFavorites = isVisible({ scope: 'menuItem', target: 'footer.favorites' });
+            const showFooterFavorites = true; // Always visible on this page? Or use 'footer.favorites'
             const showFooterSearch = isVisible({ scope: 'menuItem', target: 'footer.search' });
             const showFooterTools = isVisible({ scope: 'menuItem', target: 'footer.tools' });
-            const showFooterAdmin =
-              isAuthenticated &&
-              currentUser?.role === 'администратор' &&
-              isVisible({ scope: 'menuItem', target: 'footer.admin' });
-            const itemCount =
-              (showFooterMenu ? 1 : 0) +
-              (showFooterFavorites ? 1 : 0) +
-              (showFooterSearch ? 1 : 0) +
-              (showFooterTools ? 1 : 0) +
-              (showFooterAdmin ? 1 : 0);
-            if (itemCount >= 5) return 'grid-cols-5';
-            if (itemCount === 4) return 'grid-cols-4';
+            const showFooterAdmin = isAuthenticated && currentUser?.role === 'администратор' && isVisible({ scope: 'menuItem', target: 'footer.admin' });
+
+            const count = (showFooterMenu ? 1 : 0) + 1 + (showFooterSearch ? 1 : 0) + (showFooterTools ? 1 : 0) + (showFooterAdmin ? 1 : 0);
+            if (count >= 5) return 'grid-cols-5';
+            if (count === 4) return 'grid-cols-4';
             return 'grid-cols-3';
-          })()
-            } px-6 items-center h-[60px]`}
+          })()} px-6 items-center h-[60px]`}
         >
           {isVisible({ scope: 'menuItem', target: 'footer.menu' }) && (
-            <NavLink
-              to="/"
-              end
-              className={({ isActive }) =>
-                `flex flex-col items-center justify-center gap-1 transition-colors ${isActive
-                  ? 'text-primary'
-                  : 'text-gray-400 hover:text-[#181311] dark:text-gray-500 dark:hover:text-white'
-                }`
-              }
-            >
+            <NavLink to="/" end className={({ isActive }) => `flex flex-col items-center justify-center gap-1 transition-colors ${isActive ? 'text-primary' : 'text-gray-400 dark:text-gray-500'}`}>
               <span className="material-symbols-outlined text-[24px]">restaurant_menu</span>
               <span className="text-[10px] font-bold">{language === 'EN' ? 'Menu' : 'Меню'}</span>
             </NavLink>
           )}
-          {isVisible({ scope: 'menuItem', target: 'footer.favorites' }) && (
-            <NavLink
-              to="/favorites"
-              className={({ isActive }) =>
-                `flex flex-col items-center justify-center gap-1 transition-colors ${isActive
-                  ? 'text-primary'
-                  : 'text-gray-400 hover:text-[#181311] dark:text-gray-500 dark:hover:text-white'
-                }`
-              }
-            >
-              <span className="material-symbols-outlined text-[24px] fill-1">favorite</span>
-              <span className="text-[10px] font-medium">{language === 'EN' ? 'Favorites' : 'Избранное'}</span>
-            </NavLink>
-          )}
+
+          <NavLink to="/favorites" className={({ isActive }) => `flex flex-col items-center justify-center gap-1 transition-colors ${isActive ? 'text-primary' : 'text-gray-400 dark:text-gray-500'}`}>
+            <span className="material-symbols-outlined text-[24px] fill-1">favorite</span>
+            <span className="text-[10px] font-medium">{language === 'EN' ? 'Favorites' : 'Избранное'}</span>
+          </NavLink>
+
           {isVisible({ scope: 'menuItem', target: 'footer.search' }) && (
-            <button
-              onClick={() => {
-                // Открываем глобальный поиск отдельной страницей.
-                navigate('/search');
-              }}
-              className="flex flex-col items-center justify-center gap-1 text-gray-400 hover:text-[#181311] dark:hover:text-white transition-colors"
-            >
+            <button onClick={() => navigate('/search')} className="flex flex-col items-center justify-center gap-1 text-gray-400 dark:text-gray-500 transition-colors">
               <span className="material-symbols-outlined text-[24px]">search</span>
               <span className="text-[10px] font-medium">{language === 'EN' ? 'Search' : 'Поиск'}</span>
             </button>
           )}
+
           {isVisible({ scope: 'menuItem', target: 'footer.tools' }) && (
-            <NavLink
-              to="/info"
-              className={({ isActive }) =>
-                `flex flex-col items-center justify-center gap-1 transition-colors ${isActive
-                  ? 'text-primary'
-                  : 'text-gray-400 hover:text-[#181311] dark:text-gray-500 dark:hover:text-white'
-                }`
-              }
-            >
+            <NavLink to="/info" className={({ isActive }) => `flex flex-col items-center justify-center gap-1 transition-colors ${isActive ? 'text-primary' : 'text-gray-400 dark:text-gray-500'}`}>
               <span className="material-symbols-outlined text-[24px]">new_releases</span>
-              <span className="text-[10px] font-medium">{language === 'EN' ? 'Info' : 'Информация'}</span>
+              <span className="text-[10px] font-medium">{language === 'EN' ? 'Info' : 'Инфо'}</span>
             </NavLink>
           )}
-          {isAuthenticated &&
-            currentUser?.role === 'администратор' &&
-            isVisible({ scope: 'menuItem', target: 'footer.admin' }) && (
-              <NavLink
-                to="/admin"
-                className={({ isActive }) =>
-                  `flex flex-col items-center justify-center gap-1 transition-colors ${isActive
-                    ? 'text-primary'
-                    : 'text-gray-400 hover:text-[#181311] dark:text-gray-500 dark:hover:text-white'
-                  }`
-                }
-              >
-                <span className="material-symbols-outlined text-[24px]">person</span>
-                <span className="text-[10px] font-medium">{language === 'EN' ? 'Admin' : 'Админ-панель'}</span>
-              </NavLink>
-            )}
+
+          {isAuthenticated && currentUser?.role === 'администратор' && isVisible({ scope: 'menuItem', target: 'footer.admin' }) && (
+            <NavLink to="/admin" className={({ isActive }) => `flex flex-col items-center justify-center gap-1 transition-colors ${isActive ? 'text-primary' : 'text-gray-400 dark:text-gray-500'}`}>
+              <span className="material-symbols-outlined text-[24px]">person</span>
+              <span className="text-[10px] font-medium">{language === 'EN' ? 'Admin' : 'Админ'}</span>
+            </NavLink>
+          )}
         </div>
       </div>
     </div>
