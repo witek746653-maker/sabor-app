@@ -12,7 +12,7 @@
         },
         {
             "key": "cigar-encyclopedia",
-            "title": "Энциклопедия сигар",
+            "title": "Сигарная энциклопедия",
             "url": "https://cdn.sabor-dlv.ru/resources/cigar-encyclopedia.md",
             "image": "/images/cigars-head.webp",
             "category": "Статья",
@@ -24,6 +24,15 @@
             "title": "Сет-завтраки для отеля",
             "url": "https://cdn.sabor-dlv.ru/resources/hotel-breakfast-set.md",
             "image": "/images/hotel-breakfast-set.webp",
+            "category": "Инструкция",
+            "readingTime": "1 мин",
+            "version": 1
+        },
+        {
+            "key": "cigar-tasting-set",
+            "title": "Сеты для сигарной дегустации",
+            "url": "https://cdn.sabor-dlv.ru/resources/cigar-tasting-set.md",
+            "image": "/images/cigar-tasting-set.webp",
             "category": "Инструкция",
             "readingTime": "1 мин",
             "version": 1

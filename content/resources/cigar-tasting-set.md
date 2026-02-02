@@ -61,8 +61,6 @@
 
 </aside>
 
-![image.png](image.png)
-
 <aside>
 💡
 
