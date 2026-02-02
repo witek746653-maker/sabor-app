@@ -26,6 +26,7 @@ export default function ArticleReaderPage() {
     const [loadingState, setLoadingState] = useState('loading'); // loading, success, error
     const [errorHeader, setErrorHeader] = useState('');
     const [manifestUpdate, setManifestUpdate] = useState(null);
+    const [fileDate, setFileDate] = useState(null);
 
     // Settings
     const [fontSize, setFontSize] = useState(() => localStorage.getItem('reader-font-size') || 'base');
@@ -88,6 +89,13 @@ export default function ArticleReaderPage() {
                 // 2. Fetch markdown content
                 const mdResponse = await fetch(article.url);
                 if (!mdResponse.ok) throw new Error('Не удалось загрузить текст статьи');
+
+                // Пытаемся получить реальную дату изменения файла от сервера
+                const lastModified = mdResponse.headers.get('Last-Modified');
+                if (lastModified) {
+                    setFileDate(lastModified);
+                }
+
                 const mdText = await mdResponse.text();
 
                 setRawMarkdown(mdText);
@@ -239,9 +247,9 @@ export default function ArticleReaderPage() {
                                 <span className="px-2 py-0.5 bg-primary/10 text-primary rounded-md">
                                     {articleData?.category || 'Статья'}
                                 </span>
-                                {manifestUpdate && (
+                                {(fileDate || manifestUpdate) && (
                                     <span className="px-2 py-0.5 border border-gray-100 dark:border-gray-800 text-gray-400 dark:text-gray-500 rounded-md bg-white/50 dark:bg-black/50">
-                                        Обновлено: {new Date(manifestUpdate).toLocaleDateString('ru-RU')}
+                                        Обновлено: {new Date(fileDate || manifestUpdate).toLocaleDateString('ru-RU')}
                                     </span>
                                 )}
                                 <span className="flex items-center gap-1 opacity-50">
@@ -272,7 +280,7 @@ export default function ArticleReaderPage() {
                                     <span className="text-primary font-bold">Синхронизировано:</span> {new Date().toLocaleDateString('ru-RU')} {new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}
                                 </div>
                                 <div className="opacity-50 text-right">
-                                    <span className="text-primary font-bold">Обновлено:</span> {new Date('2026-02-02T22:15:00Z').toLocaleDateString('ru-RU')}
+                                    <span className="text-primary font-bold">Обновлено:</span> {new Date(fileDate || manifestUpdate || Date.now()).toLocaleDateString('ru-RU')}
                                 </div>
                             </div>
                         </div>
