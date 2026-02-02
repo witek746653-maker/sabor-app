@@ -2,16 +2,16 @@
   "updated_at": "2026-02-02T00:00:00Z",
   "items": [
     {
-      "key": "guide/taste-of-moscow",
+      "key": "resources/taste-of-moscow",
       "title": "Москва со вкусом",
-      "url": "https://cdn.sabor-dlv.ru/guide/taste-of-moscow.md",
+      "url": "https://cdn.sabor-dlv.ru/resources/taste-of-moscow.md",
 
       "version": 1
     },
     {
-      "key": "guide/cigar-encyclopedia",
+      "key": "resources/cigar-encyclopedia",
       "title": "Энциклопедия сигар",
-      "url": "https://cdn.sabor-dlv.ru/guide/cigar-encyclopedia.md",
+      "url": "https://cdn.sabor-dlv.ru/resources/cigar-encyclopedia.md",
       "version": 1
 }
 
