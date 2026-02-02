@@ -17,7 +17,7 @@ async function precacheAssets() {
     console.error('[sw] Ошибка при загрузке манифеста ресурсов', error);
   }
 
-  const urls = new Set(['/','index.html', PRECACHE_MANIFEST_URL, ...manifest]);
+  const urls = new Set(['/', 'index.html', PRECACHE_MANIFEST_URL, ...manifest]);
 
   for (const url of urls) {
     try {

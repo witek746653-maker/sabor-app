@@ -145,6 +145,45 @@
     margin-bottom: 0;
 }
 
+/* Таблицы */
+.reader-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 2rem 0;
+    font-size: 0.9em;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--reader-quote-border);
+}
+
+.reader-content th {
+    background-color: var(--primary);
+    color: white;
+    text-align: left;
+    padding: 12px 15px;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 0.85em;
+    letter-spacing: 0.05em;
+}
+
+.reader-content td {
+    padding: 12px 15px;
+    border-bottom: 1px solid var(--reader-quote-border);
+}
+
+.reader-content tr:nth-of-type(even) {
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+.dark .reader-content tr:nth-of-type(even) {
+    background-color: rgba(255, 255, 255, 0.03);
+}
+
+.reader-content tr:last-of-type td {
+    border-bottom: none;
+}
+
 /* Search Highlights */
 .search-highlight {
     background-color: var(--reader-highlight);
