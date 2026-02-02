@@ -147,41 +147,60 @@
 
 /* Таблицы */
 .reader-content table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 2rem 0;
-    font-size: 0.9em;
-    border-radius: 12px;
-    overflow: hidden;
-    border: 1px solid var(--reader-quote-border);
+    width: 100% !important;
+    border-collapse: collapse !important;
+    margin: 2rem 0 !important;
+    font-size: 0.9em !important;
+    border-radius: 12px !important;
+    overflow: hidden !important;
+    border: 1px solid #e2e8f0 !important;
 }
 
 .reader-content th {
-    background-color: var(--primary);
-    color: white;
-    text-align: left;
-    padding: 12px 15px;
-    font-weight: bold;
-    text-transform: uppercase;
-    font-size: 0.85em;
-    letter-spacing: 0.05em;
+    background-color: #ee6c2b !important;
+    /* Наш фирменный оранжевый */
+    color: #ffffff !important;
+    text-align: left !important;
+    padding: 14px 15px !important;
+    font-weight: 800 !important;
+    text-transform: uppercase !important;
+    font-size: 0.8em !important;
+    letter-spacing: 0.05em !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+
+.reader-content th:last-child {
+    border-right: none !important;
 }
 
 .reader-content td {
-    padding: 12px 15px;
-    border-bottom: 1px solid var(--reader-quote-border);
+    padding: 12px 15px !important;
+    border-bottom: 1px solid rgba(238, 108, 43, 0.2) !important;
+    /* Очень тонкая оранжевая линия */
+    border-right: 1px solid rgba(238, 108, 43, 0.2) !important;
+    color: inherit !important;
+    vertical-align: top !important;
+}
+
+.reader-content td:last-child {
+    border-right: none !important;
+}
+
+.dark .reader-content td {
+    border-bottom: 1px solid rgba(238, 108, 43, 0.15) !important;
+    border-right: 1px solid rgba(238, 108, 43, 0.15) !important;
 }
 
 .reader-content tr:nth-of-type(even) {
-    background-color: rgba(0, 0, 0, 0.05);
+    background-color: rgba(0, 0, 0, 0.04) !important;
 }
 
 .dark .reader-content tr:nth-of-type(even) {
-    background-color: rgba(255, 255, 255, 0.08);
+    background-color: rgba(255, 255, 255, 0.06) !important;
 }
 
 .reader-content tr:last-of-type td {
-    border-bottom: none;
+    border-bottom: none !important;
 }
 
 /* Search Highlights */

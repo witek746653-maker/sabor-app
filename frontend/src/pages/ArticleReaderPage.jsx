@@ -280,7 +280,7 @@ export default function ArticleReaderPage() {
                                     <span className="text-primary font-bold">Синхронизировано:</span> {new Date().toLocaleDateString('ru-RU')} {new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}
                                 </div>
                                 <div className="opacity-50 text-right">
-                                    <span className="text-primary font-bold">Обновлено:</span> {new Date(fileDate || manifestUpdate || Date.now()).toLocaleDateString('ru-RU')}
+                                    <span className="text-primary font-bold">Обновлено:</span> {new Date(fileDate || manifestUpdate || Date.now()).toLocaleDateString('ru-RU', { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone })}
                                 </div>
                             </div>
                         </div>
