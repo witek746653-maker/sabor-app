@@ -92,6 +92,13 @@ if (!(Test-Path $publicDataDir)) {
 }
 Copy-Item -Force (Join-Path $PSScriptRoot "data\menu-database.json") (Join-Path $publicDataDir "menu-database.json")
 
+Info "Sync content into frontend/public"
+$publicContentDir = Join-Path $PSScriptRoot "frontend\public\content"
+if (!(Test-Path $publicContentDir)) {
+  New-Item -ItemType Directory -Path $publicContentDir | Out-Null
+}
+Copy-Item -Force -Recurse (Join-Path $PSScriptRoot "content\*") $publicContentDir
+
 if (-not $SkipBuild) {
   Info "Build frontend (npm run build)"
   Push-Location (Join-Path $PSScriptRoot "frontend")

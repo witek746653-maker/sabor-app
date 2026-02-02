@@ -173,11 +173,11 @@
 }
 
 .reader-content tr:nth-of-type(even) {
-    background-color: rgba(0, 0, 0, 0.02);
+    background-color: rgba(0, 0, 0, 0.05);
 }
 
 .dark .reader-content tr:nth-of-type(even) {
-    background-color: rgba(255, 255, 255, 0.03);
+    background-color: rgba(255, 255, 255, 0.08);
 }
 
 .reader-content tr:last-of-type td {
