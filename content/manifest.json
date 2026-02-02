@@ -7,7 +7,14 @@
       "url": "https://cdn.sabor-dlv.ru/guide/taste-of-moscow.md",
 
       "version": 1
-    }
+    },
+    {
+      "key": "guide/cigar-encyclopedia",
+      "title": "Энциклопедия сигар",
+      "url": "https://cdn.sabor-dlv.ru/guide/cigar-encyclopedia.md",
+      "version": 1
+}
+
   ]
 }
  
