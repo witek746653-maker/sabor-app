@@ -739,6 +739,7 @@ function HomePage() {
                   </Link>
                 );
               })}
+
               <div className="col-span-2 text-center py-8">
                 <p className="text-[#896f61] dark:text-gray-400 mb-4">Меню пока нет</p>
                 {isAuthenticated && currentUser?.role === 'администратор' && (
@@ -775,6 +776,33 @@ function HomePage() {
                       </p>
                       <p className="text-white/70 text-[10px] mt-0.5 font-medium uppercase tracking-wide">
                         {TEA_MENU_DESCRIPTION}
+                      </p>
+                    </div>
+                  </Link>
+                );
+              }
+
+              if (card.type === 'journal') {
+                return (
+                  <Link
+                    key={card.name}
+                    to="/useful"
+                    className="group relative overflow-hidden rounded-xl aspect-[4/3] shadow-md shadow-orange-900/5 active:scale-[0.98] transition-all duration-300"
+                  >
+                    <div
+                      className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
+                      style={{ backgroundImage: `url("${card.image}")` }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
+                    <div className="absolute bottom-0 left-0 right-0 p-3 flex flex-col justify-end h-full">
+                      <span className="material-symbols-outlined text-white mb-0.5 text-xl opacity-90">
+                        {card.icon}
+                      </span>
+                      <p className="text-white text-base font-bold leading-tight group-hover:text-primary transition-colors">
+                        {card.name}
+                      </p>
+                      <p className="text-white/70 text-[10px] mt-0.5 font-medium uppercase tracking-wide">
+                        {card.description}
                       </p>
                     </div>
                   </Link>

@@ -28,6 +28,11 @@ function FavoritesPage() {
     const saved = localStorage.getItem('media.favorites');
     return saved ? JSON.parse(saved) : [];
   });
+  const [articleFavorites, setArticleFavorites] = useState(() => {
+    const saved = localStorage.getItem('article-favorites');
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [articles, setArticles] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [language, setLanguage] = useState(() => {
@@ -141,7 +146,7 @@ function FavoritesPage() {
     const loadDishes = async () => {
       try {
         const allDishesData = await getDishes();
-        
+
         // Сохраняем все блюда (включая "в архиве") — архивные просто затемняем в UI
         // Термин **архив**: позиция неактивна, но всё ещё доступна для просмотра.
         // Дополнительно грузим картины из статического JSON,
@@ -158,6 +163,17 @@ function FavoritesPage() {
         } catch (e) {
           console.warn('Не удалось загрузить статический список картин для избранного:', e);
           artworks = [];
+        }
+
+        // Грузим манифест статей
+        try {
+          const manifestRes = await fetch('/content/manifest.json', { cache: 'no-store' });
+          if (manifestRes.ok) {
+            const manifest = await manifestRes.json();
+            setArticles(manifest.articles || []);
+          }
+        } catch (e) {
+          console.warn('Не удалось загрузить манифест статей для избранного:', e);
         }
 
         // Объединяем и дедуплицируем по id
@@ -198,10 +214,14 @@ function FavoritesPage() {
         const savedMedia = localStorage.getItem('media.favorites');
         setMediaFavorites(savedMedia ? JSON.parse(savedMedia) : []);
       }
+      if (e.key === 'article-favorites' || e.key === null) {
+        const savedArticles = localStorage.getItem('article-favorites');
+        setArticleFavorites(savedArticles ? JSON.parse(savedArticles) : []);
+      }
     };
 
     window.addEventListener('storage', handleStorageChange);
-    
+
     // Также проверяем изменения localStorage в том же окне
     const checkInterval = setInterval(() => {
       const saved = localStorage.getItem('favoriteDishes');
@@ -217,6 +237,12 @@ function FavoritesPage() {
       const currentMediaFavorites = savedMedia ? JSON.parse(savedMedia) : [];
       if (JSON.stringify(currentMediaFavorites) !== JSON.stringify(mediaFavorites)) {
         setMediaFavorites(currentMediaFavorites);
+      }
+
+      const savedArticles = localStorage.getItem('article-favorites');
+      const currentArticleFavorites = savedArticles ? JSON.parse(savedArticles) : [];
+      if (JSON.stringify(currentArticleFavorites) !== JSON.stringify(articleFavorites)) {
+        setArticleFavorites(currentArticleFavorites);
       }
     }, 500);
 
@@ -289,7 +315,7 @@ function FavoritesPage() {
     const dishSection = getFieldValue(dish, 'section');
     const dishAllergens = getAllergensForLanguage(dish);
     const dishTags = getTagsForLanguage(dish);
-    
+
     return !searchQuery ||
       dishTitle?.toLowerCase().includes(queryLower) ||
       dishDescription?.toLowerCase().includes(queryLower) ||
@@ -387,17 +413,16 @@ function FavoritesPage() {
           </h2>
           <div className="flex w-12 items-center justify-end">
             {isVisible({ scope: 'featureAction', target: 'language.switcher' }) && (
-              <button 
+              <button
                 onClick={() => {
                   const newLanguage = language === 'RU' ? 'EN' : 'RU';
                   setLanguage(newLanguage);
                   localStorage.setItem('menuLanguage', newLanguage);
                 }}
-                className={`text-xs font-bold leading-normal tracking-[0.015em] shrink-0 border rounded-lg px-2 py-1 transition-colors ${
-                  language === 'EN' 
-                    ? 'bg-primary text-white border-primary' 
-                    : 'text-primary border-primary/30 hover:bg-primary hover:text-white'
-                }`}
+                className={`text-xs font-bold leading-normal tracking-[0.015em] shrink-0 border rounded-lg px-2 py-1 transition-colors ${language === 'EN'
+                  ? 'bg-primary text-white border-primary'
+                  : 'text-primary border-primary/30 hover:bg-primary hover:text-white'
+                  }`}
               >
                 {language === 'RU' ? 'EN' : 'RU'}
               </button>
@@ -469,10 +494,45 @@ function FavoritesPage() {
               : formatElementsCountRu(filteredDishes.length)}
           </span>
         </div>
+
+        {articles.filter(a => articleFavorites.includes(a.key)).length > 0 && (
+          <div className="mb-5">
+            <h3 className="font-bold text-base dark:text-white px-1 mb-2">
+              {language === 'EN' ? 'Favorite articles' : 'Избранные статьи'}
+            </h3>
+            <div className="grid grid-cols-2 gap-2">
+              {articles
+                .filter(a => articleFavorites.includes(a.key))
+                .map((article) => (
+                  <Link
+                    key={article.key}
+                    to={`/article/${article.key}`}
+                    className="text-left rounded-lg overflow-hidden bg-white dark:bg-surface-dark shadow-[0_2px_8px_rgba(0,0,0,0.04)] dark:shadow-none border border-gray-100 dark:border-gray-800 hover:border-primary/30 transition-all"
+                  >
+                    <div className="relative w-full aspect-[16/9] overflow-hidden bg-gray-100 dark:bg-gray-800">
+                      <div
+                        className="absolute inset-0 bg-cover bg-center transition-transform hover:scale-105"
+                        style={{ backgroundImage: `url('${article.thumbnail || '/articles/placeholder.jpg'}')` }}
+                        onError={(e) => { e.target.style.backgroundImage = 'url("/articles/placeholder.jpg")'; }}
+                      />
+                    </div>
+                    <div className="p-2">
+                      <p className="font-bold text-[11px] leading-[1.2] dark:text-white line-clamp-2 mb-1">
+                        {article.title}
+                      </p>
+                      <p className="text-[9px] text-[#896f61] dark:text-gray-400 line-clamp-1 leading-tight opacity-90">
+                        {article.date} • {article.readingTime}
+                      </p>
+                    </div>
+                  </Link>
+                ))}
+            </div>
+          </div>
+        )}
         <div className="grid grid-cols-3 gap-2">
           {filteredDishes.length === 0 ? (
             <div className="col-span-3 text-center py-8 text-[#896f61] dark:text-gray-400">
-              {favorites.length === 0 
+              {favorites.length === 0
                 ? (language === 'EN' ? 'No favorites yet' : 'Пока нет избранных карточек')
                 : (language === 'EN' ? 'Nothing found' : 'Ничего не найдено')
               }
@@ -556,37 +616,35 @@ function FavoritesPage() {
       {/* Footer */}
       <div className="fixed bottom-0 z-50 w-full sabor-fixed bg-white/95 dark:bg-surface-dark/95 backdrop-blur-md border-t border-gray-100 dark:border-gray-800 pb-safe">
         <div
-          className={`grid ${
-            (() => {
-              const showFooterMenu = isVisible({ scope: 'menuItem', target: 'footer.menu' });
-              const showFooterFavorites = isVisible({ scope: 'menuItem', target: 'footer.favorites' });
-              const showFooterSearch = isVisible({ scope: 'menuItem', target: 'footer.search' });
-              const showFooterTools = isVisible({ scope: 'menuItem', target: 'footer.tools' });
-              const showFooterAdmin =
-                isAuthenticated &&
-                currentUser?.role === 'администратор' &&
-                isVisible({ scope: 'menuItem', target: 'footer.admin' });
-              const itemCount =
-                (showFooterMenu ? 1 : 0) +
-                (showFooterFavorites ? 1 : 0) +
-                (showFooterSearch ? 1 : 0) +
-                (showFooterTools ? 1 : 0) +
-                (showFooterAdmin ? 1 : 0);
-              if (itemCount >= 5) return 'grid-cols-5';
-              if (itemCount === 4) return 'grid-cols-4';
-              return 'grid-cols-3';
-            })()
-          } px-6 items-center h-[60px]`}
+          className={`grid ${(() => {
+            const showFooterMenu = isVisible({ scope: 'menuItem', target: 'footer.menu' });
+            const showFooterFavorites = isVisible({ scope: 'menuItem', target: 'footer.favorites' });
+            const showFooterSearch = isVisible({ scope: 'menuItem', target: 'footer.search' });
+            const showFooterTools = isVisible({ scope: 'menuItem', target: 'footer.tools' });
+            const showFooterAdmin =
+              isAuthenticated &&
+              currentUser?.role === 'администратор' &&
+              isVisible({ scope: 'menuItem', target: 'footer.admin' });
+            const itemCount =
+              (showFooterMenu ? 1 : 0) +
+              (showFooterFavorites ? 1 : 0) +
+              (showFooterSearch ? 1 : 0) +
+              (showFooterTools ? 1 : 0) +
+              (showFooterAdmin ? 1 : 0);
+            if (itemCount >= 5) return 'grid-cols-5';
+            if (itemCount === 4) return 'grid-cols-4';
+            return 'grid-cols-3';
+          })()
+            } px-6 items-center h-[60px]`}
         >
           {isVisible({ scope: 'menuItem', target: 'footer.menu' }) && (
             <NavLink
               to="/"
               end
               className={({ isActive }) =>
-                `flex flex-col items-center justify-center gap-1 transition-colors ${
-                  isActive
-                    ? 'text-primary'
-                    : 'text-gray-400 hover:text-[#181311] dark:text-gray-500 dark:hover:text-white'
+                `flex flex-col items-center justify-center gap-1 transition-colors ${isActive
+                  ? 'text-primary'
+                  : 'text-gray-400 hover:text-[#181311] dark:text-gray-500 dark:hover:text-white'
                 }`
               }
             >
@@ -595,13 +653,12 @@ function FavoritesPage() {
             </NavLink>
           )}
           {isVisible({ scope: 'menuItem', target: 'footer.favorites' }) && (
-            <NavLink 
+            <NavLink
               to="/favorites"
               className={({ isActive }) =>
-                `flex flex-col items-center justify-center gap-1 transition-colors ${
-                  isActive
-                    ? 'text-primary'
-                    : 'text-gray-400 hover:text-[#181311] dark:text-gray-500 dark:hover:text-white'
+                `flex flex-col items-center justify-center gap-1 transition-colors ${isActive
+                  ? 'text-primary'
+                  : 'text-gray-400 hover:text-[#181311] dark:text-gray-500 dark:hover:text-white'
                 }`
               }
             >
@@ -610,7 +667,7 @@ function FavoritesPage() {
             </NavLink>
           )}
           {isVisible({ scope: 'menuItem', target: 'footer.search' }) && (
-            <button 
+            <button
               onClick={() => {
                 // Открываем глобальный поиск отдельной страницей.
                 navigate('/search');
@@ -625,10 +682,9 @@ function FavoritesPage() {
             <NavLink
               to="/info"
               className={({ isActive }) =>
-                `flex flex-col items-center justify-center gap-1 transition-colors ${
-                  isActive
-                    ? 'text-primary'
-                    : 'text-gray-400 hover:text-[#181311] dark:text-gray-500 dark:hover:text-white'
+                `flex flex-col items-center justify-center gap-1 transition-colors ${isActive
+                  ? 'text-primary'
+                  : 'text-gray-400 hover:text-[#181311] dark:text-gray-500 dark:hover:text-white'
                 }`
               }
             >
@@ -642,10 +698,9 @@ function FavoritesPage() {
               <NavLink
                 to="/admin"
                 className={({ isActive }) =>
-                  `flex flex-col items-center justify-center gap-1 transition-colors ${
-                    isActive
-                      ? 'text-primary'
-                      : 'text-gray-400 hover:text-[#181311] dark:text-gray-500 dark:hover:text-white'
+                  `flex flex-col items-center justify-center gap-1 transition-colors ${isActive
+                    ? 'text-primary'
+                    : 'text-gray-400 hover:text-[#181311] dark:text-gray-500 dark:hover:text-white'
                   }`
                 }
               >

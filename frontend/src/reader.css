@@ -1,0 +1,177 @@
+/* Reader specific styles */
+:root {
+    --reader-max-width: 720px;
+}
+
+/* Base themes */
+.light {
+    --reader-bg: #ffffff;
+    --reader-text: #1a1a1a;
+    --reader-text-secondary: #666666;
+    --reader-accent: #3b82f6;
+    /* Будем использовать primary из проекта */
+    --reader-highlight: #fef08a;
+    --reader-quote-border: #e2e8f0;
+    --reader-quote-bg: #f8fafc;
+    --reader-progress: #3b82f6;
+    --reader-header-bg: rgba(255, 255, 255, 0.9);
+}
+
+.dark {
+    --reader-bg: #111827;
+    --reader-text: #f3f4f6;
+    --reader-text-secondary: #9ca3af;
+    --reader-accent: #60a5fa;
+    --reader-highlight: #854d0e;
+    --reader-quote-border: #374151;
+    --reader-quote-bg: #1f2937;
+    --reader-progress: #60a5fa;
+    --reader-header-bg: rgba(17, 24, 39, 0.9);
+}
+
+/* Typography */
+.reader-content {
+    font-family: 'Source Serif 4', Georgia, serif;
+    line-height: 1.7;
+    color: var(--reader-text);
+    overflow-wrap: break-word;
+}
+
+.max-w-reader {
+    max-width: var(--reader-max-width);
+}
+
+.font-size-sm {
+    font-size: 0.9375rem;
+}
+
+.font-size-base {
+    font-size: 1.0625rem;
+}
+
+.font-size-lg {
+    font-size: 1.25rem;
+}
+
+.font-size-xl {
+    font-size: 1.4375rem;
+}
+
+.font-size-2xl {
+    font-size: 1.625rem;
+}
+
+/* Styles for Markdown elements */
+.reader-content h1,
+.reader-content h2,
+.reader-content h3 {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+}
+
+.reader-content h1 {
+    font-size: 2.25rem;
+}
+
+.reader-content h2 {
+    font-size: 1.8rem;
+}
+
+.reader-content h3 {
+    font-size: 1.5rem;
+}
+
+.reader-content p {
+    margin-bottom: 1.5rem;
+}
+
+.reader-content blockquote {
+    border-left: 4px solid var(--reader-quote-border);
+    padding-left: 1rem;
+    margin-left: 0;
+    margin-right: 0;
+    background: var(--reader-quote-bg);
+    padding: 1rem;
+    font-style: italic;
+    border-radius: 0 8px 8px 0;
+}
+
+.reader-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 12px;
+    margin: 2rem 0;
+}
+
+.reader-content ul,
+.reader-content ol {
+    margin-bottom: 1.5rem;
+    padding-left: 1.5rem;
+}
+
+.reader-content li {
+    margin-bottom: 0.5rem;
+}
+
+/* Search Highlights */
+.search-highlight {
+    background-color: var(--reader-highlight);
+    border-radius: 2px;
+}
+
+.search-highlight-active {
+    background-color: var(--reader-progress);
+    color: white !important;
+    border-radius: 2px;
+}
+
+/* Animations */
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slide-down {
+    from {
+        transform: translateY(100%);
+    }
+
+    to {
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in {
+    animation: fade-in 0.3s ease-out;
+}
+
+.animate-slide-down {
+    animation: slide-down 0.3s ease-out;
+}
+
+.bg-reader-bg {
+    background-color: var(--reader-bg);
+}
+
+.text-foreground {
+    color: var(--reader-text);
+}
+
+/* Explicitly apply theme colors when the class is present */
+.light,
+.dark {
+    background-color: var(--reader-bg);
+    color: var(--reader-text);
+}
+
+.theme-transition {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}

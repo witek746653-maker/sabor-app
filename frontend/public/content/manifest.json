@@ -1,0 +1,25 @@
+{
+    "updated_at": "2026-02-02T21:20:00Z",
+    "articles": [
+        {
+            "key": "taste-of-moscow",
+            "title": "Москва со вкусом",
+            "url": "https://cdn.sabor-dlv.ru/resources/taste-of-moscow.md",
+            "image": "/images/taste-of-moscow.webp",
+            "category": "Инструкция официанту",
+            "readingTime": "4 мин",
+            "wordCount": 850,
+            "version": 1
+        },
+        {
+            "key": "cigar-encyclopedia",
+            "title": "Энциклопедия сигар",
+            "url": "https://cdn.sabor-dlv.ru/resources/cigar-encyclopedia.md",
+            "image": "/images/cigars-head.webp",
+            "category": "Статья",
+            "readingTime": "7 мин",
+            "wordCount": 1450,
+            "version": 1
+        }
+    ]
+}

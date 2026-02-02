@@ -17,7 +17,7 @@ function InfoPage() {
   const [language, setLanguage] = useState(() => {
     return localStorage.getItem('menuLanguage') || 'RU';
   });
-  
+
   // Определяем базовый URL для файлов
   // HTML файлы находятся в public/ и обслуживаются через React dev server (разработка) или веб-сервер (продакшен)
   // React dev server автоматически обслуживает файлы из папки public/, поэтому используем window.location.origin
@@ -94,11 +94,11 @@ function InfoPage() {
       e.stopPropagation();
       return;
     }
-    
+
     // Предотвращаем перехват React Router
     e.preventDefault();
     e.stopPropagation();
-    
+
     if (tool.type === 'pdf') {
       // Гостевой режим — только просмотр меню, без внутренних файлов
       if (isGuest) {
@@ -114,7 +114,7 @@ function InfoPage() {
       // Открываем HTML файл напрямую, обходя React Router
       const baseUrl = getBaseUrl();
       const fullUrl = baseUrl + tool.path;
-      
+
       // Создаем временную ссылку и программно кликаем по ней
       // Это гарантированно обходит React Router
       const link = document.createElement('a');
@@ -148,7 +148,7 @@ function InfoPage() {
 
   const handlePdfShare = async () => {
     const fullUrl = getPdfUrl({ disposition: 'attachment' });
-    
+
     if (navigator.share) {
       try {
         // Для Web Share API нужно сначала получить файл
@@ -156,7 +156,7 @@ function InfoPage() {
         const response = await fetch(fullUrl, { credentials: 'include', cache: 'no-store' });
         const blob = await response.blob();
         const file = new File([blob], 'Комплекс для новых сотрудников (актуальный).pdf', { type: 'application/pdf' });
-        
+
         await navigator.share({
           title: 'Комплекс для новых сотрудников',
           text: 'Комплекс для новых сотрудников (актуальный)',
@@ -237,6 +237,13 @@ function InfoPage() {
       type: 'pdf',
       description: 'Внутренние ресурсы',
       comingSoon: false
+    },
+    {
+      name: 'Статьи и гайды',
+      path: '/useful',
+      type: 'react',
+      description: 'Полезные материалы',
+      comingSoon: false
     }
   ];
 
@@ -254,7 +261,7 @@ function InfoPage() {
     <div className="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden pb-20 bg-background-light dark:bg-background-dark text-[#181311] dark:text-white font-display antialiased" style={{ position: 'relative', zIndex: 1 }}>
       {/* Header */}
       <header className="sticky top-0 z-50 flex items-center bg-white/95 dark:bg-[#181311]/95 backdrop-blur-sm p-4 pb-2 justify-between border-b border-orange-100/50 dark:border-gray-800 shadow-sm transition-all">
-        <button 
+        <button
           onClick={() => navigate(-1)}
           className="text-[#181311] dark:text-white flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-orange-50 dark:hover:bg-white/5 transition-colors"
         >
@@ -282,7 +289,7 @@ function InfoPage() {
             const description = getToolDescription(tool.name) || tool.description;
 
             return (
-              <ComingSoonWrapper 
+              <ComingSoonWrapper
                 key={tool.name}
                 isComingSoon={tool.comingSoon}
                 allowAccess={Boolean(tool.allowAccess)}
@@ -293,36 +300,36 @@ function InfoPage() {
                   onClick={(e) => handleToolClick(e, tool)}
                   className="group relative overflow-hidden rounded-xl aspect-[4/3] shadow-md shadow-orange-900/5 active:scale-[0.98] transition-all duration-300 text-left"
                 >
-                {imageUrl ? (
-                  <>
-                    <div
-                      className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
-                      style={{ backgroundImage: `url("${imageUrl}")` }}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
-                  </>
-                ) : (
-                  <div className="absolute inset-0 bg-orange-100 dark:bg-gray-800 flex items-center justify-center">
-                    <span className="material-symbols-outlined text-primary/40 dark:text-white/10 text-6xl">
+                  {imageUrl ? (
+                    <>
+                      <div
+                        className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
+                        style={{ backgroundImage: `url("${imageUrl}")` }}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
+                    </>
+                  ) : (
+                    <div className="absolute inset-0 bg-orange-100 dark:bg-gray-800 flex items-center justify-center">
+                      <span className="material-symbols-outlined text-primary/40 dark:text-white/10 text-6xl">
+                        {icon}
+                      </span>
+                    </div>
+                  )}
+                  {!imageUrl && (
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                  )}
+                  <div className="absolute bottom-0 left-0 right-0 p-3 flex flex-col justify-end h-full">
+                    <span className="material-symbols-outlined text-white mb-0.5 text-xl opacity-90">
                       {icon}
                     </span>
+                    <p className="text-white text-base font-bold leading-tight">{tool.name}</p>
+                    {description && (
+                      <p className="text-white/70 text-[10px] mt-0.5 font-medium uppercase tracking-wide">
+                        {description}
+                      </p>
+                    )}
                   </div>
-                )}
-                {!imageUrl && (
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                )}
-                <div className="absolute bottom-0 left-0 right-0 p-3 flex flex-col justify-end h-full">
-                  <span className="material-symbols-outlined text-white mb-0.5 text-xl opacity-90">
-                    {icon}
-                  </span>
-                  <p className="text-white text-base font-bold leading-tight">{tool.name}</p>
-                  {description && (
-                    <p className="text-white/70 text-[10px] mt-0.5 font-medium uppercase tracking-wide">
-                      {description}
-                    </p>
-                  )}
-                </div>
-              </button>
+                </button>
               </ComingSoonWrapper>
             );
           })}
@@ -331,11 +338,11 @@ function InfoPage() {
 
       {/* Модальное окно для PDF */}
       {showPdfModal && (
-        <div 
+        <div
           className="fixed inset-0 z-[100] bg-black/50 flex items-center justify-center p-4"
           onClick={() => setShowPdfModal(false)}
         >
-          <div 
+          <div
             className="bg-white dark:bg-[#181311] rounded-2xl shadow-xl max-w-sm w-full p-6"
             onClick={(e) => e.stopPropagation()}
           >
@@ -389,8 +396,7 @@ function InfoPage() {
       {/* Footer */}
       <footer className="fixed bottom-0 bg-white dark:bg-[#181311] border-t border-orange-100 dark:border-gray-800 pb-safe z-40 w-full sabor-fixed">
         <div
-          className={`grid ${
-            (() => {
+          className={`grid ${(() => {
               const showFooterMenu = isVisible({ scope: 'menuItem', target: 'footer.menu' });
               const showFooterFavorites = isVisible({ scope: 'menuItem', target: 'footer.favorites' });
               const showFooterSearch = isVisible({ scope: 'menuItem', target: 'footer.search' });
@@ -409,7 +415,7 @@ function InfoPage() {
               if (itemCount === 4) return 'grid-cols-4';
               return 'grid-cols-3';
             })()
-          } h-16`}
+            } h-16`}
         >
           {isVisible({ scope: 'menuItem', target: 'footer.menu' }) && (
             <Link
@@ -430,18 +436,17 @@ function InfoPage() {
                 e.preventDefault();
                 toast.info('Доступно после входа. Гостевой режим поддерживает только просмотр данных.');
               }}
-              className={`flex flex-col items-center justify-center gap-1 transition-colors ${
-                isGuest
+              className={`flex flex-col items-center justify-center gap-1 transition-colors ${isGuest
                   ? 'opacity-50 cursor-not-allowed text-gray-400 dark:text-gray-600'
                   : 'text-gray-400 dark:text-gray-500 hover:text-primary dark:hover:text-primary'
-              }`}
+                }`}
             >
               <span className="material-symbols-outlined text-2xl">favorite</span>
               <span className="text-[10px] font-medium">Избранное</span>
             </Link>
           )}
           {isVisible({ scope: 'menuItem', target: 'footer.search' }) && (
-            <button 
+            <button
               onClick={() => {
                 // Открываем глобальный поиск отдельной страницей.
                 navigate('/search');
