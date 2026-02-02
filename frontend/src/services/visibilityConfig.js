@@ -1,7 +1,8 @@
 import api from './api';
 
-export const getVisibilityConfig = async () => {
-  const response = await api.get('/api/config/visibility', { timeout: 8000 });
+export const getVisibilityConfig = async (t) => {
+  const params = t ? { t } : {};
+  const response = await api.get('/api/config/visibility', { params, timeout: 8000 });
   return response.data;
 };
 

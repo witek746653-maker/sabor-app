@@ -182,6 +182,14 @@ export default function StatusBanner() {
     return { bg: '#16a34a', dot: '#bbf7d0', text: '#ffffff' }; // green-600
   }, [chipTone]);
 
+  const chipIcon = useMemo(() => {
+    if (chipTone === 'down') return 'wifi_off';
+    if (chipTone === 'degraded') return 'wifi_off';
+    if (chipTone === 'fallback') return 'wifi_off';
+    if (chipTone === 'checking') return 'wifi_find';
+    return 'wifi';
+  }, [chipTone]);
+
   // "Как принято": для обычного пользователя показываем детали ВРЕМЕННО,
   // чтобы индикатор не мешал интерфейсу. Потом сворачиваем в маленькую иконку.
   useEffect(() => {
@@ -241,21 +249,21 @@ export default function StatusBanner() {
     health.state === 'ok'
       ? 'OK'
       : health.state === 'degraded'
-      ? 'DEGRADED'
-      : health.state === 'down'
-      ? 'DOWN'
-      : 'CHECK';
+        ? 'DEGRADED'
+        : health.state === 'down'
+          ? 'DOWN'
+          : 'CHECK';
 
   const srcShort =
     effectiveSource === 'api'
       ? 'сервер'
       : effectiveSource === 'static'
-      ? 'файл'
-      : effectiveSource === 'cache'
-      ? 'кэш'
-      : effectiveSource === 'offline-guest'
-      ? 'офлайн'
-      : '—';
+        ? 'файл'
+        : effectiveSource === 'cache'
+          ? 'кэш'
+          : effectiveSource === 'offline-guest'
+            ? 'офлайн'
+            : '—';
 
   // Индустриальный вариант:
   // - маленькая "иконка статуса" (почти не перекрывает UI)
@@ -284,12 +292,10 @@ export default function StatusBanner() {
     userSelect: 'none',
   };
 
-  const iconDotStyle = {
-    width: 10,
-    height: 10,
-    borderRadius: 999,
-    background: chipColors.dot,
-    boxShadow: '0 0 0 3px rgba(0,0,0,0.12) inset',
+  const iconSymbolStyle = {
+    fontSize: 20,
+    color: chipColors.text,
+    userSelect: 'none',
   };
 
   const panelStyle = {
@@ -379,8 +385,8 @@ export default function StatusBanner() {
                   {menuSourceMode === 'backend-json'
                     ? 'файл через бэкенд'
                     : menuSourceMode === 'static'
-                    ? 'файл public'
-                    : 'авто'}
+                      ? 'файл public'
+                      : 'авто'}
                 </span>
               </div>
 
@@ -489,7 +495,9 @@ export default function StatusBanner() {
             }
           }}
         >
-          <span style={iconDotStyle} aria-hidden="true" />
+          <span className="material-symbols-outlined" style={iconSymbolStyle} aria-hidden="true">
+            {chipIcon}
+          </span>
         </div>
       </div>
     </div>

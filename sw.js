@@ -77,7 +77,8 @@ self.addEventListener('fetch', (event) => {
     }
 
     event.respondWith((async () => {
-      const cached = await caches.match(request);
+      const isApiRequest = url.pathname.startsWith('/api/');
+      const cached = isApiRequest ? null : await caches.match(request);
       if (cached) {
         return cached;
       }

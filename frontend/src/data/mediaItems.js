@@ -7,7 +7,7 @@ const mediaItems = [
     duration: '10 мин',
     level: 'Базовый',
     category: 'Бар',
-    audioUrl: '/media/podcast-cocktail-menu-concept-and-philosophy.m4a',
+    audioUrl: '/media/podcast-cocktail-menu-concept-and-philosophy.mp3',
     coverUrl: '/images/podcast-bar-cocktails.webp'
   },
   {
@@ -18,7 +18,7 @@ const mediaItems = [
     duration: '10 мин',
     level: 'Базовый',
     category: 'Бар',
-    audioUrl: '/media/podcast-kak-pit-duhi-i-tryufelnoe-maslo.m4a',
+    audioUrl: '/media/podcast-kak-pit-duhi-i-tryufelnoe-maslo.mp3',
     coverUrl: '/images/podcast-bar-cocktails.webp'
   },
   {

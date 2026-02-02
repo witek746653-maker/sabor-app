@@ -13,6 +13,27 @@ const RULE_SCOPES = ['route', 'menuItem', 'menuSection', 'pageBlock', 'featureAc
 const ACTIONS = ['allow', 'deny'];
 const ROLE_OPTIONS = ['guest', 'официант', 'администратор', 'хостес'];
 
+// Стили для темных выпадающих списков (select)
+const selectStyles = `
+  select {
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 0.7rem center;
+    background-size: 1em;
+    padding-right: 2.5rem !important;
+  }
+  select option {
+    background-color: #1a1a1a;
+    color: white;
+    padding: 10px;
+  }
+  .dark select option {
+    background-color: #111111;
+    color: white;
+  }
+`;
+
 const SCOPE_LABELS = {
   route: 'Маршрут',
   menuItem: 'Элемент меню',
@@ -263,27 +284,37 @@ function VisibilityPage() {
       setLoading(true);
       try {
         const data = await getAdminVisibilityConfig();
-        const draft = data?.draft?.config || { rules: [] };
-        const published = data?.published?.config || null;
+        const publishedData = data?.published?.config || null;
+        const draftData = data?.draft?.config || { rules: [] };
+
+        // Если черновик пуст, а опубликованные правила есть — берем их за основу
+        const initialRules = (draftData.rules && draftData.rules.length > 0)
+          ? draftData.rules
+          : (publishedData?.rules || []);
+
+        const initialFeatures = (draftData.features && Object.keys(draftData.features).length > 0)
+          ? draftData.features
+          : (publishedData?.features || {});
 
         setDraftConfig({
-          version: data?.draft?.version || draft?.version || 0,
-          rules: draft?.rules || [],
-          features: draft?.features || {},
+          version: data?.draft?.version || 0,
+          rules: initialRules,
+          features: initialFeatures,
         });
+
         setPublishedConfig(
           data?.published
             ? {
-                version: data.published.version,
-                rules: published?.rules || [],
-                features: published?.features || {},
-                updatedBy: data.published.updated_by,
-                updatedAt: data.published.updated_at,
-              }
+              version: data.published.version,
+              rules: publishedData?.rules || [],
+              features: publishedData?.features || {},
+              updatedBy: data.published.updated_by,
+              updatedAt: data.published.updated_at,
+            }
             : null
         );
         setVersions(data?.versions || []);
-        setJsonText(JSON.stringify({ rules: draft?.rules || [], features: draft?.features || {} }, null, 2));
+        setJsonText(JSON.stringify({ rules: initialRules, features: initialFeatures }, null, 2));
       } catch (err) {
         toast.error('Не удалось загрузить конфиг видимости');
       } finally {
@@ -315,10 +346,23 @@ function VisibilityPage() {
 
 
   const updateRule = (ruleId, patch) => {
+    // Если меняется ID, то "причесываем" его (убираем лишние пробелы по краям)
+    const normalizedPatch = { ...patch };
+    if (normalizedPatch.id) {
+      normalizedPatch.id = normalizedPatch.id.trim();
+    }
+
     setDraftConfig((prev) => ({
       ...prev,
-      rules: prev.rules.map((rule) => (rule.id === ruleId ? { ...rule, ...patch } : rule)),
+      rules: (prev.rules || []).map((rule) =>
+        (rule.id === ruleId ? { ...rule, ...normalizedPatch } : rule)
+      ),
     }));
+
+    // Синхронизируем выбор, чтобы редактор не закрылся
+    if (normalizedPatch.id && selectedRuleId === ruleId) {
+      setSelectedRuleId(normalizedPatch.id);
+    }
   };
 
   const updateRuleWhen = (ruleId, patch) => {
@@ -349,11 +393,20 @@ function VisibilityPage() {
   };
 
   const handleDeleteRule = (ruleId) => {
+    const ok = window.confirm(`Удалить правило "${ruleId}"?`);
+    if (!ok) return;
+
+    const normId = String(ruleId || '').trim();
     setDraftConfig((prev) => ({
       ...prev,
-      rules: (prev.rules || []).filter((rule) => rule.id !== ruleId),
+      rules: (prev.rules || []).filter((rule) => {
+        const currentId = String(rule.id || '').trim();
+        return currentId !== normId;
+      }),
     }));
+
     if (selectedRuleId === ruleId) setSelectedRuleId(null);
+    toast.success('Правило удалено из черновика');
   };
 
   const handleApplyJson = () => {
@@ -413,8 +466,13 @@ function VisibilityPage() {
   };
 
   const handlePublish = async () => {
-    const ok = window.confirm('Опубликовать текущий черновик?');
-    if (!ok) return;
+    if (normalizedDraft.rules.length === 0) {
+      const confirmEmpty = window.confirm('Внимание! Список правил пуст. Если вы опубликуете, ВСЕ ограничения будут сняты. Продолжить?');
+      if (!confirmEmpty) return;
+    } else {
+      const ok = window.confirm('Опубликовать текущий черновик?');
+      if (!ok) return;
+    }
     setPublishing(true);
     try {
       const res = await publishVisibilityConfig(normalizedDraft.version);
@@ -444,13 +502,21 @@ function VisibilityPage() {
     try {
       const res = await rollbackVisibilityConfig(version);
       const published = res?.published?.config || { rules: [] };
-      setPublishedConfig({
+      const configData = {
         version: res?.published?.version || version,
         rules: published.rules || [],
+        features: published.features || {},
         updatedBy: res?.published?.updated_by,
         updatedAt: res?.published?.updated_at,
+      };
+      setPublishedConfig(configData);
+      // КРИТИЧНО: Синхронизируем черновик, чтобы правила появились в редакторе
+      setDraftConfig({
+        version: configData.version,
+        rules: configData.rules,
+        features: configData.features,
       });
-      toast.success('Откат выполнен');
+      toast.success('Откат выполнен. Правила восстановлены в редакторе.');
     } catch (err) {
       toast.error('Не удалось откатить версию');
     }
@@ -465,7 +531,8 @@ function VisibilityPage() {
   }
 
   return (
-    <div className="h-full flex flex-col overflow-y-auto p-6 gap-6">
+    <div className="h-full flex flex-col overflow-y-auto p-6 gap-6 bg-background-light dark:bg-background-dark">
+      <style>{selectStyles}</style>
       <div className="flex items-start justify-between gap-4">
         <div>
           <h2 className="text-2xl font-bold text-text-primary-light dark:text-text-primary-dark">
@@ -628,18 +695,17 @@ function VisibilityPage() {
                 <button
                   key={rule.id}
                   onClick={() => setSelectedRuleId(rule.id)}
-                  className={`w-full text-left px-3 py-2 rounded-lg border text-xs transition-colors ${
-                    selectedRuleId === rule.id
-                      ? 'border-primary bg-primary/10'
-                      : 'border-gray-200 dark:border-white/10 hover:bg-gray-50 dark:hover:bg-white/5'
-                  }`}
+                  className={`w-full text-left px-3 py-2 rounded-lg border text-xs transition-colors ${selectedRuleId === rule.id
+                    ? 'border-primary bg-primary/10'
+                    : 'border-gray-200 dark:border-white/10 hover:bg-gray-50 dark:hover:bg-white/5'
+                    }`}
                 >
-                  <div className="font-semibold">{rule.id}</div>
-                  <div className="text-[11px] text-text-secondary-light dark:text-text-secondary-dark">
-                    {rule.scope} • {rule.target}
+                  <div className="font-bold text-sm text-primary mb-1">{rule.id}</div>
+                  <div className="text-[10px] text-text-secondary-light dark:text-text-secondary-dark">
+                    Тип: {SCOPE_LABELS[rule.scope] || rule.scope} • Цель: {rule.target}
                   </div>
-                  <div className="text-[11px] mt-1">
-                    {visible ? 'Показывать' : 'Скрывать'}
+                  <div className={`text-[10px] mt-1 font-semibold ${visible ? 'text-green-600' : 'text-red-600'}`}>
+                    Результат: {visible ? 'Показывать' : 'Скрывать'}
                   </div>
                 </button>
               );
@@ -672,16 +738,17 @@ function VisibilityPage() {
           )}
 
           {selectedRule && (
-            <div className="grid md:grid-cols-2 gap-4 text-sm">
+            <div key={selectedRule.id} className="grid md:grid-cols-2 gap-4 text-sm">
               <label className="flex flex-col gap-1">
-                <span className="text-xs text-text-secondary-light dark:text-text-secondary-dark">ID</span>
+                <span className="text-xs text-text-secondary-light dark:text-text-secondary-dark">ID / Название правила</span>
                 <input
-                  value={selectedRule.id}
-                  onChange={(e) => updateRule(selectedRule.id, { id: e.target.value })}
+                  defaultValue={selectedRule.id}
+                  onBlur={(e) => updateRule(selectedRule.id, { id: e.target.value })}
+                  placeholder="Например: Скрыть зимнее меню"
                   className="px-3 py-2 rounded-lg border border-gray-200 dark:border-white/10 bg-white/80 dark:bg-white/5"
                 />
-                <span className="text-[11px] text-text-secondary-light dark:text-text-secondary-dark">
-                  Уникальный ключ правила. По нему легко искать и понимать историю.
+                <span className="text-[11px] text-text-secondary-light dark:text-text-secondary-dark font-medium text-primary">
+                  Это имя правила, по которому вы найдете его в списке слева. (Применится после клика в сторону)
                 </span>
               </label>
               <label className="flex flex-col gap-1">
@@ -827,8 +894,9 @@ function VisibilityPage() {
                   <label className="flex flex-col gap-1">
                     <span>Роли (через запятую)</span>
                     <input
-                      value={(selectedRule.when?.roles || []).join(', ')}
-                      onChange={(e) =>
+                      placeholder="Например: guest, официант"
+                      defaultValue={(selectedRule.when?.roles || []).join(', ')}
+                      onBlur={(e) =>
                         updateRuleWhen(selectedRule.id, {
                           roles: e.target.value
                             .split(',')
@@ -839,14 +907,15 @@ function VisibilityPage() {
                       className="px-2 py-2 rounded-lg border border-gray-200 dark:border-white/10 bg-white/80 dark:bg-white/5"
                     />
                     <span className="text-[11px] text-text-secondary-light dark:text-text-secondary-dark">
-                      Ограничить по ролям (например: guest, официант, администратор).
+                      Ограничить по ролям (например: guest, официант). Применится после клика в сторону.
                     </span>
                   </label>
                   <label className="flex flex-col gap-1">
                     <span>User IDs (через запятую)</span>
                     <input
-                      value={(selectedRule.when?.userIds || []).join(', ')}
-                      onChange={(e) =>
+                      placeholder="Например: 1, 2, 3"
+                      defaultValue={(selectedRule.when?.userIds || []).join(', ')}
+                      onBlur={(e) =>
                         updateRuleWhen(selectedRule.id, {
                           userIds: e.target.value
                             .split(',')
@@ -857,7 +926,7 @@ function VisibilityPage() {
                       className="px-2 py-2 rounded-lg border border-gray-200 dark:border-white/10 bg-white/80 dark:bg-white/5"
                     />
                     <span className="text-[11px] text-text-secondary-light dark:text-text-secondary-dark">
-                      Точное ограничение по конкретным пользователям.
+                      Точное ограничение по конкретным пользователям (сохранится после клика в сторону).
                     </span>
                   </label>
                   <label className="flex items-center gap-2">

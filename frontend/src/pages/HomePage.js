@@ -7,6 +7,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { useVisibility } from '../contexts/VisibilityContext';
 import ComingSoonWrapper from '../components/ComingSoonWrapper';
 import HelpPopover from '../components/HelpPopover';
+import AppTour from '../components/AppTour';
 import { isComingSoon } from '../utils/featureStatus';
 
 function HomePage() {
@@ -48,6 +49,8 @@ function HomePage() {
   const [language, setLanguage] = useState(() => {
     return localStorage.getItem('menuLanguage') || 'RU';
   });
+  // Состояние для тура по приложению
+  const [showTour, setShowTour] = useState(false);
 
   // Ключ для списка прочитанных уведомлений (храним локально на устройстве)
   const NOTIFICATIONS_READ_KEY = 'sabor.notificationsReadIds.v1';
@@ -103,7 +106,7 @@ function HomePage() {
     };
 
     loadMenus();
-    
+
     // Загружаем уведомления при монтировании
     loadNotifications();
 
@@ -112,6 +115,15 @@ function HomePage() {
     if (!checking) {
       if (isAuthenticated) {
         setShowLoginModal(false); // Если авторизован, скрываем модальное окно
+
+        // Проверяем, проходил ли пользователь тур раньше
+        const tourCompleted = localStorage.getItem('sabor.tourCompleted');
+        if (!tourCompleted) {
+          // Показываем тур с небольшой задержкой, чтобы пользователь успел увидеть интерфейс
+          setTimeout(() => {
+            setShowTour(true);
+          }, 1000); // 1 секунда задержки
+        }
       } else {
         setShowLoginModal(true); // Если не авторизован, показываем модальное окно входа
       }
@@ -137,20 +149,20 @@ function HomePage() {
   useEffect(() => {
     const handleClickOutside = (e) => {
       // Не закрываем, если клик был на кнопке колокольчика или внутри панели
-      if (showNotifications && 
-          !e.target.closest('.notifications-panel') && 
-          !e.target.closest('button[aria-label="notifications"]') &&
-          !e.target.closest('.notifications-button')) {
+      if (showNotifications &&
+        !e.target.closest('.notifications-panel') &&
+        !e.target.closest('button[aria-label="notifications"]') &&
+        !e.target.closest('.notifications-button')) {
         setShowNotifications(false);
       }
     };
-    
+
     if (showNotifications) {
       // Небольшая задержка, чтобы не закрыть сразу после открытия
       const timeout = setTimeout(() => {
         document.addEventListener('click', handleClickOutside);
       }, 100);
-      
+
       return () => {
         clearTimeout(timeout);
         document.removeEventListener('click', handleClickOutside);
@@ -160,22 +172,22 @@ function HomePage() {
 
   // Обработка свайпов для закрытия панелей
   const minSwipeDistance = 50;
-  
+
   const onTouchStart = (e) => {
     setTouchEnd(null);
     setTouchStart(e.targetTouches[0].clientX);
   };
-  
+
   const onTouchMove = (e) => {
     setTouchEnd(e.targetTouches[0].clientX);
   };
-  
+
   const onTouchEnd = () => {
     if (!touchStart || !touchEnd) return;
     const distance = touchStart - touchEnd;
     const isLeftSwipe = distance > minSwipeDistance;
     const isRightSwipe = distance < -minSwipeDistance;
-    
+
     if (isLeftSwipe && showNotifications) {
       setShowNotifications(false);
     }
@@ -285,13 +297,13 @@ function HomePage() {
   // Функция для обработки отправки формы обратной связи
   const handleFeedbackSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Гости не могут отправлять обратную связь
     if (isGuest) {
       setFeedbackError('Доступно после входа. Гостевой режим поддерживает только просмотр данных.');
       return;
     }
-    
+
     // Проверяем, что есть текст сообщения
     if (!feedbackForm.message.trim()) {
       setFeedbackError('Пожалуйста, введите сообщение');
@@ -311,7 +323,7 @@ function HomePage() {
       // Успешная отправка
       setFeedbackSuccess(true);
       setFeedbackForm({ name: '', type: 'question', message: '' });
-      
+
       // Закрываем модальное окно через 2 секунды
       setTimeout(() => {
         setShowFeedbackModal(false);
@@ -444,7 +456,7 @@ function HomePage() {
     <div className="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden pb-20 bg-background-light dark:bg-background-dark text-[#181311] dark:text-white font-display antialiased" style={{ position: 'relative', zIndex: 1 }}>
       {/* Header */}
       <header className="sticky top-0 z-50 flex items-center bg-white/95 dark:bg-[#181311]/95 backdrop-blur-sm p-4 pb-2 justify-between border-b border-orange-100/50 dark:border-gray-800 shadow-sm transition-all">
-        <button 
+        <button
           onClick={() => setShowMenuPanel(true)}
           className="text-[#181311] dark:text-white flex size- shrink-0 items-center justify-center rounded-full hover:bg-orange-50 dark:hover:bg-white/5 transition-colors"
         >
@@ -457,7 +469,7 @@ function HomePage() {
           className="h-8 mx-auto"
         />
         <div className="relative">
-          <button 
+          <button
             onClick={(e) => {
               e.stopPropagation();
               // Обновляем уведомления при открытии панели
@@ -478,13 +490,13 @@ function HomePage() {
           {/* Полноэкранный оверлей уведомлений */}
           {showNotifications && (
             <>
-              <div 
+              <div
                 className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
                 onClick={() => setShowNotifications(false)}
                 onTouchStart={onTouchStart}
                 onTouchMove={onTouchMove}
                 onTouchEnd={onTouchEnd}
-                style={{ 
+                style={{
                   zIndex: 9998,
                   position: 'fixed',
                   top: 0,
@@ -493,13 +505,13 @@ function HomePage() {
                   bottom: 0
                 }}
               />
-              <div 
+              <div
                 className="notifications-panel fixed top-0 right-0 h-screen w-full max-w-md bg-white dark:bg-[#181311] shadow-2xl z-[9999] overflow-y-auto transform transition-transform duration-300 ease-out"
                 onClick={(e) => e.stopPropagation()}
                 onTouchStart={onTouchStart}
                 onTouchMove={onTouchMove}
                 onTouchEnd={onTouchEnd}
-                style={{ 
+                style={{
                   zIndex: 9999,
                   position: 'fixed',
                   top: 0,
@@ -535,9 +547,9 @@ function HomePage() {
                     </button>
                   )}
                 </div>
-                <div 
-                  className="p-4" 
-                  style={{ 
+                <div
+                  className="p-4"
+                  style={{
                     minHeight: '200px',
                     position: 'relative',
                     zIndex: 10000,
@@ -560,74 +572,73 @@ function HomePage() {
                         }
                         const displayDate = notification.createdAt || notification.date || notification.created_at;
                         return (
-                      <div
-                        key={idx}
-                        className={`p-4 rounded-xl mb-3 cursor-pointer transition-all ${
-                          !notification.read 
-                            ? 'bg-primary/10 border-l-4 border-primary shadow-sm' 
-                            : 'bg-gray-50 dark:bg-gray-900/50'
-                        }`}
-                        onClick={() => {
-                          const readIds = new Set(readNotificationIds());
-                          readIds.add(String(notification.id));
-                          writeNotificationIds(Array.from(readIds));
-                          const updated = notifications.map((n, i) =>
-                            i === idx ? { ...n, read: true } : n
-                          );
-                          setNotifications(updated);
-                          const newUnread = updated.filter((n) => !n.read).length;
-                          setUnreadCount(newUnread);
-                        }}
-                      >
-                        <div className="flex items-start gap-3">
-                          <span className="material-symbols-outlined text-primary text-[24px] mt-0.5 flex-shrink-0">
-                            {notification.type === 'update' ? 'update' : 
-                             notification.type === 'announcement' ? 'campaign' : 
-                             notification.type === 'attention' ? 'priority_high' : 'info'}
-                          </span>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-start justify-between gap-2 mb-1">
-                              <h4 className="font-bold text-base text-[#181311] dark:text-white break-words">
-                                {notification.title || 'Без названия'}
-                              </h4>
-                              {!notification.read && (
-                                <span className="w-2 h-2 bg-primary rounded-full flex-shrink-0 mt-2"></span>
-                              )}
-                            </div>
-                            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2 leading-relaxed break-words">
-                              {notification.message || 'Нет сообщения'}
-                            </p>
-                            <div className="flex items-center gap-3 text-xs text-gray-400 dark:text-gray-500">
-                              {displayDate && (
-                                <span>
-                                  {new Date(displayDate).toLocaleDateString('ru-RU', {
-                                    day: 'numeric',
-                                    month: 'short',
-                                    hour: '2-digit',
-                                    minute: '2-digit'
-                                  })}
-                                </span>
-                              )}
-                              {notification.author && (
-                                <span className="flex items-center gap-1">
-                                  <span className="material-symbols-outlined text-[14px]">person</span>
-                                  {notification.author}
-                                </span>
-                              )}
-                              {notification.expiresAt && (
-                                <span className="flex items-center gap-1 text-orange-600">
-                                  <span className="material-symbols-outlined text-[14px]">schedule</span>
-                                  До {new Date(notification.expiresAt).toLocaleTimeString('ru-RU', {
-                                    hour: '2-digit',
-                                    minute: '2-digit'
-                                  })}
-                                </span>
-                              )}
+                          <div
+                            key={idx}
+                            className={`p-4 rounded-xl mb-3 cursor-pointer transition-all ${!notification.read
+                              ? 'bg-primary/10 border-l-4 border-primary shadow-sm'
+                              : 'bg-gray-50 dark:bg-gray-900/50'
+                              }`}
+                            onClick={() => {
+                              const readIds = new Set(readNotificationIds());
+                              readIds.add(String(notification.id));
+                              writeNotificationIds(Array.from(readIds));
+                              const updated = notifications.map((n, i) =>
+                                i === idx ? { ...n, read: true } : n
+                              );
+                              setNotifications(updated);
+                              const newUnread = updated.filter((n) => !n.read).length;
+                              setUnreadCount(newUnread);
+                            }}
+                          >
+                            <div className="flex items-start gap-3">
+                              <span className="material-symbols-outlined text-primary text-[24px] mt-0.5 flex-shrink-0">
+                                {notification.type === 'update' ? 'update' :
+                                  notification.type === 'announcement' ? 'campaign' :
+                                    notification.type === 'attention' ? 'priority_high' : 'info'}
+                              </span>
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-start justify-between gap-2 mb-1">
+                                  <h4 className="font-bold text-base text-[#181311] dark:text-white break-words">
+                                    {notification.title || 'Без названия'}
+                                  </h4>
+                                  {!notification.read && (
+                                    <span className="w-2 h-2 bg-primary rounded-full flex-shrink-0 mt-2"></span>
+                                  )}
+                                </div>
+                                <p className="text-sm text-gray-600 dark:text-gray-400 mb-2 leading-relaxed break-words">
+                                  {notification.message || 'Нет сообщения'}
+                                </p>
+                                <div className="flex items-center gap-3 text-xs text-gray-400 dark:text-gray-500">
+                                  {displayDate && (
+                                    <span>
+                                      {new Date(displayDate).toLocaleDateString('ru-RU', {
+                                        day: 'numeric',
+                                        month: 'short',
+                                        hour: '2-digit',
+                                        minute: '2-digit'
+                                      })}
+                                    </span>
+                                  )}
+                                  {notification.author && (
+                                    <span className="flex items-center gap-1">
+                                      <span className="material-symbols-outlined text-[14px]">person</span>
+                                      {notification.author}
+                                    </span>
+                                  )}
+                                  {notification.expiresAt && (
+                                    <span className="flex items-center gap-1 text-orange-600">
+                                      <span className="material-symbols-outlined text-[14px]">schedule</span>
+                                      До {new Date(notification.expiresAt).toLocaleTimeString('ru-RU', {
+                                        hour: '2-digit',
+                                        minute: '2-digit'
+                                      })}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </div>
-                      );
+                        );
                       }).filter(Boolean)}
                     </div>
                   )}
@@ -646,7 +657,7 @@ function HomePage() {
               Разделы меню
             </h2>
           </div>
-          
+
         </div>
 
         {/* Menu Grid */}
@@ -839,27 +850,27 @@ function HomePage() {
       {/* Footer */}
       <footer className="fixed bottom-0 bg-white dark:bg-[#181311] border-t border-orange-100 dark:border-gray-800 pb-safe z-40 w-full sabor-fixed">
         <div
-          className={`grid ${
-            (() => {
-              const showFooterMenu = isVisible({ scope: 'menuItem', target: 'footer.menu' });
-              const showFooterFavorites = isVisible({ scope: 'menuItem', target: 'footer.favorites' });
-              const showFooterSearch = isVisible({ scope: 'menuItem', target: 'footer.search' });
-              const showFooterTools = isVisible({ scope: 'menuItem', target: 'footer.tools' });
-              const showFooterAdmin =
-                isAuthenticated &&
-                currentUser?.role === 'администратор' &&
-                isVisible({ scope: 'menuItem', target: 'footer.admin' });
-              const itemCount =
-                (showFooterMenu ? 1 : 0) +
-                (showFooterFavorites ? 1 : 0) +
-                (showFooterSearch ? 1 : 0) +
-                (showFooterTools ? 1 : 0) +
-                (showFooterAdmin ? 1 : 0);
-              if (itemCount >= 5) return 'grid-cols-5';
-              if (itemCount === 4) return 'grid-cols-4';
-              return 'grid-cols-3';
-            })()
-          } h-16`}
+          className={`grid ${(() => {
+            const showFooterMenu = isVisible({ scope: 'menuItem', target: 'footer.menu' });
+            const showFooterFavorites = isVisible({ scope: 'menuItem', target: 'footer.favorites' });
+            const showFooterSearch = isVisible({ scope: 'menuItem', target: 'footer.search' });
+            const showFooterTools = isVisible({ scope: 'menuItem', target: 'footer.tools' });
+            const showFooterAdmin =
+              isAuthenticated &&
+              currentUser?.role === 'администратор' &&
+              !showTour &&
+              isVisible({ scope: 'menuItem', target: 'footer.admin' });
+            const itemCount =
+              (showFooterMenu ? 1 : 0) +
+              (showFooterFavorites ? 1 : 0) +
+              (showFooterSearch ? 1 : 0) +
+              (showFooterTools ? 1 : 0) +
+              (showFooterAdmin ? 1 : 0);
+            if (itemCount >= 5) return 'grid-cols-5';
+            if (itemCount === 4) return 'grid-cols-4';
+            return 'grid-cols-3';
+          })()
+            } h-16`}
         >
           {isVisible({ scope: 'menuItem', target: 'footer.menu' }) && (
             <Link
@@ -875,6 +886,7 @@ function HomePage() {
               {isGuest ? (
                 <button
                   disabled
+                  data-tour="footer-favorites"
                   title="Доступно после входа"
                   className="flex flex-col items-center justify-center gap-1 text-gray-300 dark:text-gray-600 opacity-50 cursor-not-allowed"
                 >
@@ -884,6 +896,7 @@ function HomePage() {
               ) : (
                 <Link
                   to="/favorites"
+                  data-tour="footer-favorites"
                   className="flex flex-col items-center justify-center gap-1 text-gray-400 dark:text-gray-500 hover:text-primary dark:hover:text-primary transition-colors"
                 >
                   <span className="material-symbols-outlined text-2xl">favorite</span>
@@ -893,8 +906,9 @@ function HomePage() {
             </>
           )}
           {isVisible({ scope: 'menuItem', target: 'footer.search' }) && (
-            <button 
+            <button
               onClick={() => navigate('/search')}
+              data-tour="footer-search"
               className="flex flex-col items-center justify-center gap-1 text-gray-400 dark:text-gray-500 hover:text-primary dark:hover:text-primary transition-colors"
             >
               <span className="material-symbols-outlined text-2xl">search</span>
@@ -904,6 +918,7 @@ function HomePage() {
           {isVisible({ scope: 'menuItem', target: 'footer.tools' }) && (
             <Link
               to="/info"
+              data-tour="footer-info"
               className="flex flex-col items-center justify-center gap-1 text-gray-400 dark:text-gray-500 hover:text-primary dark:hover:text-primary transition-colors"
             >
               <span className="material-symbols-outlined text-2xl">new_releases</span>
@@ -912,6 +927,7 @@ function HomePage() {
           )}
           {isAuthenticated &&
             currentUser?.role === 'администратор' &&
+            !showTour &&
             isVisible({ scope: 'menuItem', target: 'footer.admin' }) && (
               <Link
                 to="/admin"
@@ -928,14 +944,14 @@ function HomePage() {
       {/* Полноэкранная slide-in панель меню */}
       {showMenuPanel && (
         <>
-          <div 
+          <div
             className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] transition-opacity"
             onClick={() => setShowMenuPanel(false)}
             onTouchStart={onTouchStart}
             onTouchMove={onTouchMove}
             onTouchEnd={onTouchEnd}
           />
-          <div 
+          <div
             className="fixed top-0 left-0 h-full w-full max-w-sm bg-white dark:bg-[#181311] shadow-2xl z-[101] overflow-y-auto transform transition-transform duration-300 ease-out"
             onTouchStart={onTouchStart}
             onTouchMove={onTouchMove}
@@ -1050,7 +1066,7 @@ function HomePage() {
                 </ComingSoonWrapper>
               )}
               {isVisible({ scope: 'pageBlock', target: 'home.sidebar.feedback' }) && (
-                <button 
+                <button
                   onClick={() => {
                     if (isGuest) {
                       // Показываем подсказку для гостей
@@ -1061,12 +1077,12 @@ function HomePage() {
                     setShowMenuPanel(false);
                   }}
                   disabled={isGuest}
+                  data-tour="sidebar-feedback"
                   title={isGuest ? 'Доступно после входа' : 'Обратная связь'}
-                  className={`w-full text-left p-4 rounded-xl transition-colors flex items-center gap-3 ${
-                    isGuest 
-                      ? 'opacity-50 cursor-not-allowed' 
-                      : 'hover:bg-gray-100 dark:hover:bg-gray-900/50'
-                  }`}
+                  className={`w-full text-left p-4 rounded-xl transition-colors flex items-center gap-3 ${isGuest
+                    ? 'opacity-50 cursor-not-allowed'
+                    : 'hover:bg-gray-100 dark:hover:bg-gray-900/50'
+                    }`}
                 >
                   <span className={`material-symbols-outlined text-2xl ${isGuest ? 'text-gray-400' : 'text-primary'}`}>feedback</span>
                   <span className={`text-base font-medium ${isGuest ? 'text-gray-400' : 'text-[#181311] dark:text-white'}`}>
@@ -1075,6 +1091,17 @@ function HomePage() {
                   </span>
                 </button>
               )}
+              {/* Кнопка "Тур по приложению" */}
+              <button
+                onClick={() => {
+                  setShowTour(true);
+                  setShowMenuPanel(false); // Закрываем боковое меню
+                }}
+                className="w-full text-left p-4 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-900/50 transition-colors flex items-center gap-3"
+              >
+                <span className="material-symbols-outlined text-primary text-2xl">tour</span>
+                <span className="text-base font-medium text-[#181311] dark:text-white">Тур по приложению</span>
+              </button>
               {isVisible({ scope: 'pageBlock', target: 'home.sidebar.theme' }) && (
                 <button
                   onClick={toggleTheme}
@@ -1110,20 +1137,23 @@ function HomePage() {
       )}
 
       {/* Модальное окно входа в систему */}
-      {showLoginModal && !isAuthenticated && (
+      {showLoginModal && (!isAuthenticated || showTour) && (
         <>
-          <div 
+          <div
             className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[10000] transition-opacity"
             onClick={() => {
               // Не позволяем закрыть модальное окно входа кликом вне его
               // Пользователь должен войти, чтобы использовать приложение
             }}
           />
-          <div 
+          <div
             className="fixed inset-0 z-[10001] flex items-center justify-center p-4"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="bg-white dark:bg-[#181311] rounded-2xl shadow-2xl max-w-md w-full">
+            <div
+              data-tour="login-modal"
+              className="bg-white dark:bg-[#181311] rounded-2xl shadow-2xl max-w-md w-full"
+            >
               <div className="p-6">
                 <h2 className="text-2xl font-bold text-[#181311] dark:text-white mb-2 text-center">
                   Вход в систему
@@ -1131,7 +1161,7 @@ function HomePage() {
                 <p className="text-sm text-gray-600 dark:text-gray-400 text-center mb-6">
                   Введите логин и пароль выданные админом.
                 </p>
-                
+
                 <form onSubmit={handleLogin} className="space-y-4">
                   {loginError && (
                     <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-3 flex items-center gap-2">
@@ -1241,11 +1271,11 @@ function HomePage() {
       {/* Модальное окно подтверждения выхода */}
       {showLogoutConfirm && (
         <>
-          <div 
+          <div
             className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[10000] transition-opacity"
             onClick={() => setShowLogoutConfirm(false)}
           />
-          <div 
+          <div
             className="fixed inset-0 z-[10001] flex items-center justify-center p-4"
             onClick={(e) => e.stopPropagation()}
           >
@@ -1257,7 +1287,7 @@ function HomePage() {
                 <p className="text-sm text-gray-600 dark:text-gray-400 text-center mb-6">
                   Вы действительно хотите выйти из системы?
                 </p>
-                
+
                 <div className="flex gap-3">
                   <button
                     onClick={() => setShowLogoutConfirm(false)}
@@ -1281,11 +1311,11 @@ function HomePage() {
       {/* Модальное окно обратной связи */}
       {showFeedbackModal && (
         <>
-          <div 
+          <div
             className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[10000] transition-opacity"
             onClick={handleCloseFeedbackModal}
           />
-          <div 
+          <div
             className="fixed inset-0 z-[10001] flex items-center justify-center p-4"
             onClick={(e) => e.stopPropagation()}
           >
@@ -1479,6 +1509,15 @@ function HomePage() {
           </div>
         </>
       )}
+
+      {/* Тур по приложению */}
+      <AppTour
+        isOpen={showTour}
+        onClose={() => setShowTour(false)}
+        onThemeToggle={toggleTheme}
+        onToggleLoginModal={setShowLoginModal}
+        onToggleMenu={setShowMenuPanel}
+      />
     </div>
   );
 }

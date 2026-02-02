@@ -37,7 +37,9 @@ export const VisibilityProvider = ({ children }) => {
 
     const loadConfig = async () => {
       try {
-        const data = await getVisibilityConfig();
+        // Добавляем timestamp, чтобы браузер не брал конфиг из своего сетевого кэша
+        const timestamp = Date.now();
+        const data = await getVisibilityConfig(timestamp);
         const normalized = normalizeVisibilityConfig(data);
         if (!alive) return;
         setConfig(normalized);
