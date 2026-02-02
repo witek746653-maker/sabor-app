@@ -8,7 +8,6 @@
       "image": "/images/taste-of-moscow.webp",
       "category": "Инструкция",
       "readingTime": "4 мин",
-      "wordCount": 850,
       "version": 1
     },
     {
@@ -18,7 +17,15 @@
       "image": "/images/cigars-head.webp",
       "category": "Статья",
       "readingTime": "7 мин",
-      "wordCount": 1450,
+      "version": 1
+    },
+    {
+      "key": "hotel-breakfast-set",
+      "title": "Сет-завтраки для отеля",
+      "url": "https://cdn.sabor-dlv.ru/resources/hotel-breakfast-set.md",
+      "image": "/images/hotel-breakfast-set.webp",
+      "category": "Инструкция",
+      "readingTime": "1 мин",
       "version": 1
     }
   ]
