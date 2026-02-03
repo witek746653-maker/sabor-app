@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { useVisibility } from '../contexts/VisibilityContext';
 import { getDishImageUrl } from '../utils/imageUtils';
+import { useFavorites } from '../contexts/FavoritesContext';
 import './DishDetailPage.css';
 
 const isNonEmpty = (v) => {
@@ -31,20 +32,17 @@ function BarItemDetailPage() {
   const { isGuest } = useAuth();
   const toast = useToast();
   const { isVisible } = useVisibility();
+  const { catalogIds, toggleCatalogFavorite } = useFavorites();
 
   const [item, setItem] = useState(null);
   const [loading, setLoading] = useState(true);
   const [language, setLanguage] = useState(() => localStorage.getItem('menuLanguage') || 'RU');
-  const [favorites, setFavorites] = useState(() => {
-    const saved = localStorage.getItem('favoriteDishes');
-    return saved ? JSON.parse(saved) : [];
-  });
   const [searchQuery, setSearchQuery] = useState('');
   const [isImageExpanded, setIsImageExpanded] = useState(false);
 
   const searchRefs = useRef({});
 
-  const isFavorite = item && favorites.includes(item.id);
+  const isFavorite = item && catalogIds.includes(item.id);
   const isArchived = item?.status === 'в архиве';
 
   const getFieldValue = (fieldName) => {
@@ -114,9 +112,7 @@ function BarItemDetailPage() {
 
   const toggleFavorite = () => {
     if (!item || isGuest) return;
-    const newFavorites = isFavorite ? favorites.filter((fid) => fid !== item.id) : [...favorites, item.id];
-    setFavorites(newFavorites);
-    localStorage.setItem('favoriteDishes', JSON.stringify(newFavorites));
+    toggleCatalogFavorite(item.id);
   };
 
   const handleBack = () => {

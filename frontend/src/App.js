@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { FavoritesProvider } from './contexts/FavoritesContext';
 import { ToastProvider } from './contexts/ToastContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { VisibilityProvider, useVisibility } from './contexts/VisibilityContext';
@@ -86,16 +87,17 @@ function App() {
     <ErrorBoundary>
       <ThemeProvider>
         <AuthProvider>
-          <VisibilityProvider>
-            <ToastProvider>
-              <Router>
-                <div className="App">
-                  <div className="sabor-container">
-                    {/* Компонент для отслеживания контекста (страница, роль пользователя) */}
-                    <SentryContextTracker />
-                    {/* Индикатор статуса сервера/источника данных (виден и пользователю, и админу) */}
-                    <StatusBanner />
-                    <Routes>
+          <FavoritesProvider>
+            <VisibilityProvider>
+              <ToastProvider>
+                <Router>
+                  <div className="App">
+                    <div className="sabor-container">
+                      {/* Компонент для отслеживания контекста (страница, роль пользователя) */}
+                      <SentryContextTracker />
+                      {/* Индикатор статуса сервера/источника данных (виден и пользователю, и админу) */}
+                      <StatusBanner />
+                      <Routes>
                       {/* Публичные маршруты */}
                       <Route
                         path="/"
@@ -233,12 +235,13 @@ function App() {
                         <Route path="visibility" element={<VisibilityPage />} />
                         <Route path="help" element={<AdminHelpPage />} />
                       </Route>
-                    </Routes>
+                      </Routes>
+                    </div>
                   </div>
-                </div>
-              </Router>
-            </ToastProvider>
-          </VisibilityProvider>
+                </Router>
+              </ToastProvider>
+            </VisibilityProvider>
+          </FavoritesProvider>
         </AuthProvider>
       </ThemeProvider>
     </ErrorBoundary>

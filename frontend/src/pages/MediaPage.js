@@ -18,14 +18,14 @@ import {
   FastForward
 } from 'lucide-react';
 import mediaItems from '../data/mediaItems';
-import { getJSON, setJSON, toggleInArray } from '../utils/storage';
+import { getJSON, setJSON } from '../utils/storage';
 import { useAuth } from '../contexts/AuthContext';
 import { getMediaLikes, toggleMediaLike } from '../services/api';
+import { useFavorites } from '../contexts/FavoritesContext';
 
 const PLAYBACK_RATES = [0.5, 1, 1.25, 1.5];
 
 const STORAGE_KEYS = {
-  favorites: 'media.favorites',
   history: 'media.history',
   durations: 'media.durations',
   progress: 'media.progress',
@@ -38,7 +38,7 @@ const MediaPage = () => {
   const [items, setItems] = useState([]);
   const [likeCounts, setLikeCounts] = useState({});
   const [likedByMe, setLikedByMe] = useState({});
-  const [favorites, setFavorites] = useState(() => getJSON(STORAGE_KEYS.favorites, []));
+  const { mediaIds, toggleMediaFavorite } = useFavorites();
   const [history, setHistory] = useState(() => getJSON(STORAGE_KEYS.history, []));
   const [durations, setDurations] = useState(() => getJSON(STORAGE_KEYS.durations, {}));
   const savedPlayerState = getJSON(STORAGE_KEYS.playerState, {});
@@ -66,7 +66,7 @@ const MediaPage = () => {
 
   const { isAuthenticated, isGuest, canWrite } = useAuth();
   // В гостевом режиме скрываем маркер "в избранном", даже если он есть в хранилище.
-  const effectiveFavorites = isGuest ? [] : favorites;
+  const effectiveFavorites = isGuest ? [] : mediaIds;
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -75,10 +75,6 @@ const MediaPage = () => {
     }, 600);
     return () => clearTimeout(timer);
   }, []);
-
-  useEffect(() => {
-    setJSON(STORAGE_KEYS.favorites, favorites);
-  }, [favorites]);
 
   useEffect(() => {
     setJSON(STORAGE_KEYS.history, history);
@@ -255,7 +251,7 @@ const MediaPage = () => {
       setNotice('Избранное доступно только после входа.');
       return;
     }
-    setFavorites((prev) => toggleInArray(prev, itemId));
+    toggleMediaFavorite(itemId);
   };
 
   const handleDownload = (item) => {

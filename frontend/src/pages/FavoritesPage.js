@@ -5,35 +5,27 @@ import { useAuth } from '../contexts/AuthContext';
 import { getDishImageUrl } from '../utils/imageUtils';
 import { useVisibility } from '../contexts/VisibilityContext';
 import mediaItems from '../data/mediaItems';
+import { useFavorites } from '../contexts/FavoritesContext';
 
 function FavoritesPage() {
   const navigate = useNavigate();
   const { isAuthenticated, currentUser, isGuest } = useAuth();
   const { isVisible } = useVisibility();
+  const {
+    catalogIds,
+    mediaIds,
+    articleIds,
+    toggleCatalogFavorite,
+    toggleMediaFavorite,
+    toggleArticleFavorite
+  } = useFavorites();
 
   // Состояние для всех загруженных "товаров" (блюда, напитки, картины)
   const [allCatalogItems, setAllCatalogItems] = useState([]);
 
-  // Состояние избранного (ID)
-  const [favorites, setFavorites] = useState(() => {
-    const saved = localStorage.getItem('favoriteDishes');
-    const artSaved = localStorage.getItem('art-favorites');
-    const ids = [
-      ...(saved ? JSON.parse(saved) : []),
-      ...(artSaved ? JSON.parse(artSaved) : []),
-    ];
-    return Array.from(new Set(ids)).filter(Boolean);
-  });
-
-  const [mediaFavorites, setMediaFavorites] = useState(() => {
-    const saved = localStorage.getItem('media.favorites');
-    return saved ? JSON.parse(saved) : [];
-  });
-
-  const [articleFavorites, setArticleFavorites] = useState(() => {
-    const saved = localStorage.getItem('article-favorites');
-    return saved ? JSON.parse(saved) : [];
-  });
+  const favorites = catalogIds;
+  const mediaFavorites = mediaIds;
+  const articleFavorites = articleIds;
 
   const [articles, setArticles] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -171,52 +163,6 @@ function FavoritesPage() {
     loadData();
   }, []);
 
-  // Следим за изменениями localStorage (синхронизация вкладок)
-  useEffect(() => {
-    const handleStorage = (e) => {
-      // 1. FAVORITE PRODUCTS
-      if (!e.key || ['favoriteDishes', 'art-favorites'].includes(e.key)) {
-        const d = localStorage.getItem('favoriteDishes');
-        const a = localStorage.getItem('art-favorites');
-        const ids = [...(d ? JSON.parse(d) : []), ...(a ? JSON.parse(a) : [])];
-        const newSet = Array.from(new Set(ids)).filter(Boolean);
-
-        setFavorites(prev => {
-          if (JSON.stringify(prev) === JSON.stringify(newSet)) return prev;
-          return newSet;
-        });
-      }
-      // 2. FAVORITE MEDIA
-      if (!e.key || e.key === 'media.favorites') {
-        const m = localStorage.getItem('media.favorites');
-        const newMedia = m ? JSON.parse(m) : [];
-
-        setMediaFavorites(prev => {
-          if (JSON.stringify(prev) === JSON.stringify(newMedia)) return prev;
-          return newMedia;
-        });
-      }
-      // 3. FAVORITE ARTICLES
-      if (!e.key || e.key === 'article-favorites') {
-        const ar = localStorage.getItem('article-favorites');
-        const newArticles = ar ? JSON.parse(ar) : [];
-
-        setArticleFavorites(prev => {
-          if (JSON.stringify(prev) === JSON.stringify(newArticles)) return prev;
-          return newArticles;
-        });
-      }
-    };
-
-    window.addEventListener('storage', handleStorage);
-    // Интервал для надежности (polling)
-    const interval = setInterval(() => handleStorage({ key: null }), 1000);
-
-    return () => {
-      window.removeEventListener('storage', handleStorage);
-      clearInterval(interval);
-    };
-  }, []);
 
   // === ЛОГИКА ФИЛЬТРАЦИИ И ПОИСКА ===
 
@@ -319,6 +265,22 @@ function FavoritesPage() {
 
   // === UI RENDER COMPONENTS ===
 
+  // Кнопка удаления из избранного
+  const RemoveFavoriteButton = ({ onClick, title }) => (
+    <button
+      type="button"
+      title={title || (language === 'EN' ? 'Remove from favorites' : 'Убрать из избранного')}
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        onClick?.();
+      }}
+      className="absolute top-1 right-1 z-10 size-7 rounded-full bg-white/90 dark:bg-black/60 flex items-center justify-center text-red-500 shadow hover:scale-105 transition"
+    >
+      <span className="material-symbols-outlined text-[18px]">heart_minus</span>
+    </button>
+  );
+
   // Компонент Таба фильтра
   const FilterTab = ({ id, label, count, icon }) => (
     <button
@@ -361,6 +323,7 @@ function FavoritesPage() {
                   className="text-left rounded-lg overflow-hidden bg-white dark:bg-surface-dark shadow-sm border border-gray-100 dark:border-gray-800 hover:border-primary/50 transition-all group"
                 >
                   <div className="relative w-full aspect-square bg-gray-100 dark:bg-gray-800">
+                    <RemoveFavoriteButton onClick={() => toggleMediaFavorite(item.id)} />
                     <img
                       src={item.coverUrl}
                       alt=""
@@ -387,6 +350,7 @@ function FavoritesPage() {
                   className="block rounded-lg overflow-hidden bg-white dark:bg-surface-dark shadow-sm border border-gray-100 dark:border-gray-800 hover:border-primary/50 transition-all"
                 >
                   <div className="relative w-full aspect-square bg-gray-100 dark:bg-gray-800">
+                    <RemoveFavoriteButton onClick={() => toggleArticleFavorite(item.key)} />
                     <div
                       className="absolute inset-0 bg-cover bg-center"
                       style={{ backgroundImage: `url('${item.image || '/articles/placeholder.jpg'}')` }}
@@ -413,6 +377,7 @@ function FavoritesPage() {
                 className={`block rounded-lg overflow-hidden bg-white dark:bg-surface-dark shadow-sm border border-gray-100 dark:border-gray-800 hover:border-primary/50 transition-all ${isArchived ? 'opacity-70 grayscale' : ''}`}
               >
                 <div className="relative w-full aspect-square bg-gray-100 dark:bg-gray-800 group">
+                  <RemoveFavoriteButton onClick={() => toggleCatalogFavorite(item.id)} />
                   {imgUrl ? (
                     <div
                       className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"

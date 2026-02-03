@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useToast } from '../contexts/ToastContext';
 import { useAuth } from '../contexts/AuthContext';
+import { useFavorites } from '../contexts/FavoritesContext';
 
 /**
  * ArtDetailPage - детальная страница просмотра картины
@@ -16,20 +17,14 @@ function ArtDetailPage() {
   const { id } = useParams(); // id картины из URL
   const navigate = useNavigate();
   const toast = useToast();
-  const { isAuthenticated, isGuest } = useAuth();
+  const { isGuest } = useAuth();
+  const { catalogIds, toggleCatalogFavorite } = useFavorites();
 
   // State для данных картины
   const [artwork, setArtwork] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // State для избранного
-  const [isLiked, setIsLiked] = useState(false);
-
-  // В проекте избранное хранится в localStorage под ключом `favoriteDishes`.
-  // Раньше для картин мы использовали отдельный ключ `art-favorites`.
-  // Оставляем совместимость: читаем/пишем в оба, чтобы ничего не потерять.
-  const FAVORITES_KEY = 'favoriteDishes';
-  const ART_FAVORITES_KEY = 'art-favorites';
+  const isLiked = catalogIds.includes(id);
 
   // Функция для конвертации путей из JSON в правильные URL для React
   const fixImagePath = (path) => {
@@ -60,10 +55,7 @@ function ArtDetailPage() {
         setArtwork(artItem);
         setLoading(false);
 
-        // Проверяем, есть ли картина в избранном (localStorage)
-        const favorites = JSON.parse(localStorage.getItem(FAVORITES_KEY) || '[]');
-        const artFavorites = JSON.parse(localStorage.getItem(ART_FAVORITES_KEY) || '[]');
-        setIsLiked((favorites || []).includes(id) || (artFavorites || []).includes(id));
+        // Статус избранного берём из контекста (сервер + локальный кэш)
       } catch (error) {
         console.error('Ошибка загрузки данных о картине:', error);
         toast.error('Не удалось загрузить информацию о картине');
@@ -82,33 +74,8 @@ function ArtDetailPage() {
       toast.error('Избранное доступно только после входа');
       return;
     }
-    try {
-      // Получаем текущий список избранного из localStorage
-      const favorites = JSON.parse(localStorage.getItem(FAVORITES_KEY) || '[]');
-      const artFavorites = JSON.parse(localStorage.getItem(ART_FAVORITES_KEY) || '[]');
-
-      let newFavorites;
-      let newArtFavorites;
-      if (isLiked) {
-        // Если уже в избранном - удаляем
-        newFavorites = (favorites || []).filter((favId) => favId !== id);
-        newArtFavorites = (artFavorites || []).filter((favId) => favId !== id);
-        toast.success('Картина удалена из избранного');
-      } else {
-        // Если не в избранном - добавляем
-        newFavorites = Array.from(new Set([...(favorites || []), id]));
-        newArtFavorites = Array.from(new Set([...(artFavorites || []), id]));
-        toast.success('Картина добавлена в избранное');
-      }
-
-      // Сохраняем обновленный список
-      localStorage.setItem(FAVORITES_KEY, JSON.stringify(newFavorites));
-      localStorage.setItem(ART_FAVORITES_KEY, JSON.stringify(newArtFavorites));
-      setIsLiked(!isLiked);
-    } catch (error) {
-      console.error('Ошибка при работе с избранным:', error);
-      toast.error('Не удалось обновить избранное');
-    }
+    toggleCatalogFavorite(id);
+    toast.success(isLiked ? 'Картина удалена из избранного' : 'Картина добавлена в избранное');
   };
 
   // Функция отправки информации о картине через Web Share API

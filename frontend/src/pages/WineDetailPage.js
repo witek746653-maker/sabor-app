@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { useVisibility } from '../contexts/VisibilityContext';
 import { getDishImageUrl } from '../utils/imageUtils';
+import { useFavorites } from '../contexts/FavoritesContext';
 import './DishDetailPage.css';
 
 // Термин **парсинг**: простыми словами “разобрать строку на кусочки”.
@@ -39,14 +40,11 @@ function WineDetailPage() {
   const { isGuest } = useAuth();
   const toast = useToast();
   const { isVisible } = useVisibility();
+  const { catalogIds, toggleCatalogFavorite } = useFavorites();
 
   const [wine, setWine] = useState(null);
   const [loading, setLoading] = useState(true);
   const [language, setLanguage] = useState(() => localStorage.getItem('menuLanguage') || 'RU');
-  const [favorites, setFavorites] = useState(() => {
-    const saved = localStorage.getItem('favoriteDishes');
-    return saved ? JSON.parse(saved) : [];
-  });
   const [searchQuery, setSearchQuery] = useState('');
   const [isImageExpanded, setIsImageExpanded] = useState(false);
   const [audioPlaying, setAudioPlaying] = useState(false);
@@ -54,7 +52,7 @@ function WineDetailPage() {
 
   const searchRefs = useRef({});
 
-  const isFavorite = wine && favorites.includes(wine.id);
+  const isFavorite = wine && catalogIds.includes(wine.id);
   const isArchived = wine?.status === 'в архиве';
 
   const getFieldValue = (fieldName) => {
@@ -109,9 +107,7 @@ function WineDetailPage() {
 
   const toggleFavorite = () => {
     if (!wine || isGuest) return;
-    const newFavorites = isFavorite ? favorites.filter((fid) => fid !== wine.id) : [...favorites, wine.id];
-    setFavorites(newFavorites);
-    localStorage.setItem('favoriteDishes', JSON.stringify(newFavorites));
+    toggleCatalogFavorite(wine.id);
   };
 
   const handleBack = () => {

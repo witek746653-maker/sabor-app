@@ -493,6 +493,28 @@ export const toggleMediaLike = async (mediaId) => {
   return response.data;
 };
 
+// ========== API ДЛЯ ИЗБРАННОГО ==========
+
+export const getFavorites = async () => {
+  const response = await api.get('/api/favorites');
+  return response.data;
+};
+
+export const updateFavorite = async (type, id, action = 'toggle') => {
+  const payload = {
+    type: String(type || '').trim(),
+    id: String(id || '').trim(),
+    action: String(action || 'toggle').trim()
+  };
+  const response = await api.post('/api/favorites', payload);
+  return response.data;
+};
+
+export const replaceFavorites = async (payload) => {
+  const response = await api.put('/api/favorites', payload);
+  return response.data;
+};
+
 // ========== АДМИНСКИЕ API ==========
 
 export const login = async (username, password, remember = false) => {

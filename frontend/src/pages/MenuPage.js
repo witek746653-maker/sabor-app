@@ -4,12 +4,14 @@ import { getDishes } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import { useVisibility } from '../contexts/VisibilityContext';
 import { getDishImageUrl } from '../utils/imageUtils';
+import { useFavorites } from '../contexts/FavoritesContext';
 
 function MenuPage({ mode }) {
   const { menuName } = useParams();
   const navigate = useNavigate();
-  const { isAuthenticated, currentUser, isGuest, canWrite } = useAuth();
+  const { isAuthenticated, currentUser, isGuest } = useAuth();
   const { isVisible } = useVisibility();
+  const { catalogIds } = useFavorites();
   const [dishes, setDishes] = useState([]);
   const [allDishes, setAllDishes] = useState([]); // Все блюда из всех меню для избранного
   const [sections, setSections] = useState([]);
@@ -26,11 +28,7 @@ function MenuPage({ mode }) {
     return localStorage.getItem('menuLanguage') || 'RU';
   });
   const [showFavorites, setShowFavorites] = useState(false);
-  const [favorites, setFavorites] = useState(() => {
-    // Загружаем избранное из localStorage
-    const saved = localStorage.getItem('favoriteDishes');
-    return saved ? JSON.parse(saved) : [];
-  });
+  const favorites = catalogIds;
   const menuFiltersStorageKey = `menuFilters:${mode === 'tea' ? 'tea' : (menuName || 'all')}`;
   const [filtersLoaded, setFiltersLoaded] = useState(false);
 
@@ -271,31 +269,6 @@ function MenuPage({ mode }) {
     loadDishes();
   }, [menuName, mode, isVisible]);
 
-  // Обновляем избранное при изменении localStorage
-  useEffect(() => {
-    const handleStorageChange = (e) => {
-      if (e.key === 'favoriteDishes' || e.key === null) {
-        const saved = localStorage.getItem('favoriteDishes');
-        setFavorites(saved ? JSON.parse(saved) : []);
-      }
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-
-    // Также проверяем изменения localStorage в том же окне
-    const checkInterval = setInterval(() => {
-      const saved = localStorage.getItem('favoriteDishes');
-      const currentFavorites = saved ? JSON.parse(saved) : [];
-      if (JSON.stringify(currentFavorites) !== JSON.stringify(favorites)) {
-        setFavorites(currentFavorites);
-      }
-    }, 500);
-
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      clearInterval(checkInterval);
-    };
-  }, [favorites]);
 
   // Сохраняем выбранные фильтры меню в localStorage.
   useEffect(() => {

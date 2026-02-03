@@ -16,7 +16,7 @@ import signal
 import logging
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
-from models import db, Dish, FeedbackMessage, Notification, User, VisibilityConfig, MediaLike
+from models import db, Dish, FeedbackMessage, Notification, User, VisibilityConfig, MediaLike, FavoriteItem
 
 try:
     # Sentry — сервис для сбора ошибок с сервера.
@@ -952,6 +952,40 @@ def check_admin_role():
         return jsonify({'error': 'Доступ запрещен', 'message': 'Только администратор'}), 403
     return None
 
+
+FAVORITE_ALLOWED_TYPES = {"catalog", "media", "article"}
+FAVORITE_TYPE_ALIASES = {
+    "catalog": "catalog",
+    "dish": "catalog",
+    "dishes": "catalog",
+    "menu": "catalog",
+    "media": "media",
+    "article": "article",
+    "articles": "article",
+}
+
+
+def _normalize_favorite_type(raw):
+    key = str(raw or "").strip().lower()
+    return FAVORITE_TYPE_ALIASES.get(key)
+
+
+def _normalize_favorite_id(raw):
+    value = str(raw or "").strip()
+    return value or None
+
+
+def _favorites_response(items):
+    payload = {"catalog": [], "media": [], "articles": []}
+    for fav in items:
+        if fav.item_type == "catalog":
+            payload["catalog"].append(fav.item_id)
+        elif fav.item_type == "media":
+            payload["media"].append(fav.item_id)
+        elif fav.item_type == "article":
+            payload["articles"].append(fav.item_id)
+    return payload
+
 def _parse_datetime_local(value):
     """
     Преобразует строку вида '2026-01-28T10:30' в datetime.
@@ -1427,6 +1461,134 @@ def toggle_media_like(media_id):
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': 'MEDIA_LIKE_TOGGLE_ERROR', 'message': str(e)}), 500
+
+
+# ========== ИЗБРАННОЕ ==========
+
+@app.route('/api/favorites', methods=['GET'])
+@login_required
+def get_favorites():
+    """
+    Возвращает избранное текущего пользователя.
+    Формат: { catalog: [], media: [], articles: [] }
+    """
+    guest_check = check_not_guest()
+    if guest_check:
+        return guest_check
+    try:
+        from flask_login import current_user
+        user_id = int(current_user.id)
+        items = FavoriteItem.query.filter_by(user_id=user_id).all()
+        return jsonify(_favorites_response(items))
+    except Exception as e:
+        return jsonify({'error': 'FAVORITES_READ_ERROR', 'message': str(e)}), 500
+
+
+@app.route('/api/favorites', methods=['POST'])
+@login_required
+def update_favorite():
+    """
+    Добавить/удалить/переключить один элемент избранного.
+    Payload: { type, id, action } action: add | remove | toggle
+    """
+    guest_check = check_not_guest()
+    if guest_check:
+        return guest_check
+    payload = request.json if isinstance(request.json, dict) else {}
+    fav_type = _normalize_favorite_type(payload.get("type"))
+    item_id = _normalize_favorite_id(payload.get("id"))
+    action = str(payload.get("action") or "toggle").strip().lower()
+
+    if not fav_type or fav_type not in FAVORITE_ALLOWED_TYPES:
+        return jsonify({'error': 'FAVORITES_BAD_REQUEST', 'message': 'type обязателен'}), 400
+    if not item_id:
+        return jsonify({'error': 'FAVORITES_BAD_REQUEST', 'message': 'id обязателен'}), 400
+    if action not in {"add", "remove", "toggle"}:
+        return jsonify({'error': 'FAVORITES_BAD_REQUEST', 'message': 'action должен быть add/remove/toggle'}), 400
+
+    try:
+        from flask_login import current_user
+        user_id = int(current_user.id)
+
+        existing = FavoriteItem.query.filter_by(
+            user_id=user_id, item_type=fav_type, item_id=item_id
+        ).first()
+
+        if action == "remove" or (action == "toggle" and existing):
+            if existing:
+                db.session.delete(existing)
+                db.session.commit()
+            return jsonify({'status': 'ok', 'type': fav_type, 'id': item_id, 'favorite': False})
+
+        if not existing:
+            db.session.add(FavoriteItem(user_id=user_id, item_type=fav_type, item_id=item_id))
+            try:
+                db.session.commit()
+            except IntegrityError:
+                db.session.rollback()
+        return jsonify({'status': 'ok', 'type': fav_type, 'id': item_id, 'favorite': True})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': 'FAVORITES_UPDATE_ERROR', 'message': str(e)}), 500
+
+
+@app.route('/api/favorites', methods=['PUT'])
+@login_required
+def replace_favorites():
+    """
+    Полностью заменить избранное пользователя.
+    Payload: { catalog: [], media: [], articles: [] }
+    """
+    guest_check = check_not_guest()
+    if guest_check:
+        return guest_check
+    payload = request.json if isinstance(request.json, dict) else {}
+
+    def _parse_list(key):
+        raw = payload.get(key)
+        if raw is None:
+            return []
+        if not isinstance(raw, list):
+            raise ValueError(f"{key} must be array")
+        out = []
+        for v in raw:
+            norm = _normalize_favorite_id(v)
+            if norm:
+                out.append(norm)
+        return out
+
+    try:
+        catalog = _parse_list("catalog")
+        media = _parse_list("media")
+        articles = _parse_list("articles")
+    except ValueError as e:
+        return jsonify({'error': 'FAVORITES_BAD_REQUEST', 'message': str(e)}), 400
+
+    try:
+        from flask_login import current_user
+        user_id = int(current_user.id)
+
+        FavoriteItem.query.filter_by(user_id=user_id).delete()
+
+        for item_id in catalog:
+            db.session.add(FavoriteItem(user_id=user_id, item_type="catalog", item_id=item_id))
+        for item_id in media:
+            db.session.add(FavoriteItem(user_id=user_id, item_type="media", item_id=item_id))
+        for item_id in articles:
+            db.session.add(FavoriteItem(user_id=user_id, item_type="article", item_id=item_id))
+
+        db.session.commit()
+        return jsonify({
+            'status': 'ok',
+            'counts': {
+                'catalog': len(catalog),
+                'media': len(media),
+                'articles': len(articles),
+            },
+        })
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': 'FAVORITES_REPLACE_ERROR', 'message': str(e)}), 500
 
 # ========== АДМИНСКИЕ API (требуют авторизации) ==========
 

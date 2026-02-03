@@ -13,6 +13,7 @@ import { useToast } from '../contexts/ToastContext'; // Используем с�
 import { ArrowUp, Clock } from 'lucide-react';
 import { TableOfContents } from '../components/reader/TableOfContents';
 import '../reader.css';
+import { useFavorites } from '../contexts/FavoritesContext';
 
 export default function ArticleReaderPage() {
     const { articleKey } = useParams();
@@ -36,8 +37,9 @@ export default function ArticleReaderPage() {
     });
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const [isTOCOpen, setIsTOCOpen] = useState(false);
-    const [isBookmarked, setIsBookmarked] = useState(false);
     const [headers, setHeaders] = useState([]);
+    const { articleIds, toggleArticleFavorite } = useFavorites();
+    const isBookmarked = articleIds.includes(articleKey);
 
     // Функция для извлечения заголовков для оглавления
     const extractHeaders = (html) => {
@@ -157,16 +159,6 @@ export default function ArticleReaderPage() {
         };
     }, [fontSize, theme]);
 
-    // Load bookmark status
-    useEffect(() => {
-        if (!articleKey) return;
-        const saved = localStorage.getItem('article-favorites');
-        if (saved) {
-            const favorites = JSON.parse(saved);
-            setIsBookmarked(favorites.includes(articleKey));
-        }
-    }, [articleKey]);
-
     const handleShare = async () => {
         if (navigator.share) {
             try {
@@ -197,25 +189,11 @@ export default function ArticleReaderPage() {
 
 
     const handleToggleBookmark = () => {
-        const nextState = !isBookmarked;
-        setIsBookmarked(nextState);
-
-        // Persist to localStorage
-        const saved = localStorage.getItem('article-favorites');
-        let favorites = saved ? JSON.parse(saved) : [];
-
-        if (nextState) {
-            if (!favorites.includes(articleKey)) {
-                favorites.push(articleKey);
-            }
-        } else {
-            favorites = favorites.filter(id => id !== articleKey);
-        }
-
-        localStorage.setItem('article-favorites', JSON.stringify(favorites));
+        if (!articleKey) return;
+        toggleArticleFavorite(articleKey);
 
         toast.info(articleData?.title, {
-            title: nextState ? "Добавлено в избранное" : "Удалено из избранного",
+            title: !isBookmarked ? "Добавлено в избранное" : "Удалено из избранного",
         });
     };
 

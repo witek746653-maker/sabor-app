@@ -286,3 +286,25 @@ class MediaLike(db.Model):
 
     def __repr__(self):
         return f'<MediaLike {self.media_id} by {self.user_id}>'
+
+
+class FavoriteItem(db.Model):
+    """
+    Избранное пользователя.
+
+    Одна запись = один пользователь добавил один item_id выбранного типа.
+    """
+
+    __tablename__ = 'favorite_items'
+    __table_args__ = (
+        db.UniqueConstraint('user_id', 'item_type', 'item_id', name='uq_favorite_user_type_item'),
+    )
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    user_id = db.Column(db.Integer, nullable=False, index=True)
+    item_type = db.Column(db.String(30), nullable=False, index=True)  # catalog | media | article
+    item_id = db.Column(db.String(120), nullable=False, index=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def __repr__(self):
+        return f'<FavoriteItem {self.item_type}:{self.item_id} by {self.user_id}>'

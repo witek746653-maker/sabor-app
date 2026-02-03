@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { useVisibility } from '../contexts/VisibilityContext';
 import { getDishImageUrl } from '../utils/imageUtils';
+import { useFavorites } from '../contexts/FavoritesContext';
 import './DishDetailPage.css';
 
 function DishDetailPage({ mode }) {
@@ -13,6 +14,7 @@ function DishDetailPage({ mode }) {
   const { isAuthenticated, currentUser, isGuest, canWrite } = useAuth();
   const toast = useToast();
   const { isVisible } = useVisibility();
+  const { catalogIds, toggleCatalogFavorite } = useFavorites();
   const [dish, setDish] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isFeaturesExpanded, setIsFeaturesExpanded] = useState(false);
@@ -20,11 +22,6 @@ function DishDetailPage({ mode }) {
   const [language, setLanguage] = useState(() => {
     // Загружаем язык из localStorage или используем 'RU' по умолчанию
     return localStorage.getItem('menuLanguage') || 'RU';
-  });
-  const [favorites, setFavorites] = useState(() => {
-    // Загружаем избранное из localStorage
-    const saved = localStorage.getItem('favoriteDishes');
-    return saved ? JSON.parse(saved) : [];
   });
   const [searchQuery, setSearchQuery] = useState('');
   const [isImageExpanded, setIsImageExpanded] = useState(false);
@@ -54,16 +51,12 @@ function DishDetailPage({ mode }) {
   };
 
   // Проверяем, находится ли блюдо в избранном
-  const isFavorite = dish && favorites.includes(dish.id);
+  const isFavorite = dish && catalogIds.includes(dish.id);
 
   // Функция для переключения избранного
   const toggleFavorite = () => {
     if (!dish || isGuest) return; // Гости не могут добавлять в избранное
-    const newFavorites = isFavorite
-      ? favorites.filter(id => id !== dish.id)
-      : [...favorites, dish.id];
-    setFavorites(newFavorites);
-    localStorage.setItem('favoriteDishes', JSON.stringify(newFavorites));
+    toggleCatalogFavorite(dish.id);
   };
 
   const handleBack = () => {
