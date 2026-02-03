@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { FavoritesProvider } from './contexts/FavoritesContext';
 import { ToastProvider } from './contexts/ToastContext';
@@ -36,6 +36,7 @@ import MediaPage from './pages/MediaPage';
 import ArticlesListPage from './pages/ArticlesListPage';
 import ArticleReaderPage from './pages/ArticleReaderPage';
 import './App.css';
+import { useFavorites } from './contexts/FavoritesContext';
 
 // Компонент-защитник для админ-маршрутов
 function AdminRoute({ children }) {
@@ -81,6 +82,17 @@ function VisibilityRoute({ scope, target, fallbackTo = '/', linkedMenuItemTarget
   return children;
 }
 
+function FavoritesSyncOnRouteChange() {
+  const location = useLocation();
+  const { refreshFavorites } = useFavorites();
+
+  React.useEffect(() => {
+    refreshFavorites();
+  }, [location.pathname, location.search, refreshFavorites]);
+
+  return null;
+}
+
 function App() {
   return (
     // Error Boundary перехватывает все ошибки рендеринга React-компонентов
@@ -97,6 +109,7 @@ function App() {
                       <SentryContextTracker />
                       {/* Индикатор статуса сервера/источника данных (виден и пользователю, и админу) */}
                       <StatusBanner />
+                    <FavoritesSyncOnRouteChange />
                       <Routes>
                       {/* Публичные маршруты */}
                       <Route

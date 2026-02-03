@@ -1,4 +1,4 @@
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useAuth } from './AuthContext';
 import { getFavorites, replaceFavorites, updateFavorite } from '../services/api';
 
@@ -71,10 +71,11 @@ export const FavoritesProvider = ({ children }) => {
   const [mediaIds, setMediaIds] = useState(() => readArray(FAVORITES_KEYS.media));
   const [articleIds, setArticleIds] = useState(() => readArray(FAVORITES_KEYS.articles));
   const [syncing, setSyncing] = useState(false);
-  const POLL_INTERVAL_MS = 5000;
+  const syncInFlight = useRef(false);
 
   const syncFromServer = useCallback(async () => {
-    if (!canSync || syncing) return;
+    if (!canSync || syncInFlight.current) return;
+    syncInFlight.current = true;
     setSyncing(true);
     try {
       const server = await getFavorites();
@@ -90,8 +91,9 @@ export const FavoritesProvider = ({ children }) => {
       console.warn('Не удалось синхронизировать избранное:', error);
     } finally {
       setSyncing(false);
+      syncInFlight.current = false;
     }
-  }, [canSync, syncing]);
+  }, [canSync]);
 
   useEffect(() => {
     if (!canSync) return;
@@ -114,13 +116,6 @@ export const FavoritesProvider = ({ children }) => {
     };
   }, [canSync, syncFromServer]);
 
-  useEffect(() => {
-    if (!canSync) return;
-    const interval = setInterval(() => {
-      syncFromServer();
-    }, POLL_INTERVAL_MS);
-    return () => clearInterval(interval);
-  }, [canSync, syncFromServer]);
 
   useEffect(() => {
     writeLocal(FAVORITES_KEYS.catalog, catalogIds);
