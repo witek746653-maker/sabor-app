@@ -71,8 +71,10 @@ export const FavoritesProvider = ({ children }) => {
   const [mediaIds, setMediaIds] = useState(() => readArray(FAVORITES_KEYS.media));
   const [articleIds, setArticleIds] = useState(() => readArray(FAVORITES_KEYS.articles));
   const [syncing, setSyncing] = useState(false);
+  const POLL_INTERVAL_MS = 5000;
 
   const syncFromServer = useCallback(async () => {
+    if (!canSync || syncing) return;
     setSyncing(true);
     try {
       const server = await getFavorites();
@@ -80,36 +82,44 @@ export const FavoritesProvider = ({ children }) => {
       const serverMedia = Array.isArray(server?.media) ? server.media : [];
       const serverArticles = Array.isArray(server?.articles) ? server.articles : [];
 
-      const nextCatalog = mergePreserve(serverCatalog, readLocalCatalog());
-      const nextMedia = mergePreserve(serverMedia, readArray(FAVORITES_KEYS.media));
-      const nextArticles = mergePreserve(serverArticles, readArray(FAVORITES_KEYS.articles));
-
-      const needsReplace =
-        nextCatalog.length !== serverCatalog.length ||
-        nextMedia.length !== serverMedia.length ||
-        nextArticles.length !== serverArticles.length;
-
-      if (needsReplace) {
-        await replaceFavorites({
-          catalog: nextCatalog,
-          media: nextMedia,
-          articles: nextArticles
-        });
-      }
-
-      setCatalogIds(nextCatalog);
-      setMediaIds(nextMedia);
-      setArticleIds(nextArticles);
+      // Сервер — источник правды: полностью заменяем локальные списки.
+      setCatalogIds(unique(serverCatalog));
+      setMediaIds(unique(serverMedia));
+      setArticleIds(unique(serverArticles));
     } catch (error) {
       console.warn('Не удалось синхронизировать избранное:', error);
     } finally {
       setSyncing(false);
     }
-  }, []);
+  }, [canSync, syncing]);
 
   useEffect(() => {
     if (!canSync) return;
     syncFromServer();
+  }, [canSync, syncFromServer]);
+
+  useEffect(() => {
+    if (!canSync) return;
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        syncFromServer();
+      }
+    };
+    const handleFocus = () => syncFromServer();
+    window.addEventListener('focus', handleFocus);
+    document.addEventListener('visibilitychange', handleVisibility);
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+      document.removeEventListener('visibilitychange', handleVisibility);
+    };
+  }, [canSync, syncFromServer]);
+
+  useEffect(() => {
+    if (!canSync) return;
+    const interval = setInterval(() => {
+      syncFromServer();
+    }, POLL_INTERVAL_MS);
+    return () => clearInterval(interval);
   }, [canSync, syncFromServer]);
 
   useEffect(() => {
