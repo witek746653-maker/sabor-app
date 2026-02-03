@@ -39,8 +39,6 @@ Robusto (Double Robusto, Petit Robusto), Panatela, Toro.
 
 **Фигурадо:** Pyramid, Belicoso, Torpedo, Perfecto, Diadema, Culebra.
 
-![image.png](image.png)
-
 ### Методы скрутки
 
 В мире только три метода изготовления сигар:

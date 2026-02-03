@@ -1,28 +1,10 @@
 {
-    "updated_at": "2026-02-03T01:15:00Z",
+    "updated_at": "2026-02-03T12:00:00Z",
     "articles": [
-        {
-            "key": "vip-deposits",
-            "title": "Депозиты VIP-комнат",
-            "url": "/content/resources/vip-deposits.md",
-            "image": "/images/vip-deposits.webp",
-            "category": "Памятка",
-            "readingTime": "1 мин",
-            "version": 1
-        },
-        {
-            "key": "cork-fee",
-            "title": "Пробковый сбор",
-            "url": "/content/resources/cork-fee.md",
-            "image": "/images/corkage-fee.webp",
-            "category": "Памятка",
-            "readingTime": "1 мин",
-            "version": 1
-        },
         {
             "key": "taste-of-moscow",
             "title": "Москва со вкусом",
-            "url": "https://cdn.sabor-dlv.ru/resources/taste-of-moscow.md",
+            "url": "/content/resources/taste-of-moscow.md",
             "image": "/images/taste-of-moscow.webp",
             "category": "Памятка",
             "readingTime": "4 мин",
@@ -31,7 +13,7 @@
         {
             "key": "cigar-encyclopedia",
             "title": "Сигарная энциклопедия",
-            "url": "https://cdn.sabor-dlv.ru/resources/cigar-encyclopedia.md",
+            "url": "/content/resources/cigar-encyclopedia.md",
             "image": "/images/cigars-head.webp",
             "category": "Статья",
             "readingTime": "7 мин",
@@ -40,7 +22,7 @@
         {
             "key": "hotel-breakfast-set",
             "title": "Сет-завтраки для отеля",
-            "url": "https://cdn.sabor-dlv.ru/resources/hotel-breakfast-set.md",
+            "url": "/content/resources/hotel-breakfast-set.md",
             "image": "/images/hotel-breakfast-set.webp",
             "category": "Сет-меню",
             "readingTime": "1 мин",
@@ -49,7 +31,7 @@
         {
             "key": "cigar-tasting-set",
             "title": "Сеты для сигарной дегустации",
-            "url": "https://cdn.sabor-dlv.ru/resources/cigar-tasting-set.md",
+            "url": "/content/resources/cigar-tasting-set.md",
             "image": "/images/cigar-tasting-set.webp",
             "category": "Сет-меню",
             "readingTime": "2 мин",
