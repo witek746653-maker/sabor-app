@@ -170,6 +170,7 @@ if (-not $SkipMigrate) {
   if ($SkipUpload) {
     Write-Host "Skipping migrate because -SkipUpload is set (no guarantee server has updated JSON/scripts)." -ForegroundColor Yellow
   } else {
+    Start-Sleep -Seconds 3
     Run "ssh" ($CommonSshArgs + @($Remote, "cd $RemoteRoot/backend && ../venv/bin/python3 migrate_to_db.py --yes"))
   }
 } else {
@@ -180,6 +181,7 @@ Info "Restart service ($ServiceName)"
 if ($SkipUpload) {
   Write-Host "Skipping restart because -SkipUpload is set." -ForegroundColor Yellow
 } else {
+  Start-Sleep -Seconds 3
   Run "ssh" ($CommonSshArgs + @($Remote, "systemctl restart $ServiceName"))
 }
 

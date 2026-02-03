@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '../contexts/ToastContext';
+import { formatMessageWithLinks } from '../utils/textFormatter';
 
 function NotificationsPage() {
   const navigate = useNavigate();
@@ -22,7 +23,7 @@ function NotificationsPage() {
       keywords: []
     };
   });
-  
+
   // Форма создания/редактирования уведомления
   const [formData, setFormData] = useState({
     title: '',
@@ -129,12 +130,12 @@ function NotificationsPage() {
     if (editingNotification) {
       // Обновляем существующее
       if (notification.status === 'draft') {
-        const updatedDrafts = drafts.map(d => 
+        const updatedDrafts = drafts.map(d =>
           d.id === notification.id ? notification : d
         );
         saveDrafts(updatedDrafts);
       } else {
-        const updated = notifications.map(n => 
+        const updated = notifications.map(n =>
           n.id === notification.id ? notification : n
         );
         saveNotifications(updated);
@@ -160,7 +161,7 @@ function NotificationsPage() {
     try {
       // Получаем все уведомления пользователей
       const userNotifications = JSON.parse(localStorage.getItem('notifications') || '[]');
-      
+
       // Создаем уведомление для пользователей (упрощенная версия без технических полей)
       const userNotification = {
         id: notification.id || `notif-${Date.now()}`,
@@ -173,20 +174,20 @@ function NotificationsPage() {
         author: notification.author || '',
         expiresAt: notification.expiresAt || null
       };
-      
+
       // Добавляем в начало списка
       userNotifications.unshift(userNotification);
-      
+
       // Сохраняем в localStorage
       localStorage.setItem('notifications', JSON.stringify(userNotifications));
-      
+
       // Обновляем счетчик непрочитанных
       const unread = userNotifications.filter(n => !n.read).length;
       localStorage.setItem('unreadNotifications', unread.toString());
-      
+
       // Триггерим событие для обновления в других компонентах
       window.dispatchEvent(new Event('storage'));
-      
+
       console.log('Уведомление отправлено пользователям:', userNotification);
     } catch (error) {
       console.error('Ошибка отправки уведомления пользователям:', error);
@@ -220,7 +221,7 @@ function NotificationsPage() {
   };
 
   const handleArchive = (notification) => {
-    const updated = notifications.map(n => 
+    const updated = notifications.map(n =>
       n.id === notification.id ? { ...n, status: 'archived' } : n
     );
     saveNotifications(updated);
@@ -229,7 +230,7 @@ function NotificationsPage() {
 
   const handleDelete = (notification, isDraft = false) => {
     if (!window.confirm('Удалить это уведомление?')) return;
-    
+
     if (isDraft) {
       const updated = drafts.filter(d => d.id !== notification.id);
       saveDrafts(updated);
@@ -260,7 +261,7 @@ function NotificationsPage() {
       const diff = date - now;
       const hours = Math.floor(diff / (1000 * 60 * 60));
       const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      
+
       if (diff < 0) return 'Истекло';
       if (hours > 0) return `Осталось: ${hours}ч ${minutes}м`;
       return `Осталось: ${minutes}м`;
@@ -317,31 +318,28 @@ function NotificationsPage() {
         <div className="flex gap-2 mb-6 border-b border-gray-200 dark:border-gray-800">
           <button
             onClick={() => setActiveTab('active')}
-            className={`px-4 py-2 font-semibold transition-colors ${
-              activeTab === 'active'
+            className={`px-4 py-2 font-semibold transition-colors ${activeTab === 'active'
                 ? 'text-primary border-b-2 border-primary'
                 : 'text-gray-500 dark:text-gray-400'
-            }`}
+              }`}
           >
             Активные ({activeNotifications.length})
           </button>
           <button
             onClick={() => setActiveTab('drafts')}
-            className={`px-4 py-2 font-semibold transition-colors ${
-              activeTab === 'drafts'
+            className={`px-4 py-2 font-semibold transition-colors ${activeTab === 'drafts'
                 ? 'text-primary border-b-2 border-primary'
                 : 'text-gray-500 dark:text-gray-400'
-            }`}
+              }`}
           >
             Черновики ({drafts.length})
           </button>
           <button
             onClick={() => setActiveTab('archive')}
-            className={`px-4 py-2 font-semibold transition-colors ${
-              activeTab === 'archive'
+            className={`px-4 py-2 font-semibold transition-colors ${activeTab === 'archive'
                 ? 'text-primary border-b-2 border-primary'
                 : 'text-gray-500 dark:text-gray-400'
-            }`}
+              }`}
           >
             Архив
           </button>
@@ -397,7 +395,9 @@ function NotificationsPage() {
                         </button>
                       </div>
                     </div>
-                    <p className="text-gray-700 dark:text-gray-300 mb-3">{notification.message}</p>
+                    <p className="text-gray-700 dark:text-gray-300 mb-3 whitespace-pre-wrap">
+                      {formatMessageWithLinks(notification.message)}
+                    </p>
                     <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
                       {notification.author && (
                         <span className="flex items-center gap-1">
@@ -467,7 +467,9 @@ function NotificationsPage() {
                         </button>
                       </div>
                     </div>
-                    <p className="text-gray-700 dark:text-gray-300 mb-3">{draft.message || 'Сообщение не заполнено'}</p>
+                    <p className="text-gray-700 dark:text-gray-300 mb-3 whitespace-pre-wrap">
+                      {formatMessageWithLinks(draft.message || 'Сообщение не заполнено')}
+                    </p>
                     {!draft.lifetimeType && (
                       <p className="text-xs text-red-600 dark:text-red-400 mb-2">
                         ⚠️ Необходимо задать срок жизни для отправки
@@ -513,7 +515,9 @@ function NotificationsPage() {
                         <span className="material-symbols-outlined">delete</span>
                       </button>
                     </div>
-                    <p className="text-gray-700 dark:text-gray-300 mb-3">{notification.message}</p>
+                    <p className="text-gray-700 dark:text-gray-300 mb-3 whitespace-pre-wrap">
+                      {formatMessageWithLinks(notification.message)}
+                    </p>
                   </div>
                 ))
               )}
@@ -560,6 +564,9 @@ function NotificationsPage() {
                     className="w-full px-4 py-2 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#2c2420] text-[#181311] dark:text-white min-h-[100px]"
                     placeholder="Введите текст уведомления"
                   />
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    Подсказка: используйте <b>[Текст ссылки](/путь)</b> или <b>[Текст](https://сайт.рф)</b> для добавления ссылок
+                  </p>
                 </div>
 
                 <div>
@@ -713,8 +720,8 @@ function NotificationsPage() {
                               </h4>
                               <span className="w-2 h-2 bg-primary rounded-full flex-shrink-0 mt-2"></span>
                             </div>
-                            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2 leading-relaxed">
-                              {notification.message}
+                            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2 leading-relaxed whitespace-pre-wrap">
+                              {formatMessageWithLinks(notification.message)}
                             </p>
                             <div className="flex items-center gap-3 text-xs text-gray-400 dark:text-gray-500">
                               {notification.author && (

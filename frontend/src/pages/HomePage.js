@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { formatMessageWithLinks } from '../utils/textFormatter';
 import { getMenus, getSections, submitFeedback, login as apiLogin, loginAsGuest, getPublicNotifications } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
@@ -605,8 +606,8 @@ function HomePage() {
                                     <span className="w-2 h-2 bg-primary rounded-full flex-shrink-0 mt-2"></span>
                                   )}
                                 </div>
-                                <p className="text-sm text-gray-600 dark:text-gray-400 mb-2 leading-relaxed break-words">
-                                  {notification.message || 'Нет сообщения'}
+                                <p className="text-sm text-gray-600 dark:text-gray-400 mb-2 leading-relaxed break-words whitespace-pre-wrap">
+                                  {formatMessageWithLinks(notification.message || 'Нет сообщения')}
                                 </p>
                                 <div className="flex items-center gap-3 text-xs text-gray-400 dark:text-gray-500">
                                   {displayDate && (
