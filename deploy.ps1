@@ -144,12 +144,13 @@ if ($SkipUpload) {
   $jsonSrc = Join-Path $PSScriptRoot "data/menu-database.json"
   $jsonDst = "${RemoteScpPrefix}/data/menu-database.json"
   Run "scp" ($CommonSshArgs + @($jsonSrc, $jsonDst))
+  Start-Sleep -Seconds 2
+
 
   # 2) Бэкенд (код)
   $backendFiles = @("app.py", "models.py", "migrate_to_db.py") | ForEach-Object { Join-Path $PSScriptRoot ("backend\" + $_) }
-  foreach ($f in $backendFiles) {
-    Run "scp" ($CommonSshArgs + @($f, "${RemoteScpPrefix}/backend/"))
-  }
+  Run "scp" ($CommonSshArgs + $backendFiles + @("${RemoteScpPrefix}/backend/"))
+  Start-Sleep -Seconds 2
 
   # 3) Фронтенд build (если не пропущен)
   if (-not $SkipBuild) {
@@ -158,7 +159,9 @@ if ($SkipUpload) {
     # Поэтому "мусор" от прошлых сборок (например, старые PDF в /menus/) может остаться и продолжать открываться.
     # KISS-решение: перед загрузкой удаляем старую папку build на сервере.
     Run "ssh" ($CommonSshArgs + @($Remote, "rm -rf $RemoteRoot/frontend/build && mkdir -p $RemoteRoot/frontend"))
+    Start-Sleep -Seconds 2
     Run "scp" ($CommonSshArgs + @("-r", $buildPath, "${RemoteScpPrefix}/frontend/"))
+    Start-Sleep -Seconds 2
   }
 }
 

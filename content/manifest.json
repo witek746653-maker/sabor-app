@@ -36,6 +36,24 @@
             "category": "Сет-меню",
             "readingTime": "2 мин",
             "version": 1
+        },
+        {
+            "key": "cork-fee",
+            "title": "Пробковый сбор",
+            "url": "/content/resources/cork-fee.md",
+            "image": "/images/corkage-fee.webp",
+            "category": "Памятка",
+            "readingTime": "1 мин",
+            "version": 1
+        },
+        {
+            "key": "vip-deposits",
+            "title": "Депозиты VIP-комнат",
+            "url": "/content/resources/vip-deposits.md",
+            "image": "/images/vip-deposits.webp",
+            "category": "Памятка",
+            "readingTime": "1 мин",
+            "version": 1
         }
     ]
 }
