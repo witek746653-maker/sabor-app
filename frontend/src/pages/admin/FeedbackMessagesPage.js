@@ -31,7 +31,7 @@ function FeedbackMessagesPage() {
   const handleMarkRead = async (messageId) => {
     try {
       await markFeedbackRead(messageId);
-      setMessages(messages.map(msg => 
+      setMessages(messages.map(msg =>
         msg.id === messageId ? { ...msg, read: true } : msg
       ));
     } catch (error) {
@@ -53,7 +53,9 @@ function FeedbackMessagesPage() {
 
   const formatDate = (dateString) => {
     if (!dateString) return 'Дата неизвестна';
-    const date = new Date(dateString);
+    // Если в строке нет 'Z' или '+', дописываем 'Z', чтобы JS понял, что это UTC
+    const utcString = dateString.includes('Z') || dateString.includes('+') ? dateString : dateString + 'Z';
+    const date = new Date(utcString);
     return date.toLocaleString('ru-RU', {
       year: 'numeric',
       month: 'long',
@@ -65,10 +67,11 @@ function FeedbackMessagesPage() {
 
   const getFeedbackTypeInfo = (type) => {
     const types = {
-      question: { label: '❓ Вопрос', color: 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800' },
-      bug: { label: '🐞 Проблема / ошибка', color: 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 border-red-200 dark:border-red-800' },
-      suggestion: { label: '💡 Предложение', color: 'bg-yellow-50 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-300 border-yellow-200 dark:border-yellow-800' },
-      greeting: { label: '📚 Просто пожелать добра 😉', color: 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800' }
+      bug: { label: '🔴 Не работает', color: 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 border-red-200 dark:border-red-800' },
+      error: { label: '📝 Ошибка текста', color: 'bg-yellow-50 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-300 border-yellow-200 dark:border-yellow-800' },
+      wrong: { label: '⚠️ Работает неправильно', color: 'bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-300 border-orange-200 dark:border-orange-800' },
+      idea: { label: '💡 Улучшение', color: 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800' },
+      question: { label: '❓ Вопрос', color: 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800' }
     };
     return types[type] || types.question;
   };
@@ -96,21 +99,19 @@ function FeedbackMessagesPage() {
       <div className="mb-4 flex gap-2">
         <button
           onClick={() => setFilter('all')}
-          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-            filter === 'all'
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${filter === 'all'
               ? 'bg-primary text-white'
               : 'bg-gray-100 dark:bg-white/10 text-text-primary-light dark:text-text-primary-dark hover:bg-gray-200 dark:hover:bg-white/20'
-          }`}
+            }`}
         >
           Все ({messages.length})
         </button>
         <button
           onClick={() => setFilter('unread')}
-          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors relative ${
-            filter === 'unread'
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors relative ${filter === 'unread'
               ? 'bg-primary text-white'
               : 'bg-gray-100 dark:bg-white/10 text-text-primary-light dark:text-text-primary-dark hover:bg-gray-200 dark:hover:bg-white/20'
-          }`}
+            }`}
         >
           Непрочитанные
           {unreadCount > 0 && (
@@ -121,11 +122,10 @@ function FeedbackMessagesPage() {
         </button>
         <button
           onClick={() => setFilter('read')}
-          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-            filter === 'read'
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${filter === 'read'
               ? 'bg-primary text-white'
               : 'bg-gray-100 dark:bg-white/10 text-text-primary-light dark:text-text-primary-dark hover:bg-gray-200 dark:hover:bg-white/20'
-          }`}
+            }`}
         >
           Прочитанные ({messages.filter(msg => msg.read).length})
         </button>
@@ -137,19 +137,18 @@ function FeedbackMessagesPage() {
           <div className="text-center py-8 text-text-secondary-light">Загрузка...</div>
         ) : filteredMessages.length === 0 ? (
           <div className="text-center py-8 text-text-secondary-light">
-            {filter === 'unread' ? 'Нет непрочитанных сообщений' : 
-             filter === 'read' ? 'Нет прочитанных сообщений' : 
-             'Нет сообщений'}
+            {filter === 'unread' ? 'Нет непрочитанных сообщений' :
+              filter === 'read' ? 'Нет прочитанных сообщений' :
+                'Нет сообщений'}
           </div>
         ) : (
           filteredMessages.map((message) => (
             <div
               key={message.id}
-              className={`flex flex-col bg-surface-light dark:bg-surface-dark rounded-2xl p-4 shadow-sm border ${
-                message.read 
-                  ? 'border-gray-100 dark:border-white/5 opacity-75' 
+              className={`flex flex-col bg-surface-light dark:bg-surface-dark rounded-2xl p-4 shadow-sm border ${message.read
+                  ? 'border-gray-100 dark:border-white/5 opacity-75'
                   : 'border-primary/30 dark:border-primary/20'
-              } relative`}
+                } relative`}
             >
               {!message.read && (
                 <div className="absolute top-3 right-3 w-3 h-3 bg-primary rounded-full"></div>

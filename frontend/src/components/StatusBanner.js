@@ -67,6 +67,16 @@ export default function StatusBanner() {
     checkedAt: null,
   });
 
+  const [forceDown, setForceDown] = useState(false);
+
+  useEffect(() => {
+    const handleTourWifi = (e) => {
+      setForceDown(!!e.detail);
+    };
+    window.addEventListener('sabor-tour-wifi-state', handleTourWifi);
+    return () => window.removeEventListener('sabor-tour-wifi-state', handleTourWifi);
+  }, []);
+
   const [runtime, setRuntime] = useState(() => {
     const r = safeJsonParse(localStorage.getItem(MENU_DB_RUNTIME_KEY) || '');
     return r || { source: null, at: null, note: null };
@@ -163,10 +173,10 @@ export default function StatusBanner() {
     return apiBad || sourceNotServer || (offlineGuestEnabled && !apiChecking);
   }, [effectiveSource, health.state, offlineGuestEnabled]);
 
-  const shouldShow = isAdmin || hasIssue;
+  const shouldShow = isAdmin || hasIssue || forceDown;
 
   const chipTone = useMemo(() => {
-    if (health.state === 'down') return 'down';
+    if (forceDown || health.state === 'down') return 'down';
     if (health.state === 'degraded') return 'degraded';
     if (effectiveSource && effectiveSource !== 'api') return 'fallback';
     if (health.state === 'checking') return 'checking';
@@ -315,7 +325,7 @@ export default function StatusBanner() {
   if (!shouldShow) return null;
 
   return (
-    <div style={rootStyle} data-status-banner="1">
+    <div style={rootStyle} data-status-banner="1" data-tour="status-banner">
       {expanded && (
         <div style={{ ...panelStyle, marginLeft: 'auto' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, marginBottom: 6 }}>

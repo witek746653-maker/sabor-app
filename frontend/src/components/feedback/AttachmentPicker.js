@@ -22,6 +22,14 @@ export default function AttachmentPicker({ attachments, onChange }) {
 
   const addFiles = (files, source) => {
     const list = Array.from(files || []);
+
+    // Проверка размера (15МБ на один файл)
+    const tooBig = list.find(f => f.size > 15 * 1024 * 1024);
+    if (tooBig) {
+      alert(`Файл "${tooBig.name}" слишком большой. Пожалуйста, сожмите его или выберите другой.`);
+      return;
+    }
+
     const next = list.map((file) => ({
       id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
       file,
@@ -59,6 +67,10 @@ export default function AttachmentPicker({ attachments, onChange }) {
     addFiles([file], 'screenshot');
   };
 
+  const canCapture = typeof navigator !== 'undefined' &&
+    navigator.mediaDevices &&
+    typeof navigator.mediaDevices.getDisplayMedia === 'function';
+
   return (
     <div className={styles.attachmentsBlock}>
       <div className={styles.attachmentButtons}>
@@ -66,6 +78,11 @@ export default function AttachmentPicker({ attachments, onChange }) {
           Прикрепить
         </button>
         <ScreenshotCapture onAdd={handleScreenshotAdd} />
+        {!canCapture && (
+          <div className={styles.mobileHint}>
+            Можно прикрепить скриншот из галереи
+          </div>
+        )}
         <input
           ref={inputRef}
           type="file"

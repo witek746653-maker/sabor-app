@@ -12,6 +12,7 @@ export default function FeedbackEdgeTab({ onOpen, visible, safeRight }) {
       type="button"
       onClick={onOpen}
       aria-label="Сообщить о проблеме"
+      data-tour="feedback-tab"
       className={styles.edgeTabButton}
       style={{ right: safeRight ? `${safeRight}px` : undefined }}
     >

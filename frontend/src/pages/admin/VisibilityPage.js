@@ -97,7 +97,6 @@ const TARGET_GROUPS = [
       { scope: 'pageBlock', target: 'home.sidebar.faq', label: 'Боковое меню: Частые вопросы гостей' },
       { scope: 'pageBlock', target: 'home.sidebar.checklists', label: 'Боковое меню: Чек-листы' },
       { scope: 'pageBlock', target: 'home.sidebar.servicePrinciples', label: 'Боковое меню: Принципы сервиса' },
-      { scope: 'pageBlock', target: 'home.sidebar.feedback', label: 'Боковое меню: Обратная связь' },
       { scope: 'pageBlock', target: 'home.sidebar.theme', label: 'Боковое меню: Тема' },
       { scope: 'pageBlock', target: 'home.sidebar.logout', label: 'Боковое меню: Выход из системы' },
     ],

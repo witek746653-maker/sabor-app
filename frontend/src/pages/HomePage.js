@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { formatMessageWithLinks } from '../utils/textFormatter';
-import { getMenus, getSections, submitFeedback, login as apiLogin, loginAsGuest, getPublicNotifications } from '../services/api';
+import { getMenus, getSections, login as apiLogin, loginAsGuest, getPublicNotifications } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -26,24 +26,7 @@ function HomePage() {
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [showMenuPanel, setShowMenuPanel] = useState(false);
-  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
-  const [loginForm, setLoginForm] = useState({
-    username: '',
-    password: ''
-  });
-  const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(true); // По умолчанию включаем "Запомнить меня"
-  const [loginError, setLoginError] = useState(null);
-  const [loginSubmitting, setLoginSubmitting] = useState(false);
-  const [feedbackForm, setFeedbackForm] = useState({
-    name: '',
-    type: 'question',
-    message: ''
-  });
-  const [feedbackSubmitting, setFeedbackSubmitting] = useState(false);
-  const [feedbackSuccess, setFeedbackSuccess] = useState(false);
-  const [feedbackError, setFeedbackError] = useState(null);
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
@@ -295,68 +278,7 @@ function HomePage() {
     return null;
   };
 
-  // Функция для обработки отправки формы обратной связи
-  const handleFeedbackSubmit = async (e) => {
-    e.preventDefault();
 
-    // Гости не могут отправлять обратную связь
-    if (isGuest) {
-      setFeedbackError('Доступно после входа. Гостевой режим поддерживает только просмотр данных.');
-      return;
-    }
-
-    // Проверяем, что есть текст сообщения
-    if (!feedbackForm.message.trim()) {
-      setFeedbackError('Пожалуйста, введите сообщение');
-      return;
-    }
-
-    setFeedbackSubmitting(true);
-    setFeedbackError(null);
-
-    try {
-      await submitFeedback({
-        name: feedbackForm.name.trim() || '',
-        type: feedbackForm.type,
-        message: feedbackForm.message.trim()
-      });
-
-      // Успешная отправка
-      setFeedbackSuccess(true);
-      setFeedbackForm({ name: '', type: 'question', message: '' });
-
-      // Закрываем модальное окно через 2 секунды
-      setTimeout(() => {
-        setShowFeedbackModal(false);
-        setFeedbackSuccess(false);
-      }, 2000);
-    } catch (error) {
-      setFeedbackError(error.response?.data?.error || error.message || 'Ошибка при отправке сообщения');
-    } finally {
-      setFeedbackSubmitting(false);
-    }
-  };
-
-  // Функция для закрытия модального окна обратной связи
-  const handleCloseFeedbackModal = () => {
-    if (!feedbackSubmitting) {
-      setShowFeedbackModal(false);
-      setFeedbackForm({ name: '', type: 'question', message: '' });
-      setFeedbackError(null);
-      setFeedbackSuccess(false);
-    }
-  };
-
-  // Функция для получения названия типа сообщения
-  const getFeedbackTypeLabel = (type) => {
-    const types = {
-      question: '❓ Вопрос',
-      bug: '🐞 Проблема / ошибка',
-      suggestion: '💡 Предложение',
-      greeting: '📚 Просто пожелать добра 😉 (мм.. лучше вышли донат)'
-    };
-    return types[type] || types.question;
-  };
 
   // Обработчик входа
   const handleLogin = async (e) => {
@@ -1094,32 +1016,7 @@ function HomePage() {
                   </button>
                 </ComingSoonWrapper>
               )}
-              {isVisible({ scope: 'pageBlock', target: 'home.sidebar.feedback' }) && (
-                <button
-                  onClick={() => {
-                    if (isGuest) {
-                      // Показываем подсказку для гостей
-                      toast.info('Доступно после входа. Гостевой режим поддерживает только просмотр данных.');
-                      return;
-                    }
-                    setShowFeedbackModal(true);
-                    setShowMenuPanel(false);
-                  }}
-                  disabled={isGuest}
-                  data-tour="sidebar-feedback"
-                  title={isGuest ? 'Доступно после входа' : 'Обратная связь'}
-                  className={`w-full text-left p-4 rounded-xl transition-colors flex items-center gap-3 ${isGuest
-                    ? 'opacity-50 cursor-not-allowed'
-                    : 'hover:bg-gray-100 dark:hover:bg-gray-900/50'
-                    }`}
-                >
-                  <span className={`material-symbols-outlined text-2xl ${isGuest ? 'text-gray-400' : 'text-primary'}`}>feedback</span>
-                  <span className={`text-base font-medium ${isGuest ? 'text-gray-400' : 'text-[#181311] dark:text-white'}`}>
-                    Обратная связь
-                    {isGuest && <span className="text-xs text-gray-400 ml-2">(Доступно после входа)</span>}
-                  </span>
-                </button>
-              )}
+
               {/* Кнопка "Тур по приложению" */}
               <button
                 onClick={() => {
@@ -1337,207 +1234,7 @@ function HomePage() {
         </>
       )}
 
-      {/* Модальное окно обратной связи */}
-      {showFeedbackModal && (
-        <>
-          <div
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[10000] transition-opacity"
-            onClick={handleCloseFeedbackModal}
-          />
-          <div
-            className="fixed inset-0 z-[10001] flex items-center justify-center p-4"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="bg-white dark:bg-[#181311] rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-              {/* Заголовок */}
-              <div className="sticky top-0 bg-white dark:bg-[#181311] border-b border-gray-200 dark:border-gray-800 p-4 flex items-center justify-between z-10">
-                <div className="flex items-center gap-2">
-                  <h2 className="text-xl font-bold text-[#181311] dark:text-white">
-                    Обратная связь
-                  </h2>
-                  <HelpPopover title="Справка: обратная связь" icon="help" size="lg">
-                    <div className="text-sm" style={{ opacity: 0.95 }}>
-                      <div style={{ fontWeight: 900, marginBottom: 6 }}>Кому уходит сообщение</div>
-                      <div style={{ opacity: 0.9 }}>
-                        Сообщение попадает в раздел “Обратная связь” в админ‑панели. Его увидит администратор приложения/ресторана.
-                      </div>
 
-                      <details>
-                        <summary>Зачем это нужно</summary>
-                        <div style={{ marginTop: 6, opacity: 0.9 }}>
-                          - сообщить об ошибке (“что-то не так на сайте”)
-                          <br />- задать вопрос
-                          <br />- предложить улучшение (меню, тексты, удобство)
-                        </div>
-                      </details>
-
-                      <details>
-                        <summary>Как написать, чтобы быстрее поняли</summary>
-                        <div style={{ marginTop: 6, opacity: 0.9 }}>
-                          1) Выберите тип сообщения
-                          <br />2) Опишите “что хотели сделать → что получилось”
-                          <br />3) Если это ошибка — добавьте шаги (1-2-3) и название блюда/страницы
-                        </div>
-                      </details>
-
-                      <details>
-                        <summary>Важно</summary>
-                        <div style={{ marginTop: 6, opacity: 0.9 }}>
-                          Это не чат “прямо сейчас”. Для срочных вопросов лучше использовать телефон/мессенджер ресторана.
-                        </div>
-                      </details>
-                    </div>
-                  </HelpPopover>
-                </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={handleCloseFeedbackModal}
-                    disabled={feedbackSubmitting}
-                    className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 disabled:opacity-50"
-                  >
-                    <span className="material-symbols-outlined">close</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Форма */}
-              <form onSubmit={handleFeedbackSubmit} className="p-6 space-y-4">
-                {/* Сообщение об успехе */}
-                {feedbackSuccess && (
-                  <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-4 flex items-center gap-3">
-                    <span className="material-symbols-outlined text-green-600 dark:text-green-400">check_circle</span>
-                    <p className="text-green-800 dark:text-green-200 text-sm font-medium">
-                      Спасибо! Ваше сообщение отправлено.
-                    </p>
-                  </div>
-                )}
-
-                {/* Сообщение об ошибке */}
-                {feedbackError && (
-                  <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4 flex items-center gap-3">
-                    <span className="material-symbols-outlined text-red-600 dark:text-red-400">error</span>
-                    <p className="text-red-800 dark:text-red-200 text-sm font-medium">
-                      {feedbackError}
-                    </p>
-                  </div>
-                )}
-
-                {/* Поле "Имя" (необязательно) */}
-                <div>
-                  <label className="block text-sm font-medium text-[#181311] dark:text-white mb-2">
-                    Имя <span className="text-gray-400 text-xs">(необязательно)</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={feedbackForm.name}
-                    onChange={(e) => setFeedbackForm({ ...feedbackForm, name: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-[#181311] dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-                    placeholder="Ваше имя"
-                    disabled={feedbackSubmitting || feedbackSuccess}
-                  />
-                </div>
-
-                {/* Поле "Тип сообщения" */}
-                <div>
-                  <div className="flex items-center justify-between gap-3 mb-2">
-                    <label className="block text-sm font-medium text-[#181311] dark:text-white">
-                      Тип сообщения <span className="text-red-500">*</span>
-                    </label>
-                    <HelpPopover title="Справка: тип сообщения" icon="help">
-                      <div style={{ opacity: 0.9 }}>
-                        Выберите категорию — так админ быстрее поймёт, что делать.
-                        <details>
-                          <summary>Подсказка по вариантам</summary>
-                          <div style={{ marginTop: 6, opacity: 0.9 }}>
-                            - <b>Вопрос</b>: “как найти…”, “что значит…”
-                            <br />- <b>Проблема</b>: “не открывается”, “не грузится”
-                            <br />- <b>Предложение</b>: “добавить/улучшить…”
-                          </div>
-                        </details>
-                      </div>
-                    </HelpPopover>
-                  </div>
-                  <select
-                    value={feedbackForm.type}
-                    onChange={(e) => setFeedbackForm({ ...feedbackForm, type: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-[#181311] dark:text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-                    required
-                    disabled={feedbackSubmitting || feedbackSuccess}
-                  >
-                    <option value="question">❓ Вопрос</option>
-                    <option value="bug">🐞 Проблема / ошибка</option>
-                    <option value="suggestion">💡 Предложение</option>
-                    <option value="greeting">📚 Просто пожелать добра 😉 (мм.. лучше вышли донат)</option>
-                  </select>
-                </div>
-
-                {/* Поле "Сообщение" (обязательно) */}
-                <div>
-                  <div className="flex items-center justify-between gap-3 mb-2">
-                    <label className="block text-sm font-medium text-[#181311] dark:text-white">
-                      Сообщение <span className="text-red-500">*</span>
-                    </label>
-                    <HelpPopover title="Справка: что писать" icon="help" size="lg">
-                      <div style={{ opacity: 0.9 }}>
-                        Пишите коротко и по делу — так быстрее исправят.
-                        <details>
-                          <summary>Шаблон (скопируйте)</summary>
-                          <div style={{ marginTop: 6, opacity: 0.9 }}>
-                            Что хотел сделать:
-                            <br />Что получилось:
-                            <br />Где это было (страница/блюдо):
-                            <br />Шаги (1-2-3):
-                          </div>
-                        </details>
-                      </div>
-                    </HelpPopover>
-                  </div>
-                  <textarea
-                    value={feedbackForm.message}
-                    onChange={(e) => setFeedbackForm({ ...feedbackForm, message: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-[#181311] dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all resize-none"
-                    placeholder="Напишите ваше сообщение..."
-                    rows={5}
-                    required
-                    disabled={feedbackSubmitting || feedbackSuccess}
-                  />
-                </div>
-
-                {/* Кнопки */}
-                <div className="flex gap-3 pt-2">
-                  <button
-                    type="button"
-                    onClick={handleCloseFeedbackModal}
-                    disabled={feedbackSubmitting}
-                    className="flex-1 px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 text-[#181311] dark:text-white font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
-                  >
-                    Отмена
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={feedbackSubmitting || feedbackSuccess || !feedbackForm.message.trim()}
-                    className="flex-1 px-4 py-3 rounded-xl bg-primary text-white font-medium hover:bg-primary/90 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                  >
-                    {feedbackSubmitting ? (
-                      <>
-                        <span className="material-symbols-outlined animate-spin text-lg">sync</span>
-                        <span>Отправка...</span>
-                      </>
-                    ) : feedbackSuccess ? (
-                      <>
-                        <span className="material-symbols-outlined text-lg">check</span>
-                        <span>Отправлено</span>
-                      </>
-                    ) : (
-                      'Отправить'
-                    )}
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </>
-      )}
 
       {/* Тур по приложению */}
       <AppTour

@@ -573,12 +573,7 @@ export const deleteDish = async (id) => {
   return response.data;
 };
 
-// ========== API ДЛЯ ОБРАТНОЙ СВЯЗИ ==========
 
-export const submitFeedback = async (feedbackData) => {
-  const response = await api.post('/api/feedback', feedbackData);
-  return response.data;
-};
 
 /**
  * @typedef {Object} FeedbackPayload
@@ -599,6 +594,8 @@ export const submitFeedback = async (feedbackData) => {
 export const sendReport = async (payload) => {
   const form = new FormData();
   form.append('message', payload.message || '');
+  form.append('type', payload.type || 'question');
+  form.append('name', payload.name || '');
   form.append('tags', JSON.stringify(payload.tags || []));
   form.append('url', payload.url || '');
   form.append('ts', payload.ts || '');

@@ -9,11 +9,16 @@ import styles from './FeedbackWidget.module.css';
 
 const STRINGS = {
   title: 'Сообщить о проблеме',
+  typeLabel: 'Тип обращения',
+  types: [
+    { id: 'bug', label: 'Не работает' },
+    { id: 'error', label: 'Ошибка текста' },
+    { id: 'wrong', label: 'Работает неправильно' },
+    { id: 'idea', label: 'Улучшение' },
+    { id: 'question', label: 'Вопрос' },
+  ],
   messageLabel: 'Что не так?',
-  tagsLabel: 'Быстрые теги',
-  tags: ['Не работает', 'Ошибка текста', 'Не нажимается', 'Другое'],
   attachLabel: 'Вложения',
-  metaNote: 'Мы приложим ссылку и тех. данные',
   send: 'Отправить',
   sending: 'Отправка...',
   success: 'Спасибо! Сообщение отправлено.',
@@ -84,7 +89,8 @@ function dataUrlToFile(dataUrl, name) {
 export default function FeedbackWidget() {
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState('');
-  const [tags, setTags] = useState([]);
+  const [type, setType] = useState('bug');
+
   const [attachments, setAttachments] = useState([]);
   const [status, setStatus] = useState('idle');
   const [error, setError] = useState('');
@@ -124,21 +130,30 @@ export default function FeedbackWidget() {
 
   const canShowTab = showTab && isIdle && !open;
 
-  const buildPayload = () => ({
-    message: message.trim(),
-    tags,
-    url: window.location.href,
-    ts: new Date().toISOString(),
-    userAgent: navigator.userAgent,
-    viewport: { w: window.innerWidth, h: window.innerHeight },
-    attachments: attachments.map((a) => a.file),
-    build: process.env.REACT_APP_BUILD_VERSION || undefined,
-  });
+  const buildPayload = () => {
+    // Пытаемся найти имя пользователя в разных глобальных переменных
+    const userName = window.USER_DATA?.name ||
+      window.__USER__?.name ||
+      window.currentUser?.name ||
+      'Гость';
+
+    return {
+      message: message.trim(),
+      type,
+      name: userName,
+      url: decodeURIComponent(window.location.href), // Отправляем уже красивую ссылку
+      ts: new Date().toISOString(),
+      userAgent: navigator.userAgent,
+      viewport: { w: window.innerWidth, h: window.innerHeight },
+      attachments: attachments.map((a) => a.file),
+      build: process.env.REACT_APP_BUILD_VERSION || undefined,
+    };
+  };
 
   const clearForm = () => {
     attachments.forEach((a) => a.previewUrl && URL.revokeObjectURL(a.previewUrl));
     setMessage('');
-    setTags([]);
+    setType('bug');
     setAttachments([]);
   };
 
@@ -175,7 +190,7 @@ export default function FeedbackWidget() {
       }
       saveQueue([]);
     } catch {
-      // оставляем очередь
+      // оставляем
     } finally {
       flushRef.current = false;
     }
@@ -187,12 +202,6 @@ export default function FeedbackWidget() {
     flushQueue();
     return () => window.removeEventListener('online', onOnline);
   }, []);
-
-  const handleTag = (tag) => {
-    if (!tags.includes(tag)) setTags([...tags, tag]);
-    if (!message.trim()) setMessage(tag);
-    else if (!message.includes(tag)) setMessage(`${message.trim()} — ${tag}`);
-  };
 
   const handleSubmit = async () => {
     if (!message.trim()) {
@@ -214,11 +223,8 @@ export default function FeedbackWidget() {
       await sendReport(payload);
       setStatus('success');
       clearForm();
-      // Автоматически закрываем форму через 2 секунды после успеха
       setTimeout(() => {
         setOpen(false);
-        // Сбрасываем статус через некоторое время после закрытия,
-        // чтобы при следующем открытии форма была чистой
         setTimeout(() => setStatus('idle'), 500);
       }, 2000);
     } catch (e) {
@@ -237,33 +243,45 @@ export default function FeedbackWidget() {
       {open && (
         <FeedbackSheet open={open} onClose={() => setOpen(false)} safeBottom={safe.bottom}>
           <div className={styles.sheetBody}>
+            <div className={styles.label}>{STRINGS.typeLabel}</div>
+            <div className={styles.typeSelector}>
+              {STRINGS.types.map((t) => (
+                <button
+                  key={t.id}
+                  type="button"
+                  className={`${styles.typeBtn} ${type === t.id ? styles.typeBtnActive : ''}`}
+                  onClick={() => setType(t.id)}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+
             <label className={styles.label}>{STRINGS.messageLabel}</label>
             <textarea
               className={styles.textarea}
               rows={4}
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              aria-label="Что не так?"
+              placeholder="Опишите подробнее..."
             />
-
-            <div className={styles.metaNote}>{STRINGS.tagsLabel}</div>
-            <div className={styles.chips}>
-              {STRINGS.tags.map((tag) => (
-                <button
-                  key={tag}
-                  type="button"
-                  className={`${styles.chip} ${tags.includes(tag) ? styles.chipActive : ''}`}
-                  onClick={() => handleTag(tag)}
-                >
-                  {tag}
-                </button>
-              ))}
-            </div>
 
             <div className={styles.metaNote}>{STRINGS.attachLabel}</div>
             <AttachmentPicker attachments={attachments} onChange={setAttachments} />
 
-            <div className={styles.metaNote}>{STRINGS.metaNote}</div>
+            <div className={styles.metaNote}>Технические данные</div>
+            <div className={styles.contextBlock}>
+              <div className={styles.contextItem}>
+                <span className={styles.contextLabel}>Страница:</span>
+                <span className={styles.contextValue}>{decodeURIComponent(window.location.pathname)}</span>
+              </div>
+              <div className={styles.contextItem}>
+                <span className={styles.contextLabel}>Устройство:</span>
+                <span className={styles.contextValue}>
+                  {navigator.platform}, {window.innerWidth}x{window.innerHeight}
+                </span>
+              </div>
+            </div>
           </div>
           <div className={styles.stickyFooter}>
             <button

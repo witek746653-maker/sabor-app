@@ -396,7 +396,7 @@ init_sentry_for_backend()
 # Создаём приложение Flask
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'change-this-in-production-12345')
-app.config['MAX_CONTENT_LENGTH'] = int(os.getenv('MAX_UPLOAD_MB', '20')) * 1024 * 1024  # Защита от больших файлов
+app.config['MAX_CONTENT_LENGTH'] = int(os.getenv('MAX_UPLOAD_MB', '50')) * 1024 * 1024  # Лимит увеличен до 50МБ
 
 # Настройки для работы cookies (единый домен на Beget)
 # На Beget фронтенд и бэкенд работают на одном домене, поэтому cross-domain не нужен
@@ -2139,19 +2139,20 @@ def submit_feedback():
         if is_multipart:
             form = request.form or {}
             data = {
-                "name": form.get("name", ""),
-                "type": form.get("type", "bug"),
-                "message": form.get("message", ""),
+                "name": form.get("name"),
+                "type": form.get("type"),
+                "message": form.get("message"),
                 "tags": _safe_json_load(form.get("tags"), []),
-                "url": form.get("url", ""),
-                "ts": form.get("ts", ""),
-                "userAgent": form.get("userAgent", ""),
+                "url": form.get("url"),
+                "ts": form.get("ts"),
+                "userAgent": form.get("userAgent"),
                 "viewport": _safe_json_load(form.get("viewport"), {}),
-                "build": form.get("build", ""),
+                "build": form.get("build"),
             }
             attachments = _save_feedback_attachments(request.files.getlist("attachments"))
         else:
-            data = request.json or {}
+            # Если не мультипарт, всё равно пробуем взять из form (на всякий случай) или из json
+            data = request.json or request.form or {}
             attachments = []
 
         # Проверяем, что есть текст сообщения
@@ -2167,9 +2168,23 @@ def submit_feedback():
         }
         tags = data.get("tags") if isinstance(data.get("tags"), list) else []
 
+        # Попытка определить имя пользователя на сервере
+        user_name = data.get('name')
+        if not user_name or user_name in ['Гость', '', None]:
+            from flask_login import current_user
+            if current_user.is_authenticated:
+                # Проверяем все возможные варианты полей, которые могут быть в твоей модели User
+                user_name = (
+                    getattr(current_user, 'name', None) or 
+                    getattr(current_user, 'fio', None) or 
+                    getattr(current_user, 'username', None) or 
+                    getattr(current_user, 'login', None) or 
+                    f"Пользователь ID: {current_user.id}"
+                )
+        
         # Создаём новое сообщение
         feedback = FeedbackMessage(
-            name=data.get('name', ''),
+            name=str(user_name) if user_name else 'Гость',
             type=data.get('type', 'question'),
             message=data.get('message'),
             tags_json=json.dumps(tags, ensure_ascii=False),
@@ -2184,19 +2199,38 @@ def submit_feedback():
 
         # Отправляем в Telegram (если включено)
         try:
+            # Маппинг типов для красивого отображения в ТГ
+            types_map = {
+                'bug': '🔴 Не работает',
+                'error': '📝 Ошибка текста',
+                'wrong': '⚠️ Работает неправильно',
+                'idea': '💡 Предложить улучшение',
+                'question': '❓ Задать вопрос'
+            }
+            # Если тип не пришел или он пустой, пусть будет bug (🔴 Не работает)
+            raw_type = data.get('type') or 'bug'
+            display_type = types_map.get(raw_type, raw_type)
+
             message_lines = [
                 "📩 Новое сообщение от пользователя",
                 f"ID: {feedback.id}",
-                f"Тип: {feedback.type}",
+                f"Тип: {display_type}",
                 f"Имя: {feedback.name or '—'}",
-                f"Теги: {', '.join(tags) if tags else '—'}",
                 f"URL: {meta.get('url') or '—'}",
                 "Сообщение:",
                 feedback.message or '',
             ]
             if attachments:
                 message_lines.append(f"Вложения: {len(attachments)}")
-                message_lines.extend([a.get("url") or "" for a in attachments])
+                base_url = request.host_url.rstrip('/')
+                for a in attachments:
+                    file_url = a.get("url") or ""
+                    if file_url:
+                        # Меняем путь на /api/..., чтобы фронтенд-роутер не перехватывал ссылку
+                        api_file_url = file_url.replace('/static/uploads/feedback/', '/api/feedback/attachments/')
+                        full_url = f"{base_url}{api_file_url}"
+                        message_lines.append(full_url)
+
             _send_telegram_message("\n".join(message_lines).strip())
         except Exception as e:
             app.logger.warning(f"Telegram notify failed: {e}")
@@ -2281,7 +2315,7 @@ def delete_feedback_message(message_id):
 
 # ========== ОТДАЧА ФАЙЛОВ ОБРАТНОЙ СВЯЗИ ==========
 
-@app.route('/static/uploads/feedback/<path:filename>')
+@app.route('/api/feedback/attachments/<path:filename>')
 def serve_feedback_uploads(filename):
     """Отдача загруженных файлов (скриншоты, фото)"""
     return send_from_directory(FEEDBACK_UPLOAD_DIR, filename)

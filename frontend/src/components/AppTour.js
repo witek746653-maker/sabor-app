@@ -93,7 +93,7 @@ function AppTour({ isOpen, onClose, onThemeToggle, onToggleLoginModal }) {
         },
         {
             title: '☰ Сэндвич-меню',
-            description: 'Открой боковое меню для доступа к дополнительным функциям: тур по приложению, смена темы, обратная связь, выход из системы и многое другое.',
+            description: 'Открой боковое меню для доступа к дополнительным функциям: тур по приложению, смена темы, выход из системы и многое другое.',
             icon: 'menu',
             gradient: 'from-indigo-500 to-purple-600',
             mode: 'modal',
@@ -101,10 +101,11 @@ function AppTour({ isOpen, onClose, onThemeToggle, onToggleLoginModal }) {
         },
         {
             title: ' Связь с администратором',
-            description: 'В сэндвич-меню есть кнопка "Обратная связь". Используй её для вопросов, предложений или сообщений об ошибках.',
+            description: 'Видишь красный "язычок" справа? Это быстрый способ связаться с админом. Используй его для вопросов, предложений или если что-то сломалось.',
             icon: 'feedback',
-            gradient: 'from-cyan-500 to-blue-600',
-            mode: 'modal',
+            gradient: 'from-orange-500 to-red-600',
+            mode: 'spotlight',
+            spotlightSelector: '[data-tour="feedback-tab"]',
             iconAnimation: 'animate-pulse'
         },
         {
@@ -112,7 +113,10 @@ function AppTour({ isOpen, onClose, onThemeToggle, onToggleLoginModal }) {
             description: 'Если связь пропадет — появится красный банер. Не пугайся! Можно на него нажать и проверить статус соединения. При восстановлении сети банер исчезнет автоматически.',
             icon: 'wifi_off',
             gradient: 'from-rose-500 to-red-600',
-            mode: 'modal',
+            mode: 'spotlight',
+            spotlightSelector: '[data-tour="status-banner"]',
+            onEnter: () => window.dispatchEvent(new CustomEvent('sabor-tour-wifi-state', { detail: true })),
+            onLeave: () => window.dispatchEvent(new CustomEvent('sabor-tour-wifi-state', { detail: false })),
             iconAnimation: 'animate-pulse'
         },
         {

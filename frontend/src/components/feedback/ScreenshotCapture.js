@@ -42,7 +42,7 @@ export default function ScreenshotCapture({ onAdd }) {
   };
 
   if (!canCapture) {
-    return <div className={styles.metaNote}>Скриншот недоступен в этом браузере</div>;
+    return null;
   }
 
   return (

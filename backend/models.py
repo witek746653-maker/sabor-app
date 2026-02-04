@@ -391,6 +391,12 @@ class FeedbackMessage(db.Model):
                 return json.loads(raw) if raw else fallback
             except Exception:
                 return fallback
+        # Исправляем пути вложений для админки, чтобы фронтенд-роутер их не блокировал
+        raw_attachments = _safe_json(self.attachments_json, [])
+        for a in raw_attachments:
+            if 'url' in a and '/static/uploads/feedback/' in a['url']:
+                a['url'] = a['url'].replace('/static/uploads/feedback/', '/api/feedback/attachments/')
+
         return {
             'id': self.id,
             'name': self.name,
@@ -398,9 +404,9 @@ class FeedbackMessage(db.Model):
             'message': self.message,
             'tags': _safe_json(self.tags_json, []),
             'meta': _safe_json(self.meta_json, {}),
-            'attachments': _safe_json(self.attachments_json, []),
+            'attachments': raw_attachments,
             'read': self.read,
-            'created_at': self.created_at.isoformat() if self.created_at else None
+            'created_at': (self.created_at.isoformat() + 'Z') if self.created_at else None
         }
     
     def __repr__(self):
