@@ -27,6 +27,14 @@ function HomePage() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [showMenuPanel, setShowMenuPanel] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [loginForm, setLoginForm] = useState({
+    username: '',
+    password: ''
+  });
+  const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(true);
+  const [loginError, setLoginError] = useState(null);
+  const [loginSubmitting, setLoginSubmitting] = useState(false);
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);

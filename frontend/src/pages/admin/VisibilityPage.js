@@ -6,12 +6,12 @@ import {
   rollbackVisibilityConfig,
   saveVisibilityDraft,
 } from '../../services/visibilityConfig';
-import { normalizeVisibilityConfig, resolveVisibility } from '../../utils/visibilityResolver';
+import { normalizeVisibilityConfig, resolveVisibility, ruleMatchesUser } from '../../utils/visibilityResolver';
 import { DEFAULT_FEATURE_FLAGS, FEATURE_DEFINITIONS } from '../../utils/featureStatus';
 
 const RULE_SCOPES = ['route', 'menuItem', 'menuSection', 'pageBlock', 'featureAction', 'contentItem'];
 const ACTIONS = ['allow', 'deny'];
-const ROLE_OPTIONS = ['guest', 'официант', 'администратор', 'хостес'];
+const ROLE_OPTIONS = ['guest', 'официант', 'администратор', 'хостес', 'менеджер'];
 
 // Стили для темных выпадающих списков (select)
 const selectStyles = `
@@ -255,6 +255,17 @@ function VisibilityPage() {
   const [targetQuickSearch, setTargetQuickSearch] = useState('');
 
   const previewContext = useMemo(() => buildPreviewContext(previewRole), [previewRole]);
+
+  // Создаем карту: ID правила -> его содержимое в виде СТРОГОЙ строки
+  const publishedRulesMap = useMemo(() => {
+    const map = new Map();
+    // Сначала прогоняем через нормализатор, чтобы убрать лишний "шум"
+    const normalizedPublished = normalizeVisibilityConfig({ rules: publishedConfig?.rules || [] });
+    normalizedPublished.rules.forEach(r => {
+      map.set(r.id, JSON.stringify(r));
+    });
+    return map;
+  }, [publishedConfig]);
 
   const normalizedDraft = useMemo(() => normalizeVisibilityConfig(draftConfig), [draftConfig]);
   const rules = normalizedDraft.rules;
@@ -685,27 +696,62 @@ function VisibilityPage() {
 
           <div className="space-y-2 max-h-[520px] overflow-y-auto">
             {filteredRules.map((rule) => {
-              const visible = resolveVisibility({
+              const matches = ruleMatchesUser(rule, previewContext);
+
+              // Проверяем: совпадает ли ТЕКУЩЕЕ правило с тем, что ОПУБЛИКОВАНО на сервере
+              const serverRuleJson = publishedRulesMap.get(rule.id);
+              const currentRuleJson = JSON.stringify(rule);
+              const isPublished = serverRuleJson === currentRuleJson;
+
+              const totalVisible = resolveVisibility({
                 config: normalizedDraft,
                 scope: rule.scope,
                 target: rule.target,
                 userContext: previewContext,
               });
+
               return (
                 <button
                   key={rule.id}
                   onClick={() => setSelectedRuleId(rule.id)}
-                  className={`w-full text-left px-3 py-2 rounded-lg border text-xs transition-colors ${selectedRuleId === rule.id
-                    ? 'border-primary bg-primary/10'
-                    : 'border-gray-200 dark:border-white/10 hover:bg-gray-50 dark:hover:bg-white/5'
+                  className={`w-full text-left px-3 py-3 rounded-xl border text-xs transition-all duration-200 relative overflow-hidden ${selectedRuleId === rule.id
+                    ? 'ring-2 ring-primary ring-offset-2 dark:ring-offset-background-dark z-10'
+                    : ''
+                    } ${isPublished
+                      ? 'border-primary/50 bg-primary/10 shadow-sm'
+                      : 'border-yellow-500/30 bg-yellow-500/5'
                     }`}
                 >
-                  <div className="font-bold text-sm text-primary mb-1">{rule.id}</div>
-                  <div className="text-[10px] text-text-secondary-light dark:text-text-secondary-dark">
-                    Тип: {SCOPE_LABELS[rule.scope] || rule.scope} • Цель: {rule.target}
+                  {/* Ярлык "На сайте" */}
+                  {isPublished ? (
+                    <div className="absolute top-0 right-0 px-2 py-0.5 bg-primary text-[9px] text-white font-bold rounded-bl-lg uppercase tracking-wider">
+                      На сайте ✅
+                    </div>
+                  ) : (
+                    <div className="absolute top-0 right-0 px-2 py-0.5 bg-yellow-600 text-[9px] text-white font-bold rounded-bl-lg uppercase tracking-wider">
+                      Черновик ✏️
+                    </div>
+                  )}
+
+                  <div className={`font-bold text-sm mb-1 ${isPublished ? 'text-primary' : 'text-yellow-700 dark:text-yellow-500'}`}>
+                    {rule.id}
                   </div>
-                  <div className={`text-[10px] mt-1 font-semibold ${visible ? 'text-green-600' : 'text-red-600'}`}>
-                    Результат: {visible ? 'Показывать' : 'Скрывать'}
+
+                  <div className="text-[10px] text-text-secondary-light dark:text-text-secondary-dark leading-relaxed space-y-1">
+                    <div>Тип: {SCOPE_LABELS[rule.scope] || rule.scope} • Цель: {rule.target}</div>
+
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className={`px-1.5 py-0.5 rounded-md font-medium ${matches ? 'bg-primary/20 text-primary' : 'bg-gray-200 dark:bg-white/10 text-gray-500'}`}>
+                        Для текущей роли: {matches ? 'Подходит ✅' : 'Нет'}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className={`text-[10px] mt-2 p-1.5 rounded-lg border font-bold text-center ${totalVisible
+                    ? 'border-green-500/30 text-green-600 bg-green-500/5'
+                    : 'border-red-500/30 text-red-600 bg-red-500/5'
+                    }`}>
+                    ИТОГ ДЛЯ БЛОКА: {totalVisible ? 'ПОКАЗЫВАТЬ' : 'СКРЫТЬ'}
                   </div>
                 </button>
               );
@@ -877,100 +923,126 @@ function VisibilityPage() {
                   allow = показать, deny = скрыть.
                 </span>
               </label>
-              <label className="flex items-center gap-2 mt-6">
-                <input
-                  type="checkbox"
-                  checked={selectedRule.enabled !== false}
-                  onChange={(e) => updateRule(selectedRule.id, { enabled: e.target.checked })}
-                />
-                <span className="text-xs text-text-secondary-light dark:text-text-secondary-dark">Включено</span>
-              </label>
+              <div className="flex items-center justify-between mt-2 p-3 rounded-lg bg-white/40 dark:bg-white/5 border border-gray-200 dark:border-white/10">
+                <div className="flex flex-col">
+                  <span className="text-xs font-bold">Статус правила</span>
+                  <span className="text-[10px] text-text-secondary-light dark:text-text-secondary-dark">Включено или временно не действует</span>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    className="sr-only peer"
+                    checked={selectedRule.enabled !== false}
+                    onChange={(e) => updateRule(selectedRule.id, { enabled: e.target.checked })}
+                  />
+                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none dark:bg-white/10 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                </label>
+              </div>
 
               <div className="md:col-span-2 border-t border-gray-200 dark:border-white/10 pt-4">
                 <div className="text-xs text-text-secondary-light dark:text-text-secondary-dark mb-2">
                   Targeting (кому применять)
                 </div>
-                <div className="grid md:grid-cols-2 gap-3 text-xs">
-                  <label className="flex flex-col gap-1">
-                    <span>Роли (через запятую)</span>
-                    <input
-                      placeholder="Например: guest, официант"
-                      defaultValue={(selectedRule.when?.roles || []).join(', ')}
-                      onBlur={(e) =>
-                        updateRuleWhen(selectedRule.id, {
-                          roles: e.target.value
-                            .split(',')
-                            .map((item) => item.trim())
-                            .filter(Boolean),
-                        })
-                      }
-                      className="px-2 py-2 rounded-lg border border-gray-200 dark:border-white/10 bg-white/80 dark:bg-white/5"
-                    />
-                    <span className="text-[11px] text-text-secondary-light dark:text-text-secondary-dark">
-                      Ограничить по ролям (например: guest, официант). Применится после клика в сторону.
-                    </span>
-                  </label>
-                  <label className="flex flex-col gap-1">
-                    <span>User IDs (через запятую)</span>
-                    <input
-                      placeholder="Например: 1, 2, 3"
-                      defaultValue={(selectedRule.when?.userIds || []).join(', ')}
-                      onBlur={(e) =>
-                        updateRuleWhen(selectedRule.id, {
-                          userIds: e.target.value
-                            .split(',')
-                            .map((item) => item.trim())
-                            .filter(Boolean),
-                        })
-                      }
-                      className="px-2 py-2 rounded-lg border border-gray-200 dark:border-white/10 bg-white/80 dark:bg-white/5"
-                    />
-                    <span className="text-[11px] text-text-secondary-light dark:text-text-secondary-dark">
-                      Точное ограничение по конкретным пользователям (сохранится после клика в сторону).
-                    </span>
-                  </label>
-                  <label className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      checked={Boolean(selectedRule.when?.isGuest)}
-                      onChange={(e) => updateRuleWhen(selectedRule.id, { isGuest: e.target.checked })}
-                    />
-                    <span>Только гость</span>
-                  </label>
-                  <label className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      checked={Boolean(selectedRule.when?.isAdmin)}
-                      onChange={(e) => updateRuleWhen(selectedRule.id, { isAdmin: e.target.checked })}
-                    />
-                    <span>Только админ</span>
-                  </label>
-                  <label className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      checked={Boolean(selectedRule.when?.canWrite)}
-                      onChange={(e) => updateRuleWhen(selectedRule.id, { canWrite: e.target.checked })}
-                    />
-                    <span>Может писать</span>
-                  </label>
-                  <label className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      checked={Boolean(selectedRule.when?.isAuthenticated)}
-                      onChange={(e) => updateRuleWhen(selectedRule.id, { isAuthenticated: e.target.checked })}
-                    />
-                    <span>Только авторизованные</span>
-                  </label>
-                  <label className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      checked={Boolean(selectedRule.when?.everyone)}
-                      onChange={(e) => updateRuleWhen(selectedRule.id, { everyone: e.target.checked })}
-                    />
-                    <span>Для всех</span>
-                  </label>
-                  <div className="md:col-span-2 text-[11px] text-text-secondary-light dark:text-text-secondary-dark">
-                    Если ничего не выбрано, правило действует для всех.
+                <div className="grid md:grid-cols-2 gap-4 text-xs">
+                  <div className="space-y-3">
+                    <div className="font-semibold text-primary mb-1">Роли и флаги:</div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <label className="flex items-center gap-2 p-2 rounded border border-gray-200 dark:border-white/5 bg-white/30 dark:bg-white/5">
+                        <input
+                          type="checkbox"
+                          checked={Boolean(selectedRule.when?.everyone)}
+                          onChange={(e) => updateRuleWhen(selectedRule.id, { everyone: e.target.checked })}
+                        />
+                        <span>Для всех</span>
+                      </label>
+                      <label className="flex items-center gap-2 p-2 rounded border border-gray-200 dark:border-white/5 bg-white/30 dark:bg-white/5">
+                        <input
+                          type="checkbox"
+                          checked={Boolean(selectedRule.when?.isGuest)}
+                          onChange={(e) => updateRuleWhen(selectedRule.id, { isGuest: e.target.checked })}
+                        />
+                        <span>Гость</span>
+                      </label>
+                      <label className="flex items-center gap-2 p-2 rounded border border-gray-200 dark:border-white/5 bg-white/30 dark:bg-white/5">
+                        <input
+                          type="checkbox"
+                          checked={Boolean(selectedRule.when?.isAdmin) || (Array.isArray(selectedRule.when?.roles) && selectedRule.when.roles.includes('администратор'))}
+                          onChange={(e) => {
+                            const isChecked = e.target.checked;
+                            const currentRoles = Array.isArray(selectedRule.when?.roles) ? selectedRule.when.roles : [];
+                            let nextRoles = isChecked
+                              ? [...currentRoles.filter(r => r !== 'администратор'), 'администратор']
+                              : currentRoles.filter(r => r !== 'администратор');
+
+                            updateRuleWhen(selectedRule.id, {
+                              isAdmin: isChecked,
+                              roles: nextRoles
+                            });
+                          }}
+                        />
+                        <span className="font-bold text-primary">Админ</span>
+                      </label>
+                      <label className="flex items-center gap-2 p-2 rounded border border-gray-200 dark:border-white/5 bg-white/30 dark:bg-white/5">
+                        <input
+                          type="checkbox"
+                          checked={Boolean(selectedRule.when?.isAuthenticated)}
+                          onChange={(e) => updateRuleWhen(selectedRule.id, { isAuthenticated: e.target.checked })}
+                        />
+                        <span>Авторизованные</span>
+                      </label>
+
+                      {['менеджер', 'официант', 'хостес'].map(roleName => (
+                        <label key={roleName} className="flex items-center gap-2 p-2 rounded border border-gray-200 dark:border-white/5 bg-white/30 dark:bg-white/5">
+                          <input
+                            type="checkbox"
+                            checked={Array.isArray(selectedRule.when?.roles) && selectedRule.when.roles.includes(roleName)}
+                            onChange={(e) => {
+                              const currentRoles = Array.isArray(selectedRule.when?.roles) ? selectedRule.when.roles : [];
+                              const nextRoles = e.target.checked
+                                ? [...currentRoles, roleName]
+                                : currentRoles.filter(r => r !== roleName);
+                              updateRuleWhen(selectedRule.id, { roles: nextRoles });
+                            }}
+                          />
+                          <span className="capitalize">{roleName}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <div className="font-semibold text-primary mb-1">Дополнительно:</div>
+                    <label className="flex flex-col gap-1">
+                      <span>User IDs (через запятую)</span>
+                      <input
+                        placeholder="Например: 1, 2, 3"
+                        defaultValue={(selectedRule.when?.userIds || []).join(', ')}
+                        onBlur={(e) =>
+                          updateRuleWhen(selectedRule.id, {
+                            userIds: e.target.value
+                              .split(',')
+                              .map((item) => item.trim())
+                              .filter(Boolean),
+                          })
+                        }
+                        className="px-2 py-2 rounded-lg border border-gray-200 dark:border-white/10 bg-white/80 dark:bg-white/5"
+                      />
+                      <span className="text-[10px] text-text-secondary-light dark:text-text-secondary-dark">
+                        Конкретные пользователи.
+                      </span>
+                    </label>
+                    <label className="flex items-center gap-2 mt-2">
+                      <input
+                        type="checkbox"
+                        checked={Boolean(selectedRule.when?.canWrite)}
+                        onChange={(e) => updateRuleWhen(selectedRule.id, { canWrite: e.target.checked })}
+                      />
+                      <span>Может редактировать</span>
+                    </label>
+                  </div>
+
+                  <div className="md:col-span-2 p-2 bg-blue-500/10 border border-blue-500/20 rounded text-[10px]">
+                    Если ничего не выбрано, правило считается выключенным или для всех (зависит от настроек).
                   </div>
                 </div>
               </div>

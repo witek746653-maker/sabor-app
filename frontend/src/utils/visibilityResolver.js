@@ -12,6 +12,21 @@ const toArray = (value) => {
   return [value];
 };
 
+const cleanObject = (obj) => {
+  if (!obj || typeof obj !== 'object') return null;
+  const result = {};
+  // Сортируем ключи, чтобы порядок всегда был одинаковым
+  Object.keys(obj).sort().forEach(key => {
+    const val = obj[key];
+    // Пропускаем пустые или дефолтные значения
+    if (val === null || val === undefined) return;
+    if (Array.isArray(val) && val.length === 0) return;
+    if (typeof val === 'boolean' && val === false && key !== 'enabled') return;
+    result[key] = val;
+  });
+  return Object.keys(result).length > 0 ? result : null;
+};
+
 const normalizeRule = (rule) => {
   if (!rule || typeof rule !== 'object') return null;
   const id = String(rule.id || '').trim();
@@ -21,14 +36,15 @@ const normalizeRule = (rule) => {
   if (!id || !scope || !target || !ALLOWED_ACTIONS.has(action)) return null;
 
   const enabled = rule.enabled !== false;
-  const when = rule.when && typeof rule.when === 'object' ? rule.when : null;
+  const when = cleanObject(rule.when);
 
+  // Возвращаем объект с четким порядком ключей для JSON.stringify
   return {
+    action,
+    enabled,
     id,
     scope,
     target,
-    action,
-    enabled,
     when,
   };
 };
@@ -39,7 +55,7 @@ const ruleMatchesTarget = (rule, scope, target) => {
   return rule.target === target;
 };
 
-const ruleMatchesUser = (rule, userContext) => {
+export const ruleMatchesUser = (rule, userContext) => {
   if (!rule) return false;
   const when = rule.when;
   if (!when || when.everyone === true) return true;
@@ -51,19 +67,34 @@ const ruleMatchesUser = (rule, userContext) => {
   const canWrite = Boolean(userContext?.canWrite);
   const isAuthenticated = Boolean(userContext?.isAuthenticated);
 
+  const conditions = [];
+
+  // Роли и ID проверяем как раньше
   if (Array.isArray(when.roles) && when.roles.length > 0) {
-    if (!role || !when.roles.includes(role)) return false;
+    conditions.push(() => role && when.roles.includes(role));
   }
   if (Array.isArray(when.userIds) && when.userIds.length > 0) {
     const allowedIds = when.userIds.map((id) => String(id));
-    if (!userId || !allowedIds.includes(String(userId))) return false;
+    conditions.push(() => userId && allowedIds.includes(String(userId)));
   }
-  if (typeof when.isGuest === 'boolean' && when.isGuest !== isGuest) return false;
-  if (typeof when.isAdmin === 'boolean' && when.isAdmin !== isAdmin) return false;
-  if (typeof when.canWrite === 'boolean' && when.canWrite !== canWrite) return false;
-  if (typeof when.isAuthenticated === 'boolean' && when.isAuthenticated !== isAuthenticated) return false;
 
-  return true;
+  // А вот флаги (галочки) проверяем ТОЛЬКО если они включены (true)
+  if (when.isGuest === true) {
+    conditions.push(() => isGuest === true);
+  }
+  if (when.isAdmin === true) {
+    conditions.push(() => isAdmin === true);
+  }
+  if (when.canWrite === true) {
+    conditions.push(() => canWrite === true);
+  }
+  if (when.isAuthenticated === true) {
+    conditions.push(() => isAuthenticated === true);
+  }
+
+  if (conditions.length === 0) return true;
+
+  return conditions.some((check) => check());
 };
 
 const ruleSpecificity = (rule, userContext) => {
@@ -77,10 +108,10 @@ const ruleSpecificity = (rule, userContext) => {
   if (Array.isArray(when.roles) && when.roles.length > 0) {
     if (when.roles.includes(userContext?.role)) score += 2;
   }
-  if (typeof when.isGuest === 'boolean') score += 1;
-  if (typeof when.isAdmin === 'boolean') score += 1;
-  if (typeof when.canWrite === 'boolean') score += 1;
-  if (typeof when.isAuthenticated === 'boolean') score += 1;
+  if (when.isGuest === true) score += 1;
+  if (when.isAdmin === true) score += 1;
+  if (when.canWrite === true) score += 1;
+  if (when.isAuthenticated === true) score += 1;
 
   return score;
 };
