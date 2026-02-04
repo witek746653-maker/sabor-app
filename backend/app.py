@@ -14,6 +14,8 @@ import time
 import subprocess
 import signal
 import logging
+import urllib.request
+import urllib.error
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
 from models import db, Dish, FeedbackMessage, Notification, User, VisibilityConfig, MediaLike, FavoriteItem
@@ -426,6 +428,9 @@ _MENU_DB_BY_ID_CACHE_MTIME = None
 # Настройки "деплоя из админки" (по умолчанию выключено — это опасная операция)
 ADMIN_DEPLOY_ENABLED = os.getenv("ADMIN_DEPLOY_ENABLED", "false").lower() == "true"
 DEPLOY_ADMIN_TOKEN = os.getenv("DEPLOY_ADMIN_TOKEN", "").strip()
+TELEGRAM_ENABLED = _env_bool("TELEGRAM_ENABLED", False)
+TELEGRAM_BOT_TOKEN = (os.getenv("TELEGRAM_BOT_TOKEN") or "").strip()
+TELEGRAM_CHAT_ID = (os.getenv("TELEGRAM_CHAT_ID") or "").strip()
 _DEPLOY_STATE = {
     "status": "idle",  # idle | running | done | error
     "started_at": None,
@@ -442,6 +447,33 @@ def _deploy_log(line: str):
         _DEPLOY_STATE["log"] = _DEPLOY_STATE["log"][-200:]
     except Exception:
         pass
+
+
+def _send_telegram_message(text: str) -> bool:
+    if not TELEGRAM_ENABLED:
+        return False
+    if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
+        return False
+    try:
+        payload = {
+            "chat_id": TELEGRAM_CHAT_ID,
+            "text": text,
+            "disable_web_page_preview": True,
+        }
+        data = json.dumps(payload, ensure_ascii=False).encode("utf-8")
+        url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
+        req = urllib.request.Request(
+            url,
+            data=data,
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        with urllib.request.urlopen(req, timeout=6) as resp:
+            _ = resp.read()
+        return True
+    except Exception as e:
+        app.logger.warning(f"Telegram send failed: {e}")
+        return False
 
 def _require_admin():
     """
@@ -1905,6 +1937,20 @@ def submit_feedback():
         # Сохраняем в базу данных
         db.session.add(feedback)
         db.session.commit()
+
+        # Отправляем в Telegram (если включено)
+        try:
+            message_lines = [
+                "📩 Новое сообщение от пользователя",
+                f"ID: {feedback.id}",
+                f"Тип: {feedback.type}",
+                f"Имя: {feedback.name or '—'}",
+                "Сообщение:",
+                feedback.message or '',
+            ]
+            _send_telegram_message("\n".join(message_lines).strip())
+        except Exception as e:
+            app.logger.warning(f"Telegram notify failed: {e}")
         
         return jsonify({'status': 'ok', 'message': 'Сообщение отправлено', 'id': feedback.id})
     except Exception as e:
