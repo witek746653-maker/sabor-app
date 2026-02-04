@@ -15,7 +15,7 @@ export default function FeedbackEdgeTab({ onOpen, visible, safeRight }) {
       className={styles.edgeTabButton}
       style={{ right: safeRight ? `${safeRight}px` : 0 }}
     >
-      <span className={`${styles.edgeTabVisual} ${styles.edgeTabVisualLight}`} />
+      <div className={styles.edgeTabVisual} />
     </button>
   );
 }

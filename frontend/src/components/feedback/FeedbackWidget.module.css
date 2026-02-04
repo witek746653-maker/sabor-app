@@ -1,10 +1,7 @@
 .edgeTabButton {
   position: fixed;
-  top: 50%;
+  bottom: 120px;
   right: 0;
-  transform: translateY(-50%);
-  width: 48px;
-  height: 56px;
   z-index: 60;
   background: transparent;
   border: none;
@@ -13,290 +10,257 @@
   align-items: center;
   justify-content: flex-end;
   touch-action: manipulation;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.edgeTabButton:hover {
+  transform: translateX(-4px);
 }
 
 .edgeTabVisual {
   width: 10px;
   height: 56px;
   border-radius: 8px 0 0 8px;
-  background: #111827;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-}
-
-.edgeTabVisualLight {
   background: #ef4444;
+  /* Классический красный */
+  box-shadow: -4px 4px 16px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
 }
 
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(2, 6, 23, 0.5);
+  background: rgba(2, 6, 23, 0.4);
+  backdrop-filter: blur(4px);
   z-index: 80;
   opacity: 0;
-  transition: opacity 220ms ease;
+  transition: opacity 400ms ease;
+  /* Плавнее */
+  pointer-events: none;
 }
 
 .overlayOpen {
   opacity: 1;
+  pointer-events: auto;
 }
 
 .sheet {
   position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  left: 16px;
+  right: 16px;
+  bottom: 24px;
+  margin: 0 auto;
+  max-width: 420px;
   z-index: 90;
   background: #ffffff;
-  border-radius: 18px 18px 0 0;
-  box-shadow: 0 -16px 40px rgba(0, 0, 0, 0.2);
-  transform: translateY(100%);
-  transition: transform 380ms cubic-bezier(0.55, 0.055, 0.675, 0.19);
-  max-height: 90vh;
+  border-radius: 28px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+  transform: translateY(calc(100% + 40px));
+  opacity: 0;
+  /* Добавляем прозрачность для мягкости */
+  transition: transform 500ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    opacity 400ms ease;
+  max-height: 85vh;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .sheetOpen {
   transform: translateY(0);
-  transition: transform 420ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  opacity: 1;
 }
 
 .sheetHeader {
-  padding: 14px 16px 8px;
+  padding: 20px 24px 12px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid #f1f5f9;
 }
 
 .dragHandle {
-  width: 42px;
-  height: 5px;
-  border-radius: 999px;
+  width: 40px;
+  height: 4px;
+  border-radius: 2px;
   background: #e2e8f0;
-  margin: 6px auto 2px;
+  margin: 8px auto 0;
 }
 
 .sheetTitle {
-  font-size: 16px;
-  font-weight: 700;
+  font-size: 18px;
+  font-weight: 800;
   color: #0f172a;
+  letter-spacing: -0.02em;
 }
 
 .closeButton {
   border: none;
-  background: #f1f5f9;
-  width: 32px;
-  height: 32px;
-  border-radius: 999px;
+  background: #f8fafc;
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  color: #64748b;
+  transition: all 0.2s ease;
+}
+
+.closeButton:hover {
+  background: #f1f5f9;
+  color: #0f172a;
 }
 
 .sheetBody {
-  padding: 12px 16px 90px;
+  padding: 0 24px 24px;
   overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.sheetBody::-webkit-scrollbar {
+  display: none;
 }
 
 .label {
-  font-size: 13px;
+  font-size: 14px;
+  font-weight: 600;
   color: #475569;
-  margin-bottom: 6px;
+  margin: 20px 0 8px;
   display: block;
 }
 
 .textarea {
   width: 100%;
-  min-height: 110px;
-  border-radius: 12px;
-  border: 1px solid #e2e8f0;
-  padding: 12px;
+  min-height: 120px;
+  border-radius: 16px;
+  border: 2px solid #f1f5f9;
+  padding: 16px;
   font-size: 15px;
-  resize: vertical;
+  resize: none;
   outline: none;
+  transition: all 0.2s ease;
+  background: #f8fafc;
+}
+
+.textarea:focus {
+  border-color: #ef4444;
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
 }
 
 .chips {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
-  margin-top: 8px;
+  margin-top: 10px;
 }
 
 .chip {
-  border: 1px solid #e2e8f0;
+  border: 1px solid #f1f5f9;
+  background: #fff;
+  color: #475569;
+  padding: 8px 14px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.chip:hover {
+  border-color: #e2e8f0;
   background: #f8fafc;
-  color: #0f172a;
-  padding: 6px 10px;
-  border-radius: 999px;
-  font-size: 12px;
 }
 
 .chipActive {
-  background: #fee2e2;
-  border-color: #fecaca;
-  color: #991b1b;
+  background: #ef4444;
+  border-color: #ef4444;
+  color: #fff;
 }
 
 .attachmentsBlock {
-  margin-top: 14px;
+  margin-top: 24px;
 }
 
 .attachmentButtons {
   display: flex;
-  gap: 10px;
+  gap: 12px;
 }
 
 .btn {
-  border: 1px solid #e2e8f0;
-  background: #ffffff;
-  padding: 10px 12px;
-  border-radius: 12px;
-  font-size: 13px;
-}
-
-.btnPrimary {
-  background: #ef4444;
-  color: #fff;
-  border-color: #ef4444;
-}
-
-.attachmentList {
-  margin-top: 10px;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-}
-
-.attachmentItem {
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 8px;
-  background: #fff;
-}
-
-.attachmentPreview {
-  width: 100%;
-  height: 90px;
-  object-fit: cover;
-  border-radius: 8px;
-  background: #f1f5f9;
-}
-
-.attachmentActions {
-  display: flex;
-  gap: 6px;
-  margin-top: 6px;
-}
-
-.miniButton {
   flex: 1;
-  padding: 6px 8px;
-  border-radius: 10px;
-  border: 1px solid #e2e8f0;
+  border: 2px solid #f1f5f9;
   background: #fff;
-  font-size: 12px;
+  padding: 12px;
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn:hover {
+  background: #f8fafc;
+  border-color: #e2e8f0;
 }
 
 .metaNote {
-  margin-top: 8px;
+  margin-top: 20px;
   font-size: 12px;
-  color: #64748b;
+  color: #94a3b8;
+  text-align: center;
 }
 
 .stickyFooter {
-  position: sticky;
-  bottom: 0;
-  padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
-  background: #ffffff;
-  border-top: 1px solid #f1f5f9;
+  padding: 16px 24px 24px;
+  background: #fff;
 }
 
 .submitButton {
   width: 100%;
-  padding: 14px 16px;
-  border-radius: 14px;
+  padding: 16px;
+  border-radius: 16px;
   border: none;
   background: #ef4444;
   color: #fff;
   font-weight: 700;
   font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.submitButton:active {
+  transform: scale(0.98);
+}
+
+.submitButton:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
 .statusMessage {
-  margin-top: 8px;
-  font-size: 13px;
-}
-
-.cropperOverlay {
-  position: fixed;
-  inset: 0;
-  z-index: 120;
-  background: #0b1220;
-  display: flex;
-  flex-direction: column;
-}
-
-.cropperHeader {
-  padding: 14px 16px;
-  color: #fff;
-  font-weight: 700;
-}
-
-.cropperCanvasArea {
-  flex: 1;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-
-.cropperImage {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
-}
-
-.cropRect {
-  position: absolute;
-  border: 2px solid #fff;
-  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.4);
-  border-radius: 10px;
-  touch-action: none;
-}
-
-.cropHandle {
-  position: absolute;
-  width: 28px;
-  height: 28px;
-  background: #fff;
-  border-radius: 999px;
-  margin: -14px 0 0 -14px;
-}
-
-.cropperFooter {
-  padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
-  display: flex;
-  gap: 10px;
-}
-
-.cropperButton {
-  flex: 1;
+  margin-top: 12px;
   padding: 12px;
   border-radius: 12px;
-  border: none;
-  font-weight: 600;
+  background: #f0fdf4;
+  color: #166534;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: center;
+  animation: slideUp 0.3s ease;
 }
 
-.cropperCancel {
-  background: #1f2937;
-  color: #fff;
-}
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
 
-.cropperDone {
-  background: #ef4444;
-  color: #fff;
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

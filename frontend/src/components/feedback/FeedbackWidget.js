@@ -214,6 +214,13 @@ export default function FeedbackWidget() {
       await sendReport(payload);
       setStatus('success');
       clearForm();
+      // Автоматически закрываем форму через 2 секунды после успеха
+      setTimeout(() => {
+        setOpen(false);
+        // Сбрасываем статус через некоторое время после закрытия,
+        // чтобы при следующем открытии форма была чистой
+        setTimeout(() => setStatus('idle'), 500);
+      }, 2000);
     } catch (e) {
       setStatus('error');
       setError(STRINGS.error);

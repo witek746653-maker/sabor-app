@@ -2279,6 +2279,13 @@ def delete_feedback_message(message_id):
             return _readonly_db_response()
         return jsonify({'error': str(e)}), 500
 
+# ========== ОТДАЧА ФАЙЛОВ ОБРАТНОЙ СВЯЗИ ==========
+
+@app.route('/static/uploads/feedback/<path:filename>')
+def serve_feedback_uploads(filename):
+    """Отдача загруженных файлов (скриншоты, фото)"""
+    return send_from_directory(FEEDBACK_UPLOAD_DIR, filename)
+
 # ========== API ДЛЯ УВЕДОМЛЕНИЙ ==========
 
 @app.route('/api/notifications', methods=['GET'])
