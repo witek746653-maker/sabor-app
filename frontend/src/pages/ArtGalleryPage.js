@@ -32,18 +32,13 @@ function ArtGalleryPage() {
     return path.replace(/^\.\//, '/');
   };
 
-  // Загружаем данные о картинах из menu-database.json
+  // Загружаем данные о картинах из artworks.json
   useEffect(() => {
     const loadArtworks = async () => {
       try {
-        // Загружаем JSON с данными меню
-        const response = await fetch('/data/menu-database.json');
+        const response = await fetch('/data/artworks.json');
         const data = await response.json();
-        
-        // Фильтруем только картины (id начинается с "09")
-        const artItems = data.filter(item => 
-          item.id && item.id.startsWith('09') && item.source === 'Искусство в Sabor de la Vida'
-        );
+        const artItems = Array.isArray(data) ? data : [];
         
         console.log('Найдено картин:', artItems.length);
         console.log('Первая картина:', artItems[0]);

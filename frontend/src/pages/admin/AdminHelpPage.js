@@ -38,7 +38,7 @@ export default function AdminHelpPage() {
           <details>
             <summary>Файл через бэкенд (быстро править)</summary>
             <div className="mt-2 text-xs text-text-secondary-light dark:text-text-secondary-dark">
-              - Сайт берёт меню из файла <code>data/menu-database.json</code> через эндпоинт <code>/api/menu-json</code>.
+              - Сайт берёт меню из файлов <code>data/menu-*.json</code> через эндпоинт <code>/api/menu-json</code>.
               <br />- Это режим <b>предпросмотра</b>: быстро правите файл → F5 → сразу видите.
               <br />- Важно: изменения из админки (БД) в этом режиме могут “не появиться”, потому что вы смотрите файл.
             </div>
@@ -47,7 +47,7 @@ export default function AdminHelpPage() {
           <details>
             <summary>Файл public (fallback)</summary>
             <div className="mt-2 text-xs text-text-secondary-light dark:text-text-secondary-dark">
-              - Это запасной вариант: файл сайта <code>/data/menu-database.json</code> (лежит в <code>frontend/public/data</code>).
+              - Это запасной вариант: файлы сайта <code>/data/menu-*.json</code> (лежат в <code>frontend/public/data</code>).
               <br />- Обычно нужен, когда API недоступен.
             </div>
           </details>
@@ -62,7 +62,7 @@ export default function AdminHelpPage() {
             <summary>Хочу быстро править руками и сразу видеть результат</summary>
             <div className="mt-2 text-xs text-text-secondary-light dark:text-text-secondary-dark">
               1) В “Статус” выберите режим <b>“Файл через бэкенд (быстро править)”</b>.
-              <br />2) Правьте <code>data/menu-database.json</code>.
+              <br />2) Правьте <code>data/menu-*.json</code>.
               <br />3) Жмите F5.
             </div>
           </details>
@@ -79,7 +79,7 @@ export default function AdminHelpPage() {
             <summary>Хочу взять файл и применить его “официально” (в БД)</summary>
             <div className="mt-2 text-xs text-text-secondary-light dark:text-text-secondary-dark">
               1) Откройте вкладку <b>“Обновление”</b>.
-              <br />2) Загрузите <code>menu-database.json</code> и нажмите “Загрузить и применить”.
+              <br />2) Загрузите <code>menu-database.json</code> (или split-файлы) и нажмите “Загрузить и применить”.
               <br />3) После этого режим “Авто” покажет обновления всем пользователям.
             </div>
           </details>
@@ -107,7 +107,7 @@ export default function AdminHelpPage() {
               Термин <b>JSON</b>: формат данных. Одна лишняя запятая может сломать файл.
               <br />Проверка:
               <br />
-              <code>node -e "JSON.parse(require('fs').readFileSync('data/menu-database.json','utf8')); console.log('JSON OK')"</code>
+              <code>node -e "JSON.parse(require('fs').readFileSync('data/menu-kitchen.json','utf8')); console.log('JSON OK')"</code>
             </div>
           </details>
         </div>

@@ -10,9 +10,9 @@ const API_URL = process.env.REACT_APP_API_URL || '';
 const MENU_DB_SOURCE_STORAGE_KEY = 'sabor.menuDbSource.v1';
 
 // Источник меню в DEV/локально:
-// - "auto" (по умолчанию): сначала API, потом файл /data/menu-database.json, потом кэш
-// - "static": ВСЕГДА брать меню из /data/menu-database.json (удобно, когда правите файл руками и хотите видеть сразу)
-// - "backend-json": ВСЕГДА брать меню из бэкенда /api/menu-json (читает data/menu-database.json напрямую, без БД)
+// - "auto" (по умолчанию): сначала API, потом файлы /data/menu-*.json, потом кэш
+// - "static": ВСЕГДА брать меню из /data/menu-*.json (удобно, когда правите файл руками и хотите видеть сразу)
+// - "backend-json": ВСЕГДА брать меню из бэкенда /api/menu-json (читает split-файлы напрямую, без БД)
 //
 // Термин **.env**: это файл с настройками окружения. Важно: НЕ храните там пароли/токены и не коммитьте их в Git.
 const MENU_DB_SOURCE_MODE = (() => {
@@ -34,13 +34,18 @@ const MENU_DB_SOURCE_MODE = (() => {
 // =========================
 // Идея простая:
 // 1) Пытаемся взять данные из API (это основной источник)
-// 2) Если API упал/не отвечает — берём из статического JSON: /data/menu-database.json
+// 2) Если API упал/не отвечает — берём из статического JSON: /data/menu-*.json
 // 3) Если и JSON недоступен — берём последнюю удачную копию из localStorage
 //
-// Важно: чтобы пункт (2) работал даже при падении бэкенда, файл /data/menu-database.json
+// Важно: чтобы пункт (2) работал даже при падении бэкенда, файлы /data/menu-*.json
 // должен отдаваться ВЕБ-СЕРВЕРОМ (nginx/Beget), а не Flask. Иначе при падении Flask файл тоже не отдастся.
 
-const MENU_DB_STATIC_URL = '/data/menu-database.json';
+const MENU_DB_STATIC_URLS = [
+  '/data/menu-kitchen.json',
+  '/data/menu-wine.json',
+  '/data/menu-bar.json',
+  '/data/menu-tea.json',
+];
 const MENU_DB_BACKEND_JSON_URL = '/api/menu-json';
 const MENU_DB_CACHE_KEY = 'sabor.menuDbCache.v1';
 const MENU_DB_CACHE_META_KEY = 'sabor.menuDbCacheMeta.v1';
@@ -114,23 +119,33 @@ function _setMenuDbRuntimeSource(source, note) {
 }
 
 async function _loadMenuDbFromStatic() {
-  // Важно: используем fetch, чтобы не зависеть от axios настроек (cookies и т.п.)
-  const res = await fetch(MENU_DB_STATIC_URL, { cache: 'no-store' });
-  if (!res.ok) {
-    throw new Error(`Static menu JSON failed: ${res.status}`);
+  const results = await Promise.all(
+    MENU_DB_STATIC_URLS.map(async (url) => {
+      const res = await fetch(url, { cache: 'no-store' });
+      if (!res.ok) return [];
+      const data = await res.json();
+      return Array.isArray(data) ? data : [];
+    })
+  );
+  let combined = results.flat();
+  if (!combined.length) {
+    const legacyRes = await fetch('/data/menu-database.json', { cache: 'no-store' });
+    if (legacyRes.ok) {
+      const legacyData = await legacyRes.json();
+      combined = Array.isArray(legacyData) ? legacyData : [];
+    }
   }
-  const data = await res.json();
-  if (!Array.isArray(data)) {
-    throw new Error('Static menu JSON is not an array');
+  if (!combined.length) {
+    throw new Error('Static menu JSON is empty');
   }
-  const items = _dedupeById(data);
+  const items = _dedupeById(combined);
   _writeMenuDbCache(items, 'static');
   _setMenuDbRuntimeSource('static');
   return items;
 }
 
 async function _loadMenuDbFromBackendJson() {
-  // Берём menu-database.json через бэкенд (он читает data/menu-database.json напрямую)
+  // Берём split-файлы через бэкенд (он читает data/menu-*.json напрямую)
   const res = await fetch(MENU_DB_BACKEND_JSON_URL, { cache: 'no-store' });
   if (!res.ok) {
     throw new Error(`Backend menu JSON failed: ${res.status}`);
@@ -227,13 +242,13 @@ const api = axios.create({
 export const getDishes = async () => {
   // Самый удобный режим для ручных правок:
   // REACT_APP_MENU_DB_SOURCE=backend-json
-  // Тогда вы правите data/menu-database.json, а UI всегда берёт данные через /api/menu-json (без БД).
+  // Тогда вы правите data/menu-*.json, а UI всегда берёт данные через /api/menu-json (без БД).
   if (_forceBackendJsonMenuDb()) {
     return await _loadMenuDbFromBackendJson();
   }
 
   // Если вы правите меню руками локально — включите REACT_APP_MENU_DB_SOURCE=static
-  // Тогда UI будет читать только из frontend/public/data/menu-database.json
+  // Тогда UI будет читать только из frontend/public/data/menu-*.json
   if (_forceStaticMenuDb()) {
     return await _loadMenuDbFromStatic();
   }
@@ -272,7 +287,7 @@ export const getDish = async (id) => {
     throw new Error('Dish id is required');
   }
 
-  // Режим "backend-json": берём конкретное блюдо из data/menu-database.json через бэкенд (без API БД)
+  // Режим "backend-json": берём конкретное блюдо из data/menu-*.json через бэкенд (без API БД)
   if (_forceBackendJsonMenuDb()) {
     const items = await _loadMenuDbFromBackendJson();
     const found = items.find((it) => String(it.id) === String(normId));
@@ -626,6 +641,11 @@ export const updateUser = async (userId, userData) => {
 
 export const deleteUser = async (userId) => {
   const response = await api.delete(`/api/admin/users/${userId}`);
+  return response.data;
+};
+
+export const getAdminSidebarStats = async () => {
+  const response = await api.get('/api/admin/sidebar-stats');
   return response.data;
 };
 

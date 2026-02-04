@@ -62,7 +62,7 @@ function DeployPage() {
 
   const handleImport = async () => {
     if (!menuFile) {
-      toast.warning('Выберите файл menu-database.json');
+      toast.warning('Выберите файл меню (.json)');
       return;
     }
 
@@ -114,10 +114,10 @@ function DeployPage() {
                 В индустрии код обычно обновляют через CI/CD, но меню можно обновлять безопасно через импорт JSON.
               </div>
               <details>
-                <summary>1) “Обновить меню из menu-database.json” — что делает</summary>
+                <summary>1) “Обновить меню из menu-*.json” — что делает</summary>
                 <div style={{ marginTop: 6, opacity: 0.9 }}>
                   Термин <b>импорт</b>: взять файл и применить его к базе.
-                  <br />- загружает ваш <code>menu-database.json</code>
+                  <br />- загружает ваш <code>menu-database.json</code> (или split-файлы)
                   <br />- убирает дубликаты по <code>id</code>
                   <br />- перезаливает блюда в <b>БД</b> (термин БД: база данных)
                   <br />После этого пользователи увидят изменения в режиме “Авто”.
@@ -134,7 +134,7 @@ function DeployPage() {
           </HelpPopover>
         </div>
         <p className="text-sm text-text-secondary-light dark:text-text-secondary-dark">
-          Самый безопасный способ для частых правок — загрузить новый <b>menu-database.json</b> и применить его.
+          Самый безопасный способ для частых правок — загрузить новый <b>menu-*.json</b> и применить его.
         </p>
       </div>
 
@@ -142,7 +142,7 @@ function DeployPage() {
       <div className="p-5 bg-surface-light dark:bg-surface-dark rounded-2xl border border-gray-100 dark:border-white/5 mb-6">
         <div className="flex items-center gap-2 mb-2">
           <h3 className="text-base font-bold text-text-primary-light dark:text-text-primary-dark">
-            1) Обновить меню из menu-database.json
+            1) Обновить меню из menu-*.json
           </h3>
           <HelpPopover title="Справка: импорт меню" icon="help">
             <div style={{ opacity: 0.9 }}>
@@ -185,7 +185,7 @@ function DeployPage() {
 
           {importResult?.status === 'ok' && (
             <div className="text-sm text-green-600 dark:text-green-400">
-              ✅ Готово. Получено: {importResult.received}, уникальных: {importResult.deduped}, импорт в БД: {importResult.imported_to_db}
+              ✅ Готово. Получено: {importResult.received}, уникальных: {importResult.deduped}, импорт в БД: {importResult.imported_to_db}, картин: {importResult.imported_artworks ?? 0}
             </div>
           )}
         </div>

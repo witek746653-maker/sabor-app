@@ -3,8 +3,8 @@
 
 Что делает этот скрипт:
 1. Создаёт базу данных SQLite
-2. Создаёт таблицу dishes
-3. Читает данные из menu-database.json
+2. Создаёт таблицы kitchen_items / wine_items / bar_items / artworks
+3. Читает данные из разделённых JSON (или legacy menu-database.json)
 4. Переносит все данные в базу данных
 
 Запуск:
@@ -12,37 +12,20 @@
   python migrate_to_db.py --yes   (автоматически перезатирает данные, без вопросов)
 """
 
-import json
 import argparse
 from pathlib import Path
-from app import app
-from models import db, Dish
+from app import app, _load_menu_db_items, _load_art_db_items, _split_menu_items, _dedupe_menu_items
+from models import db, KitchenItem, WineItem, BarItem, TeaItem, Artwork
 
-# Путь к файлу с данными
+# Путь к файлам с данными
 ROOT_DIR = Path(__file__).resolve().parent.parent
-DATA_PATH = ROOT_DIR / "data" / "menu-database.json"
-JSON_BACKUP_PATH = ROOT_DIR / "frontend" / "public" / "data" / "menu-database.json"
 
 def migrate():
     """Основная функция миграции"""
     
     print("🚀 Начинаем миграцию данных из JSON в SQLite...")
     
-    # Находим файл с данными
-    json_file = None
-    if DATA_PATH.exists():
-        json_file = DATA_PATH
-        print(f"✅ Найден файл: {DATA_PATH}")
-    elif JSON_BACKUP_PATH.exists():
-        json_file = JSON_BACKUP_PATH
-        print(f"✅ Найден файл: {JSON_BACKUP_PATH}")
-    else:
-        print(f"❌ Файл menu-database.json не найден!")
-        print(f"   Искали в: {DATA_PATH}")
-        print(f"   Искали в: {JSON_BACKUP_PATH}")
-        return
-    
-    parser = argparse.ArgumentParser(description="Миграция menu-database.json -> SQLite (таблица dishes)")
+    parser = argparse.ArgumentParser(description="Миграция JSON -> SQLite (kitchen/wine/bar/artworks)")
     parser.add_argument(
         "--yes",
         action="store_true",
@@ -57,57 +40,38 @@ def migrate():
         db.create_all()
         print("✅ Таблицы созданы!")
         
-        # Читаем данные из JSON
-        print(f"\n📖 Читаем данные из {json_file}...")
-        try:
-            with open(json_file, 'r', encoding='utf-8') as f:
-                dishes_data = json.load(f)
-            print(f"✅ Прочитано {len(dishes_data)} записей")
-        except Exception as e:
-            print(f"❌ Ошибка при чтении JSON: {e}")
+        # Читаем данные из JSON (split/legacy)
+        print(f"\n📖 Читаем данные из JSON...")
+        dishes_data = _load_menu_db_items()
+        art_data = _load_art_db_items()
+        if not isinstance(dishes_data, list):
+            print("❌ JSON меню должен быть списком объектов (list). Миграция остановлена.")
             return
+        if not isinstance(art_data, list):
+            art_data = []
+        print(f"✅ Прочитано меню: {len(dishes_data)} записей")
+        print(f"✅ Прочитано картин: {len(art_data)} записей")
 
         # ========== ДЕДУПЛИКАЦИЯ ==========
         # Важно: в menu-database.json иногда встречаются повторяющиеся id (или id с пробелами).
         # В SQLite поле id — PRIMARY KEY, поэтому дубликаты ломают миграцию (UNIQUE constraint failed).
         # Решение KISS: нормализуем id (str + trim) и оставляем ПОСЛЕДНЮЮ запись для каждого id.
-        if not isinstance(dishes_data, list):
-            print("❌ JSON должен быть списком объектов (list). Миграция остановлена.")
-            return
-
-        unique_by_id = {}
-        skipped_no_id = 0
-        duplicates = 0
-
-        for item in dishes_data:
-            if not isinstance(item, dict):
-                continue
-            raw_id = item.get('id')
-            if raw_id is None:
-                skipped_no_id += 1
-                continue
-            norm_id = str(raw_id).strip()
-            if not norm_id:
-                skipped_no_id += 1
-                continue
-            # Принудительно записываем нормализованный id обратно
-            item['id'] = norm_id
-            if norm_id in unique_by_id:
-                duplicates += 1
-            unique_by_id[norm_id] = item
-
-        dishes_data = list(unique_by_id.values())
+        dishes_data, duplicates, skipped_no_id = _dedupe_menu_items(dishes_data)
         if duplicates or skipped_no_id:
-            print(f"ℹ️  Дедупликация: убрано дублей id = {duplicates}, пропущено без id = {skipped_no_id}")
-        print(f"✅ К загрузке в БД: {len(dishes_data)} уникальных блюд")
+            print(f"ℹ️  Дедупликация меню: убрано дублей id = {duplicates}, пропущено без id = {skipped_no_id}")
+        print(f"✅ К загрузке в БД меню: {len(dishes_data)} уникальных позиций")
         
         # Проверяем, есть ли уже данные в базе
-        existing_count = Dish.query.count()
+        existing_count = KitchenItem.query.count() + WineItem.query.count() + BarItem.query.count() + TeaItem.query.count() + Artwork.query.count()
         if existing_count > 0:
-            print(f"\n⚠️  В базе уже есть {existing_count} блюд")
+            print(f"\n⚠️  В базе уже есть {existing_count} записей")
             if args.yes:
                 print("🗑️  Удаляем старые данные...")
-                Dish.query.delete()
+                KitchenItem.query.delete()
+                WineItem.query.delete()
+                BarItem.query.delete()
+                TeaItem.query.delete()
+                Artwork.query.delete()
                 db.session.commit()
                 print("✅ Старые данные удалены")
             else:
@@ -121,41 +85,51 @@ def migrate():
         success_count = 0
         error_count = 0
         
-        for i, dish_data in enumerate(dishes_data, 1):
-            try:
-                # Создаём объект блюда из словаря
-                dish = Dish.from_dict(dish_data)
+        parts = _split_menu_items(dishes_data)
+        ordered_groups = [
+            ("кухня", KitchenItem, parts.get("kitchen", [])),
+            ("вино", WineItem, parts.get("wine", [])),
+            ("бар", BarItem, parts.get("bar", [])),
+            ("чай", TeaItem, parts.get("tea", [])),
+        ]
 
-                # merge() — это "upsert" по первичному ключу (id):
-                # если запись с таким id уже есть, она обновится; если нет — добавится.
-                # Это делает миграцию устойчивой даже к странным дублям в исходных данных.
-                db.session.merge(dish)
-                
-                # Выводим прогресс каждые 50 записей
-                if i % 50 == 0:
-                    print(f"   Обработано: {i}/{len(dishes_data)}")
-                    db.session.commit()  # Сохраняем каждые 50 записей
-                
-                success_count += 1
-            except Exception as e:
-                print(f"❌ Ошибка при обработке блюда {dish_data.get('id', 'unknown')}: {e}")
-                error_count += 1
-                # Важно: после ошибки SQLAlchemy помечает транзакцию как "сломанная".
-                # rollback() позволяет продолжить миграцию дальше.
-                db.session.rollback()
+        processed = 0
+        total_items = sum(len(g[2]) for g in ordered_groups)
+        for _, model, group_items in ordered_groups:
+            for dish_data in group_items:
+                try:
+                    dish = model.from_dict(dish_data)
+                    db.session.merge(dish)
+                    processed += 1
+                    if processed % 50 == 0:
+                        print(f"   Обработано: {processed}/{total_items}")
+                        db.session.commit()
+                    success_count += 1
+                except Exception as e:
+                    print(f"❌ Ошибка при обработке позиции {dish_data.get('id', 'unknown')}: {e}")
+                    error_count += 1
+                    db.session.rollback()
         
         # Сохраняем оставшиеся записи
         print("💾 Сохраняем остальные данные...")
         db.session.commit()
         
+        # Картины
+        for art in art_data:
+            try:
+                db.session.merge(Artwork.from_dict(art))
+            except Exception as e:
+                print(f"❌ Ошибка при обработке картины {art.get('id', 'unknown')}: {e}")
+                db.session.rollback()
+
         print(f"\n✅ Миграция завершена!")
-        print(f"   Успешно загружено: {success_count} блюд")
+        print(f"   Успешно загружено меню: {success_count} позиций")
         if error_count > 0:
             print(f"   Ошибок: {error_count}")
         
         # Проверяем результат
-        total_in_db = Dish.query.count()
-        print(f"\n📊 В базе данных теперь: {total_in_db} блюд")
+        total_in_db = KitchenItem.query.count() + WineItem.query.count() + BarItem.query.count() + TeaItem.query.count() + Artwork.query.count()
+        print(f"\n📊 В базе данных теперь: {total_in_db} записей")
 
 if __name__ == '__main__':
     migrate()

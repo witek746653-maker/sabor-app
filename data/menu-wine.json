@@ -1,0 +1,2582 @@
+[
+  {
+    "id": "0601",
+    "menu": "Вино",
+    "section": "Бокальные позиции — Игристые вина",
+    "section_icon": {
+      "type": "",
+      "src": "",
+      "alt": ""
+    },
+    "title": "Prosecco Casa Defra",
+    "description": "Просекко — это лёгкое и свежее итальянское игристое вино из региона Венето, созданное из винограда Glera. Оно отличается нежной перляцией, фруктовыми ароматами и мягким освежающим вкусом, который делает его идеальным как для аперитива, так и для коктейлей.",
+    "origin": "Италия, Вéнето.",
+    "producer": "Casa Defra.",
+    "tags": [
+      "белое",
+      "аперитив",
+      "Италия",
+      "brut",
+      "легкое"
+    ],
+    "pairings": {
+      "dishes": [
+        "лёгкие закуски",
+        "рыба и морепродукты",
+        "суши и сашими",
+        "белое мясо",
+        "молодые сыры"
+      ],
+      "notes": [
+        "Хорошо сочетается с легкими закусками, блюдами из рыбы и морепродуктов, идеален в качестве аперитива. Избегайте тяжёлых мясных блюд."
+      ]
+    },
+    "image": {
+      "src": "../images/wine/vino-prosecco-casa-defra.webp",
+      "alt": "Prosecco Casa Defra"
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Wine",
+        "section-en": "Wines by the Glass – Sparkling Wines",
+        "title-en": "Prosecco Casa Defra",
+        "description-en": "Prosecco is a light and fresh Italian sparkling wine from the Veneto region, made from Glera grapes. It features delicate perlage, fruity aromas, and a soft, refreshing taste that makes it ideal both as an aperitif and for cocktails.",
+        "contains-en": "",
+        "allergens-en": "",
+        "tags-en": "sparkling, white, aperitif, Italy, Glera, brut, light",
+        "audio-en": "../audio/wine/prosecco-casa-defra.mp3",
+        "comments-en": "Italian dry sparkling wine, produced from Glera grapes using the Charmat method (secondary fermentation in tank), making it lighter and more accessible than Champagne. Best consumed young (up to ~2 years), as the wine loses freshness over time.",
+        "useful phrases & words": [
+          "Prosecco — pronounced 'proh-SEHK-koh', Italian sparkling wine",
+          "Charmat method — secondary fermentation in tank (not in bottle like Champagne)",
+          "delicate perlage — fine bubbles",
+          "ideal aperitif — perfect for starting a meal",
+          "pairs well with light appetizers — classic pairing",
+          "Would you like to start with a glass of Prosecco? It's perfect as an aperitif."
+        ]
+      }
+    },
+    "status": "актуально",
+    "source_file": "vino.html",
+    "features": "Характерные ароматы: зелёное яблоко, груша, цитрус, белые цветы, иногда лёгкие тропические ноты,",
+    "grapeVarieties": [
+      "Glera (Prosecco).",
+      "Verdiso",
+      "Perera"
+    ],
+    "sweetness": "brut",
+    "comments": [
+      "Итальянское сухое игристое вино, производится из сорта Глера методом Шарма (вторичная ферментация в резервуаре), благодаря чему более легкое и доступное, чем шампанское . Рекомендуется пить молодым (до ~2 лет), так как со временем вино теряет свежесть ."
+    ],
+    "reference_info": "",
+    "updated_at": "2025-02-12T18:30:00+03:00",
+    "update_source": "json",
+    "category": "by-glass",
+    "region": "Вéнето",
+    "alcoholContent": null
+  },
+  {
+    "id": "0602",
+    "menu": "Вино",
+    "section": "Бокальные позиции — Красные вина",
+    "section_icon": {
+      "type": "",
+      "src": "",
+      "alt": ""
+    },
+    "title": "Zinfandel, Long Barn",
+    "description": "Американский Zinfandel из Калифорнии — мягкое и сочное красное вино со зрелыми нотами чёрной вишни, ежевики и дикого брамбла; выдержка на дубе добавляет оттенки ванили и тостов. Вино полнотелое и гармоничное.",
+    "origin": "США, Калифорния.",
+    "producer": "Long Barn.",
+    "tags": [
+      "США",
+      "сухое",
+      "полнотелое",
+      "красное",
+      "танинное"
+    ],
+    "pairings": {
+      "dishes": [
+        "барбекю и гриль‑мясо",
+        "рустикальная пицца"
+      ],
+      "notes": [
+        "Рекомендуется подавать к барбекю, жареным мясам и пикантной пицце; лёгкие деликатные блюда могут потеряться на фоне богатого вкуса."
+      ]
+    },
+    "image": {
+      "src": "../images/wine/vino-zinfandel-long-barn.webp",
+      "alt": "Zinfandel, Long Barn"
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Wine",
+        "section-en": "Wines by the Glass – Red Wines",
+        "title-en": "Zinfandel | Long Barn",
+        "description-en": "American Zinfandel from California — a soft and juicy red wine with ripe notes of black cherry, blackberry, and wild bramble; oak aging adds vanilla and toast notes. The wine is full-bodied and harmonious.",
+        "contains-en": "",
+        "allergens-en": "",
+        "tags-en": "USA, dry, full-bodied, red, tannic",
+        "audio-en": "../audio/wine/zinfandel-long-barn.mp3",
+        "comments-en": "The wine is produced from Zinfandel grapes grown on sunny California vineyards and aged in oak barrels, which adds vanilla and spicy notes. Modern science has proven that Zinfandel is genetically identical to Italian Primitivo.",
+        "useful phrases & words": [
+          "Zinfandel — pronounced 'ZIN-fan-del', California's signature grape",
+          "full-bodied and juicy — key descriptors",
+          "pairs excellently with BBQ — classic California pairing",
+          "ripe fruit flavors — typical characteristic",
+          "oak aging — contributes vanilla and spice notes",
+          "Would you like to try our California Zinfandel? It pairs beautifully with grilled meats."
+        ]
+      }
+    },
+    "status": "актуально",
+    "source_file": "vino.html",
+    "features": "Аромат сладкой чёрной вишни, ежевики и брамбла; вкус сочный, с нотами спелых ягод, ванили и тостов; полнотелое вино с жевательными танинами.",
+    "grapeVarieties": [
+      "Zinfandel (100%)"
+    ],
+    "sweetness": "полусухое",
+    "comments": [
+      "Вино производится из винограда Zinfandel на солнечных калифорнийских виноградниках и выдерживается в дубовых бочках, что придаёт ванильные и пряные оттенки.",
+      "Современная наука доказала, что Zinfandel генетически идентичен итальянскому Primitivo."
+    ],
+    "reference_info": "",
+    "updated_at": "2025-02-12T18:30:00+03:00",
+    "update_source": "json",
+    "category": "by-glass",
+    "region": "Калифорния",
+    "alcoholContent": null
+  },
+  {
+    "id": "0603",
+    "menu": "Вино",
+    "section": "Бокальные позиции — Красные вина",
+    "section_icon": {
+      "type": "",
+      "src": "",
+      "alt": ""
+    },
+    "title": "Tempranillo Edicion Limitada",
+    "description": "Испанский Темпранильо из Риохи: насыщенный рубиновый цвет и сложный аромат спелых чёрных ягод, слив и вишни с оттенками ванили, дуба и специй; вкус полон тёмных фруктов, шоколада и перца с гармоничной кислотностью и зрелыми танинами.",
+    "origin": "Испания, Каталония.",
+    "producer": "Barcelona Mediterranean Wine.",
+    "tags": [
+      "Испания",
+      "сухое",
+      "полнотелое",
+      "красное",
+      "танинное"
+    ],
+    "pairings": {
+      "dishes": [
+        "жареное и тушёное мясо",
+        "барбекю и бургеры",
+        "лазанья и пицца",
+        "мексиканские блюда",
+        "сыры длительной выдержки"
+      ],
+      "notes": [
+        "Отлично сочетается с насыщенными блюдами: гриль, тушёное мясо, лазанья, мексиканские блюда и выдержанные сыры; лёгкие салаты и рыба будут доминироваться богатым вкусом вина."
+      ]
+    },
+    "image": {
+      "src": "../images/wine/vino-tempranillo-edicion-limitada.webp",
+      "alt": "Tempranillo Edicion Limitada"
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Wine",
+        "section-en": "Wines by the Glass – Red Wines",
+        "title-en": "Tempranillo Edicion Limitada",
+        "description-en": "Spanish Tempranillo from Rioja: deep ruby color and complex aromas of ripe black berries, plums, and cherry with notes of vanilla, oak, and spices; the taste is full of dark fruits, chocolate, and pepper with harmonious acidity and mature tannins.",
+        "contains-en": "",
+        "allergens-en": "",
+        "tags-en": "Spain, dry, full-bodied, red, tannic",
+        "audio-en": "../audio/wine/tempranillo-edicion-limitada.mp3",
+        "comments-en": "The wine is produced in limited release and aged in oak barrels, which gives it a complex character.",
+        "useful phrases & words": [
+          "Tempranillo — pronounced 'tem-prah-NEE-yoh', Spain's signature red grape",
+          "Rioja — one of Spain's most prestigious wine regions",
+          "full-bodied and complex — key descriptors",
+          "pairs excellently with grilled meats — classic Spanish pairing",
+          "oak aging — contributes vanilla and spice notes",
+          "Would you like to try our Spanish Tempranillo? It pairs beautifully with grilled meats and hearty dishes."
+        ]
+      }
+    },
+    "status": "актуально",
+    "source_file": "vino.html",
+    "features": "Сложный букет зрелых чёрных ягод, слив, вишни, ванили, кожи и дуба; во вкусе — тёмные фрукты, шоколад и чёрный перец; тело среднее к полному, бархатистые танины.",
+    "grapeVarieties": [
+      "Tempranillo (100%)"
+    ],
+    "sweetness": "сухое",
+    "comments": [
+      "Вино производится в ограниченном выпуске и выдерживается в дубовых бочках, что придаёт ему комплексный характер."
+    ],
+    "reference_info": "",
+    "updated_at": "2025-02-12T18:30:00+03:00",
+    "update_source": "json",
+    "category": "by-glass",
+    "region": "Каталония",
+    "alcoholContent": null
+  },
+  {
+    "id": "0604",
+    "menu": "Вино",
+    "section": "Бокальные позиции — Красные вина",
+    "section_icon": {
+      "type": "",
+      "src": "",
+      "alt": ""
+    },
+    "title": "Old Vineyard Pinot Noir",
+    "description": "Пино Нуар из Патагонии, созданный из старых лоз: глубокий рубиновый цвет, аромат спелых вишен с тонкими нотами орехов, ванили и лёгкого дыма; элегантное, гармоничное вино с яркой кислотностью и шелковистыми танинами.",
+    "origin": "Аргентина, Патагония.",
+    "producer": "Humberto Canale.",
+    "tags": [
+      "Аргентина",
+      "сухое",
+      "легкое",
+      "красное",
+      "мягкое"
+    ],
+    "pairings": {
+      "dishes": [
+        "мягкие сыры",
+        "гриль‑мясо",
+        "пасты",
+        "птица и утка",
+        "грибы"
+      ],
+      "notes": [
+        "Универсально сочетается с птицей, уткой, грибами и мягкими сырами; слишком пряные и тяжёлые блюда могут подавить его деликатный вкус."
+      ]
+    },
+    "image": {
+      "src": "../images/wine/vino-humberto-canale-old-vineyard.webp",
+      "alt": "Old Vineyard Pinot Noir"
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Wine",
+        "section-en": "Wines by the Glass – Red Wines",
+        "title-en": "Old Vineyard Pinot Noir",
+        "description-en": "Pinot Noir from Patagonia, made from old vines: deep ruby color, aromas of ripe cherries with subtle notes of nuts, vanilla, and light smoke; an elegant, harmonious wine with bright acidity and silky tannins.",
+        "contains-en": "",
+        "allergens-en": "",
+        "tags-en": "Argentina, dry, light, red, soft",
+        "audio-en": "../audio/wine/old-vineyard-pinot-noir.mp3",
+        "comments-en": "The wine is produced from old vines in Patagonia and aged in oak barrels, which gives it depth and complexity.",
+        "useful phrases & words": [
+          "Pinot Noir — pronounced 'PEE-noh NWAR', elegant red grape variety",
+          "old vines — typically produce more concentrated wines",
+          "elegant and harmonious — key descriptors",
+          "pairs beautifully with poultry and mushrooms — classic pairing",
+          "silky tannins — indicates finesse",
+          "Would you like to try our Patagonian Pinot Noir? It's elegant and pairs wonderfully with duck or poultry."
+        ]
+      }
+    },
+    "status": "актуально",
+    "source_file": "vino.html",
+    "features": "Аромат спелой вишни и ореха с оттенками дыма и ванили; вкус мягкий и сбалансированный, с хорошей кислотностью и шелковистыми танинами.",
+    "grapeVarieties": [
+      "Pinot Noir (100%)"
+    ],
+    "sweetness": "сухое",
+    "comments": [
+      "Вино производится из старых лоз Патагонии и выдерживается в дубовых бочках, что придаёт ему глубину и сложность."
+    ],
+    "reference_info": "",
+    "updated_at": "2025-02-12T18:30:00+03:00",
+    "update_source": "json",
+    "category": "by-glass",
+    "region": "Патагония",
+    "alcoholContent": null
+  },
+  {
+    "id": "0605",
+    "menu": "Вино",
+    "section": "Бокальные позиции — Красные вина",
+    "section_icon": {
+      "type": "",
+      "src": "",
+      "alt": ""
+    },
+    "title": "Castellare di Castellina, Chianti Classico",
+    "description": "Классический Кьянти с ярким рубиновым цветом и пурпурными отблесками; гармоничные танины и деликатный комплексный аромат красных фруктов и трав; вкус сбалансированный, с долгим, мягким послевкусием и намеком на сладость.",
+    "origin": "Италия, Тоскана.",
+    "producer": "Domini Castellare di Castellina.",
+    "tags": [
+      "Италия",
+      "сухое",
+      "среднетелое",
+      "красное",
+      "танинное",
+      "универсальное"
+    ],
+    "pairings": {
+      "dishes": [
+        "структурированные основные блюда",
+        "тушёное мясо",
+        "средневыдержанные сыры"
+      ],
+      "notes": [
+        "Универсальное вино: подходит к мясным и сырным блюдам; избегайте чрезмерно острых или сладких блюд, которые нарушат баланс."
+      ]
+    },
+    "image": {
+      "src": "../images/wine/vino-castellare-di-castellina-chianti-classico.webp",
+      "alt": "Castellare di Castellina, Chianti Classico"
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Wine",
+        "section-en": "Wines by the Glass – Red Wines",
+        "title-en": "Castellare di Castellina, Chianti Classico",
+        "description-en": "Classic Chianti with bright ruby color and purple highlights; harmonious tannins and delicate complex aromas of red fruits and herbs; the taste is balanced, with a long, soft finish and a hint of sweetness.",
+        "contains-en": "",
+        "allergens-en": "",
+        "tags-en": "Italy, dry, medium-bodied, red, tannic, versatile",
+        "audio-en": "../audio/wine/vino-castellare-di-castellina-chianti-classico.mp3",
+        "comments-en": "Classic Chianti Classico from Tuscany, made primarily from Sangiovese grapes. This wine is known for its balance and versatility.",
+        "useful phrases & words": [
+          "Chianti Classico — pronounced 'kee-AHN-tee KLAH-see-koh', prestigious Tuscan wine region",
+          "Sangiovese — the primary grape variety in Chianti",
+          "versatile and balanced — key descriptors",
+          "pairs well with Italian cuisine — classic pairing",
+          "harmonious tannins — indicates good structure",
+          "Would you like to try our Chianti Classico? It's versatile and pairs beautifully with Italian dishes."
+        ]
+      }
+    },
+    "status": "актуально",
+    "source_file": "vino.html",
+    "features": "Букет красных и чёрных ягод, трав и фиалки; вкус гармоничный, с деликатной сложностью ароматов, мягкой кислинкой и лёгким сладковатым финишем.",
+    "grapeVarieties": [
+      "Sangiovese (90%)",
+      "Canaiolo (10%)"
+    ],
+    "sweetness": "сухое",
+    "comments": [
+      "Вино производится из традиционных сортов Санжовезе и Канаиоло и выдерживается в дубовых бочках, что придаёт ему классический характер."
+    ],
+    "reference_info": "",
+    "updated_at": "2025-02-12T18:30:00+03:00",
+    "update_source": "json",
+    "category": "by-glass",
+    "region": "Тоскана",
+    "alcoholContent": null
+  },
+  {
+    "id": "0606",
+    "menu": "Вино",
+    "section": "Бокальные позиции — Белые вина",
+    "section_icon": {
+      "type": "",
+      "src": "",
+      "alt": ""
+    },
+    "title": "Pinot Grigio, Bottega Vinai",
+    "description": "Итальянский Пино Гриджио светло‑соломистого цвета с привлекательным цветочным ароматом; освежающий, сухой и ароматный вкус с нотами зелёного яблока, цитрусов и лёгкой миндальной горчинкой; среднее тело и долгий чистый финиш.",
+    "origin": "Италия, Трентино-Альто Адидже.",
+    "producer": "Cavit.",
+    "tags": [
+      "Италия",
+      "сухое",
+      "белое",
+      "легкое",
+      "аперитив"
+    ],
+    "pairings": {
+      "dishes": [
+        "аперитив",
+        "паста в сливочном соусе",
+        "ризотто",
+        "морепродукты и рыба",
+        "курица и телятина"
+      ],
+      "notes": [
+        "Рекомендуется как аперитив; подходит к лёгким блюдам из пасты, кремового ризотто, белого мяса и морепродуктов; избегайте тяжёлых, острых блюд и красного мяса."
+      ]
+    },
+    "image": {
+      "src": "../images/wine/vino-pinot-grigio-bottega-vinai.webp",
+      "alt": "Pinot Grigio, Bottega Vinai"
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Wine",
+        "section-en": "Wines by the Glass – White Wines",
+        "title-en": "Pinot Grigio | Bottega Vinai",
+        "description-en": "Italian Pinot Grigio with light straw color and attractive floral aromas; refreshing, dry, and aromatic taste with notes of green apple, citrus, and light almond bitterness; medium body and long, clean finish.",
+        "contains-en": "",
+        "allergens-en": "",
+        "tags-en": "Italy, dry, white, light, aperitif",
+        "audio-en": "../audio/wine/pinot-grigio--bottega-vinai.mp3",
+        "comments-en": "The wine is produced from 100% Pinot Grigio in Trentino and is completely dry; excellent as an aperitif or with light dishes.",
+        "useful phrases & words": [
+          "Pinot Grigio — pronounced 'PEE-noh GREE-joh', popular Italian white wine",
+          "light and refreshing — key descriptors",
+          "pairs well with seafood — classic pairing",
+          "ideal aperitif — perfect for starting a meal",
+          "crisp and dry — typical characteristics",
+          "Would you like to start with a glass of Pinot Grigio? It's perfect as an aperitif or with seafood."
+        ]
+      }
+    },
+    "status": "в архиве",
+    "source_file": "vino.html",
+    "features": "Ароматические нотки цитрусов и цветков; свежий, сухой и ароматный вкус с хорошей структурой и минеральностью; ощущается лёгкая миндальная горчинка.",
+    "grapeVarieties": [
+      "Pinot Grigio (100%)"
+    ],
+    "sweetness": "сухое",
+    "comments": [
+      "Вино производится из 100 % Пино Гриджио в Трентино и полностью сухое; великолепно подходит в качестве аперитива или к лёгким блюдам."
+    ],
+    "reference_info": "",
+    "updated_at": "2025-02-12T18:30:00+03:00",
+    "update_source": "json",
+    "category": "by-glass",
+    "region": "Трентино-Альто Адидже",
+    "alcoholContent": null
+  },
+  {
+    "id": "0607",
+    "menu": "Вино",
+    "section": "Бокальные позиции — Белые вина",
+    "section_icon": {
+      "type": "",
+      "src": "",
+      "alt": ""
+    },
+    "title": "Chablis, Sainte Claire, Jean-Marc Brocard",
+    "description": "Минеральный Шабли из Бургундии с бледно‑жёлтым цветом и зелёными отблесками; аромат абрикоса, клементина, лимона и цветочных тонов; вкус свежий, плотный, с цитрусовыми и персиковыми нотами, яркой кислотностью и продолжительным минеральным финишем.",
+    "origin": "Франция, Бургундия, Шабли.",
+    "producer": "Jean-Marc Brocard (Domaine Sainte-Claire).",
+    "tags": [
+      "Франция",
+      "сухое",
+      "белое",
+      "легкое",
+      "аперитив"
+    ],
+    "pairings": {
+      "dishes": [
+        "морепродукты (кастрюля морепродуктов)",
+        "лосось и рыба",
+        "сыр Комте и Рокфор",
+        "холодные летние салаты"
+      ],
+      "notes": [
+        "Идеально в качестве аперитива; подходит к сырам и простой приготовленной рыбе; избегайте острых соусов и тяжёлых мясных блюд."
+      ]
+    },
+    "image": {
+      "src": "../images/wine/vino-chablis-sainte-claire-jean-marc-brocard.webp",
+      "alt": "Chablis, Sainte Claire, Jean-Marc Brocard"
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Wine",
+        "section-en": "Wines by the Glass – White Wines",
+        "title-en": "Chablis, Sainte Claire | Jean-Marc Brocard",
+        "description-en": "Mineral Chablis from Burgundy with pale yellow color and green highlights; aromas of apricot, clementine, lemon, and floral tones; the taste is fresh, dense, with citrus and peach notes, bright acidity, and a long mineral finish.",
+        "contains-en": "",
+        "allergens-en": "",
+        "tags-en": "France, dry, white, light, aperitif",
+        "audio-en": "../audio/wine/chablis-sainte-claire-jean-marc-brocard.mp3",
+        "comments-en": "The wine is produced without oak aging, which allows it to preserve pure minerality and citrus character.",
+        "useful phrases & words": [
+          "Chablis — pronounced 'shah-BLEE', prestigious white wine region in Burgundy",
+          "mineral and fresh — key descriptors for Chablis",
+          "unoaked — no oak aging, preserving pure fruit character",
+          "pairs beautifully with seafood — classic pairing",
+          "bright acidity — typical characteristic",
+          "Would you like to try our Chablis? It's mineral and pairs perfectly with seafood."
+        ]
+      }
+    },
+    "status": "в архиве",
+    "source_file": "vino.html",
+    "features": "Аромат абрикоса, лимона, клементина и цветков; вкус свежий и богатый, с цитрусовыми и каменными нотами, яркой кислотностью и минеральностью.",
+    "grapeVarieties": [
+      "Chardonnay (100%)"
+    ],
+    "sweetness": "сухое",
+    "comments": [
+      "Вино производится без дубовой выдержки, что позволяет сохранить чистый минерал и цитрусовый характер."
+    ],
+    "reference_info": "",
+    "updated_at": "2025-02-12T18:30:00+03:00",
+    "update_source": "json",
+    "category": "by-glass",
+    "region": "Бургундия, Шабли",
+    "alcoholContent": null
+  },
+  {
+    "id": "0608",
+    "menu": "Вино",
+    "section": "Бокальные позиции — Белые вина",
+    "section_icon": {
+      "type": "",
+      "src": "",
+      "alt": ""
+    },
+    "title": "Dr.Loosen, \"Blue Slate\" Riesling Dry",
+    "description": "Минеральный и свежий рислинг из Германии: аромат юной цитрусовой цедры, гуавы и белых фруктов; вкус гармоничный, концентрированный и полностью сухой с высокой кислотностью и чистым, каменным послевкусием.",
+    "origin": "Германия, Мозель-Саар-Рувер",
+    "producer": "Dr.Loosen.",
+    "tags": [
+      "Германия",
+      "сухое",
+      "белое",
+      "легкое",
+      "аперитив"
+    ],
+    "pairings": {
+      "dishes": [
+        "легкие блюда из рыбы и морепродуктов",
+        "суши и сашими",
+        "салаты и овощи"
+      ],
+      "notes": [
+        "Высокая кислотность делает его отличным для морепродуктов и азиатских блюд; избегайте тяжёлых соусов и жареного мяса."
+      ]
+    },
+    "image": {
+      "src": "../images/wine/vino-dr-loosen-blue-slate-riesling-dry.webp",
+      "alt": "Dr.Loosen, \"Blue Slate\" Riesling Dry"
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Wine",
+        "section-en": "Wines by the Glass – White Wines",
+        "title-en": "Dr. Loosen \"Blue Slate\" Riesling Dry",
+        "description-en": "Mineral and fresh Riesling from Germany: aromas of young citrus zest, guava, and white fruits; the taste is harmonious, concentrated, and completely dry with high acidity and a clean, stony finish.",
+        "contains-en": "",
+        "allergens-en": "",
+        "tags-en": "Germany, dry, white, light, aperitif",
+        "audio-en": "../audio/wine/vino-dr-loosen-blue-slate-riesling-dry.mp3",
+        "comments-en": "The wine is made from vines grown on blue slate and fully fermented to dryness.",
+        "useful phrases & words": [
+          "Riesling — pronounced 'REES-ling', Germany's signature white grape",
+          "mineral and fresh — key descriptors",
+          "blue slate — unique terroir that contributes to minerality",
+          "pairs beautifully with Asian cuisine — classic pairing",
+          "high acidity — typical characteristic",
+          "Would you like to try our German Riesling? It's mineral and pairs perfectly with seafood and Asian dishes."
+        ]
+      }
+    },
+    "status": "актуально",
+    "source_file": "vino.html",
+    "features": "Нос наполнен свежими цитрусовыми, гуавой и минеральными тонами; вкус сухой, энергичный, с яркой кислотностью и длинным минеральным финишем.",
+    "grapeVarieties": [
+      "Riesling (100%)"
+    ],
+    "sweetness": "сухое",
+    "comments": [
+      "Вино сделано с лоз на голубом сланце и полностью ферментировано до сухости."
+    ],
+    "reference_info": "",
+    "updated_at": "2025-02-12T18:30:00+03:00",
+    "update_source": "json",
+    "category": "by-glass",
+    "region": "Мозель-Саар-Рувер",
+    "alcoholContent": null
+  },
+  {
+    "id": "0609",
+    "menu": "Вино",
+    "section": "Бокальные позиции — Белые вина",
+    "section_icon": {
+      "type": "",
+      "src": "",
+      "alt": ""
+    },
+    "title": "Paddle Creek Sauvignon Blanc, Lake Road",
+    "description": "Новозеландский Совиньон Блан с ярким соломистым цветом; в аромате буйная смесь травянистых тонов, зелёного перца и тропических фруктов; вкус фруктовый, с хрустящей кислотностью и продолжительным освежающим послевкусием.",
+    "origin": "Новая Зеландия, Мальборо.",
+    "producer": "Lake Road.",
+    "tags": [
+      "Новая Зеландия",
+      "сухое",
+      "белое",
+      "легкое",
+      "аперитив"
+    ],
+    "pairings": {
+      "dishes": [
+        "белое мясо (курица, индейка)",
+        "рыба и морепродукты",
+        "козий сыр",
+        "салаты и зелёные блюда"
+      ],
+      "notes": [
+        "Совиньон Блан идеально сочетается с травяными соусами, козьим сыром и лёгкими салатами; избегайте блюд с тяжёлыми сливочными соусами и красного мяса."
+      ]
+    },
+    "image": {
+      "src": "../images/wine/vino-paddle-creek-sauvignon-blanc-lake-road.webp",
+      "alt": "Paddle Creek Sauvignon Blanc, Lake Road"
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Wine",
+        "section-en": "Wines by the Glass – White Wines",
+        "title-en": "Paddle Creek Sauvignon Blanc | Lake Road",
+        "description-en": "New Zealand Sauvignon Blanc with bright straw color; in the aroma, a vibrant mix of herbaceous tones, green pepper, and tropical fruits; the taste is fruity, with crisp acidity and a long, refreshing finish.",
+        "contains-en": "",
+        "allergens-en": "",
+        "tags-en": "New Zealand, dry, white, light, aperitif",
+        "audio-en": "../audio/wine/paddle-creek-sauvignon-blanc-lake-road.mp3",
+        "comments-en": "Classic New Zealand Sauvignon Blanc from Marlborough, known for its vibrant, herbaceous character and tropical fruit notes.",
+        "useful phrases & words": [
+          "Sauvignon Blanc — pronounced 'SOH-vee-nyon BLAHNK', aromatic white grape",
+          "herbaceous and vibrant — key descriptors for NZ Sauvignon Blanc",
+          "Marlborough — New Zealand's most famous wine region",
+          "pairs beautifully with goat cheese — classic pairing",
+          "crisp acidity — typical characteristic",
+          "Would you like to try our New Zealand Sauvignon Blanc? It's vibrant and pairs perfectly with seafood and salads."
+        ]
+      }
+    },
+    "status": "актуально",
+    "source_file": "vino.html",
+    "features": "Аромат трав, зелёного перца и тропических фруктов; во вкусе — крыжовник, грейпфрут и маракуйя; сухой, освежающий, с высокой кислотностью.",
+    "grapeVarieties": [
+      "Sauvignon Blanc (100%)"
+    ],
+    "sweetness": "сухое",
+    "comments": [
+      "Вино отражает типичный стиль Марлборо и произведено из винограда Совиньон Блан без остаточного сахара."
+    ],
+    "reference_info": "",
+    "updated_at": "2025-02-12T18:30:00+03:00",
+    "update_source": "json",
+    "category": "by-glass",
+    "region": "Мальборо",
+    "alcoholContent": null
+  },
+  {
+    "id": "0610",
+    "menu": "Вино",
+    "section": "Бокальные позиции — Розовые вина",
+    "section_icon": {
+      "type": "",
+      "src": "",
+      "alt": ""
+    },
+    "title": "Reserve de Perly Rose d'Anjou (полусладкое)",
+    "description": "Лёгкое полусладкое розе из Анжу, имеющее малиново‑розовый цвет и мягкий, окутывающий вкус с освежающей кислотностью и сладковатыми тонами красных ягод и фруктов; аромат раскрывает нотки малины, клубники и крыжовника с лёгкой пряностью.",
+    "origin": "Франция, Долина Луары.",
+    "producer": "Loire Propriétés (Луар Проприете).",
+    "tags": [
+      "Франция",
+      "полусладкое",
+      "розовое",
+      "мягкое",
+      "аперитив"
+    ],
+    "pairings": {
+      "dishes": [
+        "аперитив и закуски",
+        "десерты на основе ягод",
+        "острые блюда",
+        "пряная азиатская кухня"
+      ],
+      "notes": [
+        "Идеально подаётся охлажденным как аперитив; мягкая сладость хорошо сочетается с ягодными десертами и сладко‑острыми блюдами; избегайте тяжёлых мясных блюд."
+      ]
+    },
+    "image": {
+      "src": "../images/wine/vino-reserve-de-perly-rose-danjou.webp",
+      "alt": "Reserve de Perly Rose d'Anjou"
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Wine",
+        "section-en": "Wines by the Glass – Rosé Wines",
+        "title-en": "Reserve de Perly Rose d'Anjou (semi-sweet)",
+        "description-en": "Light semi-sweet rosé from Anjou, having a raspberry-pink color and soft, enveloping taste with refreshing acidity and sweetish tones of red berries and fruits; the aroma reveals notes of raspberry, strawberry, and gooseberry with light spiciness.",
+        "contains-en": "",
+        "allergens-en": "",
+        "tags-en": "France, semi-sweet, rosé, soft, aperitif",
+        "audio-en": "../audio/wine/reserve-de-perly-rose-danjou.mp3",
+        "comments-en": "The wine is made from the Grolleau grape variety, fermented in steel tanks and aged on lees, which gives it texture and aroma.",
+        "useful phrases & words": [
+          "Rose d'Anjou — pronounced 'roh-ZAY dahn-ZHOO', semi-sweet rosé from Loire Valley",
+          "semi-sweet — off-dry style, slightly sweet",
+          "pairs well with spicy Asian cuisine — classic pairing",
+          "ideal aperitif — perfect for starting a meal",
+          "soft and fruity — key descriptors",
+          "Would you like to try our rosé? It's semi-sweet and pairs beautifully with spicy dishes."
+        ]
+      }
+    },
+    "status": "в архиве",
+    "source_file": "vino.html",
+    "features": "Нежный аромат малины, клубники, крыжовника и пряностей; вкус мягкий, со сладковатыми тонами красных ягод, сбалансированный свежей кислотностью и шёлковистой текстурой; пряный финиш.",
+    "grapeVarieties": [
+      "Grolleau (100%)"
+    ],
+    "sweetness": "полусладкое",
+    "comments": [
+      "Вино из сорта Грольо, ферментируется в стальных чанах и выдерживается на осадке, что придаёт текстуру и аромат."
+    ],
+    "reference_info": "",
+    "updated_at": "2025-02-12T18:30:00+03:00",
+    "update_source": "json",
+    "category": "by-glass",
+    "region": "Долина Луары",
+    "alcoholContent": null
+  },
+  {
+    "id": "0611",
+    "menu": "Вино",
+    "section": "Coravin — Красные вина",
+    "section_icon": {
+      "type": "",
+      "src": "",
+      "alt": ""
+    },
+    "title": "\"La Ciaude\", Domaine Anne Gros & Jean-Paul Tollot",
+    "description": "Красное вино из региона Лангедок-Руссильон со вкусом чёрной вишни, малины, специй и диких трав; полнотелое и бархатистое, с минеральной свежестью, глубиной и длительным послевкусием, где ощутимы оттенки какао и графита.",
+    "origin": "Франция, Лангедок-Руссильон.",
+    "producer": "Anne Gros & Jean-Paul Tollot",
+    "tags": [
+      "Франция",
+      "сухое",
+      "красное",
+      "полнотелое",
+      "танинное"
+    ],
+    "pairings": {
+      "dishes": [
+        "стейки и красное мясо",
+        "баранина и телятина",
+        "паштеты и мясные блюда",
+        "выдержанные сыры"
+      ],
+      "notes": [
+        "Идеально сочетается с мясными блюдами, пряной кухней и выдержанными сырами; избегайте лёгких блюд и морепродуктов."
+      ]
+    },
+    "image": {
+      "src": "../images/wine/vino-la-ciaude-domaine-anne-gros-jean-paul-tollot.webp",
+      "alt": "\"La Ciaude\", Domaine Anne Gros & Jean-Paul Tollot"
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Wine",
+        "section-en": "Coravin – Red Wines",
+        "title-en": "La Ciaude | Domaine Anne Gros & Jean-Paul Tollot",
+        "description-en": "Red wine from Burgundy with flavors of black cherry, raspberry, spices, and wild herbs; full-bodied and velvety, with mineral freshness, depth, and a long finish where notes of cocoa and graphite are perceptible.",
+        "contains-en": "",
+        "allergens-en": "",
+        "tags-en": "France, dry, red, full-bodied, tannic",
+        "audio-en": "../audio/wine/vino-la-ciaude-domaine-anne-gros-jean-paul-tollot.mp3",
+        "comments-en": "The wine is produced by a small estate from old vines and aged in Burgundian oak; distinguished by its bright minerality and long finish.",
+        "useful phrases & words": [
+          "La Ciaude — pronounced 'lah see-OHD', Burgundian red wine",
+          "full-bodied and velvety — key descriptors",
+          "pairs beautifully with red meat — classic pairing",
+          "mineral freshness — important characteristic",
+          "aged in Burgundian oak — contributes to complexity",
+          "Would you like to try our Burgundy red? It's full-bodied and pairs excellently with steak."
+        ]
+      }
+    },
+    "status": "актуально",
+    "source_file": "vino.html",
+    "features": "Ароматы чёрной вишни, малины, печёных специй и диких трав; вкус плотный и бархатистый, с нотами минеральной свежести, какао, специй и графита; зрелые танины и долгое послевкусие.",
+    "grapeVarieties": [
+      "Carignan",
+      "Syrah",
+      "Grenache"
+    ],
+    "sweetness": "сухое",
+    "comments": [
+      "Вино производится небольшим хозяйством из старых лоз и выдерживается в бургундском дубе; отличается яркой минералкой и длительным послевкусием."
+    ],
+    "reference_info": "",
+    "updated_at": "2025-02-12T18:30:00+03:00",
+    "update_source": "json",
+    "category": "coravin",
+    "region": "Лангедок-Руссильон",
+    "alcoholContent": null
+  },
+  {
+    "id": "0612",
+    "menu": "Вино",
+    "section": "Coravin — Красные вина",
+    "section_icon": {
+      "type": "",
+      "src": "",
+      "alt": ""
+    },
+    "title": "«Bourgogne Pinot Noir Terres de Famille», Domaine de la Vougeraie",
+    "description": "Лёгкий бургундский Пино Нуар с ароматом красной смородины, клюквы, черешни и трав; вкус свежий, с нотами кислой вишни, специй и земли, завершающийся мягкими танинами и приятной кислотностью.",
+    "origin": "Франция, Бургундия.",
+    "producer": "Domaine de la Vougeraie.",
+    "tags": [
+      "Франция",
+      "сухое",
+      "красное",
+      "легкое",
+      "мягкое"
+    ],
+    "pairings": {
+      "dishes": [
+        "жареная птица",
+        "утка и индейка",
+        "грибы",
+        "гриль‑овощи и салаты",
+        "мягкие сыры (Камамбер, Бри)"
+      ],
+      "notes": [
+        "Идеально с лёгкими мясными блюдами и овощами; избегайте очень тяжёлых и пряных блюд."
+      ]
+    },
+    "image": {
+      "src": "../images/wine/vino-bourgogne-pinot-noir-terres-de-famille-domaine-de-la-vougeraie.webp",
+      "alt": "«Bourgogne Pinot Noir Terres de Famille», Domaine de la Vougeraie"
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Wine",
+        "section-en": "Coravin – Red Wines",
+        "title-en": "Bourgogne Pinot Noir Terres de Famille | Domaine de la Vougeraie",
+        "description-en": "Light Burgundian Pinot Noir with aromas of red currant, cranberry, cherry, and herbs; the taste is fresh, with notes of sour cherry, spices, and earth, finishing with soft tannins and pleasant acidity.",
+        "contains-en": "",
+        "allergens-en": "",
+        "tags-en": "France, dry, red, light, soft",
+        "audio-en": "../audio/wine/bourgogne-pinot-noir-terres-de-famille-domaine-de-la-vougeraie.mp3",
+        "comments-en": "The wine is a traditional Burgundian Pinot Noir with minimal extraction and aging in neutral barrels to preserve freshness.",
+        "useful phrases & words": [
+          "Bourgogne Pinot Noir — pronounced 'boor-GOHN-yuh PEE-noh NWAR', classic Burgundian red",
+          "light and fresh — key descriptors",
+          "pairs beautifully with poultry — classic pairing",
+          "soft tannins — indicates elegance",
+          "aged in neutral barrels — preserves fruit character",
+          "Would you like to try our Burgundy Pinot Noir? It's elegant and pairs wonderfully with duck or poultry."
+        ]
+      }
+    },
+    "status": "актуально",
+    "source_file": "vino.html",
+    "features": "Нос раскрывает ноты красных ягод, трав и земли; вкус лёгкий и свежий, с кисло‑вишнёвым характером, мягкими танинами и длительным фруктовым послевкусием.",
+    "grapeVarieties": [
+      "Pinot Noir (100%)"
+    ],
+    "sweetness": "сухое",
+    "comments": [
+      "Вино — традиционный бургундский Пино Нуар с минимальной экстракцией и выдержкой в нейтральных бочках для сохранения свежести."
+    ],
+    "reference_info": "",
+    "updated_at": "2025-02-12T18:30:00+03:00",
+    "update_source": "json",
+    "category": "coravin",
+    "region": "Бургундия",
+    "alcoholContent": null
+  },
+  {
+    "id": "0613",
+    "menu": "Вино",
+    "section": "Coravin — Красные вина",
+    "section_icon": {
+      "type": "",
+      "src": "",
+      "alt": ""
+    },
+    "title": "«Fumin» Les Cretes",
+    "description": "Альпийское красное вино из сорта Фумин, насыщенного рубинового цвета с фиолетовым оттенком; аромат лесных ягод, кожи, специй и трав; на вкусе сочное и ароматное, с мягкими танинами и нотами ванили, можжевельника, табака и лакрицы; заканчивается свежей кислинкой и минеральным оттенком.",
+    "origin": "Италия, Валле д'Аоста.",
+    "producer": "Les Cretes.",
+    "tags": [
+      "Италия",
+      "сухое",
+      "красное",
+      "полнотелое",
+      "танинное"
+    ],
+    "pairings": {
+      "dishes": [
+        "карбонада с полентой",
+        "мясо дичи",
+        "тушёная игра",
+        "сыры средней выдержки",
+        "сердечные закуски"
+      ],
+      "notes": [
+        "Отлично подходит к пряным мясным и дичьим блюдам; избегайте лёгких салатов и морепродуктов."
+      ]
+    },
+    "image": {
+      "src": "../images/wine/vino-fumin-les-cretes.webp",
+      "alt": "«Fumin» Les Cretes"
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Wine",
+        "section-en": "Coravin – Red Wines",
+        "title-en": "Fumin | Les Cretes",
+        "description-en": "Alpine red wine from the Fumin grape variety, deep ruby color with purple highlights; aromas of forest berries, leather, spices, and herbs; on the palate, juicy and aromatic, with soft tannins and notes of vanilla, juniper, tobacco, and licorice; finishes with fresh acidity and a mineral note.",
+        "contains-en": "",
+        "allergens-en": "",
+        "tags-en": "Italy, dry, red, full-bodied, tannic",
+        "audio-en": "../audio/wine/fumin-les-cretes.mp3",
+        "comments-en": "The Fumin grape variety is grown in Valle d'Aosta; the wine is often aged in oak barrels, which gives it complexity and structure.",
+        "useful phrases & words": [
+          "Fumin — pronounced 'foo-MEEN', rare Alpine grape variety from Valle d'Aosta",
+          "full-bodied and complex — key descriptors",
+          "pairs excellently with game — classic pairing",
+          "alpine character — unique terroir",
+          "aged in oak barrels — contributes to complexity",
+          "Would you like to try our Alpine Fumin? It's full-bodied and pairs beautifully with game dishes."
+        ]
+      }
+    },
+    "status": "актуально",
+    "source_file": "vino.html",
+    "features": "Интенсивные ароматы лесных ягод, кожи, специй, трав и фиалок; вкус сочный и многослойный, с нотами ванили, можжевельника, табака и лакрицы; танины плотные, но элегантные, финал длительный и минеральный.",
+    "grapeVarieties": [
+      "Fumin (100%)"
+    ],
+    "sweetness": "сухое",
+    "comments": [
+      "Сорт Фумин выращивается в Валле д'Аоста; вино часто выдерживается в дубовых бочках, что придаёт ему комплексность и структуру."
+    ],
+    "reference_info": "",
+    "updated_at": "2025-02-12T18:30:00+03:00",
+    "update_source": "json",
+    "category": "coravin",
+    "region": "Валле д'Аоста",
+    "alcoholContent": null
+  },
+  {
+    "id": "0614",
+    "menu": "Вино",
+    "section": "Coravin — Красные вина",
+    "title": "\"50 & 50\", Avignonesi & Capannelle",
+    "description": "Культовое тосканское красное вино, созданное из равных долей Санджовезе и Мерло; глубокий рубиновый цвет; аромат мелких красных фруктов — чёрной смородины, черешни и голубики — с нюансами подлеска, ванили и корицы; на вкусе сладость фруктов гармонично сочетается с плотными танинами, возвращаются специи и мята, завершаясь долгим, шелковистым финишем.",
+    "origin": "Италия, Тоскана.",
+    "producer": "Avignonesi & Capannelle",
+    "tags": [
+      "Италия",
+      "сухое",
+      "красное",
+      "полнотелое",
+      "танинное"
+    ],
+    "pairings": {
+      "dishes": [
+        "жареная говядина и стейки",
+        "тушёные мясные блюда",
+        "богатые пасты и лазанья",
+        "выдержанные сыры"
+      ],
+      "notes": [
+        "Вино требует насыщенной кухни: мясо на гриле, томлёные блюда и выдержанные сыры; избегайте лёгких закусок и рыбы."
+      ],
+      "drinks": [],
+      "wines": []
+    },
+    "image": {
+      "src": "../images/wine/vino-50-50-avignonesi-capannelle.webp",
+      "alt": "\"50 & 50\", Avignonesi & Capannelle"
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Wine",
+        "section-en": "Coravin – Red Wines",
+        "title-en": "50 & 50 | Avignonesi & Capannelle",
+        "description-en": "Cult Tuscan red wine, created from equal parts Sangiovese and Merlot; deep ruby color; aromas of small red fruits — black currant, cherry, and blueberry — with nuances of undergrowth, vanilla, and cinnamon; on the palate, fruit sweetness harmoniously combines with dense tannins, spices and mint return, finishing with a long, silky finish.",
+        "contains-en": "",
+        "allergens-en": "",
+        "tags-en": "Italy, dry, red, full-bodied, tannic",
+        "audio-en": "../audio/wine/vino-50-50-avignonesi-capannelle.mp3",
+        "comments-en": "A blend from two great estates — Avignonesi and Capannelle; aged in barriques for about 24 months and released in limited quantities.",
+        "useful phrases & words": [
+          "50 & 50 — cult Tuscan wine, equal blend of Sangiovese and Merlot",
+          "full-bodied and powerful — key descriptors",
+          "pairs excellently with grilled meats — classic pairing",
+          "aged in barriques — small oak barrels",
+          "limited release — exclusive wine",
+          "Would you like to try our cult Tuscan blend? It's powerful and pairs beautifully with steak."
+        ]
+      }
+    },
+    "status": "в архиве",
+    "source_file": "vino.html",
+    "features": "Ароматы красных ягод, чёрной смородины, черешни и специй; вкус мощный, но изящный, со сладкими фруктами, пряными нотами, мятой и тимьяном; танины зрелые, финиш длинный.",
+    "grapeVarieties": [
+      "Sangiovese (50%)",
+      "Merlot (50%)"
+    ],
+    "sweetness": "сухое",
+    "comments": [
+      "Бленд двух великих хозяйств — Avignonesi и Capannelle; выдерживается в барриках около 24 месяцев и выпускается ограниченным тиражом."
+    ],
+    "reference_info": "",
+    "updated_at": "2025-12-28T10:23:45.212Z",
+    "update_source": "json",
+    "ingredients": [],
+    "allergens": [],
+    "category": "coravin",
+    "region": "Тоскана",
+    "alcoholContent": null
+  },
+  {
+    "id": "0615",
+    "menu": "Вино",
+    "section": "Coravin — Белые вина",
+    "title": "«Oasi Mantellina», Lugana, Allegrini",
+    "description": "Белое вино из региона Лаго ди Гарда, обладающее ярким ароматом жасмина, белого персика, бергамота и лимонной цедры; вкус свежий, сочный и продолжительный с нотами цитрусовых и зрелых фруктов, лёгкой минеральностью и солоноватостью.",
+    "origin": "Италия, Ломбардия (аппелласьон Lugana).",
+    "producer": "Allegrini.",
+    "tags": [
+      "Италия",
+      "сухое",
+      "белое",
+      "легкое",
+      "аперитив"
+    ],
+    "pairings": {
+      "dishes": [
+        "суши и сашими",
+        "паста с морепродуктами",
+        "салат из морепродуктов",
+        "вегетарианские кускусы со специями",
+        "солёная рыба"
+      ],
+      "notes": [
+        "Свежесть и яркая ароматика делают его идеальным для блюд из рыбы и морепродуктов, азиатской кухни и лёгких салатов; избегайте тяжёлых сливочных соусов."
+      ],
+      "drinks": [],
+      "wines": []
+    },
+    "image": {
+      "src": "../images/wine/vino-oasi-mantellina-lugana-allegrini.webp",
+      "alt": "«Oasi Mantellina», Lugana, Allegrini"
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Wine",
+        "section-en": "Coravin – White Wines",
+        "title-en": "Oasi Mantellina, Lugana | Allegrini",
+        "description-en": "White wine from the Lake Garda region, featuring bright aromas of jasmine, white peach, bergamot, and lemon zest; the taste is fresh, juicy, and long-lasting with notes of citrus and ripe fruits, light minerality and saltiness.",
+        "contains-en": "",
+        "allergens-en": "",
+        "tags-en": "Italy, dry, white, light, aperitif",
+        "audio-en": "../audio/wine/oasi-mantellina-lugana-allegrini.mp3",
+        "comments-en": "The wine is made from the Turbiana (Lugana) grape variety with residual sugar of about 1.4 g/l, aged on lees, which gives it fullness of taste.",
+        "useful phrases & words": [
+          "Lugana — pronounced 'loo-GAH-nah', prestigious white wine region near Lake Garda",
+          "fresh and aromatic — key descriptors",
+          "pairs beautifully with seafood — classic pairing",
+          "aged on lees — contributes to texture",
+          "light minerality — important characteristic",
+          "Would you like to try our Lugana? It's fresh and pairs perfectly with seafood and Asian dishes."
+        ]
+      }
+    },
+    "status": "в архиве",
+    "source_file": "vino.html",
+    "features": "Ароматы жасмина, белого персика, бергамота, лимонной цедры, крыжовника и трав; во вкусе — персик, ананас, мандарин, манго, дыня и зелёный миндаль; высокая кислотность, лёгкая солёность и длинное послевкусие.",
+    "grapeVarieties": [
+      "Turbiana",
+      "Cortese"
+    ],
+    "sweetness": "сухое",
+    "comments": [
+      "Вино из сорта Турбиана (Лугана) с остаточным сахаром около 1,4 г/л, выдерживается на дрожжевом осадке, что придаёт полноту вкуса."
+    ],
+    "reference_info": "",
+    "updated_at": "2025-12-28T10:24:13.784Z",
+    "update_source": "json",
+    "ingredients": [],
+    "allergens": [],
+    "category": "coravin",
+    "region": "Ломбардия (аппелласьон Lugana)",
+    "alcoholContent": null
+  },
+  {
+    "id": "0617",
+    "menu": "Вино",
+    "section": "Coravin — Розовые вина",
+    "section_icon": {
+      "type": "",
+      "src": "",
+      "alt": ""
+    },
+    "title": "«Tavel», E. Guigal",
+    "description": "Принц французских розовых вин из долины Роны, обладающий чистым, глубоким лососево‑розовым цветом; аромат элегантных цветочных и фруктовых нот; вкус насыщенный, структурированный, с приятной кислотностью, ароматной ягодной сладостью и телом, напоминающим фиалки и табак.",
+    "origin": "Франция, Долина Роны (апелласьон Тавель).",
+    "producer": "Гигаль (Guigal).",
+    "tags": [
+      "Франция",
+      "сухое",
+      "розовое",
+      "полнотелое",
+      "аперитив"
+    ],
+    "pairings": {
+      "dishes": [
+        "закуски и стартеры",
+        "рыба и морепродукты",
+        "холодные мясные нарезки",
+        "гриль и паэлья"
+      ],
+      "notes": [
+        "Тяжёлая текстура делает его идеальным к пряным рыбным блюдам, курице, грилю и паэлье; избегайте очень сладких десертов."
+      ]
+    },
+    "image": {
+      "src": "../images/wine/vino-tavel-e-guigal.webp",
+      "alt": "«Tavel», E. Guigal"
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Wine",
+        "section-en": "Coravin – Rosé Wines",
+        "title-en": "Tavel | E. Guigal",
+        "description-en": "The prince of French rosé wines from the Rhône Valley, having a pure, deep salmon-pink color; aromas of elegant floral and fruity notes; the taste is rich, structured, with pleasant acidity, aromatic berry sweetness, and a body reminiscent of violets and tobacco.",
+        "contains-en": "",
+        "allergens-en": "",
+        "tags-en": "France, dry, rosé, full-bodied, aperitif",
+        "audio-en": "../audio/wine/vino-tavel-e-guigal.mp3",
+        "comments-en": "Tavel is the only dry rosé appellation in the Rhône Valley; the blend consists of Grenache, Cinsault, Cleret, Syrah, and other varieties.",
+        "useful phrases & words": [
+          "Tavel — pronounced 'tah-VEHL', prestigious rosé appellation in Rhône Valley",
+          "full-bodied rosé — unique characteristic, most rosés are light",
+          "pairs beautifully with grilled dishes — classic pairing",
+          "structured and rich — key descriptors",
+          "dry rosé — unique in Rhône Valley",
+          "Would you like to try our Tavel? It's a full-bodied rosé and pairs perfectly with grilled dishes."
+        ]
+      }
+    },
+    "status": "актуально",
+    "source_file": "vino.html",
+    "features": "Ароматы цветков, ягод и лёгкие нотки фиалки и табака; вкус фруктовый, хорошо структурированный, с балансом между кислотностью и мясистостью; финиш длинный и ароматный.",
+    "grapeVarieties": [
+      "Grenache (50%)",
+      "Cinsault (15%)",
+      "Cleret (10%)",
+      "Syrah (10%)"
+    ],
+    "sweetness": "сухое",
+    "comments": [
+      "Tavel — единственный сухой розовый апелласьон долины Роны; купаж состоит из Гренаша, Синсо, Клеретт, Сира и других сортов."
+    ],
+    "reference_info": "",
+    "updated_at": "2025-02-12T18:30:00+03:00",
+    "update_source": "json",
+    "category": "coravin",
+    "region": "Долина Роны (апелласьон Тавель)",
+    "alcoholContent": null
+  },
+  {
+    "id": "0630",
+    "menu": "Вино",
+    "section": "Coravin — Белые вина",
+    "section_icon": {
+      "type": "",
+      "src": "",
+      "alt": ""
+    },
+    "title": "Gavi del Comune di Tassarolo, Marchese Luca Spinola",
+    "description": "Элегантное белое вино из Пьемонта, произведённое из сорта Кортезе; обладает свежим ароматом цитрусовых, зелёного яблока и миндаля; вкус минеральный, сбалансированный и чистый, с приятной кислотностью и долгим послевкусием.",
+    "origin": "Италия, Пьемонт (апелласьон Gavi).",
+    "producer": "Marchese Luca Spinola.",
+    "tags": [
+      "Италия",
+      "сухое",
+      "белое",
+      "легкое",
+      "аперитив"
+    ],
+    "pairings": {
+      "dishes": [
+        "рыба и морепродукты",
+        "лёгкие салаты",
+        "паста с морепродуктами",
+        "белое мясо",
+        "суши и сашими",
+        "молодые сыры"
+      ],
+      "notes": [
+        "Идеально к лёгким блюдам из рыбы и морепродуктов, салатам и белой рыбе; избегайте тяжёлых сливочных соусов и жирных блюд."
+      ]
+    },
+    "image": {
+      "src": "../images/wine/vino-gavi-del-comune-di-tassarolo-marchese-luca-spinola.webp",
+      "alt": "Gavi del Comune di Tassarolo, Marchese Luca Spinola"
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Wine",
+        "section-en": "Coravin – White Wines",
+        "title-en": "Gavi del Comune di Tassarolo, Marchese Luca Spinola",
+        "description-en": "Elegant white wine from Piedmont, made from the Cortese grape variety; features fresh aromas of citrus, green apple, and almond; the taste is mineral, balanced and clean, with pleasant acidity and a long finish.",
+        "contains-en": "",
+        "allergens-en": "",
+        "tags-en": "Italy, dry, white, light, aperitif",
+        "audio-en": "../audio/wine/gavi-del-comune-di-tassarolo-marchese-luca-spinola.mp3",
+        "comments-en": "Gavi is one of Italy's most famous white wines, produced from the Cortese grape variety in Piedmont.",
+        "useful phrases & words": [
+          "Gavi — pronounced 'GAH-vee', one of Italy's most prestigious white wine regions",
+          "Cortese — the grape variety used exclusively in Gavi wines",
+          "crisp and mineral — key descriptors for Gavi wines",
+          "pairs beautifully with seafood — classic pairing for Gavi",
+          "light-bodied and refreshing — typical characteristics",
+          "Would you like to try a glass of our Gavi? It's excellent with seafood dishes."
+        ]
+      }
+    },
+    "status": "актуально",
+    "source_file": "vino.html",
+    "features": "Ароматы цитрусовых, зелёного яблока, миндаля и лёгкие минеральные ноты; вкус свежий и чистый, с хорошей кислотностью и долгим минеральным послевкусием.",
+    "grapeVarieties": [
+      "Cortese (100%)"
+    ],
+    "sweetness": "сухое",
+    "comments": [
+      "Gavi — одно из самых известных белых вин Италии, производится из сорта Кортезе в Пьемонте. Вино отличается свежестью, минеральностью и элегантностью, идеально подходит для аперитива и лёгких блюд."
+    ],
+    "reference_info": "",
+    "updated_at": "2025-02-12T18:30:00+03:00",
+    "update_source": "json",
+    "category": "coravin",
+    "region": "Пьемонт (апелласьон Gavi)",
+    "alcoholContent": null
+  },
+  {
+    "id": "0631",
+    "menu": "Вино",
+    "section": "Coravin — Белые вина",
+    "section_icon": {
+      "type": "",
+      "src": "",
+      "alt": ""
+    },
+    "title": "Bourgogne Aligote, Domaine Jean-Charles Rion",
+    "description": "Свежее и яркое белое вино из Бургундии, изготовленное из сорта Алиготе; обладает ароматом лимона, зелёного яблока и белых цветов; вкус живой, с высокой кислотностью, минеральностью и освежающим финишем.",
+    "origin": "Франция, Бургундия.",
+    "producer": "Domaine Jean-Charles Rion.",
+    "tags": [
+      "Франция",
+      "сухое",
+      "белое",
+      "легкое",
+      "аперитив"
+    ],
+    "pairings": {
+      "dishes": [
+        "устрицы и морепродукты",
+        "лёгкие закуски",
+        "рыба на пару",
+        "козьи сыры"
+      ],
+      "notes": [
+        "Классическое вино для аперитива и лёгких блюд; идеально к устрицам и морепродуктам."
+      ]
+    },
+    "image": {
+      "src": "../images/wine/vino-bourgogne-aligote-domaine-jean-charles-rion.webp",
+      "alt": "Bourgogne Aligote, Domaine Jean-Charles Rion"
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Wine",
+        "section-en": "Coravin – White Wines",
+        "title-en": "Bourgogne Aligote, Domaine Jean-Charles Rion",
+        "description-en": "Fresh and vibrant white wine from Burgundy, made from the Aligote grape variety; features aromas of lemon, green apple, and white flowers; the taste is lively, with high acidity, minerality, and a refreshing finish.",
+        "contains-en": "",
+        "allergens-en": "",
+        "tags-en": "France, dry, white, light, aperitif",
+        "audio-en": "../audio/wine/bourgogne-aligote-domaine-jean-charles-rion.mp3",
+        "comments-en": "Aligote is a traditional Burgundian grape variety, known for its freshness and high acidity. A classic aperitif wine, especially popular when paired with oysters.",
+        "useful phrases & words": [
+          "Aligote — pronounced 'ah-lee-go-TAY', a traditional Burgundian grape variety",
+          "high acidity — key characteristic of Aligote wines",
+          "classic aperitif wine — typical use for Aligote",
+          "pairs perfectly with oysters — traditional Burgundian pairing",
+          "crisp and refreshing — typical descriptors",
+          "Would you like a glass of Aligote to start? It's excellent as an aperitif, especially with oysters."
+        ]
+      }
+    },
+    "status": "актуально",
+    "source_file": "vino.html",
+    "features": "Ароматы лимона, зелёного яблока, белых цветов и лёгкие минеральные ноты; вкус свежий и живой, с высокой кислотностью и освежающим минеральным финишем.",
+    "grapeVarieties": [
+      "Aligote (100%)"
+    ],
+    "sweetness": "сухое",
+    "comments": [
+      "Алиготе — традиционный бургундский сорт, известный своей свежестью и высокой кислотностью. Классическое вино для аперитива, особенно популярно в сочетании с устрицами."
+    ],
+    "reference_info": "",
+    "updated_at": "2025-02-12T18:30:00+03:00",
+    "update_source": "json",
+    "category": "coravin",
+    "region": "Бургундия",
+    "alcoholContent": null
+  },
+  {
+    "id": "0616",
+    "menu": "Вино",
+    "section": "Coravin — Белые вина",
+    "section_icon": {
+      "type": "",
+      "src": "",
+      "alt": ""
+    },
+    "title": "Bourgogne Hautes Cotes De Nuits, Manuel Olivier",
+    "description": "Бургундское белое вино из высокогорных виноградников Верхнего Кот-де-Нюи, произведённое из Шардоне; аромат груши, белого персика, цветов и миндаля; вкус элегантный, с хорошей кислотностью, минеральностью и длительным послевкусием.",
+    "origin": "Франция, Бургундия.",
+    "producer": "Domaine Manuel Olivier.",
+    "tags": [
+      "Франция",
+      "сухое",
+      "белое",
+      "среднетелое",
+      "аперитив"
+    ],
+    "pairings": {
+      "dishes": [
+        "рыба и морепродукты",
+        "птица в сливочном соусе",
+        "паста с соусом бешамель",
+        "сливочные сыры"
+      ],
+      "notes": [
+        "Лёгкая минеральность и элегантность подходят к блюдам в сливочном соусе и мягким сырам."
+      ]
+    },
+    "image": {
+      "src": "../images/wine/vino-bourgogne-hautes-cotes-de-nuits-manuel-olivier.webp",
+      "alt": "Bourgogne Hautes Cotes De Nuits, Manuel Olivier"
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Wine",
+        "section-en": "Coravin – White Wines",
+        "title-en": "Bourgogne Hautes Cotes De Nuits, Manuel Olivier",
+        "description-en": "Burgundian white wine from the high-altitude vineyards of Hautes-Cotes de Nuits, made from Chardonnay; features aromas of pear, white peach, flowers, and almond; the taste is elegant, with good acidity, minerality, and a long finish.",
+        "contains-en": "",
+        "allergens-en": "",
+        "tags-en": "France, dry, white, medium-bodied, aperitif",
+        "audio-en": "../audio/wine/bourgogne-hautes-cotes-de-nuits-manuel-olivier.mp3",
+        "comments-en": "This wine is produced from grapes grown in the high-altitude vineyards of Hautes-Cotes de Nuits; it's distinguished by its freshness and elegance. Partially aged on lees for a creamy texture.",
+        "useful phrases & words": [
+          "Hautes-Cotes de Nuits — pronounced 'OHT kote de NWEE', high-altitude vineyards in Burgundy",
+          "elegant and balanced — key descriptors for this Chardonnay",
+          "creamy texture — from aging on lees",
+          "pairs well with fish and seafood — classic pairing",
+          "minerality — important characteristic",
+          "Would you like to try our Burgundy Chardonnay? It's elegant and pairs beautifully with fish dishes."
+        ]
+      }
+    },
+    "status": "актуально",
+    "source_file": "vino.html",
+    "features": "Ароматы груши, белого персика, цветов и миндаля; вкус элегантный и сбалансированный, с хорошей кислотностью, минеральностью и длительным послевкусием.",
+    "grapeVarieties": [
+      "Chardonnay (100%)"
+    ],
+    "sweetness": "сухое",
+    "comments": [
+      "Вино производится из винограда с высокогорных виноградников Верхнего Кот-де-Нюи; отличается свежестью и элегантностью. Частично выдерживается на дрожжевом осадке для кремовой текстуры."
+    ],
+    "reference_info": "",
+    "updated_at": "2025-02-12T18:30:00+03:00",
+    "update_source": "json",
+    "category": "coravin",
+    "region": "Бургундия",
+    "alcoholContent": null
+  },
+  {
+    "id": "0633",
+    "menu": "Вино",
+    "section": "Coravin — Красные вина",
+    "section_icon": {
+      "type": "",
+      "src": "",
+      "alt": ""
+    },
+    "title": "Chateau Falfas",
+    "description": "Бордоское красное вино из долины Бур, произведённое из классических сортов Бордо; аромат чёрной смородины, вишни, табака и специй; вкус полнотелый, структурированный, с зрелыми танинами и длительным послевкусием.",
+    "origin": "Франция, Бордо (долина Бур).",
+    "producer": "Chateau Falfas.",
+    "tags": [
+      "Франция",
+      "сухое",
+      "красное",
+      "полнотелое",
+      "танинное"
+    ],
+    "pairings": {
+      "dishes": [
+        "стейки и красное мясо",
+        "баранина и телятина",
+        "тушёные мясные блюда",
+        "выдержанные сыры"
+      ],
+      "notes": [
+        "Идеально сочетается с мясными блюдами и выдержанными сырами; избегайте лёгких блюд и морепродуктов."
+      ]
+    },
+    "image": {
+      "src": "../images/wine/vino-chateau-falfas.webp",
+      "alt": "Chateau Falfas"
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Wine",
+        "section-en": "Coravin – Red Wines",
+        "title-en": "Chateau Falfas",
+        "description-en": "Bordeaux red wine from the Cotes de Bourg, made from classic Bordeaux grape varieties; features aromas of blackcurrant, cherry, tobacco, and spices; the taste is full-bodied, structured, with mature tannins and a long finish.",
+        "contains-en": "",
+        "allergens-en": "",
+        "tags-en": "France, dry, red, full-bodied, tannic",
+        "audio-en": "../audio/wine/chateau-falfas.mp3",
+        "comments-en": "Classic Bordeaux wine from Cotes de Bourg, aged in oak barrels. A blend of traditional Bordeaux varieties: Merlot, Cabernet Sauvignon, and Cabernet Franc.",
+        "useful phrases & words": [
+          "Cotes de Bourg — pronounced 'kote de BOOR', a sub-region of Bordeaux",
+          "full-bodied and structured — key descriptors for this wine",
+          "mature tannins — indicates readiness to drink",
+          "pairs beautifully with red meat — classic Bordeaux pairing",
+          "aged in oak barrels — traditional Bordeaux winemaking",
+          "Would you like to try our Bordeaux? It's full-bodied and pairs excellently with steak."
+        ]
+      }
+    },
+    "status": "актуально",
+    "source_file": "vino.html",
+    "features": "Ароматы чёрной смородины, вишни, табака и специй; вкус полнотелый и структурированный, с зрелыми танинами, нотами ванили и длительным послевкусием.",
+    "grapeVarieties": [
+      "Merlot",
+      "Cabernet Sauvignon",
+      "Cabernet Franc"
+    ],
+    "sweetness": "сухое",
+    "comments": [
+      "Классическое бордоское вино из долины Бур, выдерживается в дубовых бочках. Смесь традиционных бордоских сортов: Мерло, Каберне Совиньон и Каберне Фран."
+    ],
+    "reference_info": "",
+    "updated_at": "2025-02-12T18:30:00+03:00",
+    "update_source": "json",
+    "category": "coravin",
+    "region": "Бордо (долина Бур)",
+    "alcoholContent": null
+  },
+  {
+    "id": "0634",
+    "menu": "Вино",
+    "section": "Coravin — Красные вина",
+    "section_icon": {
+      "type": "",
+      "src": "",
+      "alt": ""
+    },
+    "title": "Volnay, Rossignol-Cornu & Fils",
+    "description": "Элегантное бургундское красное вино из коммуны Вольне, произведённое из Пино Нуар; аромат красных ягод, вишни, фиалки и специй; вкус изысканный, бархатистый, с мягкими танинами, минеральностью и длительным послевкусием.",
+    "origin": "Франция, Бургундия (коммуна Вольне).",
+    "producer": "Rossignol-Cornu & Fils.",
+    "tags": [
+      "Франция",
+      "сухое",
+      "красное",
+      "среднетелое",
+      "элегантное"
+    ],
+    "pairings": {
+      "dishes": [
+        "жареная птица",
+        "утка и индейка",
+        "грибы",
+        "гриль-овощи",
+        "мягкие сыры"
+      ],
+      "notes": [
+        "Идеально с лёгкими мясными блюдами и птицей; избегайте очень тяжёлых и пряных блюд."
+      ]
+    },
+    "image": {
+      "src": "../images/wine/vino-volnay-rossignol-cornu-fils.webp",
+      "alt": "Volnay, Rossignol-Cornu & Fils"
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Wine",
+        "section-en": "Coravin – Red Wines",
+        "title-en": "Volnay, Rossignol-Cornu & Fils",
+        "description-en": "Elegant Burgundian red wine from the Volnay commune, made from Pinot Noir; features aromas of red berries, cherry, violet, and spices; the taste is refined, velvety, with soft tannins, minerality, and a long finish.",
+        "contains-en": "",
+        "allergens-en": "",
+        "tags-en": "France, dry, red, medium-bodied, elegant",
+        "audio-en": "../audio/wine/volnay-rossignol-cornu-fils.mp3",
+        "comments-en": "Volnay is one of the most elegant communes in Burgundy, known for its refined Pinot Noir wines. Volnay wines are distinguished by their finesse, velvety texture, and minerality.",
+        "useful phrases & words": [
+          "Volnay — pronounced 'vohl-NAY', one of Burgundy's most elegant communes",
+          "elegant and refined — key descriptors for Volnay wines",
+          "velvety texture — typical characteristic",
+          "pairs beautifully with poultry and game — classic pairing",
+          "soft tannins — indicates finesse",
+          "Would you like to try our Volnay? It's elegant and pairs wonderfully with duck or poultry."
+        ]
+      }
+    },
+    "status": "актуально",
+    "source_file": "vino.html",
+    "features": "Ароматы красных ягод, вишни, фиалки и специй; вкус элегантный и бархатистый, с мягкими танинами, минеральностью и длительным фруктовым послевкусием.",
+    "grapeVarieties": [
+      "Pinot Noir (100%)"
+    ],
+    "sweetness": "сухое",
+    "comments": [
+      "Вольне — одна из самых элегантных коммун Бургундии, известная своими изысканными винами из Пино Нуар. Вина Вольне отличаются утончённостью, бархатистостью и минеральностью."
+    ],
+    "reference_info": "",
+    "updated_at": "2025-02-12T18:30:00+03:00",
+    "update_source": "json",
+    "category": "coravin",
+    "region": "Бургундия (коммуна Вольне)",
+    "alcoholContent": null
+  },
+  {
+    "id": "0635",
+    "menu": "Вино",
+    "section": "Coravin — Красные вина",
+    "section_icon": {
+      "type": "",
+      "src": "",
+      "alt": ""
+    },
+    "title": "«Baffonero», Rocca di Frassinello",
+    "description": "Премиальное тосканское красное вино, произведённое из сорта Мерло; глубокий рубиновый цвет; аромат спелых красных фруктов, чернослива, ванили и специй; вкус мощный, бархатистый, с плотными танинами, нотами шоколада и длительным послевкусием.",
+    "origin": "Италия, Тоскана.",
+    "producer": "Rocca di Frassinello.",
+    "tags": [
+      "Италия",
+      "сухое",
+      "красное",
+      "полнотелое",
+      "танинное"
+    ],
+    "pairings": {
+      "dishes": [
+        "стейки и красное мясо",
+        "дичь",
+        "тушёные мясные блюда",
+        "выдержанные сыры"
+      ],
+      "notes": [
+        "Вино требует насыщенной кухни: мясо на гриле, томлёные блюда и выдержанные сыры; избегайте лёгких закусок."
+      ]
+    },
+    "image": {
+      "src": "../images/wine/vino-baffonero-rocca-di-frassinello.webp",
+      "alt": "«Baffonero», Rocca di Frassinello"
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Wine",
+        "section-en": "Coravin – Red Wines",
+        "title-en": "Baffonero, Rocca di Frassinello",
+        "description-en": "Premium Tuscan red wine, made from Merlot; deep ruby color; features aromas of ripe red fruits, prune, vanilla, and spices; the taste is powerful, velvety, with dense tannins, notes of chocolate, and a long finish.",
+        "contains-en": "",
+        "allergens-en": "",
+        "tags-en": "Italy, dry, red, full-bodied, tannic",
+        "audio-en": "../audio/wine/baffonero-rocca-di-frassinello.mp3",
+        "comments-en": "Premium wine from Tuscany, aged in new oak barrels; distinguished by its power and complexity. Baffonero is one of the most prestigious wines from Rocca di Frassinello estate, made from 100% Merlot.",
+        "useful phrases & words": [
+          "Baffonero — premium Tuscan wine from Rocca di Frassinello estate",
+          "100% Merlot — single varietal wine",
+          "powerful and complex — key descriptors",
+          "aged in new oak barrels — contributes to structure",
+          "pairs excellently with grilled meats — classic pairing",
+          "Would you like to try our premium Tuscan Merlot? It's powerful and pairs beautifully with steak or game."
+        ]
+      }
+    },
+    "status": "актуально",
+    "source_file": "vino.html",
+    "features": "Ароматы спелых красных фруктов, чернослива, ванили, специй и шоколада; вкус мощный и бархатистый, с плотными танинами и долгим послевкусием.",
+    "grapeVarieties": [
+      "Merlot (100%)"
+    ],
+    "sweetness": "сухое",
+    "comments": [
+      "Премиальное вино из Тосканы, выдерживается в новых дубовых бочках; отличается мощью и сложностью. Baffonero — одно из самых престижных вин хозяйства Rocca di Frassinello, производится из 100% Мерло."
+    ],
+    "reference_info": "",
+    "updated_at": "2025-02-12T18:30:00+03:00",
+    "update_source": "json",
+    "category": "coravin",
+    "region": "Тоскана",
+    "alcoholContent": null
+  },
+  {
+    "id": "0618",
+    "menu": "Вино",
+    "section": "Полубутылки (375 мл) — Шампанское",
+    "section_icon": {
+      "type": "",
+      "src": "",
+      "alt": ""
+    },
+    "title": "Piper-Heidsieck White Brut",
+    "description": "Классическое шампанское с изящным ароматом груши, белого персика, цитрусов и цветов апельсина; во вкусе раскрываются нюансы тостового хлеба, свежего миндаля и мяты; вино свежее, элегантное и гармоничное, с тонким перляжем.",
+    "origin": "Франция, Шампань.",
+    "producer": "Piper-Heidsieck (Пайпер-Хайдсик).",
+    "tags": [
+      "Франция",
+      "brut",
+      "белое",
+      "аперитив"
+    ],
+    "pairings": {
+      "dishes": [
+        "легкие закуски (стейк тартар)",
+        "молодой сыр комте",
+        "цветки кабачков с фетой",
+        "тальятелле с королевскими креветками"
+      ],
+      "notes": [
+        "Идеально для торжеств: сочетайте с лёгкими закусками, молодым сыром и морепродуктами; избегайте тяжёлых мясных блюд."
+      ]
+    },
+    "image": {
+      "src": "../images/wine/vino-piper-heidsieck-white-brut.webp",
+      "alt": "Piper-Heidsieck White Brut"
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Wine",
+        "section-en": "Half Bottles (375 ml) – Champagne",
+        "title-en": "Piper-Heidsieck White Brut",
+        "description-en": "Classic Champagne with elegant aromas of pear, white peach, citrus, and orange blossoms; on the palate, nuances of toast, fresh almond, and mint are revealed; the wine is fresh, elegant, and harmonious, with fine perlage.",
+        "contains-en": "",
+        "allergens-en": "",
+        "tags-en": "France, brut, white, aperitif",
+        "audio-en": "../audio/wine/vino-piper-heidsieck-white-brut.mp3",
+        "comments-en": "Classic Champagne cuvée, aged on lees for at least 24 months; dosage around 8 g/l.",
+        "useful phrases & words": [
+          "Piper-Heidsieck — pronounced 'PEE-per HIDE-sik', prestigious Champagne house",
+          "brut — dry style Champagne",
+          "fine perlage — delicate bubbles",
+          "pairs beautifully with light appetizers — classic pairing",
+          "aged on lees — contributes to complexity",
+          "Would you like to start with a glass of Champagne? It's perfect for celebrations and pairs beautifully with light appetizers."
+        ]
+      }
+    },
+    "status": "актуально",
+    "source_file": "vino.html",
+    "features": "Ароматы груши, белого персика, цитрусов и цветков апельсина; вкус показывает тостовый хлеб, свежий миндаль и мяту; утончённые пузырьки и долгий, свежий финиш.",
+    "grapeVarieties": [
+      "Chardonnay",
+      "Pinot Noir",
+      "Pinot Meunier"
+    ],
+    "sweetness": "brut",
+    "comments": [
+      "Кюве Брут — многовинтажное шампанское, выдерживается на осадке не менее 24 месяцев; дозировка около 8 г/л."
+    ],
+    "reference_info": "",
+    "updated_at": "2025-02-12T18:30:00+03:00",
+    "update_source": "json",
+    "category": "half-bottles",
+    "region": "Шампань",
+    "alcoholContent": null
+  },
+  {
+    "id": "0619",
+    "menu": "Вино",
+    "section": "Полубутылки (375 мл) — Красные вина",
+    "section_icon": {
+      "type": "",
+      "src": "",
+      "alt": ""
+    },
+    "title": "Speri, Valpolicella Classico",
+    "description": "Молодое и лёгкое красное вино из Венето с рубиновым цветом и фиолетовыми отблесками; аромат фиалки и черешни; вкус свежий, фруктовый и среднетелый с мягкими танинами — идеален для питья молодым.",
+    "origin": "Италия, Венето (апелласьон Вальполичелла).",
+    "producer": "Speri.",
+    "tags": [
+      "Италия",
+      "сухое",
+      "красное",
+      "легкое",
+      "мягкое"
+    ],
+    "pairings": {
+      "dishes": [
+        "антипасти и закуски",
+        "супы и паста",
+        "пицца и средиземноморские блюда"
+      ],
+      "notes": [
+        "Отлично подходит к лёгким закускам, первым блюдам и пасте; избегайте тяжёлого красного мяса и пряных блюд."
+      ]
+    },
+    "image": {
+      "src": "../images/wine/vino-speri-valpolicella-classico.webp",
+      "alt": "Speri, Valpolicella Classico"
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Wine",
+        "section-en": "Half Bottles (375 ml) – Red Wines",
+        "title-en": "Speri, Valpolicella Classico",
+        "description-en": "Young and light red wine from Veneto with ruby color and purple highlights; aromas of violet and cherry; the taste is fresh, fruity, and medium-bodied with soft tannins — ideal for drinking young.",
+        "contains-en": "",
+        "allergens-en": "",
+        "tags-en": "Italy, dry, red, light, soft",
+        "audio-en": "../audio/wine/vino-speri-valpolicella-classico.mp3",
+        "comments-en": "A blend of traditional varieties Corvina, Rondinella, and Molinara; low residual sugar content (≈3.7 g/l).",
+        "useful phrases & words": [
+          "Valpolicella — pronounced 'vahl-poh-lee-CHEH-lah', classic Italian red wine region",
+          "light and fruity — key descriptors",
+          "pairs well with pasta and pizza — classic pairing",
+          "soft tannins — indicates easy drinking",
+          "ideal for drinking young — best consumed within a few years",
+          "Would you like to try our Valpolicella? It's light and pairs beautifully with pasta dishes."
+        ]
+      }
+    },
+    "status": "актуально",
+    "source_file": "vino.html",
+    "features": "Интенсивный винный аромат с нотами фиалки и черешни; вкус свежий и фруктовый, среднее тело, мягкие танины.",
+    "grapeVarieties": [
+      "Corvina (60%)",
+      "Rondinella (30%)",
+      "Molinara (10%)"
+    ],
+    "sweetness": "сухое",
+    "comments": [
+      "Смесь традиционных сортов Корвина, Рондниелла и Молинара; низкое содержание остаточного сахара (≈3,7 г/л)."
+    ],
+    "reference_info": "",
+    "updated_at": "2025-02-12T18:30:00+03:00",
+    "update_source": "json",
+    "category": "half-bottles",
+    "region": "Венето (апелласьон Вальполичелла)",
+    "alcoholContent": null
+  },
+  {
+    "id": "0620",
+    "menu": "Вино",
+    "section": "Полубутылки (375 мл) — Красные вина",
+    "section_icon": {
+      "type": "",
+      "src": "",
+      "alt": ""
+    },
+    "title": "Domaine Masson-Blondelet, Sancerre Rouge \"Thauvenay",
+    "description": "Легкий красный Сансер из Пино Нуар, характеризуется свежестью и ароматами красных ягод, вишни и спелых фруктов; элегантная структура с нотами дымчатого кремня, мягкими танинами и минеральным подтоном.",
+    "origin": "Франция, Долина Луары (апелласьон Сансер).",
+    "producer": "Domaine Masson-Blondelet.",
+    "tags": [
+      "Франция",
+      "сухое",
+      "красное",
+      "легкое",
+      "мягкое"
+    ],
+    "pairings": {
+      "dishes": [
+        "свиная вырезка",
+        "птица (цесарка, курица)",
+        "паштет и колбасы",
+        "гриль‑овощи",
+        "мягкие сыры"
+      ],
+      "notes": [
+        "Этот деликатный Пино Нуар подходит к белому мясу, птице и лёгким грибным блюдам; избегайте тяжёлых соусов и очень пряных блюд."
+      ]
+    },
+    "image": {
+      "src": "../images/wine/vino-domaine-masson-blondelet-sancerre-rouge-thauvenay.webp",
+      "alt": "Domaine Masson-Blondelet, Sancerre Rouge \"Thauvenay"
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Wine",
+        "section-en": "Half Bottles (375 ml) – Red Wines",
+        "title-en": "Domaine Masson-Blondelet, Sancerre Rouge \"Thauvenay\"",
+        "description-en": "Light red Sancerre from Pinot Noir, characterized by freshness and aromas of red berries, cherry, and ripe fruits; elegant structure with notes of smoky flint, soft tannins, and a mineral undertone.",
+        "contains-en": "",
+        "allergens-en": "",
+        "tags-en": "France, dry, red, light, soft",
+        "audio-en": "../audio/wine/vino-domaine-masson-blondelet-sancerre-rouge-thauvenay.mp3",
+        "comments-en": "The wine comes from the village of Thauvenay in Sancerre and demonstrates the classic Pinot Noir style of the Loire Valley.",
+        "useful phrases & words": [
+          "Sancerre Rouge — pronounced 'sahn-SEHR roozh', red wine from Sancerre (more famous for white)",
+          "light and elegant — key descriptors",
+          "pairs beautifully with poultry — classic pairing",
+          "mineral undertone — typical of Sancerre",
+          "soft tannins — indicates finesse",
+          "Would you like to try our Sancerre Rouge? It's elegant and pairs perfectly with poultry dishes."
+        ]
+      }
+    },
+    "status": "актуально",
+    "source_file": "vino.html",
+    "features": "Нос раскрывает красные фрукты, вишню, оттенки дыма и кремня; вкус лёгкий, но структурированный, с голубикой, черешней и минеральностью; танины мягкие, финиш элегантный.",
+    "grapeVarieties": [
+      "Pinot Noir (100%)"
+    ],
+    "sweetness": "сухое",
+    "comments": [
+      "Вино происходит из деревни Тоаванэ в Сансере и демонстрирует классический стиль Пино Нуар долины Луары."
+    ],
+    "reference_info": "",
+    "updated_at": "2025-02-12T18:30:00+03:00",
+    "update_source": "json",
+    "category": "half-bottles",
+    "region": "Долина Луары (апелласьон Сансер)",
+    "alcoholContent": null
+  },
+  {
+    "id": "0621",
+    "menu": "Вино",
+    "section": "Полубутылки (375 мл) — Красные вина",
+    "section_icon": {
+      "type": "",
+      "src": "",
+      "alt": ""
+    },
+    "title": "Capannelle, \"Solare”",
+    "description": "Интенсивное темно‑рубиновое тосканское красное вино из Санджовезе и Мальвазии Неры; аромат малины, черешни, табака и тёмного шоколада; вкус минеральный, элегантный, с нотами вяленых ягод, специй, фенхеля и тёмных трав; танины плавные и шелковистые.",
+    "origin": "Италия, Тоскана.",
+    "producer": "Capannelle.",
+    "tags": [
+      "Италия",
+      "сухое",
+      "красное",
+      "полнотелое",
+      "танинное"
+    ],
+    "pairings": {
+      "dishes": [
+        "дичь и тушёное мясо",
+        "жаркое из говядины",
+        "игра (оленина, кабан)",
+        "ароматные сыры"
+      ],
+      "notes": [
+        "Богатый профиль идеально сочетается с мясной дичью, рагу и выдержанными сырами; избегайте лёгких блюд и морепродуктов."
+      ]
+    },
+    "image": {
+      "src": "../images/wine/vino-capannelle-solare.webp",
+      "alt": "Capannelle, \"Solare”"
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Wine",
+        "section-en": "Half Bottles (375 ml) – Red Wines",
+        "title-en": "Capannelle \"Solare\"",
+        "description-en": "Intense dark ruby Tuscan red wine from Sangiovese and Malvasia Nera; aromas of raspberry, cherry, tobacco, and dark chocolate; the taste is mineral, elegant, with notes of dried berries, spices, fennel, and dark herbs; tannins smooth and silky.",
+        "contains-en": "",
+        "allergens-en": "",
+        "tags-en": "Italy, dry, red, full-bodied, tannic",
+        "audio-en": "../audio/wine/capannelle-solare.mp3",
+        "comments-en": "The wine is aged for about 18 months in French barriques and released in limited quantities; each bottle is numbered.",
+        "useful phrases & words": [
+          "Solare — pronounced 'soh-LAH-reh', premium Tuscan wine",
+          "full-bodied and complex — key descriptors",
+          "pairs excellently with game — classic pairing",
+          "aged in French barriques — contributes to complexity",
+          "limited release — exclusive wine",
+          "Would you like to try our premium Tuscan wine? It's full-bodied and pairs beautifully with game dishes."
+        ]
+      }
+    },
+    "status": "в архиве",
+    "source_file": "vino.html",
+    "features": "Насыщенный аромат малины, черешни, табака, шоколада, фенхеля и специй; вкус минеральный и комплексный, со спелыми ягодами, травами и мягкими элегантными танинами; длинное послевкусие.",
+    "grapeVarieties": [
+      "Sangiovese (80%)",
+      "Malvasia Nera (20%)"
+    ],
+    "sweetness": "сухое",
+    "comments": [
+      "Вино выдерживается около 18 месяцев во французских барриках и выпускается ограниченным тиражом; каждая бутылка нумеруется."
+    ],
+    "reference_info": "",
+    "updated_at": "2025-02-12T18:30:00+03:00",
+    "update_source": "json",
+    "category": "half-bottles",
+    "region": "Тоскана",
+    "alcoholContent": null,
+    "allergens": []
+  },
+  {
+    "id": "0622",
+    "menu": "Вино",
+    "section": "Полубутылки (375 мл) — Красные вина",
+    "title": "\"La Reserve d'Angludet\", Margaux",
+    "description": "Второе вино Шато д’Англюде из Марго — гармоничное красное вино с ароматом свежих красных фруктов, клубники и малины, украшенным цветочными и слегка пряными нюансами; вкус элегантный и сбалансированный, с тёмными ягодами, лакрицей, специями и зрелыми танинами.",
+    "origin": "Франция, Бордо (апелласьон Марго).",
+    "producer": "Château d'Angludet (шато д’Англюде).",
+    "tags": [
+      "Франция",
+      "сухое",
+      "красное",
+      "полнотелое",
+      "танинное"
+    ],
+    "pairings": {
+      "dishes": [
+        "жареная говядина и ягнятина",
+        "дикое мясо (оленина",
+        "кабан",
+        "заяц)",
+        "грибные блюда",
+        "выдержанные сыры"
+      ],
+      "notes": [
+        "Подходит к изысканным мясным блюдам и выдержанным сырам; избегайте десертов и лёгких рыбных блюд."
+      ],
+      "drinks": [],
+      "wines": []
+    },
+    "image": {
+      "src": "../images/wine/vino-la-reserve-d-angludet-margaux.webp",
+      "alt": "\"La Reserve d'Angludet\", Margaux"
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Wine",
+        "section-en": "Half Bottles (375 ml) – Red Wines",
+        "title-en": "La Reserve d'Angludet, Margaux",
+        "description-en": "Second wine of Château d'Angludet from Margaux — harmonious red wine with aromas of fresh red fruits, strawberry, and raspberry, adorned with floral and slightly spicy nuances; the taste is elegant and balanced, with dark berries, licorice, spices, and mature tannins.",
+        "contains-en": "",
+        "allergens-en": "",
+        "tags-en": "France, dry, red, full-bodied, tannic",
+        "audio-en": "../audio/wine/la-reserve-dangludet-margaux.mp3",
+        "comments-en": "The wine is produced from young vines (6–15 years) of Château d'Angludet estate; aged in oak and ready to drink young, but has aging potential.",
+        "useful phrases & words": [
+          "Margaux — pronounced 'mahr-GOH', prestigious Bordeaux appellation",
+          "second wine — wine made from younger vines or less selected grapes",
+          "full-bodied and elegant — key descriptors",
+          "pairs beautifully with red meat — classic Bordeaux pairing",
+          "aging potential — can be cellared for several years",
+          "Would you like to try our Margaux? It's elegant and pairs excellently with steak."
+        ]
+      }
+    },
+    "status": "в архиве",
+    "source_file": "vino.html",
+    "features": "Ароматы клубники, малины и чёрной смородины с фиалковыми и пряными оттенками; вкус плотный, с нотами лакрицы, подлеска, ванили и зрелых танинов; финал длительный.",
+    "grapeVarieties": [
+      "Cabernet Sauvignon (50%)",
+      "Merlot (45%)",
+      "Petit Verdot (5%)"
+    ],
+    "sweetness": "сухое",
+    "comments": [
+      "Вино производится из молодых лоз (6–15 лет) поместья Шато д'Англюде; выдерживается в дубе и готово к употреблению молодым, но обладает потенциалом выдержки."
+    ],
+    "reference_info": "",
+    "updated_at": "2025-12-28T12:51:45.759Z",
+    "update_source": "json",
+    "ingredients": [],
+    "allergens": [],
+    "category": "half-bottles",
+    "region": "Бордо (апелласьон Марго)",
+    "alcoholContent": null
+  },
+  {
+    "id": "0623",
+    "menu": "Вино",
+    "section": "Полубутылки (375 мл) — Белые вина",
+    "section_icon": {
+      "type": "",
+      "src": "",
+      "alt": ""
+    },
+    "title": "Brolettino Lugana, Ca dei Frati (полусухое)",
+    "description": "Роскошное белое вино из Ломбардии с ярко‑жёлтым цветом; в аромате спелый персик, жёлтое яблоко, розовые лепестки и свежие бальзамические нотки; вкус свежий, элегантный и солоноватый с долгим финишем; с возрастом появляются тона сена, ванили и миндаля.",
+    "origin": "Италия, Венето (апелласьон Лугана).",
+    "producer": "Ca dei Frati.",
+    "tags": [
+      "Италия",
+      "сухое",
+      "белое",
+      "среднетелое",
+      "аперитив"
+    ],
+    "pairings": {
+      "dishes": [
+        "зимние супы с бобовыми",
+        "паста с белым соусом или морепродуктами",
+        "белое мясо и птица",
+        "полу‑выдержанные сыры",
+        "приготовленная рыба и моллюски"
+      ],
+      "notes": [
+        "Сочетайте с супами, пастой, птицей и нежными сырными блюдами; избегайте тяжёлых красных мяс и острых блюд."
+      ]
+    },
+    "image": {
+      "src": "../images/wine/vino-brolettino-lugana-ca-dei-frati.webp",
+      "alt": "Brolettino Lugana, Ca dei Frati"
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Wine",
+        "section-en": "Half Bottles (375 ml) – White Wines",
+        "title-en": "Brolettino Lugana, Ca dei Frati (off-dry)",
+        "description-en": "Luxurious white wine from Lombardy with bright yellow color; in the aroma, ripe peach, yellow apple, pink petals, and fresh balsamic notes; the taste is fresh, elegant, and salty with a long finish; with age, tones of hay, vanilla, and almond appear.",
+        "contains-en": "",
+        "allergens-en": "",
+        "tags-en": "Italy, dry, white, medium-bodied, aperitif",
+        "audio-en": "../audio/wine/brolettino-lugana-ca-dei-frati.mp3",
+        "comments-en": "Produced from the Turbiana (Trebbiano di Lugana) grape variety, aged on lees; develops in the bottle, showing nutty notes.",
+        "useful phrases & words": [
+          "Lugana — pronounced 'loo-GAH-nah', prestigious white wine region near Lake Garda",
+          "off-dry — slightly sweet style",
+          "pairs beautifully with pasta and seafood — classic pairing",
+          "aged on lees — contributes to texture",
+          "develops in bottle — can be cellared",
+          "Would you like to try our Lugana? It's elegant and pairs perfectly with pasta and seafood dishes."
+        ]
+      }
+    },
+    "status": "актуально",
+    "source_file": "vino.html",
+    "features": "Ароматы спелых персиков, жёлтых яблок, розовых лепестков, сена и ванили; вкус свежий, минеральный, с солоноватой ноткой и длинным, элегантным послевкусием.",
+    "grapeVarieties": [
+      "Turbiana (100%)"
+    ],
+    "sweetness": "сухое",
+    "comments": [
+      "Произведено из сорта Турбиана (Треббиано ди Лугана), выдерживается на осадке; развивается в бутылке, проявляя ореховые оттенки."
+    ],
+    "reference_info": "",
+    "updated_at": "2025-02-12T18:30:00+03:00",
+    "update_source": "json",
+    "category": "half-bottles",
+    "region": "Венето (апелласьон Лугана)",
+    "alcoholContent": null
+  },
+  {
+    "id": "0624",
+    "menu": "Вино",
+    "section": "Полубутылки (375 мл) — Белые вина",
+    "title": "Gavi dei Gavi",
+    "description": "Знаменитое белое вино из Пьемонта с деликатным букетом белых цветов, миндаля и минеральных тонов; вкус яркий и интенсивный, с цитрусовой свежестью, нотами апельсина и солёной минералки; на длинном финише ощущаются кремний, миндаль и грецкий орех.",
+    "origin": "Италия, Пьемонт (апелласьон Гави).",
+    "producer": "La Scolca.",
+    "tags": [
+      "Италия",
+      "сухое",
+      "белое",
+      "легкое",
+      "аперитив"
+    ],
+    "pairings": {
+      "dishes": [
+        "морепродукты и рыба",
+        "устрицы и моллюски",
+        "легкие салаты",
+        "птица на гриле",
+        "вегетарианские блюда"
+      ],
+      "notes": [
+        "Высокая кислотность и минеральность делают его идеальным к рыбе",
+        "морепродуктам",
+        "салатам и лёгкому белому мясу; избегайте тяжёлых сливочных блюд."
+      ],
+      "drinks": [],
+      "wines": []
+    },
+    "image": {
+      "src": "../images/wine/vino-gavi-dei-gavi.webp",
+      "alt": "Gavi dei Gavi"
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Wine",
+        "section-en": "Half Bottles (375 ml) – White Wines",
+        "title-en": "Gavi dei Gavi",
+        "description-en": "Famous white wine from Piedmont with a delicate bouquet of white flowers, almond, and mineral tones; the taste is bright and intense, with citrus freshness, notes of orange, and salty minerality; on the long finish, silicon, almond, and walnut are felt.",
+        "contains-en": "",
+        "allergens-en": "",
+        "tags-en": "Italy, dry, white, light, aperitif",
+        "audio-en": "../audio/wine/vino-gavi-dei-gavi.mp3",
+        "comments-en": "The wine is made from vines over 60 years old of the Cortese variety; strict grape selection ensures a bright mineral character; aging develops notes of flint and nuts.",
+        "useful phrases & words": [
+          "Gavi dei Gavi — pronounced 'GAH-vee day GAH-vee', premium Gavi wine",
+          "bright and mineral — key descriptors",
+          "pairs beautifully with seafood — classic pairing",
+          "old vines — typically produce more concentrated wines",
+          "high acidity — typical characteristic",
+          "Would you like to try our premium Gavi? It's bright and pairs perfectly with seafood."
+        ]
+      }
+    },
+    "status": "актуально",
+    "source_file": "vino.html",
+    "features": "Аромат белых цветов, миндаля и соляных минералов; вкус живой и интенсивный, с апельсиновыми и цитрусовыми нотами, солёной минералкой и нюансами кремния, миндаля и грецкого ореха; финиш свежий и длинный.",
+    "grapeVarieties": [
+      "Cortese (100%)"
+    ],
+    "sweetness": "сухое",
+    "comments": [
+      "Вино из лоз старше 60 лет сорта Кортезе; строгий отбор винограда обеспечивает яркий минеральный характер; выдержка развивает ноты кремня и ореха."
+    ],
+    "reference_info": "",
+    "updated_at": "2025-12-28T12:45:58.678Z",
+    "update_source": "json",
+    "ingredients": [],
+    "allergens": [],
+    "category": "half-bottles",
+    "region": "Пьемонт (апелласьон Гави)",
+    "alcoholContent": null
+  },
+  {
+    "id": "0625",
+    "menu": "Вино",
+    "section": "Бокальные позиции — Игристые вина",
+    "section_icon": {
+      "type": "",
+      "src": "",
+      "alt": ""
+    },
+    "title": "«Yo Wine»",
+    "description": "Испанская кава из Каталонии, произведённая по классическому бутылочному методу; свежий, сухой вкус с нотами зелёного яблока и цитрусов, тонкими хлебными оттенками и чистым, освежающим послевкусием.",
+    "origin": "Испания, Каталония.",
+    "producer": "Barcelona Mediterranean Wine S.L.",
+    "tags": [
+      "Испания",
+      "сухое",
+      "белое",
+      "легкое",
+      "аперитив",
+      "brut"
+    ],
+    "pairings": {
+      "dishes": [
+        "морепродукты и рыба",
+        "устрицы и моллюски",
+        "легкие салаты",
+        "птица на гриле",
+        "вегетарианские блюда"
+      ],
+      "notes": [
+        "Кава — это игристое вино, производимое по классическому бутылочному методу, тому же самому, что используется в Шампани. Ключевая особенность заключается в том, что вторичное брожение проходит не в резервуаре, а непосредственно в бутылке, где вино и набирает давление и сложность."
+      ]
+    },
+    "image": {
+      "src": "../images/zaglushka.webp",
+      "alt": "Yo Wine"
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Wine",
+        "section-en": "Glass Selections – Sparkling Wines",
+        "title-en": "Yo Wine",
+        "description-en": "Spanish Cava from Catalonia, produced using the classic bottle method; fresh, dry taste with notes of green apple and citrus, subtle bread tones, and a clean, refreshing finish.",
+        "contains-en": "",
+        "allergens-en": "",
+        "tags-en": "Spain, dry, white, light, aperitif, brut",
+        "audio-en": "../audio/wine/yo-wine.mp3",
+        "comments-en": "Exclusive Cava Sabor de la Vida, produced specifically for our restaurant. Available in white and rosé versions.",
+        "useful phrases & words": [
+          "Cava — pronounced 'KAH-vah', Spanish sparkling wine",
+          "classic bottle method — same as Champagne (méthode champenoise)",
+          "fresh and dry — key descriptors",
+          "pairs beautifully with seafood — classic pairing",
+          "exclusive to our restaurant — unique offering",
+          "Would you like to try our exclusive Cava? It's fresh and pairs perfectly with seafood."
+        ]
+      }
+    },
+    "status": "актуально",
+    "source_file": "vino.html",
+    "features": "Свежий, сухой вкус с нотами зелёного яблока и цитрусов, тонкими хлебными оттенками и чистым, освежающим послевкусием.",
+    "grapeVarieties": [
+      "Macabeu",
+      "Xarel·lo",
+      "Parellada"
+    ],
+    "sweetness": "сухое",
+    "comments": [
+      "Эксклюзивная кава Sabor de la Vida, произведённая специально для нашего ресторана. Представлена в белой и розовой версиях."
+    ],
+    "reference_info": "",
+    "updated_at": "2025-02-12T18:30:00+03:00",
+    "update_source": "json",
+    "category": "by-glass",
+    "region": "Каталония",
+    "alcoholContent": null
+  },
+  {
+    "id": "0626",
+    "menu": "Вино",
+    "section": "Бокальные позиции — Игристые вина",
+    "section_icon": {
+      "type": "",
+      "src": "",
+      "alt": ""
+    },
+    "title": "Louis Bouillot Cremant de Bourgogne Grand Reserve Brut",
+    "description": "Французское игристое вино из Бургундии, произведённое по классическому бутылочному методу; во вкусе демонстрирует белые фрукты, яблоко, грушу, цитрус и лёгкие хлебные ноты от выдержки на осадке; кислотность свежая, но сбалансированная.",
+    "origin": "Франция, Бургундия.",
+    "producer": "Louis Bouillot",
+    "tags": [
+      "Франция",
+      "сухое",
+      "белое",
+      "легкое",
+      "аперитив",
+      "brut"
+    ],
+    "pairings": {
+      "dishes": [
+        "морепродукты и рыба",
+        "устрицы и моллюски",
+        "легкие салаты",
+        "птица на гриле",
+        "вегетарианские блюда"
+      ],
+      "notes": [
+        "Креман — это французское игристое вино, произведённое по классическому бутылочному методу, но за пределами региона Шампань. По технологии он сопоставим с шампанским, однако отличается стилем, сортами винограда и вкусовым профилем."
+      ]
+    },
+    "image": {
+      "src": "../images/wine/vino-louis-bouillot-cremant-de-bourgogne-grand-reserve-brut.webp",
+      "alt": "Cremant de Bourgogne Grand Reserve"
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Wine",
+        "section-en": "Glass Selections – Sparkling Wines",
+        "title-en": "Louis Bouillot Cremant de Bourgogne Grand Reserve Brut",
+        "description-en": "French sparkling wine from Burgundy, produced using the classic bottle method; on the palate, it demonstrates white fruits, apple, pear, citrus, and light bread notes from aging on lees; acidity is fresh but balanced.",
+        "contains-en": "",
+        "allergens-en": "",
+        "tags-en": "France, dry, white, light, aperitif, brut",
+        "audio-en": "../audio/wine/louis-bouillot-cremant-de-bourgogne-grand-reserve-brut.mp3",
+        "comments-en": "Cremant is a refined, softer alternative to Champagne, focused on balance, freshness, and elegance, ideally suited for restaurants.",
+        "useful phrases & words": [
+          "Cremant — pronounced 'kreh-MAHN', French sparkling wine made outside Champagne",
+          "classic bottle method — same as Champagne (méthode champenoise)",
+          "fresh and balanced — key descriptors",
+          "pairs beautifully with seafood — classic pairing",
+          "softer than Champagne — more approachable style",
+          "Would you like to try our Cremant? It's elegant and pairs perfectly with seafood."
+        ]
+      }
+    },
+    "status": "актуально",
+    "source_file": "vino.html",
+    "features": "Во вкусе креман демонстрирует белые фрукты, яблоко, грушу, цитрус и лёгкие хлебные ноты от выдержки на осадке. Эти оттенки выражены мягко, без резкой дрожжевой доминанты. Кислотность свежая, но сбалансированная, что делает креман особенно комфортным для широкой аудитории.",
+    "grapeVarieties": [
+      "Aligoté",
+      "Chardonnay",
+      "Gamay",
+      "Pinot Noir"
+    ],
+    "sweetness": "сухое",
+    "comments": [
+      "Креман — это утончённая, более мягкая альтернатива шампанскому, ориентированная на баланс, свежесть и элегантность, идеально подходящая для ресторана."
+    ],
+    "reference_info": "",
+    "updated_at": "2025-02-12T18:30:00+03:00",
+    "update_source": "json",
+    "category": "by-glass",
+    "region": "Бургундия",
+    "alcoholContent": null
+  },
+  {
+    "id": "0627",
+    "menu": "Вино",
+    "section": "Бокальные позиции — Белые вина",
+    "title": "«Pinot Grigio», Kurtatsch",
+    "description": "Итальянский Пино Гриджио из Трентино-Альто Адидже; во вкусе вина ощущаются собранными и сухими, с живой, естественной кислотностью и чёткой структурой; профиль чистый и гастрономичный, с нотами зелёного яблока, груши, цитрусов и минеральными оттенками.",
+    "origin": "Италия, Трентино-Альто Адидже.",
+    "producer": "Cantina Kurtatsch",
+    "tags": [
+      "Италия",
+      "сухое",
+      "белое",
+      "легкое",
+      "аперитив"
+    ],
+    "pairings": {
+      "dishes": [
+        "морепродукты и рыба",
+        "легкие салаты",
+        "вегетарианские блюда"
+      ],
+      "notes": [
+        "Стиль производителя — минимальное вмешательство и максимальная выразительность сорта. Вина Kurtatsch никогда не перегружены дубом или экстракцией",
+        "акцент сделан на чистоту",
+        "минеральность и баланс."
+      ],
+      "drinks": [],
+      "wines": []
+    },
+    "image": {
+      "src": "../images/wine/vino-pinot-grigio-kurtatsch.webp",
+      "alt": "«Pinot Grigio», Kurtatsch"
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Wine",
+        "section-en": "Glass Selections – White Wines",
+        "title-en": "Pinot Grigio, Kurtatsch",
+        "description-en": "Italian Pinot Grigio from Trentino-Alto Adige; on the palate, the wines feel collected and dry, with lively, natural acidity and clear structure; the profile is clean and gastronomic, with notes of green apple, pear, citrus, and mineral tones.",
+        "contains-en": "",
+        "allergens-en": "",
+        "tags-en": "Italy, dry, white, light, aperitif",
+        "audio-en": "../audio/wine/pinot-grigio-kurtatsch.mp3",
+        "comments-en": "The wine is made from Pinot Grigio grapes from Trentino-Alto Adige; Kurtatsch wines are known for their purity, minerality, and balance.",
+        "useful phrases & words": [
+          "Pinot Grigio — pronounced 'PEE-noh GREE-joh', popular Italian white wine",
+          "clean and gastronomic — key descriptors",
+          "minimal intervention — producer's style",
+          "pairs beautifully with seafood — classic pairing",
+          "natural acidity — typical characteristic",
+          "Would you like to try our Pinot Grigio? It's clean and pairs perfectly with seafood and salads."
+        ]
+      }
+    },
+    "status": "актуально",
+    "source_file": "vino.html",
+    "features": "Во вкусе вина ощущаются собранными и сухими, с живой, естественной кислотностью и чёткой структурой. Нет тяжести, сладости или навязчивого дуба — профиль чистый и гастрономичный. Ароматика и вкус строятся вокруг зелёного яблока, груши, цитрусов, иногда с тонкими травяными и минеральными оттенками.",
+    "grapeVarieties": [
+      "Pinot Grigio (100%)"
+    ],
+    "sweetness": "сухое",
+    "comments": [
+      "Вино из сорта Пинот Григо с Трентино-Альто Адидже; вина Kurtatsch известны своей чистотой, минеральностью и балансом."
+    ],
+    "reference_info": "",
+    "updated_at": "2025-12-28T12:44:06.584Z",
+    "update_source": "json",
+    "ingredients": [],
+    "allergens": [],
+    "category": "by-glass",
+    "region": "Трентино-Альто Адидже",
+    "alcoholContent": null
+  },
+  {
+    "id": "0628",
+    "menu": "Вино",
+    "section": "Бокальные позиции — Белые вина",
+    "section_icon": {
+      "type": "",
+      "src": "",
+      "alt": ""
+    },
+    "title": "«Le Clou Chablis», Domaine Passy",
+    "description": "«Le Clou Chablis» — это классическое, честное шабли без излишней округлости и сладости. Вино для тех, кто ценит точность, прохладу и элегантность, а не фруктовую пышность. Идеально подходит для ресторана как эталонный пример стиля Chablis.",
+    "origin": "Франция, Бургундия, Шабли.",
+    "producer": "Famille Descombets, Domaine Passy.",
+    "tags": [
+      "Франция",
+      "сухое",
+      "белое",
+      "легкое",
+      "аперитив"
+    ],
+    "pairings": {
+      "dishes": [
+        "морепродукты и рыба",
+        "устрицы и моллюски",
+        "легкие салаты",
+        "вегетарианские блюда"
+      ],
+      "notes": [
+        "Классическое шабли идеально подходит к морепродуктам, устрицам и лёгким блюдам; избегайте тяжёлых соусов и красного мяса."
+      ]
+    },
+    "image": {
+      "src": "../images/wine/vino-chablis-domaine-passy-le-clou.webp",
+      "alt": "«Le Clou Chablis», Domaine Passy"
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Wine",
+        "section-en": "Glass Selections – White Wines",
+        "title-en": "Le Clou Chablis | Domaine Passy",
+        "description-en": "Le Clou Chablis is a classic, honest Chablis without excessive roundness and sweetness. A wine for those who value precision, coolness, and elegance, not fruity opulence. Ideally suited for restaurants as a benchmark example of Chablis style.",
+        "contains-en": "",
+        "allergens-en": "",
+        "tags-en": "France, dry, white, light, aperitif",
+        "audio-en": "../audio/wine/chablis-domaine-passy-le-clou.mp3",
+        "comments-en": "Domaine Passy is a small domaine in Chablis, focused on a traditional approach: emphasis on terroir, minimal intervention, and pure expression of the variety. The wine is produced exclusively from Chardonnay grown on limestone-marl soils with high content of Kimmeridgian limestone, which is the hallmark of the region.",
+        "useful phrases & words": [
+          "Chablis — pronounced 'shah-BLEE', prestigious white wine region in Burgundy",
+          "mineral and fresh — key descriptors for Chablis",
+          "unoaked — no oak aging, preserving pure fruit character",
+          "pairs beautifully with oysters — classic pairing",
+          "Kimmeridgian limestone — unique terroir of Chablis",
+          "Would you like to try our Chablis? It's mineral and pairs perfectly with oysters and seafood."
+        ]
+      }
+    },
+    "status": "актуально",
+    "source_file": "vino.html",
+    "features": "Стиль вина строго сухой, минеральный и свежий. Во вкусе доминируют ноты зелёного яблока, лимона, лайма, иногда белого персика. Ключевая особенность — выраженная минеральность: оттенки мокрого камня, мела, ракушечника, которые отличают шабли от других шардоне. Дуб практически не ощущается или отсутствует вовсе, благодаря чему вкус остаётся чистым, холодным и собранным. Кислотность высокая, но благородная — она придаёт вину напряжение и делает его особенно гастрономичным.",
+    "grapeVarieties": [
+      "Chardonnay (100%)"
+    ],
+    "sweetness": "сухое",
+    "comments": [
+      "Domaine Passy — небольшой домен в Шабли, ориентированный на традиционный подход: акцент на терруар, минимальное вмешательство и чистую передачу сорта. Вино производится исключительно из Chardonnay, выращенного на известняково-мергелевых почвах с высоким содержанием киммериджского известняка, что является визитной карточкой региона."
+    ],
+    "reference_info": "",
+    "updated_at": "2025-02-12T18:30:00+03:00",
+    "update_source": "json",
+    "category": "by-glass",
+    "region": "Бургундия, Шабли",
+    "alcoholContent": null
+  },
+  {
+    "id": "0629",
+    "menu": "Вино",
+    "section": "Бокальные позиции — Розовые вина",
+    "section_icon": {
+      "type": "",
+      "src": "",
+      "alt": ""
+    },
+    "title": "Rose d'Anjou Semi-sweet, Joseph Verdier",
+    "description": "Вино ароматное, с яркими нотами клубники, малины, красной смородины, лёгкими цветочными оттенками и свежими цитрусовыми нюансами. Во вкусе — умеренная сладость, хорошо поддержанная освежающей кислотностью, лёгкое тело и чистое, ягодное послевкусие. Баланс сладости и свежести — ключевая черта этого вина.",
+    "origin": "Франция, Долина Луары, аппелласьон Rosé d’Anjou",
+    "producer": "Joseph Verdier",
+    "tags": [
+      "Франция",
+      "полусладкое",
+      "розовое",
+      "легкое",
+      "аперитив"
+    ],
+    "pairings": {
+      "dishes": [
+        "жирная рыба",
+        "легкие салаты",
+        "белое мясо и птица",
+        "мягкие сыры и легкие десерты"
+      ],
+      "notes": [
+        "Полусладкое розовое вино идеально подходит к жирной рыбе, лёгким салатам и белому мясу; избегайте очень тяжёлых мясных блюд."
+      ]
+    },
+    "image": {
+      "src": "../images/wine/vino-rose-danjou-joseph-verdier.webp",
+      "alt": "«Rose d'Anjou, Joseph Verdier"
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Wine",
+        "section-en": "Glass Selections – Rose Wines",
+        "title-en": "Rose d'Anjou Semi-sweet, Joseph Verdier",
+        "description-en": "Aromatic wine with bright notes of strawberry, raspberry, red currant, light floral tones, and fresh citrus nuances. On the palate — moderate sweetness, well supported by refreshing acidity, light body, and a clean, berry finish. The balance of sweetness and freshness is the key characteristic of this wine.",
+        "contains-en": "",
+        "allergens-en": "",
+        "tags-en": "France, semi-sweet, rosé, light, aperitif",
+        "audio-en": "../audio/wine/rose-d'anjou-joseph-verdier.mp3",
+        "comments-en": "Rosé d'Anjou «Joseph Verdier» is a versatile, approachable, and gastronomic rosé wine, ideally suited for aperitifs, summer dishes, and situations where it's important to please different tastes.",
+        "useful phrases & words": [
+          "Rose d'Anjou — pronounced 'roh-ZAY dahn-ZHOO', semi-sweet rosé from Loire Valley",
+          "semi-sweet — off-dry style, slightly sweet",
+          "pairs well with fatty fish — classic pairing",
+          "ideal aperitif — perfect for starting a meal",
+          "versatile and approachable — key descriptors",
+          "Would you like to try our rosé? It's semi-sweet and pairs beautifully with fish and salads."
+        ]
+      }
+    },
+    "status": "актуально",
+    "source_file": "vino.html",
+    "features": "Ароматные ноты клубники, малины, красной смородины, лёгкие цветочные оттенки и свежие цитрусовые нюансы; во вкусе умеренная сладость, хорошо поддержанная освежающей кислотностью, лёгкое тело и чистое, ягодное послевкусие.",
+    "grapeVarieties": [
+      "Gamay",
+      "Grolleau"
+    ],
+    "sweetness": "полусладкое",
+    "comments": [
+      "Rosé d'Anjou «Joseph Verdier» — это универсальное, понятное и гастрономичное розовое вино, идеально подходящее для аперитива, летних блюд и ситуаций, где важно угодить разным вкусам."
+    ],
+    "reference_info": "",
+    "updated_at": "2025-02-12T18:30:00+03:00",
+    "update_source": "json",
+    "category": "by-glass",
+    "region": "Долина Луары, аппелласьон Rosé d’Anjou",
+    "alcoholContent": null
+  },
+  {
+    "id": "0630",
+    "menu": "Вино",
+    "section": "Бокальные позиции - безалкогольные вина",
+    "section_icon": {
+      "type": "",
+      "src": "",
+      "alt": ""
+    },
+    "title": "Convivi Merlot",
+    "description": "Безалкогольное красное вино в стиле Merlot с мягкими фруктовыми ароматами, сбалансированной кислотностью и гладкой текстурой. Лёгкая структура и насыщенный аромат красных ягод.",
+    "origin": "Италия",
+    "producer": "Convivi",
+    "tags": [
+      "безалкогольное",
+      "красное",
+      "Merlot",
+      "легкое",
+      "фруктовое"
+    ],
+    "pairings": {
+      "dishes": [
+        "паштеты",
+        "овощные блюда",
+        "сырные тарелки"
+      ],
+      "notes": [
+        "Подходит к богатым овощным блюдам, сырным тарелкам и лёгким мясным закускам."
+      ]
+    },
+    "image": {
+      "src": "../images/wine/vino-convivi -merlot.webp",
+      "alt": "Convivi Merlot"
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Wine",
+        "section-en": "Non-Alcoholic Wines",
+        "title-en": "Convivi Merlot",
+        "description-en": "Non-alcoholic red wine in the Merlot style with soft fruit notes and balanced acidity."
+      }
+    },
+    "status": "актуально",
+    "source_file": "database.json",
+    "features": "",
+    "grapeVarieties": [
+      "Merlot"
+    ],
+    "sweetness": "сухое",
+    "comments": [
+      ""
+    ],
+    "reference_info": "",
+    "updated_at": "2026-02-03T12:00:00+03:00",
+    "update_source": "",
+    "category": "non-alcoholic",
+    "region": "Фриули-Венеция-Джулия",
+    "alcoholContent": "< 0.5%"
+  }
+]

@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Outlet, useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { logout } from '../services/api';
+import { getAdminSidebarStats, logout } from '../services/api';
 
 /**
  * AdminLayout - Единый layout для админ-панели
@@ -21,6 +21,18 @@ function AdminLayout() {
 
   // Проверяем, является ли пользователь администратором
   const isAdmin = currentUser?.role === 'администратор';
+  const [sidebarStats, setSidebarStats] = useState({
+    users: 0,
+    feedbackUnread: 0,
+    notificationsActive: 0,
+    mediaLikesTotal: 0,
+    visibilityRulesActive: 0,
+    kitchenItems: 0,
+    wineItems: 0,
+    barItems: 0,
+    teaItems: 0,
+  });
+  const [sidebarStatsLoading, setSidebarStatsLoading] = useState(false);
 
   const handleLogout = async () => {
     try {
@@ -34,6 +46,41 @@ function AdminLayout() {
       navigate('/admin/login');
     }
   };
+
+  useEffect(() => {
+    if (!isAdmin) return;
+    let alive = true;
+
+    const load = async () => {
+      setSidebarStatsLoading(true);
+      try {
+        const data = await getAdminSidebarStats();
+        if (!alive) return;
+        setSidebarStats({
+          users: Number(data?.users ?? 0),
+          feedbackUnread: Number(data?.feedbackUnread ?? 0),
+          notificationsActive: Number(data?.notificationsActive ?? 0),
+          mediaLikesTotal: Number(data?.mediaLikesTotal ?? 0),
+          visibilityRulesActive: Number(data?.visibilityRulesActive ?? 0),
+          kitchenItems: Number(data?.kitchenItems ?? 0),
+          wineItems: Number(data?.wineItems ?? 0),
+          barItems: Number(data?.barItems ?? 0),
+          teaItems: Number(data?.teaItems ?? 0),
+        });
+      } catch (error) {
+        if (alive) {
+          console.error('Ошибка загрузки сайдбар-статистики:', error);
+        }
+      } finally {
+        if (alive) setSidebarStatsLoading(false);
+      }
+    };
+
+    load();
+    return () => {
+      alive = false;
+    };
+  }, [isAdmin, location.pathname]);
 
   if (checking) {
     return (
@@ -56,6 +103,7 @@ function AdminLayout() {
     if (path.includes('/admin/edit') || path.includes('/admin/add')) return 'dish-edit';
     if (path.includes('/admin/wine')) return 'wine';
     if (path.includes('/admin/bar')) return 'bar';
+    if (path.includes('/admin/tea')) return 'tea';
     return 'kitchen';
   };
 
@@ -67,6 +115,18 @@ function AdminLayout() {
   const handleNavClick = () => {
     closeMenus();
   };
+
+  const renderBadgeValue = (value) => {
+    if (sidebarStatsLoading) return '…';
+    const num = Number(value);
+    return Number.isFinite(num) ? num : 0;
+  };
+
+  const Badge = ({ value }) => (
+    <span className="ml-auto inline-flex items-center justify-center min-w-[22px] h-5 px-1.5 text-[11px] font-bold rounded-full bg-primary/15 text-primary">
+      {renderBadgeValue(value)}
+    </span>
+  );
 
   const leftMenuContent = (
     <>
@@ -93,6 +153,7 @@ function AdminLayout() {
         >
           <span className="material-symbols-outlined text-xl">restaurant_menu</span>
           <span className="font-medium">Кухня</span>
+          <Badge value={sidebarStats.kitchenItems} />
         </Link>
 
         <Link
@@ -106,6 +167,7 @@ function AdminLayout() {
         >
           <span className="material-symbols-outlined text-xl">wine_bar</span>
           <span className="font-medium">Вино</span>
+          <Badge value={sidebarStats.wineItems} />
         </Link>
 
         <Link
@@ -119,6 +181,21 @@ function AdminLayout() {
         >
           <span className="material-symbols-outlined text-xl">local_bar</span>
           <span className="font-medium">Бар</span>
+          <Badge value={sidebarStats.barItems} />
+        </Link>
+
+        <Link
+          to="/admin/tea"
+          onClick={handleNavClick}
+          className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors ${
+            activeSection === 'tea'
+              ? 'bg-primary text-white'
+              : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
+          }`}
+        >
+          <span className="material-symbols-outlined text-xl">local_cafe</span>
+          <span className="font-medium">Чай</span>
+          <Badge value={sidebarStats.teaItems} />
         </Link>
 
         <button
@@ -129,6 +206,7 @@ function AdminLayout() {
             const params = new URLSearchParams();
             if (activeSection === 'wine') params.set('menu', 'Вино');
             if (activeSection === 'bar') params.set('menu', 'Барное меню');
+            if (activeSection === 'tea') params.set('menu', 'Чай');
             const qs = params.toString();
             navigate(qs ? `/admin/add?${qs}` : '/admin/add');
           }}
@@ -144,6 +222,8 @@ function AdminLayout() {
               ? 'Добавить вино'
               : activeSection === 'bar'
               ? 'Добавить напиток'
+              : activeSection === 'tea'
+              ? 'Добавить чай'
               : 'Добавить блюдо'}
           </span>
         </button>
@@ -176,6 +256,7 @@ function AdminLayout() {
         >
           <span className="material-symbols-outlined text-xl">people</span>
           <span className="font-medium">Пользователи</span>
+          <Badge value={sidebarStats.users} />
         </Link>
 
         <Link
@@ -189,6 +270,7 @@ function AdminLayout() {
         >
           <span className="material-symbols-outlined text-xl">feedback</span>
           <span className="font-medium">Обратная связь</span>
+          <Badge value={sidebarStats.feedbackUnread} />
         </Link>
 
         <Link
@@ -202,6 +284,7 @@ function AdminLayout() {
         >
           <span className="material-symbols-outlined text-xl">notifications</span>
           <span className="font-medium">Уведомления</span>
+          <Badge value={sidebarStats.notificationsActive} />
         </Link>
 
         <Link
@@ -215,6 +298,7 @@ function AdminLayout() {
         >
           <span className="material-symbols-outlined text-xl">favorite</span>
           <span className="font-medium">Медиа / лайки</span>
+          <Badge value={sidebarStats.mediaLikesTotal} />
         </Link>
 
         <Link
@@ -228,6 +312,7 @@ function AdminLayout() {
         >
           <span className="material-symbols-outlined text-xl">visibility</span>
           <span className="font-medium">Видимость / Фичи</span>
+          <Badge value={sidebarStats.visibilityRulesActive} />
         </Link>
 
         <Link

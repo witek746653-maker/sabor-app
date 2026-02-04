@@ -1,0 +1,803 @@
+[
+  {
+    "id": "0802",
+    "menu": "Чай",
+    "section": "💚 Зелёные чаи",
+    "title": "Гёкуро",
+    "description": "Премиальный японский чай теневого выращивания. Обладает густым «умами»-вкусом, с оттенками морской воды, орхидеи и авокадо.",
+    "origin": "Япония",
+    "tags": [
+      "зелёный чай",
+      "Япония",
+      "умами",
+      "морской",
+      "премиальный",
+      "насыщенный"
+    ],
+    "brewing": {
+      "temperature_c": 75,
+      "time_minutes": "2"
+    },
+    "caffeine": "среднее",
+    "allergens": "",
+    "image": {
+      "src": "",
+      "alt": "Гёкуро"
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Tea",
+        "section-en": "Green Tea",
+        "title-en": "Gyokuro",
+        "description-en": "Premium shaded Japanese green tea with a rich umami taste and notes of sea breeze, orchid, and avocado.",
+        "contains-en": "",
+        "allergens-en": "",
+        "tags-en": "green tea, Japan, umami, rich",
+        "audio-en": "",
+        "comments-en": "",
+        "useful phrases & words": []
+      }
+    },
+    "status": "актуально",
+    "features": "Густой умами, морские оттенки, орхидея, авокадо.",
+    "comments": [],
+    "reference_info": "",
+    "updated_at": "2026-01-26T00:00:00-06:00",
+    "update_source": "json"
+  },
+  {
+    "id": "0803",
+    "menu": "Чай",
+    "section": "💚 Зелёные чаи",
+    "title": "Жемчужина Дракона",
+    "description": "Ручная скрутка нежнейших зелёных листьев и многоступенчатая выдержка в жасмине. Настой — шёлковый, цветочный, с долгим жасминовым шлейфом.",
+    "origin": "Китай",
+    "tags": [
+      "зелёный чай",
+      "Китай",
+      "жасмин",
+      "цветочный",
+      "ароматный",
+      "мягкий"
+    ],
+    "brewing": {
+      "temperature_c": 80,
+      "time_minutes": "3"
+    },
+    "caffeine": "среднее",
+    "allergens": "",
+    "image": {
+      "src": "",
+      "alt": "Жемчужина Дракона"
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Tea",
+        "section-en": "Green Tea",
+        "title-en": "Dragon Pearl (Jasmine Green Tea)",
+        "description-en": "Hand-rolled tender green tea scented through multi-stage jasmine infusion. Silky, floral, with a long jasmine finish.",
+        "contains-en": "jasmine",
+        "allergens-en": "",
+        "tags-en": "green tea, China, jasmine, floral, silky",
+        "audio-en": "",
+        "comments-en": "",
+        "useful phrases & words": []
+      }
+    },
+    "status": "актуально",
+    "features": "Шёлковый настой, цветочность, длинный жасминовый шлейф.",
+    "comments": [],
+    "reference_info": "",
+    "updated_at": "2026-01-26T00:00:00-06:00",
+    "update_source": "json"
+  },
+  {
+    "id": "0804",
+    "menu": "Чай",
+    "section": "💚 Зелёные чаи",
+    "title": "Лун Цзин (Колодец Дракона)",
+    "description": "Самый знаменитый зелёный чай Китая. Аромат свежих злаков, орехов и жареных семян. Вкус мягкий, с лёгкой сладостью и миндальной горчинкой.",
+    "origin": "Китай",
+    "tags": [
+      "зелёный чай",
+      "Китай",
+      "ореховый",
+      "злаковый",
+      "мягкий",
+      "классика"
+    ],
+    "brewing": {
+      "temperature_c": 80,
+      "time_minutes": "2–3"
+    },
+    "caffeine": "среднее",
+    "allergens": "",
+    "image": {
+      "src": "",
+      "alt": "Лун Цзин (Колодец Дракона)"
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Tea",
+        "section-en": "Green Tea",
+        "title-en": "Long Jing (Dragon Well)",
+        "description-en": "China’s most famous green tea with aromas of fresh grains, nuts, and toasted seeds. Soft taste with gentle sweetness and a hint of almond bitterness.",
+        "contains-en": "",
+        "allergens-en": "",
+        "tags-en": "green tea, China, nutty, grainy, classic",
+        "audio-en": "",
+        "comments-en": "",
+        "useful phrases & words": []
+      }
+    },
+    "status": "актуально",
+    "features": "Свежие злаки, орехи, жареные семена, миндальная горчинка.",
+    "comments": [],
+    "reference_info": "",
+    "updated_at": "2026-01-26T00:00:00-06:00",
+    "update_source": "json"
+  },
+  {
+    "id": "0805",
+    "menu": "Чай",
+    "section": "🌗 Улуны",
+    "title": "Да Хун Пао",
+    "description": "Знаменитый тёмный улун с минеральной глубиной и нотами коры, орехов, шоколада. Один из самых богатых по вкусу чаёв в мире.",
+    "origin": "Китай",
+    "tags": [
+      "улун",
+      "Китай",
+      "тёмный улун",
+      "минеральный",
+      "ореховый",
+      "шоколадный"
+    ],
+    "brewing": {
+      "temperature_c": 90,
+      "time_minutes": "5"
+    },
+    "caffeine": "среднее",
+    "allergens": "",
+    "image": {
+      "src": "",
+      "alt": "Да Хун Пао"
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Tea",
+        "section-en": "Oolong Tea",
+        "title-en": "Da Hong Pao",
+        "description-en": "Famous dark oolong with mineral depth and notes of bark, nuts, and chocolate. One of the richest teas in the world by flavor.",
+        "contains-en": "",
+        "allergens-en": "",
+        "tags-en": "oolong tea, China, dark oolong, mineral, nutty, chocolate",
+        "audio-en": "",
+        "comments-en": "",
+        "useful phrases & words": []
+      }
+    },
+    "status": "актуально",
+    "features": "Минеральная глубина, кора, орехи, шоколад.",
+    "comments": [],
+    "reference_info": "",
+    "updated_at": "2026-01-26T00:00:00-06:00",
+    "update_source": "json"
+  },
+  {
+    "id": "0806",
+    "menu": "Чай",
+    "section": "🌗 Улуны",
+    "title": "Те Гуань Инь",
+    "description": "Светлый ароматный улун с нотами сирени, персика и сливочного крема. Настой свежий, цветочный, с долгим медовым послевкусием.",
+    "origin": "Китай",
+    "tags": [
+      "улун",
+      "Китай",
+      "светлый улун",
+      "цветочный",
+      "персик",
+      "медовый"
+    ],
+    "brewing": {
+      "temperature_c": 90,
+      "time_minutes": "4–5"
+    },
+    "caffeine": "среднее",
+    "allergens": "",
+    "image": {
+      "src": "",
+      "alt": "Те Гуань Инь"
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Tea",
+        "section-en": "Oolong Tea",
+        "title-en": "Tie Guan Yin",
+        "description-en": "Light aromatic oolong with notes of lilac, peach, and creamy custard. Fresh floral infusion with a long honeyed finish.",
+        "contains-en": "",
+        "allergens-en": "",
+        "tags-en": "oolong tea, China, light oolong, floral, peach, honeyed",
+        "audio-en": "",
+        "comments-en": "",
+        "useful phrases & words": []
+      }
+    },
+    "status": "актуально",
+    "features": "Сирень, персик, сливочный крем, медовое послевкусие.",
+    "comments": [],
+    "reference_info": "",
+    "updated_at": "2026-01-26T00:00:00-06:00",
+    "update_source": "json"
+  },
+  {
+    "id": "0807",
+    "menu": "Чай",
+    "section": "🖤 Чёрные чаи",
+    "title": "Дянь Хун «Сила Китая»",
+    "description": "Премиальный китайский красный чай, состоящий исключительно из золотистых типс. В аромате — мёд, изюм, кожура винограда.",
+    "origin": "Китай",
+    "tags": [
+      "чёрный чай",
+      "красный чай",
+      "Китай",
+      "медовый",
+      "изюм",
+      "типсы"
+    ],
+    "brewing": {
+      "temperature_c": 90,
+      "time_minutes": "5"
+    },
+    "caffeine": "высокое",
+    "allergens": "",
+    "image": {
+      "src": "",
+      "alt": "Дянь Хун «Сила Китая»"
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Tea",
+        "section-en": "Black Tea",
+        "title-en": "Dian Hong “Power of China”",
+        "description-en": "Premium Chinese red tea made exclusively from golden tips. Aromas of honey, raisins, and grape peel.",
+        "contains-en": "",
+        "allergens-en": "",
+        "tags-en": "black tea, Chinese red tea, China, honey, raisin, golden tips",
+        "audio-en": "",
+        "comments-en": "",
+        "useful phrases & words": []
+      }
+    },
+    "status": "актуально",
+    "features": "Мёд, изюм, кожура винограда, плотная сладость.",
+    "comments": [],
+    "reference_info": "",
+    "updated_at": "2026-01-26T00:00:00-06:00",
+    "update_source": "json"
+  },
+  {
+    "id": "0808",
+    "menu": "Чай",
+    "section": "🖤 Чёрные чаи",
+    "title": "Ассам Таадж Амчонг GTGFOP1",
+    "description": "Чай с характером: насыщенный, терпкий, с нотами коньяка, дуба и специй. Для тех, кто любит «мощную классику».",
+    "origin": "Индия",
+    "tags": [
+      "чёрный чай",
+      "Индия",
+      "Ассам",
+      "терпкий",
+      "пряный",
+      "классика"
+    ],
+    "brewing": {
+      "temperature_c": 95,
+      "time_minutes": "5"
+    },
+    "caffeine": "высокое",
+    "allergens": "",
+    "image": {
+      "src": "",
+      "alt": "Ассам Таадж Амчонг GTGFOP1"
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Tea",
+        "section-en": "Black Tea",
+        "title-en": "Assam Taaj Amchong GTGFOP1",
+        "description-en": "Bold and tannic with notes of cognac, oak, and spice—perfect for lovers of powerful classics.",
+        "contains-en": "",
+        "allergens-en": "",
+        "tags-en": "black tea, India, Assam, bold, tannic, spiced",
+        "audio-en": "",
+        "comments-en": "",
+        "useful phrases & words": []
+      }
+    },
+    "status": "актуально",
+    "features": "Коньяк, дуб, специи, мощная терпкость.",
+    "comments": [],
+    "reference_info": "",
+    "updated_at": "2026-01-26T00:00:00-06:00",
+    "update_source": "json"
+  },
+  {
+    "id": "0809",
+    "menu": "Чай",
+    "section": "🖤🌿 Пуэры",
+    "title": "Королевский Шу Пуэр",
+    "description": "Чай с землистыми, древесными и черносливовыми нотами. Тело — плотное, ликёрное. Помогает пищеварению и идеально завершает сытный приём пищи.",
+    "origin": "Китай",
+    "tags": [
+      "пуэр",
+      "шу пуэр",
+      "Китай",
+      "землистый",
+      "древесный",
+      "чернослив"
+    ],
+    "brewing": {
+      "temperature_c": 95,
+      "time_minutes": "5–6"
+    },
+    "caffeine": "среднее",
+    "allergens": "",
+    "image": {
+      "src": "",
+      "alt": "Королевский Шу Пуэр"
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Tea",
+        "section-en": "Pu-erh Tea",
+        "title-en": "Royal Shu Pu-erh",
+        "description-en": "Earthy, woody pu-erh with prune notes and a dense, liqueur-like body—perfect after a hearty meal.",
+        "contains-en": "",
+        "allergens-en": "",
+        "tags-en": "pu-erh tea, shu pu-erh, China, earthy, woody, prune",
+        "audio-en": "",
+        "comments-en": "",
+        "useful phrases & words": []
+      }
+    },
+    "status": "актуально",
+    "features": "Землистость, древесность, чернослив, плотное тело.",
+    "comments": [],
+    "reference_info": "",
+    "updated_at": "2026-01-26T00:00:00-06:00",
+    "update_source": "json"
+  },
+  {
+    "id": "0810",
+    "menu": "Чай",
+    "section": "🖤🌿 Пуэры",
+    "title": "Пуэр с ягодами / молоком (опционально)",
+    "description": "Вариант для тех, кто только знакомится с пуэрами: более мягкий профиль, с ягодной сладостью или молочным телом.",
+    "origin": "Китай",
+    "tags": [
+      "пуэр",
+      "Китай",
+      "мягкий",
+      "ягодный",
+      "молочные ноты",
+      "для знакомства"
+    ],
+    "brewing": {
+      "temperature_c": 95,
+      "time_minutes": "5"
+    },
+    "caffeine": "среднее",
+    "allergens": "",
+    "image": {
+      "src": "",
+      "alt": "Пуэр с ягодами / молоком (опционально)"
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Tea",
+        "section-en": "Pu-erh Tea",
+        "title-en": "Pu-erh with Berries / Milk (Optional)",
+        "description-en": "A softer pu-erh option for beginners—either with berry sweetness or a milky body.",
+        "contains-en": "berries (optional), milk-like notes (optional)",
+        "allergens-en": "",
+        "tags-en": "pu-erh tea, China, мягкий, berry, milky notes, beginner-friendly",
+        "audio-en": "",
+        "comments-en": "Contains berries; may contain dairy-like notes",
+        "useful phrases & words": []
+      }
+    },
+    "status": "актуально",
+    "features": "Более мягкий пуэр: ягодная сладость или молочное тело.",
+    "comments": [
+      "содержит ягоды, может содержать молочные ноты"
+    ],
+    "reference_info": "",
+    "updated_at": "2026-01-26T00:00:00-06:00",
+    "update_source": "json"
+  },
+  {
+    "id": "0811",
+    "menu": "Чай",
+    "section": "🌺 Травяные чаи",
+    "title": "Гречишный чай — апельсиновые дольки",
+    "description": "Тёплый напиток с ярким вкусом гречихи, нотами апельсина и лёгкой шоколадной тенью. Утончённый и сытный — как сладкий перекус в чашке.",
+    "origin": "Купаж",
+    "tags": [
+      "травяной чай",
+      "гречишный",
+      "апельсин",
+      "шоколадные ноты",
+      "согревающий",
+      "без кофеина"
+    ],
+    "brewing": {
+      "temperature_c": 90,
+      "time_minutes": "4–5"
+    },
+    "caffeine": "без кофеина",
+    "allergens": [
+      "цитрусы"
+    ],
+    "image": {
+      "src": "",
+      "alt": "Гречишный чай — апельсиновые дольки"
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Tea",
+        "section-en": "Herbal Tea",
+        "title-en": "Buckwheat Tea — Orange Slices",
+        "description-en": "A warm, comforting drink with bright buckwheat flavor, orange notes, and a light шоколадный оттенок—like a sweet snack in a cup.",
+        "contains-en": "orange",
+        "allergens-en": "citrus",
+        "tags-en": "herbal tea, buckwheat, orange, comforting, caffeine-free",
+        "audio-en": "",
+        "comments-en": "",
+        "useful phrases & words": []
+      }
+    },
+    "status": "актуально",
+    "features": "Гречиха, апельсин, лёгкая шоколадная тень; сытный и тёплый.",
+    "comments": [],
+    "reference_info": "",
+    "updated_at": "2026-01-26T00:00:00-06:00",
+    "update_source": "json"
+  },
+  {
+    "id": "0812",
+    "menu": "Чай",
+    "section": "🌺 Травяные чаи",
+    "title": "Ройбос Апельсин–Ромашка",
+    "description": "Цветочный южноафриканский купаж с ромашкой, лавандой, шиповником и апельсином. Сладкий и расслабляющий, без кофеина.",
+    "origin": "ЮАР",
+    "tags": [
+      "ройбос",
+      "ЮАР",
+      "апельсин",
+      "ромашка",
+      "лаванда",
+      "шиповник",
+      "без кофеина"
+    ],
+    "brewing": {
+      "temperature_c": 95,
+      "time_minutes": "5"
+    },
+    "caffeine": "без кофеина",
+    "allergens": [
+      "цитрусы"
+    ],
+    "image": {
+      "src": "",
+      "alt": "Ройбос Апельсин–Ромашка"
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Tea",
+        "section-en": "Herbal Tea",
+        "title-en": "Rooibos Orange–Chamomile",
+        "description-en": "A floral South African blend with chamomile, lavender, rosehip, and orange. Sweet, calming, and caffeine-free.",
+        "contains-en": "orange, chamomile, lavender, rosehip",
+        "allergens-en": "citrus",
+        "tags-en": "rooibos, South Africa, orange, chamomile, lavender, caffeine-free",
+        "audio-en": "",
+        "comments-en": "",
+        "useful phrases & words": []
+      }
+    },
+    "status": "актуально",
+    "features": "Сладкий, расслабляющий, цветочно-цитрусовый купаж.",
+    "comments": [],
+    "reference_info": "",
+    "updated_at": "2026-01-26T00:00:00-06:00",
+    "update_source": "json"
+  },
+  {
+    "id": "0813",
+    "menu": "Чай",
+    "section": "🌺 Травяные чаи",
+    "title": "Йога-чай",
+    "description": "Мягкая травяная смесь без кофеина с лепестками розы, зизифорой, базиликом и мятой. Лёгкий, расслабляющий настой с цветочно-травяным ароматом и чистым, спокойным вкусом.",
+    "origin": "",
+    "tags": [
+      "травяной чай",
+      "без кофеина",
+      "расслабляющий",
+      "роза",
+      "мята",
+      "базилик"
+    ],
+    "brewing": {
+      "temperature_c": 90,
+      "time_minutes": "5–7"
+    },
+    "caffeine": "без кофеина",
+    "allergens": "",
+    "image": {
+      "src": "",
+      "alt": "Йога-чай"
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Tea",
+        "section-en": "Herbal Tea",
+        "title-en": "Yoga Tea",
+        "description-en": "A gentle caffeine-free herbal blend with rose petals, ziziphora, basil, and mint. Light, calming infusion with a clean, peaceful taste.",
+        "contains-en": "rose petals, ziziphora, basil, mint",
+        "allergens-en": "",
+        "tags-en": "herbal tea, caffeine-free, calming, rose, mint, basil",
+        "audio-en": "",
+        "comments-en": "Contains mint, basil, rose petals",
+        "useful phrases & words": []
+      }
+    },
+    "status": "актуально",
+    "features": "Цветочно-травяный аромат, чистый спокойный вкус; для вечера.",
+    "comments": [
+      "содержит мяту, базилик, лепестки розы"
+    ],
+    "reference_info": "",
+    "updated_at": "2026-01-26T00:00:00-06:00",
+    "update_source": "json"
+  },
+  {
+    "id": "0814",
+    "menu": "Чай",
+    "section": "Чаи с добавками",
+    "title": "Масала Чай",
+    "description": "Классический индийский пряный чай с корицей, имбирём, гвоздикой, перцем и кардамоном. Густой, согревающий, насыщенный — с мягким жгучим послевкусием и глубоким ароматом специй.",
+    "origin": "Индия",
+    "tags": [
+      "чёрный чай",
+      "Индия",
+      "масала",
+      "пряный",
+      "согревающий",
+      "специи"
+    ],
+    "brewing": {
+      "temperature_c": 95,
+      "time_minutes": "4–5"
+    },
+    "caffeine": "среднее",
+    "allergens": [
+      "специи"
+    ],
+    "image": {
+      "src": "",
+      "alt": "Масала Чай"
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Tea",
+        "section-en": "Tea with Additions",
+        "title-en": "Masala Chai",
+        "description-en": "Classic Indian spiced tea with cinnamon, ginger, cloves, pepper, and cardamom. Thick, warming, насыщенный, with a gentle spicy finish.",
+        "contains-en": "cinnamon, ginger, cloves, pepper, cardamom",
+        "allergens-en": "",
+        "tags-en": "tea, India, masala, spiced, warming",
+        "audio-en": "",
+        "comments-en": "Contains spices (cinnamon, ginger, cloves, pepper, cardamom)",
+        "useful phrases & words": []
+      }
+    },
+    "status": "актуально",
+    "features": "Густой, согревающий, пряный; мягко-жгучее послевкусие.",
+    "comments": [
+      "содержит специи (корица, имбирь, гвоздика, перец, кардамон)"
+    ],
+    "reference_info": "",
+    "updated_at": "2026-01-26T00:00:00-06:00",
+    "update_source": "json"
+  },
+  {
+    "id": "0815",
+    "menu": "Чай",
+    "section": "Чаи с добавками",
+    "title": "Тайна Изабеллы",
+    "description": "Связанный зелёный чай, который раскрывается под водой цветочным букетом жасмина и календулы. Вкус — деликатный, светлый, с виноградной сладостью, напоминает молодое белое вино.",
+    "origin": "Китай",
+    "tags": [
+      "связанный чай",
+      "зелёный чай",
+      "Китай",
+      "жасмин",
+      "календула",
+      "эстетика"
+    ],
+    "brewing": {
+      "temperature_c": 85,
+      "time_minutes": "3–4"
+    },
+    "caffeine": "среднее",
+    "allergens": "",
+    "image": {
+      "src": "",
+      "alt": "Тайна Изабеллы"
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Tea",
+        "section-en": "Tea with Additions",
+        "title-en": "Isabella’s Secret (Blooming Tea)",
+        "description-en": "A blooming green tea that unfurls into a floral bouquet of jasmine and calendula. Delicate taste with grape-like sweetness, reminiscent of young white wine.",
+        "contains-en": "jasmine, calendula",
+        "allergens-en": "",
+        "tags-en": "blooming tea, green tea, China, jasmine, calendula, floral",
+        "audio-en": "",
+        "comments-en": "Contains jasmine, calendula",
+        "useful phrases & words": []
+      }
+    },
+    "status": "актуально",
+    "features": "Связанный чай-«шоу»: жасмин, календула, виноградная сладость.",
+    "comments": [
+      "Содержит жасмин, календулу"
+    ],
+    "reference_info": "",
+    "updated_at": "2026-01-26T00:00:00-06:00",
+    "update_source": "json"
+  },
+  {
+    "id": "0816",
+    "menu": "Чай",
+    "section": "Чаи с добавками",
+    "title": "Улун с манго",
+    "description": "Светлый улун, в котором свежесть манго сочетается с мягкой текстурой улуна.",
+    "origin": "Купаж",
+    "tags": [
+      "улун",
+      "манго",
+      "фруктовый",
+      "мягкий",
+      "ароматный",
+      "десертный"
+    ],
+    "brewing": {
+      "temperature_c": 90,
+      "time_minutes": "4"
+    },
+    "caffeine": "среднее",
+    "allergens": "",
+    "image": {
+      "src": "",
+      "alt": "Улун с манго"
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Tea",
+        "section-en": "Tea with Additions",
+        "title-en": "Mango Oolong",
+        "description-en": "A light oolong where fresh mango meets the soft texture of oolong tea.",
+        "contains-en": "mango",
+        "allergens-en": "",
+        "tags-en": "oolong tea, mango, fruity, aromatic, soft",
+        "audio-en": "",
+        "comments-en": "May contain mango",
+        "useful phrases & words": []
+      }
+    },
+    "status": "актуально",
+    "features": "Свежесть манго + мягкая текстура улуна.",
+    "comments": [
+      "может содержать манго"
+    ],
+    "reference_info": "",
+    "updated_at": "2026-01-26T00:00:00-06:00",
+    "update_source": "json"
+  },
+  {
+    "id": "0817",
+    "menu": "Чай",
+    "section": "Чаи с добавками",
+    "title": "Молочный улун",
+    "description": "Легендарный светлый улун плотной скрутки с ярким сливочным ароматом. Полный, густой вкус с тонкими нотками топленого молока.",
+    "origin": "Китай",
+    "tags": [
+      "улун",
+      "Китай",
+      "молочные ноты",
+      "сливочный",
+      "ароматизированный",
+      "легендарный"
+    ],
+    "brewing": {
+      "temperature_c": 90,
+      "time_minutes": "4–5"
+    },
+    "caffeine": "среднее",
+    "allergens": "",
+    "image": {
+      "src": "",
+      "alt": "Молочный улун"
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Tea",
+        "section-en": "Tea with Additions",
+        "title-en": "Milk Oolong",
+        "description-en": "Legendary light oolong with a bright creamy aroma and a full, dense taste with subtle baked-milk notes.",
+        "contains-en": "milk-like aroma (flavoring)",
+        "allergens-en": "",
+        "tags-en": "oolong tea, China, creamy, milk notes, aromatic",
+        "audio-en": "",
+        "comments-en": "Contains dairy-like aromatic notes (flavoring)",
+        "useful phrases & words": []
+      }
+    },
+    "status": "актуально",
+    "features": "Яркий сливочный аромат, густой вкус, нотки топленого молока.",
+    "comments": [
+      "содержит молочные ноты (ароматизация)"
+    ],
+    "reference_info": "",
+    "updated_at": "2026-01-26T00:00:00-06:00",
+    "update_source": "json"
+  },
+  {
+    "id": "0818",
+    "menu": "Чай",
+    "section": "🖤 Чёрные чаи",
+    "title": "Лапсанг Сушонг (Копчёный чай)",
+    "description": "Легендарный китайский чай с ароматом костра. Его ноты дымного дерева и чернослива рождают атмосферу охотничьего ужина в лесу.",
+    "origin": "Китай",
+    "tags": [
+      "чёрный чай",
+      "Китай",
+      "копчёный",
+      "дымный",
+      "древесный",
+      "чернослив"
+    ],
+    "brewing": {
+      "temperature_c": 90,
+      "time_minutes": "5"
+    },
+    "caffeine": "высокое",
+    "allergens": "",
+    "image": {
+      "src": "",
+      "alt": "Лапсанг Сушонг (Копчёный чай)"
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Tea",
+        "section-en": "Black Tea",
+        "title-en": "Lapsang Souchong (Smoked Tea)",
+        "description-en": "Legendary Chinese tea with a campfire aroma. Notes of smoky wood and prunes evoke a rustic forest dinner atmosphere.",
+        "contains-en": "",
+        "allergens-en": "",
+        "tags-en": "black tea, China, smoked, smoky, woody, prune",
+        "audio-en": "",
+        "comments-en": "",
+        "useful phrases & words": []
+      }
+    },
+    "status": "актуально",
+    "features": "Костёр, дымное дерево, чернослив; ярко выраженная копчёность.",
+    "comments": [],
+    "reference_info": "",
+    "updated_at": "2026-01-26T00:00:00-06:00",
+    "update_source": "json"
+  }
+]

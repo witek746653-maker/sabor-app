@@ -36,8 +36,8 @@ function ArtDetailPage() {
   useEffect(() => {
     const loadArtwork = async () => {
       try {
-        // Загружаем JSON с данными меню
-        const response = await fetch('/data/menu-database.json');
+        // Загружаем JSON с данными картин
+        const response = await fetch('/data/artworks.json');
         const data = await response.json();
 
         // Находим нужную картину по id

@@ -18,7 +18,21 @@ import urllib.request
 import urllib.error
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
-from models import db, Dish, FeedbackMessage, Notification, User, VisibilityConfig, MediaLike, FavoriteItem
+from models import (
+    db,
+    Dish,
+    KitchenItem,
+    WineItem,
+    BarItem,
+    TeaItem,
+    Artwork,
+    FeedbackMessage,
+    Notification,
+    User,
+    VisibilityConfig,
+    MediaLike,
+    FavoriteItem,
+)
 
 try:
     # Sentry — сервис для сбора ошибок с сервера.
@@ -81,23 +95,175 @@ def _normalize_menu_value(val) -> str | None:
         return "Основное меню"
     return s
 
+ART_SOURCE_NAME = "Искусство в Sabor de la Vida"
+WINE_KEYWORDS = ["вин", "wine"]
+BAR_MENU_KEYWORDS = ["бар", "bar", "напит", "drink"]
+BAR_SECTION_KEYWORDS = ["коктейл", "cocktail", "пиво", "beer", "кофе", "coffee", "напит", "drink"]
+TEA_KEYWORDS = ["чай", "tea"]
+
+def _is_art_item(item: dict) -> bool:
+    if not isinstance(item, dict):
+        return False
+    source = str(item.get("source") or "").strip()
+    if source == ART_SOURCE_NAME:
+        return True
+    item_id = str(item.get("id") or "").strip()
+    return item_id.startswith("09")
+
+def _classify_menu_item(item: dict) -> str:
+    if _is_art_item(item):
+        return "art"
+    menu = item.get("menu")
+    section = item.get("section")
+    if _text_contains(menu, TEA_KEYWORDS) or _text_contains(section, TEA_KEYWORDS):
+        return "tea"
+    if _text_contains(menu, WINE_KEYWORDS) or _text_contains(section, WINE_KEYWORDS):
+        return "wine"
+    if _text_contains(menu, BAR_MENU_KEYWORDS) or _text_contains(section, BAR_SECTION_KEYWORDS):
+        return "bar"
+    return "kitchen"
+
+def _split_menu_items(items: list[dict]) -> dict:
+    out = {"kitchen": [], "wine": [], "bar": [], "tea": [], "art": []}
+    for it in items or []:
+        if not isinstance(it, dict):
+            continue
+        out[_classify_menu_item(it)].append(it)
+    return out
+
+def _load_json_list(path: Path) -> list[dict]:
+    try:
+        if path.exists():
+            with open(path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            if isinstance(data, list):
+                return [x for x in data if isinstance(x, dict)]
+    except Exception as e:
+        app.logger.warning(f"Не удалось загрузить {path}: {e}")
+    return []
+
+def _load_items_from_paths(primary: Path, backup: Path) -> list[dict]:
+    data = _load_json_list(primary)
+    if data:
+        return data
+    return _load_json_list(backup)
+
+def _ensure_split_menu_files():
+    """
+    Если новых файлов ещё нет, а legacy menu-database.json есть — разложим по файлам.
+    """
+    if MENU_KITCHEN_PATH.exists() or MENU_WINE_PATH.exists() or MENU_BAR_PATH.exists() or MENU_TEA_PATH.exists() or ART_DB_PATH.exists():
+        return
+    legacy = _load_items_from_paths(MENU_DB_PATH, MENU_DB_BACKUP_PATH)
+    if not legacy:
+        return
+    parts = _split_menu_items(legacy)
+    _atomic_write_json(MENU_KITCHEN_PATH, parts["kitchen"])
+    _atomic_write_json(MENU_WINE_PATH, parts["wine"])
+    _atomic_write_json(MENU_BAR_PATH, parts["bar"])
+    _atomic_write_json(MENU_TEA_PATH, parts["tea"])
+    _atomic_write_json(ART_DB_PATH, parts["art"])
+    _atomic_write_json(MENU_KITCHEN_BACKUP_PATH, parts["kitchen"])
+    _atomic_write_json(MENU_WINE_BACKUP_PATH, parts["wine"])
+    _atomic_write_json(MENU_BAR_BACKUP_PATH, parts["bar"])
+    _atomic_write_json(MENU_TEA_BACKUP_PATH, parts["tea"])
+    _atomic_write_json(ART_DB_BACKUP_PATH, parts["art"])
+
 def _load_menu_db_items() -> list[dict]:
     """
-    Загружает список элементов из menu-database.json.
-    KISS-страховка: если БД заполнена частично (например, миграция упала на дубле id),
-    то вина/бар можно временно отдать прямо из JSON.
+    Загружает список меню (кухня + вино + бар) из разделённых файлов.
+    Фолбэк: legacy menu-database.json.
     """
-    for path in (MENU_DB_PATH, MENU_DB_BACKUP_PATH):
-        try:
-            if path.exists():
-                with open(path, "r", encoding="utf-8") as f:
-                    data = json.load(f)
-                if isinstance(data, list):
-                    # Фильтруем только словари
-                    return [x for x in data if isinstance(x, dict)]
-        except Exception as e:
-            app.logger.warning(f"Не удалось загрузить {path}: {e}")
-    return []
+    _ensure_split_menu_files()
+    items = []
+    kitchen = _load_items_from_paths(MENU_KITCHEN_PATH, MENU_KITCHEN_BACKUP_PATH)
+    wine = _load_items_from_paths(MENU_WINE_PATH, MENU_WINE_BACKUP_PATH)
+    bar = _load_items_from_paths(MENU_BAR_PATH, MENU_BAR_BACKUP_PATH)
+    tea = _load_items_from_paths(MENU_TEA_PATH, MENU_TEA_BACKUP_PATH)
+    if kitchen or wine or bar or tea:
+        items.extend(kitchen)
+        items.extend(wine)
+        items.extend(bar)
+        items.extend(tea)
+        return items
+
+    legacy = _load_items_from_paths(MENU_DB_PATH, MENU_DB_BACKUP_PATH)
+    return [x for x in legacy if isinstance(x, dict) and not _is_art_item(x)]
+
+def _load_art_db_items() -> list[dict]:
+    """
+    Загружает список картин из artworks.json.
+    Фолбэк: фильтрация из legacy menu-database.json.
+    """
+    _ensure_split_menu_files()
+    art = _load_items_from_paths(ART_DB_PATH, ART_DB_BACKUP_PATH)
+    if art:
+        return art
+    legacy = _load_items_from_paths(MENU_DB_PATH, MENU_DB_BACKUP_PATH)
+    return [x for x in legacy if isinstance(x, dict) and _is_art_item(x)]
+
+def _load_wine_db_items() -> list[dict]:
+    _ensure_split_menu_files()
+    items = _load_items_from_paths(MENU_WINE_PATH, MENU_WINE_BACKUP_PATH)
+    if items:
+        return items
+    return [x for x in _load_menu_db_items() if _text_contains(x.get("menu"), WINE_KEYWORDS) or _text_contains(x.get("section"), WINE_KEYWORDS)]
+
+def _load_bar_db_items() -> list[dict]:
+    _ensure_split_menu_files()
+    items = _load_items_from_paths(MENU_BAR_PATH, MENU_BAR_BACKUP_PATH)
+    if items:
+        return items
+    return [
+        x
+        for x in _load_menu_db_items()
+        if _text_contains(x.get("menu"), BAR_MENU_KEYWORDS) or _text_contains(x.get("section"), BAR_SECTION_KEYWORDS)
+    ]
+
+def _load_tea_db_items() -> list[dict]:
+    _ensure_split_menu_files()
+    items = _load_items_from_paths(MENU_TEA_PATH, MENU_TEA_BACKUP_PATH)
+    if items:
+        return items
+    return [
+        x
+        for x in _load_menu_db_items()
+        if _text_contains(x.get("menu"), TEA_KEYWORDS) or _text_contains(x.get("section"), TEA_KEYWORDS)
+    ]
+
+def _menu_item_models():
+    return (KitchenItem, WineItem, BarItem, TeaItem)
+
+def _model_for_menu_item(item: dict):
+    kind = _classify_menu_item(item)
+    if kind == "wine":
+        return WineItem
+    if kind == "bar":
+        return BarItem
+    if kind == "tea":
+        return TeaItem
+    return KitchenItem
+
+def _menu_item_exists(item_id: str) -> bool:
+    norm_id = str(item_id or "").strip()
+    if not norm_id:
+        return False
+    for model in _menu_item_models():
+        if model.query.get(norm_id):
+            return True
+    return False
+
+def _apply_menu_item_update(target, updated):
+    target.menu = updated.menu
+    target.section = updated.section
+    target.title = updated.title
+    target.description = updated.description
+    target.contains = updated.contains
+    target.allergens = updated.allergens
+    target.tags = updated.tags
+    target.pairings = updated.pairings
+    target.image = updated.image
+    target.i18n = updated.i18n
 
 def _get_wines_dicts() -> list[dict]:
     """
@@ -106,14 +272,8 @@ def _get_wines_dicts() -> list[dict]:
     """
     try:
         # 1) Пытаемся взять из БД
-        dishes = Dish.query.all()
-        wines = [
-            d for d in dishes
-            if (_text_contains(d.menu, ['вин', 'wine']) or _text_contains(d.section, ['вин', 'wine']))
-        ]
+        wines = WineItem.query.all()
         if wines:
-            # Важно: в БД нет части полей (например status/origin/producer/region/...).
-            # Поэтому подмешиваем "полную" запись из menu-database.json по id.
             json_by_id = _load_menu_db_by_id()
             out = []
             for w in wines:
@@ -124,12 +284,8 @@ def _get_wines_dicts() -> list[dict]:
             return out
 
         # 2) Фолбэк: из JSON
-        items = _load_menu_db_items()
-        json_wines = [
-            item for item in items
-            if _text_contains(item.get("menu"), ['вин', 'wine']) or _text_contains(item.get("section"), ['вин', 'wine'])
-        ]
-        return [item for item in json_wines]
+        items = _load_wine_db_items()
+        return [item for item in items]
     except Exception as e:
         app.logger.exception(f"Ошибка получения вин: {e}")
         return []
@@ -140,17 +296,8 @@ def _get_bar_items_dicts() -> list[dict]:
     Сначала пробуем БД; если пусто — берём из JSON.
     """
     try:
-        dishes = Dish.query.all()
-        bar_items = [
-            d for d in dishes
-            if (
-                _text_contains(d.menu, ['бар', 'bar', 'напит', 'drink'])
-                or _text_contains(d.section, ['коктейл', 'cocktail', 'чай', 'tea', 'пиво', 'beer', 'кофе', 'coffee', 'напит', 'drink'])
-            )
-        ]
+        bar_items = BarItem.query.all()
         if bar_items:
-            # Важно: в БД нет некоторых полей (например status, cardIngredients, и т.п.)
-            # Поэтому подмешиваем "полную" запись из menu-database.json по id.
             json_by_id = _load_menu_db_by_id()
             out = []
             for b in bar_items:
@@ -159,15 +306,8 @@ def _get_bar_items_dicts() -> list[dict]:
                 out.append(_deep_merge_dicts(full or {}, base))
             return out
 
-        items = _load_menu_db_items()
-        json_bar = [
-            item for item in items
-            if (
-                _text_contains(item.get("menu"), ['бар', 'bar', 'напит', 'drink'])
-                or _text_contains(item.get("section"), ['коктейл', 'cocktail', 'чай', 'tea', 'пиво', 'beer', 'кофе', 'coffee', 'напит', 'drink'])
-            )
-        ]
-        return [item for item in json_bar]
+        items = _load_bar_db_items()
+        return [item for item in items]
     except Exception as e:
         app.logger.exception(f"Ошибка получения бара: {e}")
         return []
@@ -418,9 +558,22 @@ FRONTEND_BUILD_DIR = ROOT_DIR / "frontend" / "build"
 FRONTEND_STATIC_DIR = FRONTEND_BUILD_DIR / "static"
 FRONTEND_INDEX = FRONTEND_BUILD_DIR / "index.html"
 
-# Путь к исходным данным меню (нужно, чтобы подмешивать поля, которых нет в БД)
-MENU_DB_PATH = ROOT_DIR / "data" / "menu-database.json"
-MENU_DB_BACKUP_PATH = ROOT_DIR / "frontend" / "public" / "data" / "menu-database.json"
+# Путь к исходным данным меню (разделённые файлы + legacy для совместимости)
+MENU_DB_DIR = ROOT_DIR / "data"
+MENU_DB_PUBLIC_DIR = ROOT_DIR / "frontend" / "public" / "data"
+MENU_KITCHEN_PATH = MENU_DB_DIR / "menu-kitchen.json"
+MENU_WINE_PATH = MENU_DB_DIR / "menu-wine.json"
+MENU_BAR_PATH = MENU_DB_DIR / "menu-bar.json"
+MENU_TEA_PATH = MENU_DB_DIR / "menu-tea.json"
+ART_DB_PATH = MENU_DB_DIR / "artworks.json"
+MENU_KITCHEN_BACKUP_PATH = MENU_DB_PUBLIC_DIR / "menu-kitchen.json"
+MENU_WINE_BACKUP_PATH = MENU_DB_PUBLIC_DIR / "menu-wine.json"
+MENU_BAR_BACKUP_PATH = MENU_DB_PUBLIC_DIR / "menu-bar.json"
+MENU_TEA_BACKUP_PATH = MENU_DB_PUBLIC_DIR / "menu-tea.json"
+ART_DB_BACKUP_PATH = MENU_DB_PUBLIC_DIR / "artworks.json"
+# Legacy (старый единый файл)
+MENU_DB_PATH = MENU_DB_DIR / "menu-database.json"
+MENU_DB_BACKUP_PATH = MENU_DB_PUBLIC_DIR / "menu-database.json"
 _MENU_DB_BY_ID_CACHE = None
 _MENU_DB_BY_ID_CACHE_PATH = None
 _MENU_DB_BY_ID_CACHE_MTIME = None
@@ -682,15 +835,31 @@ def _deep_merge_dicts(base: dict, override: dict) -> dict:
     return out
 
 
-def _save_menu_db_items(items: list[dict]) -> tuple[int, int, int]:
+def _save_menu_db_items(items: list[dict], preserve_art: bool = True) -> tuple[int, int, int]:
     """
-    Сохраняет menu-database.json (и backup), с дедупликацией по id.
+    Сохраняет меню в разделённых файлах + legacy menu-database.json.
     Возвращает (deduped_len, duplicates_removed, skipped_no_id).
     """
     items, duplicates, skipped_no_id = _dedupe_menu_items(items or [])
-    _atomic_write_json(MENU_DB_PATH, items)
-    _atomic_write_json(MENU_DB_BACKUP_PATH, items)
-    # Сбрасываем кэш, чтобы чтение по id сразу увидело изменения
+    parts = _split_menu_items(items)
+    if preserve_art:
+        parts["art"] = _load_art_db_items()
+
+    _atomic_write_json(MENU_KITCHEN_PATH, parts["kitchen"])
+    _atomic_write_json(MENU_WINE_PATH, parts["wine"])
+    _atomic_write_json(MENU_BAR_PATH, parts["bar"])
+    _atomic_write_json(MENU_TEA_PATH, parts["tea"])
+    _atomic_write_json(ART_DB_PATH, parts["art"])
+    _atomic_write_json(MENU_KITCHEN_BACKUP_PATH, parts["kitchen"])
+    _atomic_write_json(MENU_WINE_BACKUP_PATH, parts["wine"])
+    _atomic_write_json(MENU_BAR_BACKUP_PATH, parts["bar"])
+    _atomic_write_json(MENU_TEA_BACKUP_PATH, parts["tea"])
+    _atomic_write_json(ART_DB_BACKUP_PATH, parts["art"])
+
+    combined = parts["kitchen"] + parts["wine"] + parts["bar"] + parts["tea"] + parts["art"]
+    _atomic_write_json(MENU_DB_PATH, combined)
+    _atomic_write_json(MENU_DB_BACKUP_PATH, combined)
+
     global _MENU_DB_BY_ID_CACHE, _MENU_DB_BY_ID_CACHE_PATH, _MENU_DB_BY_ID_CACHE_MTIME
     _MENU_DB_BY_ID_CACHE = None
     _MENU_DB_BY_ID_CACHE_PATH = None
@@ -700,9 +869,7 @@ def _save_menu_db_items(items: list[dict]) -> tuple[int, int, int]:
 
 def _upsert_menu_db_item(incoming: dict) -> bool:
     """
-    Upsert (обновить/добавить) один элемент в menu-database.json.
-    Важно: не теряем специфичные поля (вино/бар), т.к. мёрджим поверх существующего.
-    Возвращает True если элемент уже существовал, иначе False.
+    Upsert (обновить/добавить) один элемент меню.
     """
     if not isinstance(incoming, dict):
         raise ValueError("incoming must be a dict")
@@ -722,7 +889,6 @@ def _upsert_menu_db_item(incoming: dict) -> bool:
             continue
         it_id = str(it.get("id") or "").strip()
         if it_id == item_id:
-            # override обновляет только то, что прислали, остальное сохраняем
             items[idx] = _deep_merge_dicts(it, incoming)
             existed = True
             replaced = True
@@ -731,14 +897,13 @@ def _upsert_menu_db_item(incoming: dict) -> bool:
     if not replaced:
         items.append(incoming)
 
-    _save_menu_db_items(items)
+    _save_menu_db_items(items, preserve_art=True)
     return existed
 
 
 def _delete_menu_db_item(item_id: str) -> bool:
     """
-    Удаляет элемент по id из menu-database.json.
-    Возвращает True если что-то удалили, иначе False.
+    Удаляет элемент по id из меню.
     """
     norm_id = str(item_id or "").strip()
     if not norm_id:
@@ -748,7 +913,7 @@ def _delete_menu_db_item(item_id: str) -> bool:
     items = [it for it in items if str(it.get("id") or "").strip() != norm_id]
     if len(items) == before:
         return False
-    _save_menu_db_items(items)
+    _save_menu_db_items(items, preserve_art=True)
     return True
 
 
@@ -761,7 +926,11 @@ def _get_all_dishes_dicts_with_json_fallback() -> list[dict]:
     Важно: порядок берём из JSON, чтобы меню выглядело стабильно.
     """
     # 1) Берём всё из БД
-    db_items = Dish.query.all()
+    db_items = []
+    db_items.extend(KitchenItem.query.all())
+    db_items.extend(WineItem.query.all())
+    db_items.extend(BarItem.query.all())
+    db_items.extend(TeaItem.query.all())
     db_by_id = {}
     for d in db_items:
         try:
@@ -805,15 +974,52 @@ def _get_all_dishes_dicts_with_json_fallback() -> list[dict]:
 
 def _rebuild_dishes_table_from_items(items: list[dict]):
     """
-    Полностью перезаписывает таблицу dishes из списка items.
-    KISS: удаляем всё и заново заливаем.
+    Полностью перезаписывает таблицы кухни/вина/бара из списка items.
     """
-    Dish.query.delete()
+    parts = _split_menu_items(items or [])
+
+    KitchenItem.query.delete()
+    WineItem.query.delete()
+    BarItem.query.delete()
+    TeaItem.query.delete()
+    db.session.commit()
+
+    success = 0
+    for item in parts.get("kitchen", []):
+        try:
+            db.session.merge(KitchenItem.from_dict(item))
+            success += 1
+        except Exception:
+            db.session.rollback()
+    for item in parts.get("wine", []):
+        try:
+            db.session.merge(WineItem.from_dict(item))
+            success += 1
+        except Exception:
+            db.session.rollback()
+    for item in parts.get("bar", []):
+        try:
+            db.session.merge(BarItem.from_dict(item))
+            success += 1
+        except Exception:
+            db.session.rollback()
+    for item in parts.get("tea", []):
+        try:
+            db.session.merge(TeaItem.from_dict(item))
+            success += 1
+        except Exception:
+            db.session.rollback()
+    db.session.commit()
+    return success
+
+def _rebuild_artworks_table_from_items(items: list[dict]):
+    parts = _split_menu_items(items or [])
+    Artwork.query.delete()
     db.session.commit()
     success = 0
-    for item in items:
+    for item in parts.get("art", []):
         try:
-            db.session.merge(Dish.from_dict(item))
+            db.session.merge(Artwork.from_dict(item))
             success += 1
         except Exception:
             db.session.rollback()
@@ -822,52 +1028,21 @@ def _rebuild_dishes_table_from_items(items: list[dict]):
 
 def _load_menu_db_by_id():
     """
-    Загружает menu-database.json и строит словарь {id: full_item}.
-    Это нужно, потому что в таблице dishes сейчас хранятся не все поля вина
-    (например origin/producer/grapeVarieties/region).
+    Загружает меню (кухня/вино/бар) и строит словарь {id: full_item}.
     """
-    global _MENU_DB_BY_ID_CACHE, _MENU_DB_BY_ID_CACHE_PATH, _MENU_DB_BY_ID_CACHE_MTIME
-
-    # Если файл на диске НЕ менялся — возвращаем кэш.
-    # Если вы поменяли JSON руками — mtime изменится, и мы перечитаем файл автоматически.
-    if _MENU_DB_BY_ID_CACHE is not None and _MENU_DB_BY_ID_CACHE_PATH:
-        try:
-            cached_path = Path(_MENU_DB_BY_ID_CACHE_PATH)
-            if cached_path.exists():
-                mtime = cached_path.stat().st_mtime
-                if _MENU_DB_BY_ID_CACHE_MTIME == mtime:
-                    return _MENU_DB_BY_ID_CACHE
-        except Exception:
-            # если что-то пошло не так — просто перечитаем файл ниже
-            pass
-
     db_map = {}
-    for path in (MENU_DB_PATH, MENU_DB_BACKUP_PATH):
+    for item in _load_menu_db_items():
         try:
-            if path.exists():
-                with open(path, "r", encoding="utf-8") as f:
-                    data = json.load(f)
-                if isinstance(data, list):
-                    for item in data:
-                        item_id = item.get("id")
-                        if item_id:
-                            db_map[item_id] = item
-                # Запоминаем, какой файл успешно использовали
-                _MENU_DB_BY_ID_CACHE_PATH = str(path)
-                try:
-                    _MENU_DB_BY_ID_CACHE_MTIME = path.stat().st_mtime
-                except Exception:
-                    _MENU_DB_BY_ID_CACHE_MTIME = None
-                break
-        except Exception as e:
-            app.logger.warning(f"Не удалось загрузить {path}: {e}")
-
-    _MENU_DB_BY_ID_CACHE = db_map
-    return _MENU_DB_BY_ID_CACHE
+            item_id = item.get("id")
+            if item_id:
+                db_map[item_id] = item
+        except Exception:
+            continue
+    return db_map
 
 def _enrich_wine_dict(wine_dict: dict) -> dict:
     """
-    Подмешивает в ответ поля из menu-database.json, которых может не быть в БД.
+    Подмешивает в ответ поля из menu-*.json, которых может не быть в БД.
     БД остаётся источником правды; мы добавляем только отсутствующие ключи.
     """
     if not wine_dict or not wine_dict.get("id"):
@@ -1053,7 +1228,7 @@ def health_check():
 
     # 1) Проверяем БД (лёгкий запрос)
     try:
-        db_count = Dish.query.count()
+        db_count = KitchenItem.query.count() + WineItem.query.count() + BarItem.query.count() + TeaItem.query.count()
         db_ok = True
     except Exception:
         db_ok = False
@@ -1111,8 +1286,8 @@ def get_visibility_config_public():
 @app.route('/api/menu-json', methods=['GET'])
 def get_menu_json():
     """
-    DEV/KISS: отдаём menu-database.json напрямую (без базы данных).
-    Это нужно для режима "правлю data/menu-database.json → F5 → сразу вижу в UI",
+    DEV/KISS: отдаём split-меню напрямую (без базы данных).
+    Это нужно для режима "правлю data/menu-*.json → F5 → сразу вижу в UI",
     даже если бэкенд запущен.
     """
     try:
@@ -1125,7 +1300,7 @@ def get_menu_json():
 def get_dishes():
     """Возвращает все позиции (БД + JSON fallback)"""
     try:
-        # Важно: в проде бывает ситуация, когда menu-database.json уже обновлён,
+        # Важно: в проде бывает ситуация, когда menu-*.json уже обновлён,
         # а БД ещё не мигрирована. Тогда админка видит "обрезанный" список.
         # KISS-решение: отдаём объединённый список (БД как источник правды + JSON как фолбэк).
         return jsonify(_get_all_dishes_dicts_with_json_fallback())
@@ -1141,7 +1316,11 @@ def get_dish(dish_id):
             return jsonify({'error': 'Dish not found'}), 404
 
         # 1) Пытаемся найти в БД
-        dish = Dish.query.get(dish_id_norm)
+        dish = KitchenItem.query.get(dish_id_norm)
+        if not dish:
+            dish = WineItem.query.get(dish_id_norm)
+        if not dish:
+            dish = BarItem.query.get(dish_id_norm)
         if dish:
             base = dish.to_dict()
             full = _load_menu_db_by_id().get(dish_id_norm)
@@ -1162,15 +1341,8 @@ def get_menus():
     try:
         menu_set = set()
 
-        # 1) Уникальные значения меню из базы данных
-        menus = db.session.query(Dish.menu).distinct().all()
-        for row in menus:
-            norm = _normalize_menu_value(row)
-            if norm:
-                menu_set.add(norm)
-
-        # 2) Фолбэк/добавка: меню из JSON (на случай, если БД заполнена частично)
-        for item in _load_menu_db_items():
+        # Берём всё из объединённого списка (БД + JSON)
+        for item in _get_all_dishes_dicts_with_json_fallback():
             norm = _normalize_menu_value(item.get("menu"))
             if norm:
                 menu_set.add(norm)
@@ -1187,16 +1359,10 @@ def get_sections():
     try:
         menu_name = request.args.get('menu')
         
-        # Строим запрос к базе данных
-        query = db.session.query(Dish.section).distinct()
-        
-        # Фильтруем по меню, если указано
+        items = _get_all_dishes_dicts_with_json_fallback()
         if menu_name:
-            query = query.filter(Dish.menu == menu_name)
-        
-        sections = query.all()
-        # Преобразуем в список строк и фильтруем пустые
-        section_list = [s[0] for s in sections if s[0]]
+            items = [it for it in items if it.get("menu") == menu_name]
+        section_list = [it.get("section") for it in items if it.get("section")]
         return jsonify(sorted(section_list))
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -1369,8 +1535,8 @@ def get_wine(wine_id):
     try:
         # 1) Пытаемся найти в БД
         wine_id_norm = str(wine_id or "").strip()
-        wine = Dish.query.filter(Dish.id == wine_id_norm).first()
-        if wine and (_text_contains(wine.menu, ['вин', 'wine']) or _text_contains(wine.section, ['вин', 'wine'])):
+        wine = WineItem.query.get(wine_id_norm)
+        if wine:
             base = wine.to_dict()
             full = _load_menu_db_by_id().get(base.get("id"))
             merged = _deep_merge_dicts(full or {}, base)
@@ -1378,7 +1544,7 @@ def get_wine(wine_id):
 
         # 2) Фолбэк: ищем в JSON по id
         wine_dict = _load_menu_db_by_id().get(wine_id_norm)
-        if wine_dict and (_text_contains(wine_dict.get("menu"), ['вин', 'wine']) or _text_contains(wine_dict.get("section"), ['вин', 'wine'])):
+        if wine_dict and (_text_contains(wine_dict.get("menu"), WINE_KEYWORDS) or _text_contains(wine_dict.get("section"), WINE_KEYWORDS)):
             return jsonify(wine_dict)
 
         return jsonify({'error': 'Wine not found'}), 404
@@ -1761,7 +1927,7 @@ def save_dishes():
         # Дедупликация по id (в исходных данных иногда бывают дубли)
         items, duplicates, skipped_no_id = _dedupe_menu_items(data)
 
-        # 1) Пишем в menu-database.json (это решает “почему вино/бар отдельно” — всё в одном файле)
+        # 1) Пишем split-JSON (и legacy для совместимости)
         deduped_len, _, _ = _save_menu_db_items(items)
 
         # 2) Пересобираем БД из этого же списка (KISS: удалить и заново залить)
@@ -1806,24 +1972,24 @@ def update_dish(dish_id):
         # 1) Сохраняем в JSON (не теряя специфичных полей)
         _upsert_menu_db_item(data)
 
-        # 2) Upsert в БД (чтобы админка могла редактировать даже то, чего не было в БД)
-        dish = Dish.query.get(dish_id_norm)
-        updated_dish = Dish.from_dict(data)
+        # 2) Upsert в БД по нужной таблице
+        target_model = _model_for_menu_item(data)
+        updated_item = target_model.from_dict(data)
 
+        # Удаляем запись из других таблиц, если категория изменилась
+        for model in _menu_item_models():
+            if model is target_model:
+                continue
+            existing_other = model.query.get(dish_id_norm)
+            if existing_other:
+                db.session.delete(existing_other)
+
+        dish = target_model.query.get(dish_id_norm)
         if not dish:
-            dish = updated_dish
+            dish = updated_item
             db.session.add(dish)
         else:
-            dish.menu = updated_dish.menu
-            dish.section = updated_dish.section
-            dish.title = updated_dish.title
-            dish.description = updated_dish.description
-            dish.contains = updated_dish.contains
-            dish.allergens = updated_dish.allergens
-            dish.tags = updated_dish.tags
-            dish.pairings = updated_dish.pairings
-            dish.image = updated_dish.image
-            dish.i18n = updated_dish.i18n
+            _apply_menu_item_update(dish, updated_item)
 
         db.session.commit()
 
@@ -1855,14 +2021,15 @@ def add_dish():
         new_dish_data['id'] = dish_id_norm
 
         # Проверяем, нет ли уже позиции с таким ID (и в БД, и в JSON)
-        if Dish.query.get(dish_id_norm) or _load_menu_db_by_id().get(dish_id_norm):
+        if _menu_item_exists(dish_id_norm) or _load_menu_db_by_id().get(dish_id_norm):
             return jsonify({'error': 'Dish with this id already exists'}), 400
 
         # 1) Сохраняем в JSON
         _upsert_menu_db_item(new_dish_data)
 
         # 2) Создаём в БД
-        new_dish = Dish.from_dict(new_dish_data)
+        target_model = _model_for_menu_item(new_dish_data)
+        new_dish = target_model.from_dict(new_dish_data)
         db.session.add(new_dish)
         db.session.commit()
 
@@ -1890,10 +2057,11 @@ def delete_dish(dish_id):
         deleted_any = False
 
         # 1) Удаляем из БД, если есть
-        dish = Dish.query.get(dish_id_norm)
-        if dish:
-            db.session.delete(dish)
-            deleted_any = True
+        for model in _menu_item_models():
+            dish = model.query.get(dish_id_norm)
+            if dish:
+                db.session.delete(dish)
+                deleted_any = True
 
         # 2) Удаляем из JSON, если есть
         if _delete_menu_db_item(dish_id_norm):
@@ -2195,6 +2363,91 @@ def delete_admin_notification(notification_id):
         if _is_readonly_db_error(e):
             return _readonly_db_response()
         return jsonify({'error': str(e)}), 500
+
+# ========== АДМИН: СТАТИСТИКА ДЛЯ САЙДБАРА ==========
+
+@app.route('/api/admin/sidebar-stats', methods=['GET'])
+@login_required
+def get_admin_sidebar_stats():
+    """
+    Сводные счетчики для админ-сайдбара.
+    """
+    admin_check = _require_admin()
+    if admin_check:
+        return admin_check
+    try:
+        # Пользователи
+        users_total = User.query.count()
+
+        # Непрочитанная обратная связь
+        feedback_unread = FeedbackMessage.query.filter_by(read=False).count()
+
+        # Актуальные уведомления (active и не истекли)
+        now = datetime.now()
+        notifications_active = (
+            Notification.query.filter_by(status='active')
+            .filter(
+                (Notification.lifetime_type != 'date')
+                | (Notification.expires_at.is_(None))
+                | (Notification.expires_at > now)
+            )
+            .count()
+        )
+
+        # Общее число лайков
+        media_likes_total = MediaLike.query.count()
+
+        # Действующие правила видимости (published + enabled)
+        visibility_rules_active = 0
+        published = (
+            VisibilityConfig.query.filter_by(status="published")
+            .order_by(VisibilityConfig.version.desc(), VisibilityConfig.updated_at.desc())
+            .first()
+        )
+        if published:
+            try:
+                payload = json.loads(published.config_json) if published.config_json else {}
+            except Exception:
+                payload = {}
+            rules = payload.get("rules") if isinstance(payload.get("rules"), list) else []
+            visibility_rules_active = sum(
+                1 for rule in rules
+                if isinstance(rule, dict) and rule.get("enabled", True) is not False
+            )
+
+        # Вино/Бар/Кухня (по БД)
+        wine_items = WineItem.query.count()
+        bar_items = BarItem.query.count()
+        tea_items = TeaItem.query.count()
+        kitchen_items = KitchenItem.query.count()
+
+        # Фолбэк: если какой-то раздел пуст в БД — берём из JSON
+        if wine_items == 0 or bar_items == 0 or tea_items == 0 or kitchen_items == 0:
+            items = _load_menu_db_items()
+            if items:
+                parts = _split_menu_items(items)
+                if wine_items == 0:
+                    wine_items = len(parts.get("wine") or [])
+                if bar_items == 0:
+                    bar_items = len(parts.get("bar") or [])
+                if tea_items == 0:
+                    tea_items = len(parts.get("tea") or [])
+                if kitchen_items == 0:
+                    kitchen_items = len(parts.get("kitchen") or [])
+
+        return jsonify({
+            "users": users_total,
+            "feedbackUnread": feedback_unread,
+            "notificationsActive": notifications_active,
+            "mediaLikesTotal": media_likes_total,
+            "visibilityRulesActive": visibility_rules_active,
+            "kitchenItems": kitchen_items,
+            "wineItems": wine_items,
+            "barItems": bar_items,
+            "teaItems": tea_items,
+        })
+    except Exception as e:
+        return jsonify({"error": "ADMIN_SIDEBAR_STATS_ERROR", "message": str(e)}), 500
 
 # ========== API ДЛЯ УПРАВЛЕНИЯ ПОЛЬЗОВАТЕЛЯМИ ==========
 
@@ -2577,9 +2830,9 @@ def rollback_visibility_config():
 @login_required
 def admin_import_menu_json():
     """
-    Загружает menu-database.json через админку и применяет:
-    - сохраняет файл в data/menu-database.json (и backup в frontend/public/data)
-    - перезаписывает таблицу dishes в SQLite
+    Загружает JSON через админку и применяет:
+    - сохраняет split-файлы в data/menu-*.json (и backup в frontend/public/data)
+    - перезаписывает таблицы кухни/вина/бара в SQLite
     """
     admin_check = _require_admin()
     if admin_check:
@@ -2604,10 +2857,24 @@ def admin_import_menu_json():
         return jsonify({"error": "JSON должен быть списком объектов (list)"}), 400
 
     items, duplicates, skipped_no_id = _dedupe_menu_items(data)
+    kinds = { _classify_menu_item(it) for it in items if isinstance(it, dict) }
+    is_partial = len(kinds) == 1
+    only_kind = next(iter(kinds)) if is_partial else None
 
     try:
-        _atomic_write_json(MENU_DB_PATH, items)
-        _atomic_write_json(MENU_DB_BACKUP_PATH, items)
+        if is_partial:
+            if only_kind == "art":
+                existing_menu = _load_menu_db_items()
+                combined = existing_menu + items
+                _save_menu_db_items(combined, preserve_art=False)
+            else:
+                existing_menu = _load_menu_db_items()
+                parts = _split_menu_items(existing_menu)
+                parts[only_kind] = items
+                combined_menu = parts["kitchen"] + parts["wine"] + parts["bar"]
+                _save_menu_db_items(combined_menu, preserve_art=True)
+        else:
+            _save_menu_db_items(items, preserve_art=False)
     except Exception as e:
         return jsonify({"error": f"Не удалось сохранить файл на сервере: {e}"}), 500
 
@@ -2616,7 +2883,16 @@ def admin_import_menu_json():
         global _MENU_DB_BY_ID_CACHE
         _MENU_DB_BY_ID_CACHE = None
 
-        imported = _rebuild_dishes_table_from_items(items)
+        if is_partial:
+            if only_kind == "art":
+                imported = _rebuild_dishes_table_from_items(_load_menu_db_items())
+                imported_art = _rebuild_artworks_table_from_items(items)
+            else:
+                imported = _rebuild_dishes_table_from_items(_load_menu_db_items())
+                imported_art = 0
+        else:
+            imported = _rebuild_dishes_table_from_items(items)
+            imported_art = _rebuild_artworks_table_from_items(items)
         menus = sorted({(it.get("menu") or "").strip() for it in items if it.get("menu")})
         return jsonify({
             "status": "ok",
@@ -2625,6 +2901,7 @@ def admin_import_menu_json():
             "duplicates_removed": duplicates,
             "skipped_no_id": skipped_no_id,
             "imported_to_db": imported,
+            "imported_artworks": imported_art,
             "menus_found": menus,
         })
     except Exception as e:
@@ -2767,6 +3044,8 @@ def serve_frontend(path):
 # Создаём таблицы при первом запуске (если их ещё нет)
 with app.app_context():
     db.create_all()
+    # Автоматически разложим legacy menu-database.json на split-файлы
+    _ensure_split_menu_files()
 
     def _bootstrap_admin_if_configured():
         """
@@ -2815,36 +3094,51 @@ with app.app_context():
         Это помогает на хостинге, когда база создана, но данных ещё нет (и на главной видно "Меню пока нет").
         """
         try:
-            # Если блюда уже есть — ничего не делаем (не перезатираем работу админки!)
-            if Dish.query.first() is not None:
+            # Если меню уже есть — ничего не делаем (не перезатираем работу админки!)
+            if KitchenItem.query.first() is not None or WineItem.query.first() is not None or BarItem.query.first() is not None or TeaItem.query.first() is not None:
                 return
 
-            json_file = None
-            if MENU_DB_PATH.exists():
-                json_file = MENU_DB_PATH
-            elif MENU_DB_BACKUP_PATH.exists():
-                json_file = MENU_DB_BACKUP_PATH
-
-            if not json_file:
-                app.logger.warning("menu-database.json не найден. База пустая, меню не загрузится автоматически.")
+            dishes_data = _load_menu_db_items()
+            if not isinstance(dishes_data, list) or not dishes_data:
+                app.logger.warning("Меню не найдено (split/legacy). База пустая, меню не загрузится автоматически.")
                 return
 
-            with open(json_file, "r", encoding="utf-8") as f:
-                dishes_data = json.load(f)
-
-            if not isinstance(dishes_data, list):
-                app.logger.warning(f"Ожидали список блюд в {json_file}, но получили {type(dishes_data)}")
-                return
-
-            for dish_data in dishes_data:
-                db.session.add(Dish.from_dict(dish_data))
+            parts = _split_menu_items(dishes_data)
+            for item in parts.get("kitchen", []):
+                db.session.add(KitchenItem.from_dict(item))
+            for item in parts.get("wine", []):
+                db.session.add(WineItem.from_dict(item))
+            for item in parts.get("bar", []):
+                db.session.add(BarItem.from_dict(item))
+            for item in parts.get("tea", []):
+                db.session.add(TeaItem.from_dict(item))
             db.session.commit()
-            app.logger.info(f"✅ Загружено в БД блюд: {len(dishes_data)} (источник: {json_file})")
+            app.logger.info(f"✅ Загружено в БД меню: {len(dishes_data)} (split)")
         except Exception as e:
             db.session.rollback()
-            app.logger.exception(f"❌ Ошибка автозагрузки menu-database.json в БД: {e}")
+            app.logger.exception(f"❌ Ошибка автозагрузки меню в БД: {e}")
 
     _bootstrap_dishes_from_json_if_empty()
+
+    def _bootstrap_artworks_from_json_if_empty():
+        """
+        Если таблица картин пустая — пробуем загрузить artworks.json.
+        """
+        try:
+            if Artwork.query.first() is not None:
+                return
+            artworks = _load_art_db_items()
+            if not artworks:
+                return
+            for art in artworks:
+                db.session.add(Artwork.from_dict(art))
+            db.session.commit()
+            app.logger.info(f"✅ Загружено в БД картин: {len(artworks)}")
+        except Exception as e:
+            db.session.rollback()
+            app.logger.exception(f"❌ Ошибка автозагрузки картин: {e}")
+
+    _bootstrap_artworks_from_json_if_empty()
 
 # ========== ЗАПУСК СЕРВЕРА ==========
 

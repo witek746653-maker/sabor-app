@@ -88,6 +88,277 @@ class Dish(db.Model):
         return f'<Dish {self.id}: {self.title}>'
 
 
+class KitchenItem(db.Model):
+    """
+    Модель для позиций кухни.
+    """
+
+    __tablename__ = 'kitchen_items'
+
+    id = db.Column(db.String(50), primary_key=True)
+    menu = db.Column(db.String(200))
+    section = db.Column(db.String(200))
+    title = db.Column(db.String(500))
+    description = db.Column(db.Text)
+    contains = db.Column(db.Text)
+    allergens = db.Column(db.Text)
+    tags = db.Column(db.Text)
+    pairings = db.Column(db.Text)
+    image = db.Column(db.Text)
+    i18n = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    def to_dict(self):
+        import json
+        return {
+            'id': self.id,
+            'menu': self.menu,
+            'section': self.section,
+            'title': self.title,
+            'description': self.description,
+            'contains': self.contains,
+            'allergens': json.loads(self.allergens) if self.allergens else [],
+            'tags': json.loads(self.tags) if self.tags else [],
+            'pairings': json.loads(self.pairings) if self.pairings else {},
+            'image': json.loads(self.image) if self.image else {},
+            'i18n': json.loads(self.i18n) if self.i18n else {}
+        }
+
+    @classmethod
+    def from_dict(cls, data):
+        import json
+        item = cls()
+        item.id = data.get('id')
+        item.menu = data.get('menu')
+        item.section = data.get('section')
+        item.title = data.get('title')
+        item.description = data.get('description')
+        item.contains = data.get('contains')
+        item.allergens = json.dumps(data.get('allergens', []), ensure_ascii=False)
+        item.tags = json.dumps(data.get('tags', []), ensure_ascii=False)
+        item.pairings = json.dumps(data.get('pairings', {}), ensure_ascii=False)
+        item.image = json.dumps(data.get('image', {}), ensure_ascii=False)
+        item.i18n = json.dumps(data.get('i18n', {}), ensure_ascii=False)
+        return item
+
+    def __repr__(self):
+        return f'<KitchenItem {self.id}: {self.title}>'
+
+
+class WineItem(db.Model):
+    """
+    Модель для позиций вина.
+    """
+
+    __tablename__ = 'wine_items'
+
+    id = db.Column(db.String(50), primary_key=True)
+    menu = db.Column(db.String(200))
+    section = db.Column(db.String(200))
+    title = db.Column(db.String(500))
+    description = db.Column(db.Text)
+    contains = db.Column(db.Text)
+    allergens = db.Column(db.Text)
+    tags = db.Column(db.Text)
+    pairings = db.Column(db.Text)
+    image = db.Column(db.Text)
+    i18n = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    def to_dict(self):
+        import json
+        return {
+            'id': self.id,
+            'menu': self.menu,
+            'section': self.section,
+            'title': self.title,
+            'description': self.description,
+            'contains': self.contains,
+            'allergens': json.loads(self.allergens) if self.allergens else [],
+            'tags': json.loads(self.tags) if self.tags else [],
+            'pairings': json.loads(self.pairings) if self.pairings else {},
+            'image': json.loads(self.image) if self.image else {},
+            'i18n': json.loads(self.i18n) if self.i18n else {}
+        }
+
+    @classmethod
+    def from_dict(cls, data):
+        import json
+        item = cls()
+        item.id = data.get('id')
+        item.menu = data.get('menu')
+        item.section = data.get('section')
+        item.title = data.get('title')
+        item.description = data.get('description')
+        item.contains = data.get('contains')
+        item.allergens = json.dumps(data.get('allergens', []), ensure_ascii=False)
+        item.tags = json.dumps(data.get('tags', []), ensure_ascii=False)
+        item.pairings = json.dumps(data.get('pairings', {}), ensure_ascii=False)
+        item.image = json.dumps(data.get('image', {}), ensure_ascii=False)
+        item.i18n = json.dumps(data.get('i18n', {}), ensure_ascii=False)
+        return item
+
+    def __repr__(self):
+        return f'<WineItem {self.id}: {self.title}>'
+
+
+class BarItem(db.Model):
+    """
+    Модель для позиций бара.
+    """
+
+    __tablename__ = 'bar_items'
+
+    id = db.Column(db.String(50), primary_key=True)
+    menu = db.Column(db.String(200))
+    section = db.Column(db.String(200))
+    title = db.Column(db.String(500))
+    description = db.Column(db.Text)
+    contains = db.Column(db.Text)
+    allergens = db.Column(db.Text)
+    tags = db.Column(db.Text)
+    pairings = db.Column(db.Text)
+    image = db.Column(db.Text)
+    i18n = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    def to_dict(self):
+        import json
+        return {
+            'id': self.id,
+            'menu': self.menu,
+            'section': self.section,
+            'title': self.title,
+            'description': self.description,
+            'contains': self.contains,
+            'allergens': json.loads(self.allergens) if self.allergens else [],
+            'tags': json.loads(self.tags) if self.tags else [],
+            'pairings': json.loads(self.pairings) if self.pairings else {},
+            'image': json.loads(self.image) if self.image else {},
+            'i18n': json.loads(self.i18n) if self.i18n else {}
+        }
+
+    @classmethod
+    def from_dict(cls, data):
+        import json
+        item = cls()
+        item.id = data.get('id')
+        item.menu = data.get('menu')
+        item.section = data.get('section')
+        item.title = data.get('title')
+        item.description = data.get('description')
+        item.contains = data.get('contains')
+        item.allergens = json.dumps(data.get('allergens', []), ensure_ascii=False)
+        item.tags = json.dumps(data.get('tags', []), ensure_ascii=False)
+        item.pairings = json.dumps(data.get('pairings', {}), ensure_ascii=False)
+        item.image = json.dumps(data.get('image', {}), ensure_ascii=False)
+        item.i18n = json.dumps(data.get('i18n', {}), ensure_ascii=False)
+        return item
+
+    def __repr__(self):
+        return f'<BarItem {self.id}: {self.title}>'
+
+
+class TeaItem(db.Model):
+    """
+    Модель для позиций чая.
+    """
+
+    __tablename__ = 'tea_items'
+
+    id = db.Column(db.String(50), primary_key=True)
+    menu = db.Column(db.String(200))
+    section = db.Column(db.String(200))
+    title = db.Column(db.String(500))
+    description = db.Column(db.Text)
+    contains = db.Column(db.Text)
+    allergens = db.Column(db.Text)
+    tags = db.Column(db.Text)
+    pairings = db.Column(db.Text)
+    image = db.Column(db.Text)
+    i18n = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    def to_dict(self):
+        import json
+        return {
+            'id': self.id,
+            'menu': self.menu,
+            'section': self.section,
+            'title': self.title,
+            'description': self.description,
+            'contains': self.contains,
+            'allergens': json.loads(self.allergens) if self.allergens else [],
+            'tags': json.loads(self.tags) if self.tags else [],
+            'pairings': json.loads(self.pairings) if self.pairings else {},
+            'image': json.loads(self.image) if self.image else {},
+            'i18n': json.loads(self.i18n) if self.i18n else {}
+        }
+
+    @classmethod
+    def from_dict(cls, data):
+        import json
+        item = cls()
+        item.id = data.get('id')
+        item.menu = data.get('menu')
+        item.section = data.get('section')
+        item.title = data.get('title')
+        item.description = data.get('description')
+        item.contains = data.get('contains')
+        item.allergens = json.dumps(data.get('allergens', []), ensure_ascii=False)
+        item.tags = json.dumps(data.get('tags', []), ensure_ascii=False)
+        item.pairings = json.dumps(data.get('pairings', {}), ensure_ascii=False)
+        item.image = json.dumps(data.get('image', {}), ensure_ascii=False)
+        item.i18n = json.dumps(data.get('i18n', {}), ensure_ascii=False)
+        return item
+
+    def __repr__(self):
+        return f'<TeaItem {self.id}: {self.title}>'
+
+
+class Artwork(db.Model):
+    """
+    Модель для картин (сохраняем полный JSON).
+    """
+
+    __tablename__ = 'artworks'
+
+    id = db.Column(db.String(50), primary_key=True)
+    data_json = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    def to_dict(self):
+        import json
+        try:
+            payload = json.loads(self.data_json) if self.data_json else {}
+        except Exception:
+            payload = {}
+        payload = payload if isinstance(payload, dict) else {}
+        if payload.get('id') != self.id:
+            payload['id'] = self.id
+        return payload
+
+    @classmethod
+    def from_dict(cls, data):
+        import json
+        item_id = str(data.get('id') or '').strip()
+        if not item_id:
+            raise ValueError('Artwork id is required')
+        payload = dict(data)
+        payload['id'] = item_id
+        item = cls()
+        item.id = item_id
+        item.data_json = json.dumps(payload, ensure_ascii=False)
+        return item
+
+    def __repr__(self):
+        return f'<Artwork {self.id}>'
+
 class FeedbackMessage(db.Model):
     """
     Модель для сообщений обратной связи от пользователей.

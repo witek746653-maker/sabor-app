@@ -77,17 +77,20 @@ function DishesPage({ mode = 'kitchen' }) {
   const pageTitle = useMemo(() => {
     if (mode === 'wine') return 'Вино';
     if (mode === 'bar') return 'Бар';
+    if (mode === 'tea') return 'Чай';
     return 'Кухня';
   }, [mode]);
 
   const modeFiltered = useMemo(() => {
     const isWine = (dish) => dish?.menu === 'Вино';
     const isBar = (dish) => dish?.menu === 'Барное меню';
+    const isTea = (dish) => dish?.menu === 'Чай';
 
     if (mode === 'wine') return dishes.filter(isWine);
     if (mode === 'bar') return dishes.filter(isBar);
-    // kitchen = всё, кроме вина и бара
-    return dishes.filter((d) => !isWine(d) && !isBar(d));
+    if (mode === 'tea') return dishes.filter(isTea);
+    // kitchen = всё, кроме вина, бара и чая
+    return dishes.filter((d) => !isWine(d) && !isBar(d) && !isTea(d));
   }, [dishes, mode]);
 
   const filteredDishes = useMemo(() => {

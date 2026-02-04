@@ -49,7 +49,7 @@ function formatTime(ts) {
 
 function sourceLabel(source) {
   if (source === 'api') return 'сервер (API)';
-  if (source === 'static') return 'файл сайта (/data/menu-database.json)';
+  if (source === 'static') return 'файл сайта (/data/menu-*.json)';
   if (source === 'cache') return 'кэш браузера (последняя копия)';
   if (source === 'offline-guest') return 'офлайн‑гость (только просмотр)';
   return 'неизвестно';
@@ -333,7 +333,7 @@ export default function StatusBanner() {
                   <summary>Что значит “Источник меню”</summary>
                   <div style={{ marginTop: 6, opacity: 0.9 }}>
                     - <b>сервер (API)</b>: данные пришли с бэкенда (обычно из БД).
-                    <br />- <b>файл сайта</b>: данные взяты из <code>/data/menu-database.json</code> (public).
+                    <br />- <b>файл сайта</b>: данные взяты из <code>/data/menu-*.json</code> (public).
                     <br />- <b>кэш браузера</b>: показана последняя удачная копия (на случай проблем).
                   </div>
                 </details>
@@ -344,8 +344,8 @@ export default function StatusBanner() {
                     Это переключатель <b>только для вашего браузера</b> (хранится в localStorage).
                     <br />
                     <br />- <b>Авто</b>: как обычно — меню берётся из API/БД.
-                    <br />- <b>Файл через бэкенд</b>: быстрый предпросмотр — UI берёт меню из <code>data/menu-database.json</code> через <code>/api/menu-json</code>.
-                    <br />- <b>Файл public</b>: UI берёт меню из <code>frontend/public/data/menu-database.json</code> (URL <code>/data/menu-database.json</code>).
+                    <br />- <b>Файл через бэкенд</b>: быстрый предпросмотр — UI берёт меню из <code>data/menu-*.json</code> через <code>/api/menu-json</code>.
+                    <br />- <b>Файл public</b>: UI берёт меню из <code>frontend/public/data/menu-*.json</code> (URL <code>/data/menu-*.json</code>).
                   </div>
                 </details>
 

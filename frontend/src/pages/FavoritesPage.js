@@ -129,12 +129,10 @@ function FavoritesPage() {
         // 2. Картины (из JSON)
         let artworks = [];
         try {
-          const res = await fetch('/data/menu-database.json', { cache: 'no-store' });
+          const res = await fetch('/data/artworks.json', { cache: 'no-store' });
           if (res.ok) {
             const data = await res.json();
-            artworks = (data || []).filter(it =>
-              it?.source === 'Искусство в Sabor de la Vida' && String(it?.id || '').startsWith('09')
-            );
+            artworks = Array.isArray(data) ? data : [];
           }
         } catch (e) { console.warn('Ошибка загрузки картин:', e); }
 
