@@ -58,3 +58,6 @@ deploy.config.ps1
 
 # Private internal files (do not commit)
 backend/private/
+
+# Uploaded files
+backend/static/uploads/

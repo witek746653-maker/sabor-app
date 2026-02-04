@@ -16,6 +16,7 @@ import signal
 import logging
 import urllib.request
 import urllib.error
+import uuid
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
 from models import (
@@ -578,6 +579,8 @@ _MENU_DB_BY_ID_CACHE = None
 _MENU_DB_BY_ID_CACHE_PATH = None
 _MENU_DB_BY_ID_CACHE_MTIME = None
 
+FEEDBACK_UPLOAD_DIR = ROOT_DIR / "backend" / "static" / "uploads" / "feedback"
+
 # Настройки "деплоя из админки" (по умолчанию выключено — это опасная операция)
 ADMIN_DEPLOY_ENABLED = os.getenv("ADMIN_DEPLOY_ENABLED", "false").lower() == "true"
 DEPLOY_ADMIN_TOKEN = os.getenv("DEPLOY_ADMIN_TOKEN", "").strip()
@@ -627,6 +630,50 @@ def _send_telegram_message(text: str) -> bool:
     except Exception as e:
         app.logger.warning(f"Telegram send failed: {e}")
         return False
+
+def _safe_json_load(raw, fallback):
+    try:
+        return json.loads(raw) if raw else fallback
+    except Exception:
+        return fallback
+
+def _get_file_size(file_storage) -> int:
+    try:
+        pos = file_storage.stream.tell()
+        file_storage.stream.seek(0, os.SEEK_END)
+        size = file_storage.stream.tell()
+        file_storage.stream.seek(pos)
+        return int(size)
+    except Exception:
+        return 0
+
+def _save_feedback_attachments(files: list):
+    allowed_ext = {".png", ".jpg", ".jpeg", ".webp", ".gif"}
+    saved = []
+    FEEDBACK_UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+    files_list = list(files or [])
+    if len(files_list) > 5:
+        raise ValueError("Слишком много вложений")
+    for f in files_list:
+        if not f or not getattr(f, "filename", ""):
+            continue
+        raw_name = secure_filename(f.filename)
+        ext = Path(raw_name).suffix.lower()
+        if ext not in allowed_ext:
+            raise ValueError("Неподдерживаемый тип файла")
+        if not (f.mimetype or "").startswith("image/"):
+            raise ValueError("Неподдерживаемый тип файла")
+        size = _get_file_size(f)
+        unique = f"{uuid.uuid4().hex}{ext or '.png'}"
+        save_path = FEEDBACK_UPLOAD_DIR / unique
+        f.save(save_path)
+        saved.append({
+            "url": f"/static/uploads/feedback/{unique}",
+            "name": raw_name or unique,
+            "size": size,
+            "type": f.mimetype or "image/*",
+        })
+    return saved
 
 def _require_admin():
     """
@@ -2088,20 +2135,49 @@ def submit_feedback():
     if current_user.is_authenticated and (current_user.id == 0 or current_user.id == 'guest'):
         return jsonify({'error': 'Доступ запрещён. Гостевой режим поддерживает только просмотр данных.'}), 403
     try:
-        data = request.json
-        
+        is_multipart = request.content_type and "multipart/form-data" in request.content_type
+        if is_multipart:
+            form = request.form or {}
+            data = {
+                "name": form.get("name", ""),
+                "type": form.get("type", "bug"),
+                "message": form.get("message", ""),
+                "tags": _safe_json_load(form.get("tags"), []),
+                "url": form.get("url", ""),
+                "ts": form.get("ts", ""),
+                "userAgent": form.get("userAgent", ""),
+                "viewport": _safe_json_load(form.get("viewport"), {}),
+                "build": form.get("build", ""),
+            }
+            attachments = _save_feedback_attachments(request.files.getlist("attachments"))
+        else:
+            data = request.json or {}
+            attachments = []
+
         # Проверяем, что есть текст сообщения
         if not data.get('message'):
-            return jsonify({'error': 'Message is required'}), 400
-        
+            return jsonify({'error': 'Message is required', 'message': 'Message is required'}), 400
+
+        meta = {
+            "url": data.get("url", ""),
+            "ts": data.get("ts", ""),
+            "userAgent": data.get("userAgent", ""),
+            "viewport": data.get("viewport", {}),
+            "build": data.get("build", ""),
+        }
+        tags = data.get("tags") if isinstance(data.get("tags"), list) else []
+
         # Создаём новое сообщение
         feedback = FeedbackMessage(
             name=data.get('name', ''),
             type=data.get('type', 'question'),
             message=data.get('message'),
+            tags_json=json.dumps(tags, ensure_ascii=False),
+            meta_json=json.dumps(meta, ensure_ascii=False),
+            attachments_json=json.dumps(attachments, ensure_ascii=False),
             read=False
         )
-        
+
         # Сохраняем в базу данных
         db.session.add(feedback)
         db.session.commit()
@@ -2113,19 +2189,26 @@ def submit_feedback():
                 f"ID: {feedback.id}",
                 f"Тип: {feedback.type}",
                 f"Имя: {feedback.name or '—'}",
+                f"Теги: {', '.join(tags) if tags else '—'}",
+                f"URL: {meta.get('url') or '—'}",
                 "Сообщение:",
                 feedback.message or '',
             ]
+            if attachments:
+                message_lines.append(f"Вложения: {len(attachments)}")
+                message_lines.extend([a.get("url") or "" for a in attachments])
             _send_telegram_message("\n".join(message_lines).strip())
         except Exception as e:
             app.logger.warning(f"Telegram notify failed: {e}")
-        
+
         return jsonify({'status': 'ok', 'message': 'Сообщение отправлено', 'id': feedback.id})
+    except ValueError as e:
+        return jsonify({'error': str(e), 'message': str(e)}), 400
     except Exception as e:
         db.session.rollback()
         if _is_readonly_db_error(e):
             return _readonly_db_response()
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': str(e), 'message': str(e)}), 500
 
 @app.route('/api/admin/feedback', methods=['GET'])
 @login_required
@@ -3046,6 +3129,7 @@ with app.app_context():
     db.create_all()
     # Автоматически разложим legacy menu-database.json на split-файлы
     _ensure_split_menu_files()
+    skip_bootstrap = _env_bool("SABOR_SKIP_BOOTSTRAP", False)
 
     def _bootstrap_admin_if_configured():
         """
@@ -3086,7 +3170,8 @@ with app.app_context():
             db.session.rollback()
             app.logger.exception(f"❌ Не удалось создать bootstrap-админа: {e}")
 
-    _bootstrap_admin_if_configured()
+    if not skip_bootstrap:
+        _bootstrap_admin_if_configured()
 
     def _bootstrap_dishes_from_json_if_empty():
         """
@@ -3118,7 +3203,8 @@ with app.app_context():
             db.session.rollback()
             app.logger.exception(f"❌ Ошибка автозагрузки меню в БД: {e}")
 
-    _bootstrap_dishes_from_json_if_empty()
+    if not skip_bootstrap:
+        _bootstrap_dishes_from_json_if_empty()
 
     def _bootstrap_artworks_from_json_if_empty():
         """
@@ -3138,7 +3224,8 @@ with app.app_context():
             db.session.rollback()
             app.logger.exception(f"❌ Ошибка автозагрузки картин: {e}")
 
-    _bootstrap_artworks_from_json_if_empty()
+    if not skip_bootstrap:
+        _bootstrap_artworks_from_json_if_empty()
 
 # ========== ЗАПУСК СЕРВЕРА ==========
 

@@ -2,6 +2,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
+import json
 
 # Создаём объект для работы с базой данных
 # (он будет инициализирован в app.py)
@@ -374,6 +375,9 @@ class FeedbackMessage(db.Model):
     name = db.Column(db.String(200))  # Имя пользователя (необязательно)
     type = db.Column(db.String(50), default='question')  # Тип сообщения: question, bug, suggestion, greeting
     message = db.Column(db.Text, nullable=False)  # Текст сообщения (обязательно)
+    tags_json = db.Column(db.Text)  # JSON-массив тегов
+    meta_json = db.Column(db.Text)  # JSON с тех.данными
+    attachments_json = db.Column(db.Text)  # JSON-массив вложений
     read = db.Column(db.Boolean, default=False)  # Прочитано ли сообщение админом
     created_at = db.Column(db.DateTime, default=datetime.utcnow)  # Дата создания
     
@@ -382,11 +386,19 @@ class FeedbackMessage(db.Model):
         Преобразует объект сообщения в словарь (для JSON ответа).
         Используется, когда отправляем данные на фронтенд.
         """
+        def _safe_json(raw, fallback):
+            try:
+                return json.loads(raw) if raw else fallback
+            except Exception:
+                return fallback
         return {
             'id': self.id,
             'name': self.name,
             'type': self.type,
             'message': self.message,
+            'tags': _safe_json(self.tags_json, []),
+            'meta': _safe_json(self.meta_json, {}),
+            'attachments': _safe_json(self.attachments_json, []),
             'read': self.read,
             'created_at': self.created_at.isoformat() if self.created_at else None
         }

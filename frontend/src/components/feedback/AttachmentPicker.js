@@ -1,0 +1,108 @@
+import React, { useRef, useState } from 'react';
+import ScreenshotCapture from './ScreenshotCapture';
+import styles from './FeedbackWidget.module.css';
+
+/**
+ * @typedef {Object} FeedbackAttachment
+ * @property {string} id
+ * @property {File} file
+ * @property {string} previewUrl
+ * @property {'file'|'screenshot'} source
+ */
+
+/**
+ * @param {{
+ *  attachments: FeedbackAttachment[],
+ *  onChange: (items: FeedbackAttachment[]) => void
+ * }} props
+ */
+export default function AttachmentPicker({ attachments, onChange }) {
+  const inputRef = useRef(null);
+  const [reshootId, setReshootId] = useState('');
+
+  const addFiles = (files, source) => {
+    const list = Array.from(files || []);
+    const next = list.map((file) => ({
+      id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+      file,
+      previewUrl: URL.createObjectURL(file),
+      source,
+    }));
+    onChange([...attachments, ...next]);
+  };
+
+  const handleAttach = (e) => {
+    if (!e.target.files?.length) return;
+    addFiles(e.target.files, 'file');
+    e.target.value = '';
+  };
+
+  const handleRemove = (id) => {
+    const item = attachments.find((a) => a.id === id);
+    if (item?.previewUrl) URL.revokeObjectURL(item.previewUrl);
+    onChange(attachments.filter((a) => a.id !== id));
+  };
+
+  const handleScreenshotAdd = (file) => {
+    if (reshootId) {
+      const prev = attachments.find((a) => a.id === reshootId);
+      if (prev?.previewUrl) URL.revokeObjectURL(prev.previewUrl);
+      const next = attachments.map((a) =>
+        a.id === reshootId
+          ? { ...a, file, previewUrl: URL.createObjectURL(file), source: 'screenshot' }
+          : a
+      );
+      onChange(next);
+      setReshootId('');
+      return;
+    }
+    addFiles([file], 'screenshot');
+  };
+
+  return (
+    <div className={styles.attachmentsBlock}>
+      <div className={styles.attachmentButtons}>
+        <button className={styles.btn} type="button" onClick={() => inputRef.current?.click()}>
+          Прикрепить
+        </button>
+        <ScreenshotCapture onAdd={handleScreenshotAdd} />
+        <input
+          ref={inputRef}
+          type="file"
+          accept="image/*"
+          onChange={handleAttach}
+          hidden
+        />
+      </div>
+      {reshootId && <div className={styles.metaNote}>Нажмите “Скриншот”, чтобы переснять</div>}
+
+      {attachments.length > 0 && (
+        <div className={styles.attachmentList}>
+          {attachments.map((item) => (
+            <div key={item.id} className={styles.attachmentItem}>
+              <img src={item.previewUrl} alt="" className={styles.attachmentPreview} />
+              <div className={styles.attachmentActions}>
+                <button
+                  type="button"
+                  className={styles.miniButton}
+                  onClick={() => handleRemove(item.id)}
+                >
+                  Удалить
+                </button>
+                {item.source === 'screenshot' && (
+                  <button
+                    type="button"
+                    className={styles.miniButton}
+                    onClick={() => setReshootId(item.id)}
+                  >
+                    Переснять
+                  </button>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}

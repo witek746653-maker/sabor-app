@@ -171,6 +171,33 @@ function FeedbackMessagesPage() {
               <p className="text-text-primary-light dark:text-text-primary-dark text-base leading-relaxed mb-3 whitespace-pre-wrap">
                 {message.message}
               </p>
+              {Array.isArray(message.tags) && message.tags.length > 0 && (
+                <div className="flex flex-wrap gap-2 mb-3">
+                  {message.tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="px-2 py-1 rounded-full text-xs bg-gray-100 dark:bg-white/10 text-text-secondary-light dark:text-text-secondary-dark"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
+              {Array.isArray(message.attachments) && message.attachments.length > 0 && (
+                <div className="grid grid-cols-2 gap-2 mb-3">
+                  {message.attachments.map((att, idx) => (
+                    <a
+                      key={`${message.id}-${idx}`}
+                      href={att.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="block border border-gray-100 dark:border-white/10 rounded-lg overflow-hidden"
+                    >
+                      <img src={att.url} alt={att.name || ''} className="w-full h-24 object-cover" />
+                    </a>
+                  ))}
+                </div>
+              )}
 
               <div className="flex justify-between items-center pt-3 border-t border-gray-100 dark:border-white/5">
                 <span className="text-xs text-text-secondary-light dark:text-text-secondary-dark">

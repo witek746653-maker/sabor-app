@@ -580,6 +580,40 @@ export const submitFeedback = async (feedbackData) => {
   return response.data;
 };
 
+/**
+ * @typedef {Object} FeedbackPayload
+ * @property {string} message
+ * @property {string[]} tags
+ * @property {string} url
+ * @property {string} ts
+ * @property {string} userAgent
+ * @property {{w:number,h:number}} viewport
+ * @property {File[]} attachments
+ * @property {string=} build
+ */
+
+/**
+ * sendReport (multipart /api/feedback)
+ * @param {FeedbackPayload} payload
+ */
+export const sendReport = async (payload) => {
+  const form = new FormData();
+  form.append('message', payload.message || '');
+  form.append('tags', JSON.stringify(payload.tags || []));
+  form.append('url', payload.url || '');
+  form.append('ts', payload.ts || '');
+  form.append('userAgent', payload.userAgent || '');
+  form.append('viewport', JSON.stringify(payload.viewport || {}));
+  if (payload.build) form.append('build', payload.build);
+  (payload.attachments || []).forEach((file) => {
+    form.append('attachments', file, file.name);
+  });
+  const response = await api.post('/api/feedback', form, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+  return response.data;
+};
+
 export const getFeedbackMessages = async () => {
   const response = await api.get('/api/admin/feedback');
   return response.data;

@@ -8,6 +8,7 @@ import { VisibilityProvider, useVisibility } from './contexts/VisibilityContext'
 import ErrorBoundary from './components/ErrorBoundary';
 import SentryContextTracker from './components/SentryContextTracker';
 import StatusBanner from './components/StatusBanner';
+import FeedbackWidget from './components/feedback/FeedbackWidget';
 import HomePage from './pages/HomePage';
 import MenuPage from './pages/MenuPage';
 import DishDetailPage from './pages/DishDetailPage';
@@ -109,6 +110,7 @@ function App() {
                       <SentryContextTracker />
                       {/* Индикатор статуса сервера/источника данных (виден и пользователю, и админу) */}
                       <StatusBanner />
+                      <FeedbackWidget />
                     <FavoritesSyncOnRouteChange />
                       <Routes>
                       {/* Публичные маршруты */}
