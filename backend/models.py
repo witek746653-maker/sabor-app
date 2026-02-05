@@ -1,4 +1,5 @@
-from flask_sqlalchemy import SQLAlchemy
+
+from backend.extensions import db
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
@@ -6,9 +7,10 @@ import json
 
 # Создаём объект для работы с базой данных
 # (он будет инициализирован в app.py)
-db = SQLAlchemy()
+# db = SQLAlchemy()
 
 class Dish(db.Model):
+
     """
     Модель для блюда (dish).
     

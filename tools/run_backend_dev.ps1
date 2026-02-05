@@ -23,8 +23,8 @@ Write-Host "SABOR_DB_PATH = $env:SABOR_DB_PATH" -ForegroundColor DarkGray
 
 Push-Location (Join-Path $RepoRoot "backend")
 try {
-  # Запускаем Flask-приложение
-  python app.py
+  # Запускаем Flask-приложение (через новую точку входа)
+  python wsgi.py
 } finally {
   Pop-Location
 }

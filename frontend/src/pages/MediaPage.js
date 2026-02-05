@@ -131,23 +131,28 @@ const MediaPage = () => {
   useEffect(() => {
     const player = audioRef.current;
     if (!player) return;
-    player.pause();
-    // Применяем выбранную скорость при смене трека.
-    player.playbackRate = playbackRate;
-    setIsPlaying(false);
-    if (!currentId) {
-      setCurrentTime(0);
-      return;
+
+    // ВАЖНО: Мы НЕ вызываем player.pause() здесь при каждом обновлении прогресса.
+    // Теперь этот эффект срабатывает только при смене самого подкаста (currentId).
+    if (currentId) {
+      player.pause();
+      setIsPlaying(false);
+
+      // Применяем выбранную скорость при смене трека.
+      player.playbackRate = playbackRate;
+
+      const savedProgress = progressById[currentId];
+      // Безопасно вычисляем время начала
+      const safeProgress = Math.min(Math.max(savedProgress || 0, 0), player.duration || 0);
+
+      // Если метаданные уже загружены, можем установить время сразу.
+      // Но основной сброс времени будет происходить в handleDurationLoaded.
+      if (Number.isFinite(player.duration) && player.duration > 0) {
+        player.currentTime = safeProgress;
+      }
+      setCurrentTime(safeProgress);
     }
-    const savedProgress = progressById[currentId];
-    // Функция clampProgress должна быть определена или мы используем Math.min/max
-    const safeProgress = Math.min(Math.max(savedProgress || 0, 0), player.duration || 0);
-    // Восстанавливаем позицию воспроизведения из localStorage.
-    if (Number.isFinite(player.duration) && player.duration > 0) {
-      player.currentTime = safeProgress;
-    }
-    setCurrentTime(safeProgress);
-  }, [currentId, playbackRate, progressById]);
+  }, [currentId]);
 
   const handleBack = () => {
     if (sessionStorage.getItem('fromSearch') === 'true') {
