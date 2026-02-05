@@ -6,8 +6,8 @@
 import os
 os.environ.setdefault("SABOR_SKIP_BOOTSTRAP", "true")
 
-from models import db
-from app import app
+from backend.models import db
+from backend.app import app
 
 def migrate_feedback_attachments():
     print("[INFO] Миграция feedback_messages: attachments/meta/tags")

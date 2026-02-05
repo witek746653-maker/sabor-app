@@ -10,8 +10,8 @@
   py reset_password.py
 """
 
-from app import app
-from models import db, User
+from backend.app import app
+from backend.models import db, User
 
 
 def reset_password():

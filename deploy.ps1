@@ -147,9 +147,17 @@ if ($SkipUpload) {
   Start-Sleep -Seconds 2
 
 
-  # 2) Бэкенд (код)
-  $backendFiles = @("app.py", "models.py", "migrate_to_db.py") | ForEach-Object { Join-Path $PSScriptRoot ("backend\" + $_) }
-  Run "scp" ($CommonSshArgs + $backendFiles + @("${RemoteScpPrefix}/backend/"))
+  # 2) Бэкенд (весь необходимый код)
+  # Используем список файлов и папок, чтобы случайно не залить локальную базу database.db или .env
+  $backendItems = @(
+    "app.py", "app_factory.py", "models.py", "config.py", "extensions.py", 
+    "utils.py", "migrate_to_db.py", "requirements.txt", "wsgi.py",
+    "routes", "services"
+  ) | ForEach-Object { Join-Path $PSScriptRoot ("backend\" + $_) }
+
+  Run "ssh" ($CommonSshArgs + @($Remote, "sudo rm -rf $RemoteRoot/backend/* && sudo mkdir -p $RemoteRoot/backend"))
+  
+  Run "scp" ($CommonSshArgs + @("-r") + $backendItems + @("${RemoteScpPrefix}/backend/"))
   Start-Sleep -Seconds 2
 
   # 3) Фронтенд build (если не пропущен)
@@ -158,7 +166,7 @@ if ($SkipUpload) {
     # Важно: scp НЕ удаляет старые файлы на сервере.
     # Поэтому "мусор" от прошлых сборок (например, старые PDF в /menus/) может остаться и продолжать открываться.
     # KISS-решение: перед загрузкой удаляем старую папку build на сервере.
-    Run "ssh" ($CommonSshArgs + @($Remote, "rm -rf $RemoteRoot/frontend/build && mkdir -p $RemoteRoot/frontend"))
+    Run "ssh" ($CommonSshArgs + @($Remote, "sudo rm -rf $RemoteRoot/frontend/build && sudo mkdir -p $RemoteRoot/frontend"))
     Start-Sleep -Seconds 2
     Run "scp" ($CommonSshArgs + @("-r", $buildPath, "${RemoteScpPrefix}/frontend/"))
     Start-Sleep -Seconds 2
@@ -171,7 +179,7 @@ if (-not $SkipMigrate) {
     Write-Host "Skipping migrate because -SkipUpload is set (no guarantee server has updated JSON/scripts)." -ForegroundColor Yellow
   } else {
     Start-Sleep -Seconds 3
-    Run "ssh" ($CommonSshArgs + @($Remote, "cd $RemoteRoot/backend && ../venv/bin/python3 migrate_to_db.py --yes"))
+    Run "ssh" ($CommonSshArgs + @($Remote, "cd $RemoteRoot && PYTHONPATH=. ./venv/bin/python3 backend/migrate_to_db.py --yes"))
   }
 } else {
   Info "DB migration skipped (-SkipMigrate)"
@@ -182,7 +190,7 @@ if ($SkipUpload) {
   Write-Host "Skipping restart because -SkipUpload is set." -ForegroundColor Yellow
 } else {
   Start-Sleep -Seconds 3
-  Run "ssh" ($CommonSshArgs + @($Remote, "systemctl restart $ServiceName"))
+  Run "ssh" ($CommonSshArgs + @($Remote, "sudo systemctl restart $ServiceName"))
 }
 
 Info "Quick check (open in browser)"

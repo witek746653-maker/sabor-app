@@ -1,9 +1,5 @@
 
-import sys
-import os
-
-# Add project root to path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+# Test script for absolute environment
 
 from backend.app_factory import create_app
 

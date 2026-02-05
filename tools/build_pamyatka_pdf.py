@@ -187,7 +187,7 @@ def build_pdf():
     story.append(Paragraph("3) Как скачать актуальную базу (самая важная команда)", styles["h1"]))
     story.append(Paragraph("Запускать в PowerShell на компьютере:", styles["body"]))
     story.append(code_block(
-        "scp root@85.198.98.16:/var/lib/sabor-app/database.db "
+        "scp romka@85.198.98.16:/var/lib/sabor-app/database.db "
         "D:\\GitHub\\sabor-app\\backend\\database.dev.db",
         styles,
     ))
@@ -269,7 +269,7 @@ def build_pdf():
     story.append(Paragraph("12) Мини‑шпаргалка (очень коротко)", styles["h1"]))
     story.append(Paragraph("Обновить базу → запустить backend → открыть админку", styles["body"]))
     story.append(code_block(
-        "scp root@85.198.98.16:/var/lib/sabor-app/database.db "
+        "scp romka@85.198.98.16:/var/lib/sabor-app/database.db "
         "D:\\GitHub\\sabor-app\\backend\\database.dev.db\n"
         "cd D:\\GitHub\\sabor-app\n"
         "powershell -ExecutionPolicy Bypass -File .\\tools\\run_backend_dev.ps1",

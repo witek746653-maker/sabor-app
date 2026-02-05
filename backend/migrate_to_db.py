@@ -14,8 +14,9 @@
 
 import argparse
 from pathlib import Path
-from app import app, _load_menu_db_items, _load_art_db_items, _split_menu_items, _dedupe_menu_items
-from models import db, KitchenItem, WineItem, BarItem, TeaItem, Artwork
+from backend.app import app
+from backend.services.menu_service import MenuService
+from backend.models import db, KitchenItem, WineItem, BarItem, TeaItem, Artwork
 
 # Путь к файлам с данными
 ROOT_DIR = Path(__file__).resolve().parent.parent
@@ -42,8 +43,8 @@ def migrate():
         
         # Читаем данные из JSON (split/legacy)
         print(f"\n📖 Читаем данные из JSON...")
-        dishes_data = _load_menu_db_items()
-        art_data = _load_art_db_items()
+        dishes_data = MenuService.load_menu_db_items()
+        art_data = MenuService.load_art_db_items()
         if not isinstance(dishes_data, list):
             print("❌ JSON меню должен быть списком объектов (list). Миграция остановлена.")
             return
@@ -56,7 +57,7 @@ def migrate():
         # Важно: в menu-database.json иногда встречаются повторяющиеся id (или id с пробелами).
         # В SQLite поле id — PRIMARY KEY, поэтому дубликаты ломают миграцию (UNIQUE constraint failed).
         # Решение KISS: нормализуем id (str + trim) и оставляем ПОСЛЕДНЮЮ запись для каждого id.
-        dishes_data, duplicates, skipped_no_id = _dedupe_menu_items(dishes_data)
+        dishes_data, duplicates, skipped_no_id = MenuService.dedupe_menu_items(dishes_data)
         if duplicates or skipped_no_id:
             print(f"ℹ️  Дедупликация меню: убрано дублей id = {duplicates}, пропущено без id = {skipped_no_id}")
         print(f"✅ К загрузке в БД меню: {len(dishes_data)} уникальных позиций")
@@ -85,7 +86,7 @@ def migrate():
         success_count = 0
         error_count = 0
         
-        parts = _split_menu_items(dishes_data)
+        parts = MenuService.split_menu_items(dishes_data)
         ordered_groups = [
             ("кухня", KitchenItem, parts.get("kitchen", [])),
             ("вино", WineItem, parts.get("wine", [])),

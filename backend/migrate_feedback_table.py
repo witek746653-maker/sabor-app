@@ -8,8 +8,8 @@
 import sqlite3
 from pathlib import Path
 import os
-from app import app
-from models import db, FeedbackMessage
+from backend.app import app
+from backend.models import db, FeedbackMessage
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
 

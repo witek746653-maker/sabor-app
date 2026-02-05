@@ -3,8 +3,9 @@
 Удаляет старые данные и загружает заново (kitchen/wine/bar/artworks).
 """
 
-from app import app, _load_menu_db_items, _load_art_db_items, _split_menu_items
-from models import db, KitchenItem, WineItem, BarItem, TeaItem, Artwork
+from backend.app import app
+from backend.services.menu_service import MenuService
+from backend.models import db, KitchenItem, WineItem, BarItem, TeaItem, Artwork
 
 def migrate_force():
     """Принудительная миграция - удаляет старые данные и загружает заново"""
@@ -26,8 +27,8 @@ def migrate_force():
         print("[OK] Старые данные удалены!")
 
         print("\n[INFO] Читаем данные из JSON...")
-        dishes_data = _load_menu_db_items()
-        art_data = _load_art_db_items()
+        dishes_data = MenuService.load_menu_db_items()
+        art_data = MenuService.load_art_db_items()
         if not isinstance(dishes_data, list):
             print("[ERROR] Меню JSON не найден или не list")
             return
@@ -40,7 +41,7 @@ def migrate_force():
         success_count = 0
         error_count = 0
 
-        parts = _split_menu_items(dishes_data)
+        parts = MenuService.split_menu_items(dishes_data)
         ordered_groups = [
             ("кухня", KitchenItem, parts.get("kitchen", [])),
             ("вино", WineItem, parts.get("wine", [])),
