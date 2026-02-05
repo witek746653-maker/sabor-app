@@ -539,8 +539,8 @@ function MenuPage({ mode }) {
                   localStorage.setItem('menuLanguage', newLanguage);
                 }}
                 className={`text-xs font-bold leading-normal tracking-[0.015em] shrink-0 border rounded-lg px-2 py-1 transition-colors ${language === 'EN'
-                    ? 'bg-primary text-white border-primary'
-                    : 'text-primary border-primary/30 hover:bg-primary hover:text-white'
+                  ? 'bg-primary text-white border-primary'
+                  : 'text-primary border-primary/30 hover:bg-primary hover:text-white'
                   }`}
               >
                 {language === 'RU' ? 'EN' : 'RU'}
@@ -592,8 +592,8 @@ function MenuPage({ mode }) {
                   setShowTagFilter(false);
                 }}
                 className={`flex h-8 shrink-0 items-center justify-center gap-x-1 rounded-full border px-3 transition-transform active:scale-95 shadow-sm ${selectedSection !== 'all'
-                    ? 'bg-primary text-white border-primary'
-                    : 'bg-white dark:bg-surface-dark border-gray-200 dark:border-gray-700'
+                  ? 'bg-primary text-white border-primary'
+                  : 'bg-white dark:bg-surface-dark border-gray-200 dark:border-gray-700'
                   }`}
               >
                 <p className={`text-xs font-medium ${selectedSection !== 'all' ? 'text-white' : 'text-[#181311] dark:text-gray-200'}`}>{language === 'EN' ? 'Category' : 'Раздел'}</p>
@@ -609,8 +609,8 @@ function MenuPage({ mode }) {
                   setShowTagFilter(false);
                 }}
                 className={`flex h-8 shrink-0 items-center justify-center gap-x-1 rounded-full border px-3 transition-transform active:scale-95 shadow-sm ${selectedAllergens.length > 0
-                    ? 'bg-primary text-white border-primary'
-                    : 'bg-white dark:bg-surface-dark border-gray-200 dark:border-gray-700'
+                  ? 'bg-primary text-white border-primary'
+                  : 'bg-white dark:bg-surface-dark border-gray-200 dark:border-gray-700'
                   }`}
               >
                 <p className={`text-xs font-medium ${selectedAllergens.length > 0 ? 'text-white' : 'text-[#181311] dark:text-gray-200'}`}>{language === 'EN' ? 'Allergens' : 'Аллергены'}</p>
@@ -626,8 +626,8 @@ function MenuPage({ mode }) {
                   setShowAllergenFilter(false);
                 }}
                 className={`flex h-8 shrink-0 items-center justify-center gap-x-1 rounded-full border px-3 shadow-sm transition-transform active:scale-95 ${selectedTags.length > 0
-                    ? 'bg-primary text-white border-primary'
-                    : 'bg-white dark:bg-surface-dark border-gray-200 dark:border-gray-700'
+                  ? 'bg-primary text-white border-primary'
+                  : 'bg-white dark:bg-surface-dark border-gray-200 dark:border-gray-700'
                   }`}
               >
                 <p className={`text-xs font-semibold ${selectedTags.length > 0 ? 'text-white' : 'text-[#181311] dark:text-gray-200'}`}>{language === 'EN' ? 'Tags' : 'Теги'}</p>
@@ -823,8 +823,6 @@ function MenuPage({ mode }) {
 
               const isWine = isWineItem(dish);
               const isBar = isBarItem(dish);
-              const isRegularDish = !isWine && !isBar;
-              const allergens = getAllergensForLanguage(dish);
               const cardIngredients = parseCardIngredients(dish.cardIngredients);
 
               return (
@@ -864,23 +862,7 @@ function MenuPage({ mode }) {
                       <h3 className="font-bold text-[11px] leading-[1.2] dark:text-white line-clamp-2 mb-1 group-hover:text-primary transition-colors duration-200">
                         {getFieldValue(dish, 'title') || (language === 'EN' ? 'No title' : 'Без названия')}
                       </h3>
-                      {isRegularDish && allergens.length > 0 && (
-                        <div className="flex flex-wrap items-center gap-1 mb-2 text-[9px] text-[#896f61] dark:text-gray-400 leading-tight opacity-90">
-                          <span className="font-semibold">
-                            {language === 'EN' ? 'Allergens:' : 'Аллергены:'}
-                          </span>
-                          {allergens.map((allergen, idx) => {
-                            const { icon, label } = getAllergenDisplay(allergen);
-                            return (
-                              <span key={`${dish.id}-allergen-${idx}`} className="inline-flex items-center gap-1">
-                                {idx > 0 && <span className="text-[8px] opacity-60">•</span>}
-                                <span className="text-[10px] leading-none">{icon}</span>
-                                <span className="uppercase font-semibold">{label}</span>
-                              </span>
-                            );
-                          })}
-                        </div>
-                      )}
+
                       {isBar ? (
                         cardIngredients.length > 0 && (
                           <div className="flex flex-wrap gap-1 mb-2">
@@ -902,20 +884,7 @@ function MenuPage({ mode }) {
                           </p>
                         )
                       )}
-                      {isWine && (
-                        <div className="mt-auto flex items-center justify-between pt-1.5 border-t border-dashed border-gray-100 dark:border-gray-700">
-                          {allergens.length > 0 && (
-                            <div className="flex items-center gap-1">
-                              <span className="material-symbols-outlined text-gray-400 dark:text-gray-500 text-[12px]">
-                                {getAllergenIcon(allergens[0])}
-                              </span>
-                              <span className="text-[8px] text-gray-400 uppercase font-semibold">
-                                {allergens[0].substring(0, 5)}
-                              </span>
-                            </div>
-                          )}
-                        </div>
-                      )}
+
                     </div>
                   </div>
 
@@ -936,21 +905,21 @@ function MenuPage({ mode }) {
       <div className="fixed bottom-0 z-50 w-full sabor-fixed bg-white/95 dark:bg-surface-dark/95 backdrop-blur-md border-t border-gray-100 dark:border-gray-800 pb-safe">
         <div
           className={`grid ${(() => {
-              const showFooterMenu = isVisible({ scope: 'menuItem', target: 'footer.menu' });
-              const showFooterFavorites = isVisible({ scope: 'menuItem', target: 'footer.favorites' });
-              const showFooterSearch = isVisible({ scope: 'menuItem', target: 'footer.search' });
-              const showFooterAdmin =
-                isAuthenticated &&
-                !isGuest &&
-                currentUser?.role === 'администратор' &&
-                isVisible({ scope: 'menuItem', target: 'footer.admin' });
-              const itemCount =
-                (showFooterMenu ? 1 : 0) +
-                (showFooterFavorites ? 1 : 0) +
-                (showFooterSearch ? 1 : 0) +
-                (showFooterAdmin ? 1 : 0);
-              return itemCount >= 4 ? 'grid-cols-4' : 'grid-cols-3';
-            })()
+            const showFooterMenu = isVisible({ scope: 'menuItem', target: 'footer.menu' });
+            const showFooterFavorites = isVisible({ scope: 'menuItem', target: 'footer.favorites' });
+            const showFooterSearch = isVisible({ scope: 'menuItem', target: 'footer.search' });
+            const showFooterAdmin =
+              isAuthenticated &&
+              !isGuest &&
+              currentUser?.role === 'администратор' &&
+              isVisible({ scope: 'menuItem', target: 'footer.admin' });
+            const itemCount =
+              (showFooterMenu ? 1 : 0) +
+              (showFooterFavorites ? 1 : 0) +
+              (showFooterSearch ? 1 : 0) +
+              (showFooterAdmin ? 1 : 0);
+            return itemCount >= 4 ? 'grid-cols-4' : 'grid-cols-3';
+          })()
             } px-6 items-center h-[60px]`}
         >
           {isVisible({ scope: 'menuItem', target: 'footer.menu' }) && (
@@ -969,10 +938,10 @@ function MenuPage({ mode }) {
               disabled={isGuest}
               title={isGuest ? 'Доступно после входа' : (language === 'EN' ? 'Favorites' : 'Избранное')}
               className={`flex flex-col items-center justify-center gap-1 transition-colors ${isGuest
-                  ? 'opacity-50 cursor-not-allowed text-gray-400'
-                  : showFavorites || favorites.length > 0
-                    ? 'text-primary'
-                    : 'text-gray-400 hover:text-[#181311] dark:hover:text-white'
+                ? 'opacity-50 cursor-not-allowed text-gray-400'
+                : showFavorites || favorites.length > 0
+                  ? 'text-primary'
+                  : 'text-gray-400 hover:text-[#181311] dark:hover:text-white'
                 }`}
             >
               <span className={`material-symbols-outlined text-[24px] ${showFavorites || favorites.length > 0 ? 'fill-1' : ''}`}>
