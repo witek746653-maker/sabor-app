@@ -61,7 +61,7 @@ class Config:
     MENUS_DIR = FRONTEND_PUBLIC_DIR / "menus"
     TRAINER_DIR = FRONTEND_PUBLIC_DIR / "trainer"
     SCRIPTS_DIR = FRONTEND_PUBLIC_DIR / "scripts"
-    TOOLS_DIR = FRONTEND_PUBLIC_DIR / "tools"  # New
+    TOOLS_DIR = BACKEND_DIR / "static" / "tools"
 
     # Frontend Build Paths
     FRONTEND_BUILD_DIR = ROOT_DIR / "frontend" / "build"
@@ -97,7 +97,7 @@ class Config:
     FEEDBACK_UPLOAD_DIR = BACKEND_DIR / "static" / "uploads" / "feedback"
 
     # Tools Registry
-    TOOLS_REGISTRY_PATH = MENU_DB_DIR / "tools-registry.json"
+    TOOLS_REGISTRY_PATH = TOOLS_DIR / "registry.json"
 
     # Feature Flags / External Services
     ADMIN_DEPLOY_ENABLED = os.getenv("ADMIN_DEPLOY_ENABLED", "false").lower() == "true"

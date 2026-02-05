@@ -36,6 +36,7 @@ import SearchPage from './pages/SearchPage';
 import MediaPage from './pages/MediaPage';
 import ArticlesListPage from './pages/ArticlesListPage';
 import ArticleReaderPage from './pages/ArticleReaderPage';
+import ToolsPage from './pages/ToolsPage';
 import './App.css';
 import { useFavorites } from './contexts/FavoritesContext';
 
@@ -111,146 +112,147 @@ function App() {
                       {/* Индикатор статуса сервера/источника данных (виден и пользователю, и админу) */}
                       <StatusBanner />
                       <FeedbackWidget />
-                    <FavoritesSyncOnRouteChange />
+                      <FavoritesSyncOnRouteChange />
                       <Routes>
-                      {/* Публичные маршруты */}
-                      <Route
-                        path="/"
-                        element={
-                          <VisibilityRoute
-                            scope="route"
-                            target="/"
-                            linkedMenuItemTarget="footer.menu"
-                            fallbackTo={null}
-                          >
-                            <HomePage />
-                          </VisibilityRoute>
-                        }
-                      />
-                      <Route path="/menu/:menuName" element={<MenuPage />} />
-                      <Route path="/dish/:id" element={<DishDetailPage />} />
-                      <Route path="/tea" element={<MenuPage mode="tea" />} />
-                      <Route path="/tea/:id" element={<DishDetailPage mode="tea" />} />
-                      <Route path="/tea/:id/edit" element={<DishEditPage mode="tea" />} />
-                      <Route
-                        path="/wine-menu"
-                        element={
-                          <VisibilityRoute scope="route" target="/wine-menu">
-                            <WineMenuPage />
-                          </VisibilityRoute>
-                        }
-                      />
-                      <Route
-                        path="/wine-catalog"
-                        element={
-                          <VisibilityRoute scope="route" target="/wine-catalog">
-                            <WineCatalogPage />
-                          </VisibilityRoute>
-                        }
-                      />
-                      <Route
-                        path="/wine-catalog/:category"
-                        element={
-                          <VisibilityRoute scope="route" target="/wine-catalog">
-                            <WineCatalogPage />
-                          </VisibilityRoute>
-                        }
-                      />
-                      {/* Новые детальные страницы */}
-                      <Route
-                        path="/wine/:id"
-                        element={
-                          <VisibilityRoute scope="route" target="/wine/:id">
-                            <WineDetailPage />
-                          </VisibilityRoute>
-                        }
-                      />
-                      <Route
-                        path="/bar/:id"
-                        element={
-                          <VisibilityRoute scope="route" target="/bar/:id">
-                            <BarItemDetailPage />
-                          </VisibilityRoute>
-                        }
-                      />
+                        {/* Публичные маршруты */}
+                        <Route
+                          path="/"
+                          element={
+                            <VisibilityRoute
+                              scope="route"
+                              target="/"
+                              linkedMenuItemTarget="footer.menu"
+                              fallbackTo={null}
+                            >
+                              <HomePage />
+                            </VisibilityRoute>
+                          }
+                        />
+                        <Route path="/menu/:menuName" element={<MenuPage />} />
+                        <Route path="/dish/:id" element={<DishDetailPage />} />
+                        <Route path="/tea" element={<MenuPage mode="tea" />} />
+                        <Route path="/tea/:id" element={<DishDetailPage mode="tea" />} />
+                        <Route path="/tea/:id/edit" element={<DishEditPage mode="tea" />} />
+                        <Route
+                          path="/wine-menu"
+                          element={
+                            <VisibilityRoute scope="route" target="/wine-menu">
+                              <WineMenuPage />
+                            </VisibilityRoute>
+                          }
+                        />
+                        <Route
+                          path="/wine-catalog"
+                          element={
+                            <VisibilityRoute scope="route" target="/wine-catalog">
+                              <WineCatalogPage />
+                            </VisibilityRoute>
+                          }
+                        />
+                        <Route
+                          path="/wine-catalog/:category"
+                          element={
+                            <VisibilityRoute scope="route" target="/wine-catalog">
+                              <WineCatalogPage />
+                            </VisibilityRoute>
+                          }
+                        />
+                        {/* Новые детальные страницы */}
+                        <Route
+                          path="/wine/:id"
+                          element={
+                            <VisibilityRoute scope="route" target="/wine/:id">
+                              <WineDetailPage />
+                            </VisibilityRoute>
+                          }
+                        />
+                        <Route
+                          path="/bar/:id"
+                          element={
+                            <VisibilityRoute scope="route" target="/bar/:id">
+                              <BarItemDetailPage />
+                            </VisibilityRoute>
+                          }
+                        />
 
-                      {/* Совместимость со старыми ссылками (старые файлы не используем, только редирект) */}
-                      <Route path="/wine-item/:id" element={<WineDetailPage />} />
-                      <Route path="/bar-menu" element={<Navigate to={`/menu/${encodeURIComponent('Барное меню')}`} replace />} />
-                      <Route
-                        path="/info"
-                        element={
-                          <VisibilityRoute
-                            scope="route"
-                            target="/info"
-                            linkedMenuItemTarget="footer.tools"
-                          >
-                            <InfoPage />
-                          </VisibilityRoute>
-                        }
-                      />
-                      <Route path="/media" element={<MediaPage />} />
-                      <Route
-                        path="/favorites"
-                        element={
-                          <VisibilityRoute
-                            scope="route"
-                            target="/favorites"
-                            linkedMenuItemTarget="footer.favorites"
-                          >
-                            <FavoritesPage />
-                          </VisibilityRoute>
-                        }
-                      />
-                      <Route
-                        path="/search"
-                        element={
-                          <VisibilityRoute
-                            scope="route"
-                            target="/search"
-                            linkedMenuItemTarget="footer.search"
-                            fallbackTo={null}
-                          >
-                            <SearchPage />
-                          </VisibilityRoute>
-                        }
-                      />
-                      {/* Галерея картин */}
-                      <Route path="/art-gallery" element={<ArtGalleryPage />} />
-                      <Route path="/art/:id" element={<ArtDetailPage />} />
+                        {/* Совместимость со старыми ссылками (старые файлы не используем, только редирект) */}
+                        <Route path="/wine-item/:id" element={<WineDetailPage />} />
+                        <Route path="/bar-menu" element={<Navigate to={`/menu/${encodeURIComponent('Барное меню')}`} replace />} />
+                        <Route
+                          path="/info"
+                          element={
+                            <VisibilityRoute
+                              scope="route"
+                              target="/info"
+                              linkedMenuItemTarget="footer.tools"
+                            >
+                              <InfoPage />
+                            </VisibilityRoute>
+                          }
+                        />
+                        <Route path="/media" element={<MediaPage />} />
+                        <Route
+                          path="/favorites"
+                          element={
+                            <VisibilityRoute
+                              scope="route"
+                              target="/favorites"
+                              linkedMenuItemTarget="footer.favorites"
+                            >
+                              <FavoritesPage />
+                            </VisibilityRoute>
+                          }
+                        />
+                        <Route
+                          path="/search"
+                          element={
+                            <VisibilityRoute
+                              scope="route"
+                              target="/search"
+                              linkedMenuItemTarget="footer.search"
+                              fallbackTo={null}
+                            >
+                              <SearchPage />
+                            </VisibilityRoute>
+                          }
+                        />
+                        {/* Галерея картин */}
+                        <Route path="/art-gallery" element={<ArtGalleryPage />} />
+                        <Route path="/art/:id" element={<ArtDetailPage />} />
 
-                      {/* Раздел статей/журнала */}
-                      <Route path="/useful" element={<ArticlesListPage />} />
-                      <Route path="/article/:articleKey" element={<ArticleReaderPage />} />
+                        {/* Раздел статей/журнала */}
+                        <Route path="/useful" element={<ArticlesListPage />} />
+                        <Route path="/article/:articleKey" element={<ArticleReaderPage />} />
+                        <Route path="/tools" element={<ToolsPage />} />
 
-                      {/* Страница входа в админ-панель */}
-                      <Route path="/admin/login" element={<AdminLoginPage />} />
+                        {/* Страница входа в админ-панель */}
+                        <Route path="/admin/login" element={<AdminLoginPage />} />
 
-                      {/* Админ-маршруты с защитой и layout */}
-                      <Route
-                        path="/admin"
-                        element={
-                          <AdminRoute>
-                            <AdminLayout />
-                          </AdminRoute>
-                        }
-                      >
-                        {/* Вложенные маршруты отображаются в центральной области AdminLayout */}
-                        <Route index element={<Navigate to="kitchen" replace />} />
-                        <Route path="kitchen" element={<DishesPage mode="kitchen" />} />
-                        <Route path="wine" element={<DishesPage mode="wine" />} />
-                        <Route path="bar" element={<DishesPage mode="bar" />} />
-                        <Route path="tea" element={<DishesPage mode="tea" />} />
-                        <Route path="edit/:id" element={<AdminDishEditPage />} />
-                        <Route path="add" element={<AdminDishEditPage />} />
-                        <Route path="users" element={<UsersPage />} />
-                        <Route path="feedback" element={<FeedbackMessagesPage />} />
-                        <Route path="notifications" element={<NotificationsPage />} />
-                        <Route path="media" element={<MediaLikesPage />} />
-                        <Route path="deploy" element={<DeployPage />} />
-                        <Route path="visibility" element={<VisibilityPage />} />
-                        <Route path="help" element={<AdminHelpPage />} />
-                      </Route>
+                        {/* Админ-маршруты с защитой и layout */}
+                        <Route
+                          path="/admin"
+                          element={
+                            <AdminRoute>
+                              <AdminLayout />
+                            </AdminRoute>
+                          }
+                        >
+                          {/* Вложенные маршруты отображаются в центральной области AdminLayout */}
+                          <Route index element={<Navigate to="kitchen" replace />} />
+                          <Route path="kitchen" element={<DishesPage mode="kitchen" />} />
+                          <Route path="wine" element={<DishesPage mode="wine" />} />
+                          <Route path="bar" element={<DishesPage mode="bar" />} />
+                          <Route path="tea" element={<DishesPage mode="tea" />} />
+                          <Route path="edit/:id" element={<AdminDishEditPage />} />
+                          <Route path="add" element={<AdminDishEditPage />} />
+                          <Route path="users" element={<UsersPage />} />
+                          <Route path="feedback" element={<FeedbackMessagesPage />} />
+                          <Route path="notifications" element={<NotificationsPage />} />
+                          <Route path="media" element={<MediaLikesPage />} />
+                          <Route path="deploy" element={<DeployPage />} />
+                          <Route path="visibility" element={<VisibilityPage />} />
+                          <Route path="help" element={<AdminHelpPage />} />
+                        </Route>
                       </Routes>
                     </div>
                   </div>

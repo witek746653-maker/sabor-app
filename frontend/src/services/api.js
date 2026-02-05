@@ -633,6 +633,13 @@ export const getPublicNotifications = async () => {
   return response.data;
 };
 
+// ========== API ДЛЯ ИНСТРУМЕНТОВ (SERVICE LAB) ==========
+
+export const getToolsRegistry = async () => {
+  const response = await api.get('/api/tools/registry');
+  return response.data;
+};
+
 export const getAdminNotifications = async () => {
   const response = await api.get('/api/admin/notifications');
   return response.data;

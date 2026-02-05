@@ -49,6 +49,7 @@ function InfoPage() {
     if (toolLower.includes('тренажер')) return 'fitness_center';
     if (toolLower.includes('сигар') || toolLower.includes('энциклопед')) return 'smoking_rooms';
     if (toolLower.includes('комплекс') || toolLower.includes('сотрудник')) return 'business_center';
+    if (toolLower.includes('инструмент')) return 'construction';
     return 'build';
   };
 
@@ -238,6 +239,13 @@ function InfoPage() {
       path: '/useful',
       type: 'react',
       description: 'Самое важное, что нужно помнить',
+      comingSoon: false
+    },
+    {
+      name: 'Инструменты',
+      path: '/tools',
+      type: 'react',
+      description: 'Генератор винного списка и др.',
       comingSoon: false
     }
   ];

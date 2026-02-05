@@ -1,0 +1,13 @@
+[
+    {
+        "id": "wine-list-generator",
+        "title": "Генератор вин по бокалам",
+        "description": "Сбор, редактирование и контроль вин по бокалам",
+        "category": "Инструменты",
+        "type": "generator",
+        "url": "/tools/wine-list-generator/",
+        "openMode": "new_tab",
+        "enabled": true,
+        "order": 10
+    }
+]

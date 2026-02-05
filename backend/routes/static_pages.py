@@ -15,16 +15,28 @@ bp = Blueprint('static_pages', __name__)
 
 @bp.route('/tools/<path:filename>')
 def serve_tool(filename):
-    """Serve static tool HTML files"""
+    """Serve static tool files and index.html for directories"""
     try:
-        file_path = Config.TOOLS_DIR / filename
-        if Config.TOOLS_DIR.exists() and file_path.exists() and file_path.is_file():
+        base_dir = Config.TOOLS_DIR
+        file_path = base_dir / filename
+        
+        # Если это директория, ищем index.html внутри
+        if base_dir.exists() and file_path.exists() and file_path.is_dir():
+            index_path = file_path / 'index.html'
+            if index_path.exists():
+                # Перенаправляем на путь с index.html или просто отдаем его
+                # Для корректной работы относительных путей в React-приложении
+                # лучше отдавать index.html из этой папки
+                relative_index = os.path.join(filename, 'index.html')
+                return send_from_directory(str(base_dir), relative_index, mimetype='text/html')
+
+        if base_dir.exists() and file_path.exists() and file_path.is_file():
             if filename.endswith('.html'):
-                return send_from_directory(str(Config.TOOLS_DIR), filename, mimetype='text/html')
+                return send_from_directory(str(base_dir), filename, mimetype='text/html')
             else:
-                return send_from_directory(str(Config.TOOLS_DIR), filename)
+                return send_from_directory(str(base_dir), filename)
         else:
-            return jsonify({'error': f'Tool not found: {filename}'}), 404
+            return jsonify({'error': f'Tool or file not found: {filename}'}), 404
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
