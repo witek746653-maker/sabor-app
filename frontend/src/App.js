@@ -37,6 +37,7 @@ import MediaPage from './pages/MediaPage';
 import ArticlesListPage from './pages/ArticlesListPage';
 import ArticleReaderPage from './pages/ArticleReaderPage';
 import ToolsPage from './pages/ToolsPage';
+import WineListBuilderPage from './pages/WineListBuilder/WineListBuilderPage';
 import './App.css';
 import { useFavorites } from './contexts/FavoritesContext';
 
@@ -224,6 +225,7 @@ function App() {
                         <Route path="/useful" element={<ArticlesListPage />} />
                         <Route path="/article/:articleKey" element={<ArticleReaderPage />} />
                         <Route path="/tools" element={<ToolsPage />} />
+                        <Route path="/wine-list-builder" element={<WineListBuilderPage />} />
 
                         {/* Страница входа в админ-панель */}
                         <Route path="/admin/login" element={<AdminLoginPage />} />

@@ -15,8 +15,23 @@ function ToolsPage() {
         const fetchTools = async () => {
             try {
                 const data = await getToolsRegistry();
-                // Фильтруем только включенные инструменты
-                setTools(data.filter(t => t.enabled));
+                // Filter out the legacy wine generator and keep only enabled tools
+                const enabledTools = data.filter(t => t.enabled && t.id !== 'wine-list-generator');
+
+                // Manual injection of Wine List Generator
+                if (!enabledTools.find(t => t.id === 'wine-list-builder')) {
+                    enabledTools.push({
+                        id: 'wine-list-builder',
+                        title: 'Генератор списка вин',
+                        description: 'Создай список вин и отправь коллегам',
+                        type: 'generator',
+                        url: '/wine-list-builder',
+                        enabled: true,
+                        openMode: 'self'
+                    });
+                }
+
+                setTools(enabledTools);
             } catch (error) {
                 console.error('Ошибка загрузки инструментов:', error);
                 toast.error('Не удалось загрузить список инструментов');
