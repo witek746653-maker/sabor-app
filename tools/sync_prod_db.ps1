@@ -82,7 +82,7 @@ if ($LASTEXITCODE -ne 0) {
   Fail "Failed to upload Python script to server."
 }
 
-& ssh @CommonSshArgs $Remote "python3 $RemotePyScript && rm $RemotePyScript"
+& ssh @CommonSshArgs $Remote "sudo python3 $RemotePyScript && rm $RemotePyScript"
 Remove-Item $LocalPyScript -ErrorAction SilentlyContinue
 
 if ($LASTEXITCODE -ne 0) {
@@ -99,6 +99,8 @@ if (-not (Test-Path $LocalDir)) {
 if ($LASTEXITCODE -ne 0) {
   Fail "Download error. Check SSH access and file path."
 }
+
+& ssh @CommonSshArgs $Remote "sudo rm -f $RemoteTmpPath"
 
 Info "Done"
 Write-Host "Local dev DB saved to: $LocalDbPath" -ForegroundColor Green

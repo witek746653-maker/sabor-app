@@ -9,7 +9,7 @@ from datetime import datetime
 
 bp = Blueprint('admin_notifications', __name__)
 
-@bp.route('/api/notifications/active', methods=['GET'])
+@bp.route('/api/notifications', methods=['GET'])
 def get_active_notifications():
     try:
         now = datetime.now()

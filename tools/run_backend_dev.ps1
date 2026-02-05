@@ -19,12 +19,8 @@ if ([string]::IsNullOrWhiteSpace($DbPath)) {
 
 Info "Запуск локального backend с dev-базой"
 $env:SABOR_DB_PATH = $DbPath
+$env:PYTHONPATH = $RepoRoot
 Write-Host "SABOR_DB_PATH = $env:SABOR_DB_PATH" -ForegroundColor DarkGray
 
-Push-Location (Join-Path $RepoRoot "backend")
-try {
-  # Запускаем Flask-приложение (через новую точку входа)
-  python wsgi.py
-} finally {
-  Pop-Location
-}
+# Запускаем Flask-приложение из корня
+python backend/wsgi.py
