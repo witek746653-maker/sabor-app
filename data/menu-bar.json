@@ -816,52 +816,6 @@
     "cardIngredients": "вино белое / груша / лимон / яблоко / специи"
   },
   {
-    "id": "0801",
-    "menu": "Чай",
-    "section": "🤍 Белый чай",
-    "title": "Серебряные Иглы Чанша Ти",
-    "description": "Легендарный китайский белый чай из весенних почек сорта Да Бай Ча. Во вкусе — свежесть росы, дикие ягоды и лёгкая цветочная сладость.",
-    "origin": "Китай",
-    "tags": [
-      "белый чай",
-      "Китай",
-      "нежный",
-      "цветочный",
-      "ягодный",
-      "лёгкий"
-    ],
-    "brewing": {
-      "temperature_c": 85,
-      "time_minutes": "2–3"
-    },
-    "caffeine": "низкое",
-    "allergens": "",
-    "image": {
-      "src": "",
-      "alt": "Серебряные Иглы Чанша Ти"
-    },
-    "i18n": {
-      "en": {
-        "menu-en": "Tea",
-        "section-en": "White Tea",
-        "title-en": "Silver Needles (Changsha Tea)",
-        "description-en": "Legendary Chinese white tea made from spring buds of the Da Bai Cha cultivar. The taste brings fresh dew, wild berries, and a light floral sweetness.",
-        "contains-en": "",
-        "allergens-en": "",
-        "tags-en": "white tea, China, delicate, floral, berry, light",
-        "audio-en": "",
-        "comments-en": "",
-        "useful phrases & words": []
-      }
-    },
-    "status": "актуально",
-    "features": "Свежесть росы, дикие ягоды, лёгкая цветочная сладость.",
-    "comments": [],
-    "reference_info": "",
-    "updated_at": "2026-01-26T00:00:00-06:00",
-    "update_source": "json"
-  },
-  {
     "id": "0719",
     "menu": "Барное меню",
     "section": "🍺 Пиво",

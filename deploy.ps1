@@ -71,26 +71,24 @@ function SshArgs() {
 
 $CommonSshArgs = @(SshArgs)
 
-Info "Check JSON (data/menu-database.json)"
-if (!(Test-Path (Join-Path $PSScriptRoot "data/menu-database.json"))) {
-  throw "File not found: data/menu-database.json (run deploy.ps1 from repo root)."
-}
-
-# Validate JSON via Node (no local Python dependency)
-Run "node" @(
-  "-e",
-  "const fs=require('fs'); JSON.parse(fs.readFileSync('data/menu-database.json','utf8')); console.log('JSON OK');"
-)
-
-Info "Sync menu JSON into frontend/public (for offline/static fallback)"
-# Важно для надежности:
-# фронтенд берет запасной JSON из /data/menu-database.json (это файл из public после сборки).
-# Поэтому перед сборкой копируем актуальный data/menu-database.json → frontend/public/data/menu-database.json
+Info "Check Split JSON files (data/)"
+$menuFiles = @("menu-kitchen.json", "menu-wine.json", "menu-bar.json", "menu-tea.json")
 $publicDataDir = Join-Path $PSScriptRoot "frontend\public\data"
 if (!(Test-Path $publicDataDir)) {
   New-Item -ItemType Directory -Path $publicDataDir | Out-Null
 }
-Copy-Item -Force (Join-Path $PSScriptRoot "data\menu-database.json") (Join-Path $publicDataDir "menu-database.json")
+
+foreach ($f in $menuFiles) {
+    $path = Join-Path $PSScriptRoot "data\$f"
+    if (Test-Path $path) {
+        # Validate JSON
+        Run "node" @("-e", "const fs=require('fs'); JSON.parse(fs.readFileSync('$($path.Replace('\','/'))','utf8')); console.log('OK: $f');")
+        # Sync to frontend/public for fallback
+        Copy-Item -Force $path (Join-Path $publicDataDir $f)
+    } else {
+        Write-Host "Warning: $f not found" -ForegroundColor Yellow
+    }
+}
 
 Info "Sync content into frontend/public"
 $publicContentDir = Join-Path $PSScriptRoot "frontend\public\content"
@@ -140,10 +138,10 @@ Info "Upload files to server (scp)"
 if ($SkipUpload) {
   Info "Upload skipped (-SkipUpload)"
 } else {
-  # 1) Данные меню
-  $jsonSrc = Join-Path $PSScriptRoot "data/menu-database.json"
-  $jsonDst = "${RemoteScpPrefix}/data/menu-database.json"
-  Run "scp" ($CommonSshArgs + @($jsonSrc, $jsonDst))
+  # 1) Данные меню (все JSON файлы)
+  $jsonItems = Get-ChildItem (Join-Path $PSScriptRoot "data") -Filter "*.json" | ForEach-Object { $_.FullName }
+  Run "ssh" ($CommonSshArgs + @($Remote, "sudo mkdir -p $RemoteRoot/data"))
+  Run "scp" ($CommonSshArgs + $jsonItems + @("${RemoteScpPrefix}/data/"))
   Start-Sleep -Seconds 2
 
 
