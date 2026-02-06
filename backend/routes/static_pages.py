@@ -81,27 +81,32 @@ def serve_audio(filename):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@bp.route('/api/private/menus/latest.pdf', methods=['GET'])
-def get_latest_private_menu_pdf():
+@bp.route('/api/private/menus/<path:filename>', methods=['GET'])
+def serve_private_menu_pdf(filename):
     if not current_user.is_authenticated:
         return jsonify({"error": "Not authenticated"}), 401
     guest_check = check_not_guest()
     if guest_check: return guest_check
 
-    pdf_path = Config.PRIVATE_MENUS_DIR / "latest.pdf"
+    # Basic security check to prevent directory traversal
+    safe_filename = os.path.basename(filename)
+    if safe_filename != filename:
+         return jsonify({"error": "Invalid filename"}), 400
+
+    pdf_path = Config.PRIVATE_MENUS_DIR / filename
     if not pdf_path.exists():
         return jsonify({"error": "File not found"}), 404
 
     disposition = (request.args.get("disposition") or "").strip().lower()
     open_inline = disposition == "inline"
-    filename = pdf_path.name
-    match = re.search(r'(\d{4}-\d{2}-\d{2})', filename)
-    if match:
-        date_obj = datetime.strptime(match.group(1), "%Y-%m-%d")
-        formatted_date = date_obj.strftime("%d.%m.%Y")
-        final_name = f"Комплекс для новых сотрудников (актуальный от {formatted_date}).pdf"
-    else:
+    
+    # Determine friendly download name
+    if filename == "latest.pdf":
         final_name = "Комплекс для новых сотрудников (актуальный).pdf"
+    elif filename == "hostess_instruction.pdf":
+        final_name = "Инструкция для хостес.pdf"
+    else:
+        final_name = filename
         
     response = send_file(
         str(pdf_path),

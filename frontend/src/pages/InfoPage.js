@@ -11,9 +11,13 @@ function InfoPage() {
   const { isAuthenticated, currentUser, isGuest } = useAuth();
   const { isVisible, isFeatureComingSoon, isFeatureAccessAllowed } = useVisibility();
   const toast = useToast();
-  const [showPdfModal, setShowPdfModal] = useState(false);
+  const [selectedPdfTool, setSelectedPdfTool] = useState(null);
+  const showPdfModal = !!selectedPdfTool;
+
   // PDF хранится на сервере приватно и отдаётся только авторизованным пользователям
-  const pdfPath = '/api/private/menus/latest.pdf';
+  // Старый хардкод: const pdfPath = '/api/private/menus/latest.pdf';
+  // Теперь путь берется из selectedPdfTool.path
+
   const [language, setLanguage] = useState(() => {
     return localStorage.getItem('menuLanguage') || 'RU';
   });
@@ -22,6 +26,12 @@ function InfoPage() {
   // HTML файлы находятся в public/ и обслуживаются через React dev server (разработка) или веб-сервер (продакшен)
   // React dev server автоматически обслуживает файлы из папки public/, поэтому используем window.location.origin
   const getBaseUrl = () => {
+    // В режиме разработки (localhost:3000) для PDF и других файлов
+    // лучше ходить напрямую на бэкенд (localhost:5000), чтобы избежать
+    // проблем с проксированием html-запросов (когда dev server отдает index.html).
+    if (process.env.NODE_ENV === 'development' && window.location.port === '3000') {
+      return 'http://localhost:5000';
+    }
     // Всегда используем текущий origin - это будет работать и в режиме разработки, и в продакшене
     // В режиме разработки React dev server (обычно порт 3000) автоматически обслуживает файлы из public/
     // В продакшене файлы из public/ обслуживаются веб-сервером
@@ -30,13 +40,14 @@ function InfoPage() {
 
   // KISS: анти-кэш для PDF. Если URL всегда один и тот же, браузер/прокси могут отдать старый файл.
   // Термин **cache-buster**: "ломалка кэша" — добавляем к URL уникальный параметр `?v=...`.
-  const getPdfUrl = ({ disposition } = {}) => {
+  const getPdfUrl = (path, { disposition } = {}) => {
+    if (!path) return '';
     const baseUrl = getBaseUrl();
     const params = new URLSearchParams();
     if (disposition) params.set('disposition', disposition);
     params.set('v', String(Date.now()));
-    const delimiter = pdfPath.includes('?') ? '&' : '?';
-    return `${baseUrl}${pdfPath}${delimiter}${params.toString()}`;
+    const delimiter = path.includes('?') ? '&' : '?';
+    return `${baseUrl}${path}${delimiter}${params.toString()}`;
   };
 
   // Функция для получения иконки по названию инструмента
@@ -48,7 +59,7 @@ function InfoPage() {
     if (toolLower.includes('медиа') || toolLower.includes('обучение')) return 'smart_display';
 
     if (toolLower.includes('сигар') || toolLower.includes('энциклопед')) return 'smoking_rooms';
-    if (toolLower.includes('комплекс') || toolLower.includes('сотрудник')) return 'business_center';
+    if (toolLower.includes('комплекс') || toolLower.includes('сотрудник') || toolLower.includes('хостес')) return 'business_center';
     if (toolLower.includes('инструмент')) return 'construction';
     return 'build';
   };
@@ -62,7 +73,7 @@ function InfoPage() {
     if (toolLower.includes('медиа') || toolLower.includes('обучение')) return 'Видео и подкасты';
 
     if (toolLower.includes('сигар')) return 'Энциклопедия сигар';
-    if (toolLower.includes('комплекс')) return 'Внутренние ресурсы';
+    if (toolLower.includes('комплекс') || toolLower.includes('хостес')) return 'Внутренние ресурсы';
     return '';
   };
 
@@ -109,8 +120,8 @@ function InfoPage() {
         toast.info('Доступно после входа. Гостевой режим поддерживает только просмотр данных.');
         return;
       }
-      // Показываем модальное окно для PDF
-      setShowPdfModal(true);
+      // Показываем модальное окно для PDF, запоминая выбранный инструмент
+      setSelectedPdfTool(tool);
     } else if (tool.type === 'react') {
       // Переход на React-маршрут (например, галерея картин)
       navigate(tool.path);
@@ -133,25 +144,29 @@ function InfoPage() {
 
   // Функции для работы с PDF
   const handlePdfOpen = () => {
+    if (!selectedPdfTool) return;
     // Открываем в новой вкладке (inline), а не скачиваем (attachment)
-    window.open(getPdfUrl({ disposition: 'inline' }), '_blank', 'noopener,noreferrer');
-    setShowPdfModal(false);
+    window.open(getPdfUrl(selectedPdfTool.path, { disposition: 'inline' }), '_blank', 'noopener,noreferrer');
+    setSelectedPdfTool(null);
   };
 
   const handlePdfDownload = () => {
+    if (!selectedPdfTool) return;
     // Создаем ссылку для скачивания с полным URL + анти-кэш
     const link = document.createElement('a');
-    link.href = getPdfUrl({ disposition: 'attachment' });
-    link.download = 'Комплекс для новых сотрудников (актуальный).pdf';
+    link.href = getPdfUrl(selectedPdfTool.path, { disposition: 'attachment' });
+    // download attribute might be ignored if Content-Disposition header is present, but good fallback
+    link.download = selectedPdfTool.name + '.pdf';
     link.target = '_blank';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    setShowPdfModal(false);
+    setSelectedPdfTool(null);
   };
 
   const handlePdfShare = async () => {
-    const fullUrl = getPdfUrl({ disposition: 'attachment' });
+    if (!selectedPdfTool) return;
+    const fullUrl = getPdfUrl(selectedPdfTool.path, { disposition: 'attachment' });
 
     if (navigator.share) {
       try {
@@ -159,11 +174,11 @@ function InfoPage() {
         // Важно: credentials нужны, чтобы отправились cookies авторизации
         const response = await fetch(fullUrl, { credentials: 'include', cache: 'no-store' });
         const blob = await response.blob();
-        const file = new File([blob], 'Комплекс для новых сотрудников (актуальный).pdf', { type: 'application/pdf' });
+        const file = new File([blob], selectedPdfTool.name + '.pdf', { type: 'application/pdf' });
 
         await navigator.share({
-          title: 'Комплекс для новых сотрудников',
-          text: 'Комплекс для новых сотрудников (актуальный)',
+          title: selectedPdfTool.name,
+          text: selectedPdfTool.name,
           files: [file]
         });
       } catch (err) {
@@ -186,7 +201,7 @@ function InfoPage() {
         console.log('Ошибка копирования:', err);
       }
     }
-    setShowPdfModal(false);
+    setSelectedPdfTool(null);
   };
 
   // Список инструментов
@@ -214,8 +229,17 @@ function InfoPage() {
     },
 
     {
+      name: 'Инструкция для хостес',
+      path: '/api/private/menus/hostess_instruction.pdf',
+      type: 'pdf',
+      description: 'Инструкция для хостес',
+      comingSoon: false,
+      visibilityScope: 'pageBlock',
+      visibilityTarget: 'info.tile.hostessInstruction'
+    },
+    {
       name: 'Комплекс для сотрудников',
-      path: pdfPath,
+      path: '/api/private/menus/latest.pdf',
       type: 'pdf',
       description: 'Внутренние ресурсы',
       comingSoon: false
@@ -273,6 +297,13 @@ function InfoPage() {
         {/* Tools Grid */}
         <div className="grid grid-cols-2 gap-3 px-4 pb-4">
           {tools.map((tool) => {
+            // Проверка видимости: если для инструмента заданы scope/target, проверяем их
+            if (tool.visibilityScope && tool.visibilityTarget) {
+              if (!isVisible({ scope: tool.visibilityScope, target: tool.visibilityTarget })) {
+                return null;
+              }
+            }
+
             const imageUrl = getToolImage(tool.name);
             const icon = getToolIcon(tool.name);
             const description = getToolDescription(tool.name) || tool.description;
@@ -329,7 +360,7 @@ function InfoPage() {
       {showPdfModal && (
         <div
           className="fixed inset-0 z-[100] bg-black/50 flex items-center justify-center p-4"
-          onClick={() => setShowPdfModal(false)}
+          onClick={() => setSelectedPdfTool(null)}
         >
           <div
             className="bg-white dark:bg-[#181311] rounded-2xl shadow-xl max-w-sm w-full p-6"

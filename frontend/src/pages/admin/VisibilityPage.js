@@ -129,6 +129,14 @@ const TARGET_GROUPS = [
     ],
   },
   {
+    id: 'infoPageBlocks',
+    title: 'Страница Информация: плитки',
+    hint: 'Управляет видимостью плиток на странице Информация (/info).',
+    items: [
+      { scope: 'pageBlock', target: 'info.tile.hostessInstruction', label: 'Информация: Инструкция для хостес' },
+    ],
+  },
+  {
     id: 'detailButtons',
     title: 'Карточки: действия',
     hint: 'Управляет кнопками на индивидуальных страницах.',
@@ -328,31 +336,27 @@ function VisibilityPage() {
     load();
   }, []);
 
-  // Авто-сохранение (Debounce 1.5 сек)
-  useEffect(() => {
-    if (loading) return;
+  // Вычисляем наличие изменений
+  const hasChanges = useMemo(() => {
+    if (!lastSavedConfig) return false;
+    return JSON.stringify(config) !== lastSavedConfig;
+  }, [config, lastSavedConfig]);
 
-    const currentStr = JSON.stringify(config);
-    if (currentStr === lastSavedConfig) {
-      setSyncStatus('saved');
-      return;
-    }
-
+  // Ручное сохранение
+  const handleManualSave = async () => {
     setSyncStatus('syncing');
-    const timer = setTimeout(async () => {
-      try {
-        const result = await updateVisibilityLive(config);
-        setLastSavedVersion(result.version);
-        setLastSavedConfig(currentStr);
-        setSyncStatus('saved');
-      } catch (err) {
-        console.error(err);
-        setSyncStatus('error');
-      }
-    }, 1500);
-
-    return () => clearTimeout(timer);
-  }, [config, loading, lastSavedConfig]);
+    try {
+      const result = await updateVisibilityLive(config);
+      setLastSavedVersion(result.version);
+      setLastSavedConfig(JSON.stringify(config));
+      setSyncStatus('saved');
+      toast.success(`Изменения сохранены (v${result.version})`);
+    } catch (err) {
+      console.error(err);
+      setSyncStatus('error');
+      toast.error('Ошибка при сохранении');
+    }
+  };
 
   useEffect(() => {
     setJsonText(
@@ -523,26 +527,32 @@ function VisibilityPage() {
             Видимость / Feature flags
           </h2>
           <p className="text-sm text-text-secondary-light dark:text-text-secondary-dark">
-            Управляйте тем, что видит пользователь. Все изменения применяются <span className="font-bold text-primary">мгновенно</span>.
+            Система: <span className="font-bold text-primary">Draft & Publish</span>. Изменения применяются только после нажатия кнопки "Сохранить".
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          {syncStatus === 'syncing' && (
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-500/10 text-blue-500 text-[11px] font-bold animate-pulse">
-              <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
-              Синхронизация...
-            </div>
-          )}
-          {syncStatus === 'saved' && (
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-green-500/10 text-green-500 text-[11px] font-bold">
-              <span className="material-symbols-outlined text-sm">cloud_done</span>
-              Все изменения сохранены (v{lastSavedVersion})
-            </div>
-          )}
-          {syncStatus === 'error' && (
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-red-500/10 text-red-500 text-[11px] font-bold">
-              <span className="material-symbols-outlined text-sm">error_outline</span>
-              Ошибка синхронизации
+        <div className="flex items-center gap-4">
+          {hasChanges ? (
+            <button
+              onClick={handleManualSave}
+              disabled={syncStatus === 'syncing'}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-white font-bold shadow-lg shadow-primary/20 hover:bg-primary-dark active:scale-95 transition-all"
+            >
+              {syncStatus === 'syncing' ? (
+                <>
+                  <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                  Сохранение...
+                </>
+              ) : (
+                <>
+                  <span className="material-symbols-outlined text-lg">save</span>
+                  Сохранить изменения
+                </>
+              )}
+            </button>
+          ) : (
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gray-100 dark:bg-white/5 text-gray-400 dark:text-gray-500 text-[11px] font-bold">
+              <span className="material-symbols-outlined text-sm">check</span>
+              Изменений нет
             </div>
           )}
         </div>
