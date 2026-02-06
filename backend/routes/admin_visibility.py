@@ -1,9 +1,9 @@
 
 import json
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, g
 from backend.models import VisibilityConfig
 from backend.services.visibility_service import VisibilityService
-from backend.routes.auth import check_admin_role
+from backend.routes.auth import check_admin_role, check_not_guest
 from flask_login import login_required
 from backend.extensions import db
 
@@ -95,6 +95,78 @@ def save_visibility_draft():
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": "VISIBILITY_DRAFT_ERROR", "message": str(e)}), 500
+
+@bp.route('/api/admin/visibility/update', methods=['POST'])
+@login_required
+def update_visibility_live():
+    """
+    Индустриальный стандарт: Live Toggle.
+    Сразу сохраняет конфиг как 'published' и архивирует старый.
+    """
+    guest_check = check_not_guest()
+    if guest_check: return guest_check
+    check = check_admin_role()
+    if check: return check
+
+    data = request.get_json() or {}
+    raw_config = data.get('config')
+    
+    if not raw_config:
+        return jsonify({"error": "Config is required"}), 400
+
+    try:
+        # 1. Получаем текущую опубликованную версию для архивации
+        current_pub = VisibilityConfig.query.filter_by(status='published').order_by(VisibilityConfig.version.desc()).first()
+        
+        reset_version = data.get('reset_version', False)
+        if reset_version:
+            new_version = 1
+        else:
+            current_version = current_pub.version if current_pub else 0
+            new_version = current_version + 1
+
+        # 2. Нормализуем данные
+        service = VisibilityService()
+        normalized_payload = service.normalize_config(raw_config, version_override=new_version)
+
+        # 3. Архивируем текущую опубликованную версию
+        if current_pub:
+            current_pub.status = 'archived'
+
+        # 4. Создаем новую опубликованную версию
+        new_config = VisibilityConfig(
+            status='published',
+            version=new_version,
+            config_json=json.dumps(normalized_payload, ensure_ascii=False),
+            updated_by=g.user.username if hasattr(g, 'user') else 'admin'
+        )
+        
+        # 5. Также обновляем черновик, чтобы они были синхронизированы
+        draft = VisibilityConfig.query.filter_by(status='draft').first()
+        if draft:
+            draft.config_json = new_config.config_json
+            draft.version = new_config.version
+        else:
+            new_draft = VisibilityConfig(
+                status='draft',
+                version=new_version,
+                config_json=new_config.config_json,
+                updated_by=new_config.updated_by
+            )
+            db.session.add(new_draft)
+
+        db.session.add(new_config)
+        db.session.commit()
+
+        return jsonify({
+            "message": "Configuration published live",
+            "version": new_version,
+            "config": normalized_payload
+        })
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
 
 @bp.route('/api/admin/visibility/publish', methods=['POST'])
 @login_required

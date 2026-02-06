@@ -3,7 +3,7 @@ import json
 from datetime import datetime
 from flask import Blueprint, jsonify
 from backend.models import User, FeedbackMessage, Notification, MediaLike, VisibilityConfig
-from backend.models import KitchenItem, WineItem, BarItem, TeaItem
+from backend.models import KitchenItem, WineItem, BarItem, TeaItem, Artwork
 from backend.services.menu_service import MenuService
 from backend.routes.auth import check_admin_role
 from flask_login import login_required
@@ -54,15 +54,20 @@ def get_admin_sidebar_stats():
         bar_items = BarItem.query.count()
         tea_items = TeaItem.query.count()
         kitchen_items = KitchenItem.query.count()
+        art_items = Artwork.query.count()
 
-        if wine_items == 0 or bar_items == 0 or tea_items == 0 or kitchen_items == 0:
+        if wine_items == 0 or bar_items == 0 or tea_items == 0 or kitchen_items == 0 or art_items == 0:
             items = MenuService.load_menu_db_items()
-            if items:
+            # Also load art specific items as they might be separate
+            art_json_items = MenuService.load_art_db_items()
+            
+            if items or art_json_items:
                 parts = MenuService.split_menu_items(items)
                 if wine_items == 0: wine_items = len(parts.get("wine") or [])
                 if bar_items == 0: bar_items = len(parts.get("bar") or [])
                 if tea_items == 0: tea_items = len(parts.get("tea") or [])
                 if kitchen_items == 0: kitchen_items = len(parts.get("kitchen") or [])
+                if art_items == 0: art_items = len(art_json_items)
 
         return jsonify({
             "users": users_total,
@@ -74,6 +79,7 @@ def get_admin_sidebar_stats():
             "wineItems": wine_items,
             "barItems": bar_items,
             "teaItems": tea_items,
+            "artItems": art_items,
         })
     except Exception as e:
         return jsonify({"error": "ADMIN_SIDEBAR_STATS_ERROR", "message": str(e)}), 500

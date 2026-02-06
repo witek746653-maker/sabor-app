@@ -948,7 +948,7 @@ function HomePage() {
             <div className="p-4 space-y-2">
               {isVisible({ scope: 'pageBlock', target: 'home.sidebar.workSchedule' }) && (
                 <ComingSoonWrapper
-                  isComingSoon={isFeatureComingSoon('workSchedule') || isComingSoon('workSchedule')}
+                  isComingSoon={isFeatureComingSoon('workSchedule')}
                   allowAccess={isFeatureAccessAllowed('workSchedule')}
                   language={language}
                   badgePosition="inline"
@@ -961,7 +961,7 @@ function HomePage() {
               )}
               {isVisible({ scope: 'pageBlock', target: 'home.sidebar.banquets' }) && (
                 <ComingSoonWrapper
-                  isComingSoon={isFeatureComingSoon('banquets') || isComingSoon('banquets')}
+                  isComingSoon={isFeatureComingSoon('banquets')}
                   allowAccess={isFeatureAccessAllowed('banquets')}
                   language={language}
                   badgePosition="inline"
@@ -974,7 +974,7 @@ function HomePage() {
               )}
               {isVisible({ scope: 'pageBlock', target: 'home.sidebar.guestSituations' }) && (
                 <ComingSoonWrapper
-                  isComingSoon={isFeatureComingSoon('guestSituations') || isComingSoon('guestSituations')}
+                  isComingSoon={isFeatureComingSoon('guestSituations')}
                   allowAccess={isFeatureAccessAllowed('guestSituations')}
                   language={language}
                   badgePosition="inline"
@@ -987,7 +987,7 @@ function HomePage() {
               )}
               {isVisible({ scope: 'pageBlock', target: 'home.sidebar.faq' }) && (
                 <ComingSoonWrapper
-                  isComingSoon={isFeatureComingSoon('faq') || isComingSoon('faq')}
+                  isComingSoon={isFeatureComingSoon('faq')}
                   allowAccess={isFeatureAccessAllowed('faq')}
                   language={language}
                   badgePosition="inline"
@@ -1000,7 +1000,7 @@ function HomePage() {
               )}
               {isVisible({ scope: 'pageBlock', target: 'home.sidebar.checklists' }) && (
                 <ComingSoonWrapper
-                  isComingSoon={isFeatureComingSoon('checklists') || isComingSoon('checklists')}
+                  isComingSoon={isFeatureComingSoon('checklists')}
                   allowAccess={isFeatureAccessAllowed('checklists')}
                   language={language}
                   badgePosition="inline"
@@ -1013,7 +1013,7 @@ function HomePage() {
               )}
               {isVisible({ scope: 'pageBlock', target: 'home.sidebar.servicePrinciples' }) && (
                 <ComingSoonWrapper
-                  isComingSoon={isFeatureComingSoon('servicePrinciples') || isComingSoon('servicePrinciples')}
+                  isComingSoon={isFeatureComingSoon('servicePrinciples')}
                   allowAccess={isFeatureAccessAllowed('servicePrinciples')}
                   language={language}
                   badgePosition="inline"

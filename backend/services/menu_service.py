@@ -383,6 +383,20 @@ class MenuService:
             return []
 
     @staticmethod
+    def get_artworks_dicts() -> list[dict]:
+        try:
+            artworks = Artwork.query.all()
+            if artworks:
+                out = []
+                for a in artworks:
+                    out.append(a.to_dict())
+                return out
+            return MenuService.load_art_db_items()
+        except Exception as e:
+            logger.exception(f"Error fetching artworks: {e}")
+            return []
+
+    @staticmethod
     def get_all_dishes_dicts_with_json_fallback() -> list[dict]:
         db_items = []
         db_items.extend(KitchenItem.query.all())

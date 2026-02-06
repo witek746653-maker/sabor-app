@@ -1,7 +1,7 @@
 
 from flask import Blueprint, jsonify, request
 from backend.services.menu_service import MenuService
-from backend.models import VisibilityConfig
+from backend.models import VisibilityConfig, Artwork
 from backend.utils import text_contains
 
 bp = Blueprint('api_public', __name__)
@@ -171,9 +171,34 @@ def get_wine(wine_id):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@bp.route('/api/bar-items', methods=['GET'])
-def get_bar_items():
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@bp.route('/api/artworks', methods=['GET'])
+def get_artworks():
     try:
-        return jsonify(MenuService.get_bar_items_dicts())
+        return jsonify(MenuService.get_artworks_dicts())
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@bp.route('/api/artworks/<art_id>', methods=['GET'])
+def get_artwork(art_id):
+    try:
+        art_id_norm = str(art_id or "").strip()
+        if not art_id_norm:
+             return jsonify({'error': 'Artwork id is required'}), 404
+
+        # 1) Try DB
+        found = Artwork.query.get(art_id_norm)
+        if found:
+            return jsonify(found.to_dict())
+
+        # 2) Fallback JSON
+        items = MenuService.load_art_db_items()
+        found_item = next((x for x in items if str(x.get("id")) == art_id_norm), None)
+        if found_item:
+            return jsonify(found_item)
+
+        return jsonify({'error': 'Artwork not found'}), 404
     except Exception as e:
         return jsonify({'error': str(e)}), 500

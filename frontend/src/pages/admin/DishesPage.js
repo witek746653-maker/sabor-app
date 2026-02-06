@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { getDishes, deleteDish } from '../../services/api';
+import { getDishes, deleteDish, getArtworks } from '../../services/api';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../contexts/ToastContext';
 import { getDishImageUrl } from '../../utils/imageUtils';
@@ -53,7 +53,12 @@ function DishesPage({ mode = 'kitchen' }) {
   const loadDishes = async () => {
     setLoading(true);
     try {
-      const data = await getDishes();
+      let data = [];
+      if (mode === 'art') {
+        data = await getArtworks();
+      } else {
+        data = await getDishes();
+      }
       setDishes(data);
     } catch (error) {
       toast.error('Ошибка загрузки блюд: ' + error.message);
@@ -77,7 +82,10 @@ function DishesPage({ mode = 'kitchen' }) {
   const pageTitle = useMemo(() => {
     if (mode === 'wine') return 'Вино';
     if (mode === 'bar') return 'Бар';
+    if (mode === 'wine') return 'Вино';
+    if (mode === 'bar') return 'Бар';
     if (mode === 'tea') return 'Чай';
+    if (mode === 'art') return 'Картины';
     return 'Кухня';
   }, [mode]);
 
@@ -88,7 +96,10 @@ function DishesPage({ mode = 'kitchen' }) {
 
     if (mode === 'wine') return dishes.filter(isWine);
     if (mode === 'bar') return dishes.filter(isBar);
+    if (mode === 'wine') return dishes.filter(isWine);
+    if (mode === 'bar') return dishes.filter(isBar);
     if (mode === 'tea') return dishes.filter(isTea);
+    if (mode === 'art') return dishes; // getArtworks returns only art
     // kitchen = всё, кроме вина, бара и чая
     return dishes.filter((d) => !isWine(d) && !isBar(d) && !isTea(d));
   }, [dishes, mode]);
@@ -139,6 +150,8 @@ function DishesPage({ mode = 'kitchen' }) {
               const params = new URLSearchParams();
               if (mode === 'wine') params.set('menu', 'Вино');
               if (mode === 'bar') params.set('menu', 'Барное меню');
+              if (mode === 'tea') params.set('menu', 'Чай');
+              if (mode === 'art') params.set('special_type', 'artwork'); // special handling for add page
               const qs = params.toString();
               navigate(qs ? `/admin/add?${qs}` : '/admin/add');
             }}
@@ -189,13 +202,12 @@ function DishesPage({ mode = 'kitchen' }) {
           ) : (
             filteredDishes.map((dish) => {
               const isArchived = dish.status === 'в архиве';
-              
+
               return (
                 <div
                   key={dish.id}
-                  className={`flex flex-col bg-surface-light dark:bg-surface-dark rounded-2xl p-3 shadow-sm border border-gray-100 dark:border-white/5 relative overflow-hidden group min-h-[260px] ${
-                    isArchived ? 'opacity-50 grayscale' : ''
-                  }`}
+                  className={`flex flex-col bg-surface-light dark:bg-surface-dark rounded-2xl p-3 shadow-sm border border-gray-100 dark:border-white/5 relative overflow-hidden group min-h-[260px] ${isArchived ? 'opacity-50 grayscale' : ''
+                    }`}
                 >
                   {/* Картинка */}
                   <div
@@ -210,7 +222,7 @@ function DishesPage({ mode = 'kitchen' }) {
                     {!getDishImageUrl(dish) && (
                       <div className="w-full h-full flex items-center justify-center">
                         <span className="material-symbols-outlined text-gray-400 text-4xl">
-                          {mode === 'wine' ? 'wine_bar' : mode === 'bar' ? 'local_bar' : 'restaurant'}
+                          {mode === 'wine' ? 'wine_bar' : mode === 'bar' ? 'local_bar' : mode === 'art' ? 'palette' : 'restaurant'}
                         </span>
                       </div>
                     )}

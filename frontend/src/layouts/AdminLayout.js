@@ -31,6 +31,7 @@ function AdminLayout() {
     wineItems: 0,
     barItems: 0,
     teaItems: 0,
+    artItems: 0,
   });
   const [sidebarStatsLoading, setSidebarStatsLoading] = useState(false);
 
@@ -66,6 +67,7 @@ function AdminLayout() {
           wineItems: Number(data?.wineItems ?? 0),
           barItems: Number(data?.barItems ?? 0),
           teaItems: Number(data?.teaItems ?? 0),
+          artItems: Number(data?.artItems ?? 0),
         });
       } catch (error) {
         if (alive) {
@@ -103,7 +105,10 @@ function AdminLayout() {
     if (path.includes('/admin/edit') || path.includes('/admin/add')) return 'dish-edit';
     if (path.includes('/admin/wine')) return 'wine';
     if (path.includes('/admin/bar')) return 'bar';
+    if (path.includes('/admin/wine')) return 'wine';
+    if (path.includes('/admin/bar')) return 'bar';
     if (path.includes('/admin/tea')) return 'tea';
+    if (path.includes('/admin/paintings')) return 'art';
     return 'kitchen';
   };
 
@@ -145,11 +150,10 @@ function AdminLayout() {
         <Link
           to="/admin/kitchen"
           onClick={handleNavClick}
-          className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors ${
-            activeSection === 'kitchen'
+          className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors ${activeSection === 'kitchen'
               ? 'bg-primary text-white'
               : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
-          }`}
+            }`}
         >
           <span className="material-symbols-outlined text-xl">restaurant_menu</span>
           <span className="font-medium">Кухня</span>
@@ -159,11 +163,10 @@ function AdminLayout() {
         <Link
           to="/admin/wine"
           onClick={handleNavClick}
-          className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors ${
-            activeSection === 'wine'
+          className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors ${activeSection === 'wine'
               ? 'bg-primary text-white'
               : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
-          }`}
+            }`}
         >
           <span className="material-symbols-outlined text-xl">wine_bar</span>
           <span className="font-medium">Вино</span>
@@ -173,11 +176,10 @@ function AdminLayout() {
         <Link
           to="/admin/bar"
           onClick={handleNavClick}
-          className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors ${
-            activeSection === 'bar'
+          className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors ${activeSection === 'bar'
               ? 'bg-primary text-white'
               : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
-          }`}
+            }`}
         >
           <span className="material-symbols-outlined text-xl">local_bar</span>
           <span className="font-medium">Бар</span>
@@ -187,15 +189,27 @@ function AdminLayout() {
         <Link
           to="/admin/tea"
           onClick={handleNavClick}
-          className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors ${
-            activeSection === 'tea'
+          className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors ${activeSection === 'tea'
               ? 'bg-primary text-white'
               : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
-          }`}
+            }`}
         >
           <span className="material-symbols-outlined text-xl">local_cafe</span>
           <span className="font-medium">Чай</span>
           <Badge value={sidebarStats.teaItems} />
+        </Link>
+
+        <Link
+          to="/admin/paintings"
+          onClick={handleNavClick}
+          className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors ${activeSection === 'art'
+              ? 'bg-primary text-white'
+              : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
+            }`}
+        >
+          <span className="material-symbols-outlined text-xl">palette</span>
+          <span className="font-medium">Картины</span>
+          <Badge value={sidebarStats.artItems} />
         </Link>
 
         <button
@@ -210,21 +224,22 @@ function AdminLayout() {
             const qs = params.toString();
             navigate(qs ? `/admin/add?${qs}` : '/admin/add');
           }}
-          className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors ${
-            activeSection === 'dish-edit'
+          className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors ${activeSection === 'dish-edit'
               ? 'bg-primary text-white'
               : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
-          }`}
+            }`}
         >
           <span className="material-symbols-outlined text-xl">add_circle</span>
           <span className="font-medium">
             {activeSection === 'wine'
               ? 'Добавить вино'
               : activeSection === 'bar'
-              ? 'Добавить напиток'
-              : activeSection === 'tea'
-              ? 'Добавить чай'
-              : 'Добавить блюдо'}
+                ? 'Добавить напиток'
+                : activeSection === 'tea'
+                  ? 'Добавить чай'
+                  : activeSection === 'art'
+                    ? 'Добавить картину'
+                    : 'Добавить блюдо'}
           </span>
         </button>
       </nav>
@@ -248,11 +263,10 @@ function AdminLayout() {
         <Link
           to="/admin/users"
           onClick={handleNavClick}
-          className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors ${
-            activeSection === 'users'
+          className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors ${activeSection === 'users'
               ? 'bg-primary text-white'
               : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
-          }`}
+            }`}
         >
           <span className="material-symbols-outlined text-xl">people</span>
           <span className="font-medium">Пользователи</span>
@@ -262,11 +276,10 @@ function AdminLayout() {
         <Link
           to="/admin/feedback"
           onClick={handleNavClick}
-          className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors relative ${
-            activeSection === 'feedback'
+          className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors relative ${activeSection === 'feedback'
               ? 'bg-primary text-white'
               : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
-          }`}
+            }`}
         >
           <span className="material-symbols-outlined text-xl">feedback</span>
           <span className="font-medium">Обратная связь</span>
@@ -276,11 +289,10 @@ function AdminLayout() {
         <Link
           to="/admin/notifications"
           onClick={handleNavClick}
-          className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors ${
-            activeSection === 'notifications'
+          className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors ${activeSection === 'notifications'
               ? 'bg-primary text-white'
               : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
-          }`}
+            }`}
         >
           <span className="material-symbols-outlined text-xl">notifications</span>
           <span className="font-medium">Уведомления</span>
@@ -290,11 +302,10 @@ function AdminLayout() {
         <Link
           to="/admin/media"
           onClick={handleNavClick}
-          className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors ${
-            activeSection === 'media'
+          className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors ${activeSection === 'media'
               ? 'bg-primary text-white'
               : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
-          }`}
+            }`}
         >
           <span className="material-symbols-outlined text-xl">favorite</span>
           <span className="font-medium">Медиа / лайки</span>
@@ -304,11 +315,10 @@ function AdminLayout() {
         <Link
           to="/admin/visibility"
           onClick={handleNavClick}
-          className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors ${
-            activeSection === 'visibility'
+          className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors ${activeSection === 'visibility'
               ? 'bg-primary text-white'
               : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
-          }`}
+            }`}
         >
           <span className="material-symbols-outlined text-xl">visibility</span>
           <span className="font-medium">Видимость / Фичи</span>
@@ -318,11 +328,10 @@ function AdminLayout() {
         <Link
           to="/admin/deploy"
           onClick={handleNavClick}
-          className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors ${
-            activeSection === 'deploy'
+          className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors ${activeSection === 'deploy'
               ? 'bg-primary text-white'
               : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
-          }`}
+            }`}
         >
           <span className="material-symbols-outlined text-xl">sync</span>
           <span className="font-medium">Обновление</span>
@@ -331,11 +340,10 @@ function AdminLayout() {
         <Link
           to="/admin/help"
           onClick={handleNavClick}
-          className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors ${
-            activeSection === 'help'
+          className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors ${activeSection === 'help'
               ? 'bg-primary text-white'
               : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
-          }`}
+            }`}
         >
           <span className="material-symbols-outlined text-xl">help</span>
           <span className="font-medium">Справка</span>

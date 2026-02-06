@@ -78,7 +78,7 @@ export default function ArticleReaderPage() {
             setLoadingState('loading');
             try {
                 // 1. Get manifest
-                const manifestResponse = await fetch('/content/manifest.json');
+                const manifestResponse = await fetch('/api/useful/manifest');
                 if (!manifestResponse.ok) throw new Error('Не удалось загрузить манифест статей');
                 const manifest = await manifestResponse.json();
                 setManifestUpdate(manifest.updated_at);
@@ -88,14 +88,13 @@ export default function ArticleReaderPage() {
 
                 setArticleData(article);
 
-                // 2. Fetch markdown content
-                const mdResponse = await fetch(article.url);
-                if (!mdResponse.ok) throw new Error('Не удалось загрузить текст статьи');
-
-                // Пытаемся получить реальную дату изменения файла от сервера
-                const lastModified = mdResponse.headers.get('Last-Modified');
-                if (lastModified) {
-                    setFileDate(lastModified);
+                // 2. Fetch markdown content from BACKEND API (secured)
+                const mdResponse = await fetch(`/api/useful/article/${articleKey}`);
+                if (!mdResponse.ok) {
+                    if (mdResponse.status === 401 || mdResponse.status === 302) {
+                        throw new Error('Доступ запрещен. Пожалуйста, войдите в аккаунт.');
+                    }
+                    throw new Error('Не удалось загрузить текст статьи');
                 }
 
                 const mdText = await mdResponse.text();

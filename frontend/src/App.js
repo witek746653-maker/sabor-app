@@ -245,6 +245,7 @@ function App() {
                           <Route path="wine" element={<DishesPage mode="wine" />} />
                           <Route path="bar" element={<DishesPage mode="bar" />} />
                           <Route path="tea" element={<DishesPage mode="tea" />} />
+                          <Route path="paintings" element={<DishesPage mode="art" />} />
                           <Route path="edit/:id" element={<AdminDishEditPage />} />
                           <Route path="add" element={<AdminDishEditPage />} />
                           <Route path="users" element={<UsersPage />} />

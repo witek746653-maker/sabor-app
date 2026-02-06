@@ -27,11 +27,10 @@ def create_app():
         # Bootstrap Admin if needed
         _bootstrap_admin_if_configured()
 
-        # Register Blueprints
         from backend.routes import (
             api_public, auth, admin_menu, admin_users, admin_visibility, 
             admin_notifications, feedback, deploy, media_favorites, 
-            admin_general, static_pages, spa
+            admin_general, static_pages, useful_guides, spa
         )
 
         app.register_blueprint(static_pages.bp) # Static first to catch specific paths
@@ -45,6 +44,7 @@ def create_app():
         app.register_blueprint(feedback.bp)
         app.register_blueprint(deploy.bp)
         app.register_blueprint(media_favorites.bp)
+        app.register_blueprint(useful_guides.bp)
         
         # SPA last (catch-all)
         app.register_blueprint(spa.bp)

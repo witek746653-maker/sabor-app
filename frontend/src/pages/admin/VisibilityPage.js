@@ -2,36 +2,45 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useToast } from '../../contexts/ToastContext';
 import {
   getAdminVisibilityConfig,
-  publishVisibilityConfig,
   rollbackVisibilityConfig,
-  saveVisibilityDraft,
+  updateVisibilityLive,
 } from '../../services/visibilityConfig';
-import { normalizeVisibilityConfig, resolveVisibility, ruleMatchesUser } from '../../utils/visibilityResolver';
-import { DEFAULT_FEATURE_FLAGS, FEATURE_DEFINITIONS } from '../../utils/featureStatus';
+import {
+  DEFAULT_VISIBILITY_CONFIG,
+  normalizeVisibilityConfig,
+  resolveVisibility,
+  ruleMatchesUser,
+} from '../../utils/visibilityResolver';
+import { FEATURE_DEFINITIONS, DEFAULT_FEATURE_FLAGS } from '../../utils/featureStatus';
 
 const RULE_SCOPES = ['route', 'menuItem', 'menuSection', 'pageBlock', 'featureAction', 'contentItem'];
 const ACTIONS = ['allow', 'deny'];
 const ROLE_OPTIONS = ['guest', 'официант', 'администратор', 'хостес', 'менеджер'];
 
-// Стили для темных выпадающих списков (select)
+// Стили для выпадающих списков (select)
 const selectStyles = `
   select {
-    appearance: none;
-    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-    background-repeat: no-repeat;
-    background-position: right 0.7rem center;
-    background-size: 1em;
-    padding-right: 2.5rem !important;
-    background-color: rgba(255, 255, 255, 0.05);
-    color: inherit;
+    appearance: none !important;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 0.5rem center !important;
+    background-size: 1em !important;
+    padding-right: 2rem !important;
+    background-color: transparent !important;
+    color: inherit !important;
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 0.5rem;
+  }
+  .dark select {
+    border-color: rgba(255,255,255,0.1);
   }
   select option {
-    background-color: #1a1a1a !important;
-    color: #ffffff !important;
+    background-color: #ffffff !important;
+    color: #1a1a1a !important;
   }
   .dark select option {
-    background-color: #0f0f0f !important;
-    color: #e5e7eb !important;
+    background-color: #1c1c1e !important;
+    color: #ffffff !important;
   }
 `;
 
@@ -153,10 +162,10 @@ const describeWhen = (when) => {
   }
   const parts = [];
   if (Array.isArray(when.roles) && when.roles.length > 0) {
-    parts.push(`роли: ${when.roles.join(', ')}`);
+    parts.push(`роли: ${when.roles.join(', ')} `);
   }
   if (Array.isArray(when.userIds) && when.userIds.length > 0) {
-    parts.push(`ID пользователей: ${when.userIds.join(', ')}`);
+    parts.push(`ID пользователей: ${when.userIds.join(', ')} `);
   }
   if (when.isGuest) parts.push('только гости');
   if (when.isAdmin) parts.push('только админы');
@@ -172,14 +181,14 @@ const describeRule = (rule) => {
   const scopeLabel = SCOPE_LABELS[rule.scope] || rule.scope;
   const whenLabel = describeWhen(rule.when);
   const enabledLabel = rule.enabled === false ? 'выключено' : 'включено';
-  return `${actionLabel} • ${scopeLabel} • ${rule.target} • ${whenLabel} • ${enabledLabel}`;
+  return `${actionLabel} • ${scopeLabel} • ${rule.target} • ${whenLabel} • ${enabledLabel} `;
 };
 
 const buildSummaryForRole = (rules, previewContext) => {
   const uniqueTargets = new Map();
   (rules || []).forEach((rule) => {
     if (!rule || !rule.scope || !rule.target) return;
-    const key = `${rule.scope}::${rule.target}`;
+    const key = `${rule.scope}::${rule.target} `;
     if (!uniqueTargets.has(key)) {
       const visible = resolveVisibility({
         config: { rules },
@@ -200,7 +209,7 @@ const buildSummaryForRole = (rules, previewContext) => {
   const lines = items.slice(0, 8).map((item) => {
     const scopeLabel = SCOPE_LABELS[item.scope] || item.scope;
     const action = item.visible ? 'Показывать' : 'Скрывать';
-    return `${action}: ${scopeLabel} → ${item.target}`;
+    return `${action}: ${scopeLabel} → ${item.target} `;
   });
   return { total: items.length, visibleCount, hiddenCount, lines };
 };
@@ -238,18 +247,19 @@ const buildPreviewContext = (roleKey) => {
 
 function VisibilityPage() {
   const toast = useToast();
+  const [config, setConfig] = useState(DEFAULT_VISIBILITY_CONFIG);
+  const [lastSavedConfig, setLastSavedConfig] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [draftConfig, setDraftConfig] = useState({ version: 0, rules: [] });
-  const [publishedConfig, setPublishedConfig] = useState(null);
-  const [versions, setVersions] = useState([]);
+  const [syncStatus, setSyncStatus] = useState('saved'); // 'saved' | 'syncing' | 'error'
+  const [lastSavedVersion, setLastSavedVersion] = useState(0);
   const [selectedRuleId, setSelectedRuleId] = useState(null);
   const [filterScope, setFilterScope] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [jsonText, setJsonText] = useState('');
   const [jsonError, setJsonError] = useState('');
+  const [history, setHistory] = useState([]);
   const [previewRole, setPreviewRole] = useState('guest');
-  const [saving, setSaving] = useState(false);
-  const [publishing, setPublishing] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
   const [rollbackVersion, setRollbackVersion] = useState('');
   const [targetGroupId, setTargetGroupId] = useState('footer');
   const [targetQuickSearch, setTargetQuickSearch] = useState('');
@@ -260,15 +270,15 @@ function VisibilityPage() {
   const publishedRulesMap = useMemo(() => {
     const map = new Map();
     // Сначала прогоняем через нормализатор, чтобы убрать лишний "шум"
-    const normalizedPublished = normalizeVisibilityConfig({ rules: publishedConfig?.rules || [] });
+    const normalizedPublished = normalizeVisibilityConfig({ rules: config?.rules || [] });
     normalizedPublished.rules.forEach(r => {
       map.set(r.id, JSON.stringify(r));
     });
     return map;
-  }, [publishedConfig]);
+  }, [config]);
 
-  const normalizedDraft = useMemo(() => normalizeVisibilityConfig(draftConfig), [draftConfig]);
-  const rules = normalizedDraft.rules;
+  const normalizedConfig = useMemo(() => normalizeVisibilityConfig(config), [config]);
+  const rules = normalizedConfig.rules;
   const selectedRule = rules.find((rule) => rule.id === selectedRuleId) || null;
   const selectedRuleSummary = useMemo(() => describeRule(selectedRule), [selectedRule]);
   const roleSummary = useMemo(
@@ -290,57 +300,64 @@ function VisibilityPage() {
     return ALL_TARGETS.filter((item) => item.label.toLowerCase().includes(query)).slice(0, 6);
   }, [targetQuickSearch]);
 
-  useEffect(() => {
-    const load = async () => {
+  const load = async () => {
+    try {
       setLoading(true);
-      try {
-        const data = await getAdminVisibilityConfig();
-        const publishedData = data?.published?.config || null;
-        const draftData = data?.draft?.config || { rules: [] };
+      const data = await getAdminVisibilityConfig();
+      // Получаем конфиг напрямую из поля 'config' возвращаемого объекта
+      const raw = data.published?.config || {};
+      const pub = normalizeVisibilityConfig({
+        ...raw,
+        version: data.published?.version || raw.version || 0
+      });
 
-        // Если черновик пуст, а опубликованные правила есть — берем их за основу
-        const initialRules = (draftData.rules && draftData.rules.length > 0)
-          ? draftData.rules
-          : (publishedData?.rules || []);
+      setConfig(pub);
+      setLastSavedConfig(JSON.stringify(pub));
+      setJsonText(JSON.stringify(pub, null, 2));
+      setHistory(data.history || []);
+      if (pub.version) setLastSavedVersion(pub.version);
+    } catch (err) {
+      toast.error('Ошибка при загрузке конфигурации');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-        const initialFeatures = (draftData.features && Object.keys(draftData.features).length > 0)
-          ? draftData.features
-          : (publishedData?.features || {});
-
-        setDraftConfig({
-          version: data?.draft?.version || 0,
-          rules: initialRules,
-          features: initialFeatures,
-        });
-
-        setPublishedConfig(
-          data?.published
-            ? {
-              version: data.published.version,
-              rules: publishedData?.rules || [],
-              features: publishedData?.features || {},
-              updatedBy: data.published.updated_by,
-              updatedAt: data.published.updated_at,
-            }
-            : null
-        );
-        setVersions(data?.versions || []);
-        setJsonText(JSON.stringify({ rules: initialRules, features: initialFeatures }, null, 2));
-      } catch (err) {
-        toast.error('Не удалось загрузить конфиг видимости');
-      } finally {
-        setLoading(false);
-      }
-    };
-
+  useEffect(() => {
     load();
-  }, [toast]);
+  }, []);
+
+  // Авто-сохранение (Debounce 1.5 сек)
+  useEffect(() => {
+    if (loading) return;
+
+    const currentStr = JSON.stringify(config);
+    if (currentStr === lastSavedConfig) {
+      setSyncStatus('saved');
+      return;
+    }
+
+    setSyncStatus('syncing');
+    const timer = setTimeout(async () => {
+      try {
+        const result = await updateVisibilityLive(config);
+        setLastSavedVersion(result.version);
+        setLastSavedConfig(currentStr);
+        setSyncStatus('saved');
+      } catch (err) {
+        console.error(err);
+        setSyncStatus('error');
+      }
+    }, 1500);
+
+    return () => clearTimeout(timer);
+  }, [config, loading, lastSavedConfig]);
 
   useEffect(() => {
     setJsonText(
-      JSON.stringify({ rules: normalizedDraft.rules, features: normalizedDraft.features || {} }, null, 2)
+      JSON.stringify({ rules: normalizedConfig.rules, features: normalizedConfig.features || {} }, null, 2)
     );
-  }, [normalizedDraft.rules, normalizedDraft.features]);
+  }, [normalizedConfig.rules, normalizedConfig.features]);
 
   const filteredRules = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
@@ -357,27 +374,21 @@ function VisibilityPage() {
 
 
   const updateRule = (ruleId, patch) => {
-    // Если меняется ID, то "причесываем" его (убираем лишние пробелы по краям)
     const normalizedPatch = { ...patch };
-    if (normalizedPatch.id) {
-      normalizedPatch.id = normalizedPatch.id.trim();
-    }
+    if (normalizedPatch.id) normalizedPatch.id = normalizedPatch.id.trim();
 
-    setDraftConfig((prev) => ({
+    setConfig((prev) => ({
       ...prev,
       rules: (prev.rules || []).map((rule) =>
         (rule.id === ruleId ? { ...rule, ...normalizedPatch } : rule)
       ),
     }));
 
-    // Синхронизируем выбор, чтобы редактор не закрылся
-    if (normalizedPatch.id && selectedRuleId === ruleId) {
-      setSelectedRuleId(normalizedPatch.id);
-    }
+    if (normalizedPatch.id && selectedRuleId === ruleId) setSelectedRuleId(normalizedPatch.id);
   };
 
   const updateRuleWhen = (ruleId, patch) => {
-    setDraftConfig((prev) => ({
+    setConfig((prev) => ({
       ...prev,
       rules: prev.rules.map((rule) => {
         if (rule.id !== ruleId) return rule;
@@ -396,7 +407,7 @@ function VisibilityPage() {
       enabled: true,
       when: { isGuest: true },
     };
-    setDraftConfig((prev) => ({
+    setConfig((prev) => ({
       ...prev,
       rules: [newRule, ...(prev.rules || [])],
     }));
@@ -408,16 +419,12 @@ function VisibilityPage() {
     if (!ok) return;
 
     const normId = String(ruleId || '').trim();
-    setDraftConfig((prev) => ({
+    setConfig((prev) => ({
       ...prev,
-      rules: (prev.rules || []).filter((rule) => {
-        const currentId = String(rule.id || '').trim();
-        return currentId !== normId;
-      }),
+      rules: (prev.rules || []).filter((rule) => String(rule.id || '').trim() !== normId),
     }));
 
     if (selectedRuleId === ruleId) setSelectedRuleId(null);
-    toast.success('Правило удалено из черновика');
   };
 
   const handleApplyJson = () => {
@@ -428,11 +435,12 @@ function VisibilityPage() {
         setJsonError('JSON должен содержать поле rules (массив)');
         return;
       }
-      setDraftConfig((prev) => ({
+      setConfig((prev) => ({
         ...prev,
         rules: parsed.rules,
         features: parsed.features && typeof parsed.features === 'object' ? parsed.features : (prev.features || {}),
       }));
+      toast.success('JSON применен');
     } catch (err) {
       setJsonError('Не удалось разобрать JSON. Проверьте синтаксис.');
     }
@@ -441,7 +449,7 @@ function VisibilityPage() {
   const updateFeature = (featureKey, patch) => {
     const key = String(featureKey || '').trim();
     if (!key) return;
-    setDraftConfig((prev) => {
+    setConfig((prev) => {
       const prevFeatures = prev.features && typeof prev.features === 'object' ? prev.features : {};
       const current = prevFeatures[key] && typeof prevFeatures[key] === 'object' ? prevFeatures[key] : {};
       const next = { ...current, ...patch };
@@ -455,50 +463,19 @@ function VisibilityPage() {
     });
   };
 
-  const handleSaveDraft = async () => {
-    setSaving(true);
+  const handleResetVersion = async () => {
+    const ok = window.confirm('Сбросить счетчик версий на 1? Это просто сбросит номер следующей версии.');
+    if (!ok) return;
     try {
-      const res = await saveVisibilityDraft({
-        rules: normalizedDraft.rules,
-        features: normalizedDraft.features || {},
-      });
-      const draft = res?.draft?.config || { rules: [] };
-      setDraftConfig({
-        version: res?.draft?.version || normalizedDraft.version || 0,
-        rules: draft.rules || [],
-        features: draft.features || {},
-      });
-      toast.success('Черновик сохранён');
+      setSyncStatus('syncing');
+      const result = await updateVisibilityLive(config, true);
+      setLastSavedVersion(result.version);
+      setSyncStatus('saved');
+      setLastSavedConfig(JSON.stringify(config));
+      toast.success('Счетчик версий сброшен на 1');
     } catch (err) {
-      toast.error('Не удалось сохранить черновик');
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const handlePublish = async () => {
-    if (normalizedDraft.rules.length === 0) {
-      const confirmEmpty = window.confirm('Внимание! Список правил пуст. Если вы опубликуете, ВСЕ ограничения будут сняты. Продолжить?');
-      if (!confirmEmpty) return;
-    } else {
-      const ok = window.confirm('Опубликовать текущий черновик?');
-      if (!ok) return;
-    }
-    setPublishing(true);
-    try {
-      const res = await publishVisibilityConfig(normalizedDraft.version);
-      const published = res?.published?.config || { rules: [] };
-      setPublishedConfig({
-        version: res?.published?.version || normalizedDraft.version,
-        rules: published.rules || [],
-        updatedBy: res?.published?.updated_by,
-        updatedAt: res?.published?.updated_at,
-      });
-      toast.success('Конфиг опубликован');
-    } catch (err) {
-      toast.error('Не удалось опубликовать конфиг');
-    } finally {
-      setPublishing(false);
+      setSyncStatus('error');
+      toast.error('Не удалось сбросить версию');
     }
   };
 
@@ -517,17 +494,12 @@ function VisibilityPage() {
         version: res?.published?.version || version,
         rules: published.rules || [],
         features: published.features || {},
-        updatedBy: res?.published?.updated_by,
-        updatedAt: res?.published?.updated_at,
       };
-      setPublishedConfig(configData);
-      // КРИТИЧНО: Синхронизируем черновик, чтобы правила появились в редакторе
-      setDraftConfig({
-        version: configData.version,
-        rules: configData.rules,
-        features: configData.features,
-      });
-      toast.success('Откат выполнен. Правила восстановлены в редакторе.');
+
+      setConfig(configData);
+      setLastSavedConfig(JSON.stringify(configData));
+      setLastSavedVersion(configData.version);
+      toast.success('Откат выполнен. Конфигурация восстановлена.');
     } catch (err) {
       toast.error('Не удалось откатить версию');
     }
@@ -550,22 +522,46 @@ function VisibilityPage() {
             Видимость / Feature flags
           </h2>
           <p className="text-sm text-text-secondary-light dark:text-text-secondary-dark">
-            Управляйте тем, что видит пользователь, без изменения кода.
+            Управляйте тем, что видит пользователь. Все изменения применяются <span className="font-bold text-primary">мгновенно</span>.
           </p>
         </div>
-        <div className="flex flex-col items-end gap-2 text-xs text-text-secondary-light dark:text-text-secondary-dark">
-          <div>Опубликовано: {publishedConfig?.version || 'нет'}</div>
-          <div>Черновик: {normalizedDraft?.version || 'нет'}</div>
+        <div className="flex items-center gap-2">
+          {syncStatus === 'syncing' && (
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-500/10 text-blue-500 text-[11px] font-bold animate-pulse">
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+              Синхронизация...
+            </div>
+          )}
+          {syncStatus === 'saved' && (
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-green-500/10 text-green-500 text-[11px] font-bold">
+              <span className="material-symbols-outlined text-sm">cloud_done</span>
+              Все изменения сохранены (v{lastSavedVersion})
+            </div>
+          )}
+          {syncStatus === 'error' && (
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-red-500/10 text-red-500 text-[11px] font-bold">
+              <span className="material-symbols-outlined text-sm">error_outline</span>
+              Ошибка синхронизации
+            </div>
+          )}
         </div>
       </div>
 
       <div className="grid md:grid-cols-2 gap-4">
         <div className="rounded-xl border border-gray-200 dark:border-white/10 p-4">
-          <h3 className="text-sm font-bold mb-2">Состояние</h3>
-          <div className="text-xs text-text-secondary-light dark:text-text-secondary-dark space-y-1">
-            <div>Опубликованная версия: {publishedConfig?.version || '—'}</div>
-            <div>Обновил: {publishedConfig?.updatedBy || '—'}</div>
-            <div>Дата: {publishedConfig?.updatedAt || '—'}</div>
+          <h3 className="text-sm font-bold mb-2">Информация</h3>
+          <div className="flex items-center justify-between gap-4">
+            <div className="text-xs text-text-secondary-light dark:text-text-secondary-dark space-y-1">
+              <div>Версия на сервере: <span className="font-bold text-primary">{lastSavedVersion || '—'}</span></div>
+              <div>Дата: {new Date().toLocaleDateString()}</div>
+              <div>Время: {new Date().toLocaleTimeString()}</div>
+            </div>
+            <button
+              onClick={handleResetVersion}
+              className="px-3 py-1.5 rounded-lg border border-primary/30 text-primary text-[10px] font-bold hover:bg-primary/5 transition-colors"
+            >
+              Сбросить на v1
+            </button>
           </div>
         </div>
         <div className="rounded-xl border border-gray-200 dark:border-white/10 p-4">
@@ -587,114 +583,54 @@ function VisibilityPage() {
         </div>
       </div>
 
-      {/* ===== Фичи: "В разработке" ===== */}
-      <div className="rounded-xl border border-gray-200 dark:border-white/10 p-4">
-        <h3 className="text-sm font-bold mb-2">Фичи: ярлык «В разработке»</h3>
-        <div className="text-[11px] text-text-secondary-light dark:text-text-secondary-dark mb-3">
-          Здесь можно включать/выключать бейдж «В разработке» и отдельно разрешать доступ к таким разделам.
-        </div>
-        <div className="grid gap-2">
-          {FEATURE_DEFINITIONS.map((feat) => {
-            const current = normalizedDraft.features?.[feat.key] || {};
-            const fallback = DEFAULT_FEATURE_FLAGS?.[feat.key] || {};
-            const comingSoon = (current.comingSoon ?? fallback.comingSoon) === true;
-            const allowAccess = (current.allowAccess ?? fallback.allowAccess) === true;
-            return (
-              <div
-                key={feat.key}
-                className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4 p-3 rounded-lg border border-gray-200 dark:border-white/10 bg-white/60 dark:bg-white/5"
-              >
-                <div className="flex-1">
-                  <div className="text-sm font-semibold">{feat.label}</div>
-                  <div className="text-[11px] text-text-secondary-light dark:text-text-secondary-dark">
-                    key: <span className="font-mono">{feat.key}</span>
-                  </div>
-                </div>
-                <label className="flex items-center gap-2 text-xs">
-                  <input
-                    type="checkbox"
-                    checked={comingSoon}
-                    onChange={(e) => {
-                      const nextComing = e.target.checked;
-                      updateFeature(feat.key, {
-                        comingSoon: nextComing,
-                        // если выключили "в разработке" — снимаем и allowAccess (KISS, чтобы не было сюрпризов)
-                        allowAccess: nextComing ? allowAccess : false,
-                      });
-                    }}
-                  />
-                  <span>В разработке</span>
-                </label>
-                <label className={`flex items-center gap-2 text-xs ${!comingSoon ? 'opacity-50' : ''}`}>
-                  <input
-                    type="checkbox"
-                    checked={allowAccess}
-                    disabled={!comingSoon}
-                    onChange={(e) => updateFeature(feat.key, { allowAccess: e.target.checked })}
-                  />
-                  <span>Разрешить доступ</span>
-                </label>
-              </div>
-            );
-          })}
-          {FEATURE_DEFINITIONS.length === 0 && (
-            <div className="text-xs text-text-secondary-light dark:text-text-secondary-dark">
-              Список фич пуст.
-            </div>
-          )}
-        </div>
-      </div>
+      {/* ===== Секция управления правилами ===== */}
 
       <div className="grid lg:grid-cols-3 gap-6">
         <div className="lg:col-span-1 rounded-xl border border-gray-200 dark:border-white/10 p-4 flex flex-col gap-3">
-          <div className="flex items-center gap-2">
+          <h3 className="text-sm font-bold">1. Список правил</h3>
+          <div className="flex flex-col gap-2">
+            <div className="text-[11px] text-text-secondary-light dark:text-text-secondary-dark italic">Фильтр и поиск:</div>
             <select
               value={filterScope}
               onChange={(e) => setFilterScope(e.target.value)}
-              className="px-2 py-1 rounded-lg border border-gray-200 dark:border-white/10 bg-white/80 dark:bg-white/5 text-xs"
+              className="w-full px-2 py-1.5 rounded-lg border border-gray-200 dark:border-white/10 bg-white/80 dark:bg-white/5 text-xs"
             >
-              <option value="all">Все типы</option>
+              <option value="all">Все типы (Global)</option>
               {RULE_SCOPES.map((scope) => (
                 <option key={scope} value={scope}>
-                  {scope}
+                  {SCOPE_LABELS[scope] || scope}
                 </option>
               ))}
             </select>
             <input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Поиск по id/target"
-              className="flex-1 px-2 py-1 rounded-lg border border-gray-200 dark:border-white/10 bg-white/80 dark:bg-white/5 text-xs"
+              placeholder="Поиск по ID или Target..."
+              className="w-full px-2 py-1.5 rounded-lg border border-gray-200 dark:border-white/10 bg-white/80 dark:bg-white/5 text-xs"
             />
           </div>
-          <div className="text-[11px] text-text-secondary-light dark:text-text-secondary-dark">
-            Фильтр помогает быстро найти нужное правило по типу и названию.
+
+          <div className="flex items-center justify-between text-[11px] px-1">
+            <span className="text-text-secondary-light dark:text-text-secondary-dark">Предпросмотр роли:</span>
+            <select
+              value={previewRole}
+              onChange={(e) => setPreviewRole(e.target.value)}
+              className="px-1.5 py-0.5 rounded border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 text-[10px] font-medium"
+            >
+              {ROLE_OPTIONS.map((role) => (
+                <option key={role} value={role}>{role}</option>
+              ))}
+            </select>
           </div>
+
           <button
             onClick={handleAddRule}
             className="px-3 py-2 rounded-lg bg-primary text-white text-xs font-semibold"
           >
-            + Добавить правило
+            + Добавить новое правило
           </button>
-          <div className="text-xs text-text-secondary-light dark:text-text-secondary-dark">
-            Предпросмотр роли:
-            <select
-              value={previewRole}
-              onChange={(e) => setPreviewRole(e.target.value)}
-              className="ml-2 px-2 py-1 rounded-lg border border-gray-200 dark:border-white/10 bg-white/80 dark:bg-white/5 text-xs"
-            >
-              {ROLE_OPTIONS.map((role) => (
-                <option key={role} value={role}>
-                  {role}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="text-[11px] text-text-secondary-light dark:text-text-secondary-dark">
-            Здесь вы можете увидеть, как правило сработает для выбранной роли.
-          </div>
 
-          <div className="space-y-2 max-h-[520px] overflow-y-auto">
+          <div className="space-y-2 max-h-[520px] overflow-y-auto mt-2">
             {filteredRules.map((rule) => {
               const matches = ruleMatchesUser(rule, previewContext);
 
@@ -704,7 +640,7 @@ function VisibilityPage() {
               const isPublished = serverRuleJson === currentRuleJson;
 
               const totalVisible = resolveVisibility({
-                config: normalizedDraft,
+                config: normalizedConfig,
                 scope: rule.scope,
                 target: rule.target,
                 userContext: previewContext,
@@ -720,45 +656,33 @@ function VisibilityPage() {
                     } ${isPublished
                       ? 'border-primary/50 bg-primary/10 shadow-sm'
                       : 'border-yellow-500/30 bg-yellow-500/5'
-                    }`}
+                    } `}
                 >
-                  {/* Ярлык "На сайте" */}
-                  {isPublished ? (
-                    <div className="absolute top-0 right-0 px-2 py-0.5 bg-primary text-[9px] text-white font-bold rounded-bl-lg uppercase tracking-wider">
-                      На сайте ✅
-                    </div>
-                  ) : (
-                    <div className="absolute top-0 right-0 px-2 py-0.5 bg-yellow-600 text-[9px] text-white font-bold rounded-bl-lg uppercase tracking-wider">
-                      Черновик ✏️
-                    </div>
-                  )}
+                  {/* Ярлык "Активно" */}
+                  <div className="absolute top-0 right-0 px-2 py-0.5 bg-primary/20 text-[9px] text-primary font-bold rounded-bl-lg uppercase tracking-wider">
+                    Активно ✅
+                  </div>
 
-                  <div className={`font-bold text-sm mb-1 ${isPublished ? 'text-primary' : 'text-yellow-700 dark:text-yellow-500'}`}>
+                  <div className={`font-bold text-sm mb-1 ${isPublished ? 'text-primary' : 'text-yellow-700 dark:text-yellow-500'} `}>
                     {rule.id}
                   </div>
 
-                  <div className="text-[10px] text-text-secondary-light dark:text-text-secondary-dark leading-relaxed space-y-1">
-                    <div>Тип: {SCOPE_LABELS[rule.scope] || rule.scope} • Цель: {rule.target}</div>
-
-                    <div className="flex items-center gap-2 mt-1">
-                      <span className={`px-1.5 py-0.5 rounded-md font-medium ${matches ? 'bg-primary/20 text-primary' : 'bg-gray-200 dark:bg-white/10 text-gray-500'}`}>
-                        Для текущей роли: {matches ? 'Подходит ✅' : 'Нет'}
-                      </span>
-                    </div>
+                  <div className="text-[10px] text-text-secondary-light dark:text-text-secondary-dark leading-relaxed">
+                    <div>Тип: {SCOPE_LABELS[rule.scope] || rule.scope} • Тег: {rule.target}</div>
                   </div>
 
                   <div className={`text-[10px] mt-2 p-1.5 rounded-lg border font-bold text-center ${totalVisible
                     ? 'border-green-500/30 text-green-600 bg-green-500/5'
                     : 'border-red-500/30 text-red-600 bg-red-500/5'
-                    }`}>
-                    ИТОГ ДЛЯ БЛОКА: {totalVisible ? 'ПОКАЗЫВАТЬ' : 'СКРЫТЬ'}
+                    } `}>
+                    {totalVisible ? 'ПОКАЗЫВАТЬ' : 'СКРЫТЬ'}
                   </div>
                 </button>
               );
             })}
             {filteredRules.length === 0 && (
-              <div className="text-xs text-text-secondary-light dark:text-text-secondary-dark">
-                Правил нет
+              <div className="text-xs text-text-secondary-light dark:text-text-secondary-dark text-center py-4 italic">
+                Правил не найдено
               </div>
             )}
           </div>
@@ -766,11 +690,11 @@ function VisibilityPage() {
 
         <div className="lg:col-span-2 rounded-xl border border-gray-200 dark:border-white/10 p-4 flex flex-col gap-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-bold">Визуальный редактор</h3>
+            <h3 className="text-sm font-bold">2. Визуальный редактор правила</h3>
             {selectedRule && (
               <button
                 onClick={() => handleDeleteRule(selectedRule.id)}
-                className="text-xs text-red-600"
+                className="text-xs text-red-600 hover:underline"
               >
                 Удалить правило
               </button>
@@ -851,7 +775,7 @@ function VisibilityPage() {
                     <div className="flex flex-wrap gap-2 mt-2">
                       {quickSuggestions.map((item) => (
                         <button
-                          key={`${item.scope}:${item.target}:quick`}
+                          key={`${item.scope}:${item.target}: quick`}
                           type="button"
                           onClick={() => {
                             updateRule(selectedRule.id, { scope: item.scope, target: item.target });
@@ -888,7 +812,7 @@ function VisibilityPage() {
                 <div className="flex flex-wrap gap-2 mt-2">
                   {activeTargetGroup?.items.map((item) => (
                     <button
-                      key={`${item.scope}:${item.target}`}
+                      key={`${item.scope}:${item.target} `}
                       type="button"
                       onClick={() =>
                         updateRule(selectedRule.id, {
@@ -1090,42 +1014,72 @@ function VisibilityPage() {
             <div className="flex items-center gap-2 mt-2">
               <button
                 onClick={handleApplyJson}
-                className="px-3 py-2 rounded-lg bg-gray-100 dark:bg-white/10 text-xs font-medium"
+                className="px-3 py-2 rounded-lg bg-primary text-white text-xs font-semibold"
               >
-                Применить JSON
-              </button>
-              <button
-                onClick={handleSaveDraft}
-                disabled={saving}
-                className="px-3 py-2 rounded-lg bg-primary text-white text-xs font-semibold disabled:opacity-50"
-              >
-                {saving ? 'Сохранение...' : 'Сохранить черновик'}
-              </button>
-              <button
-                onClick={handlePublish}
-                disabled={publishing}
-                className="px-3 py-2 rounded-lg bg-green-600 text-white text-xs font-semibold disabled:opacity-50"
-              >
-                {publishing ? 'Публикация...' : 'Опубликовать'}
+                Применить и Сохранить JSON
               </button>
             </div>
           </div>
 
-          {versions.length > 0 && (
+          {showHistory && history.length > 0 && (
             <div className="border-t border-gray-200 dark:border-white/10 pt-4">
-              <h3 className="text-sm font-bold mb-2">История версий</h3>
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-sm font-bold">История изменений</h3>
+                <button onClick={() => setShowHistory(false)} className="text-xs text-primary">Скрыть</button>
+              </div>
               <div className="grid md:grid-cols-2 gap-2 text-xs text-text-secondary-light dark:text-text-secondary-dark">
-                {versions.map((item) => (
-                  <div key={`${item.id}-${item.version}`} className="border rounded-lg p-2">
-                    <div>Версия: {item.version}</div>
-                    <div>Статус: {item.status}</div>
-                    <div>Обновил: {item.updated_by || '—'}</div>
-                    <div>Дата: {item.updated_at || '—'}</div>
+                {history.slice(0, 10).map((item) => (
+                  <div key={`${item.id}-${item.version}`} className="border rounded-lg p-2 bg-white/30 dark:bg-white/5">
+                    <div className="flex justify-between font-bold text-text-primary">
+                      <span>Версия {item.version}</span>
+                      <span>{item.status}</span>
+                    </div>
+                    <div className="mt-1">Обновил: {item.updated_by || '—'}</div>
+                    <div className="text-[10px]">{item.updated_at || '—'}</div>
                   </div>
                 ))}
               </div>
             </div>
           )}
+          {!showHistory && history.length > 0 && (
+            <div className="border-t border-gray-200 dark:border-white/10 pt-4">
+              <button
+                onClick={() => setShowHistory(true)}
+                className="text-xs text-text-secondary-light hover:text-primary transition-colors underline"
+              >
+                Показать историю изменений (v{lastSavedVersion})
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+      {/* ===== Фичи: "В разработке" (Перенесено вниз) ===== */}
+      <div className="rounded-xl border border-gray-200 dark:border-white/10 p-4">
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="text-sm font-bold">Дополнительно: ярлыки «В разработке»</h3>
+        </div>
+        <div className="grid gap-2 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+          {FEATURE_DEFINITIONS.map((feat) => {
+            const current = normalizedConfig.features?.[feat.key] || {};
+            const fallback = DEFAULT_FEATURE_FLAGS?.[feat.key] || {};
+            const comingSoon = (current.comingSoon ?? fallback.comingSoon) === true;
+            return (
+              <label
+                key={feat.key}
+                className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 dark:border-white/10 bg-white/60 dark:bg-white/5 cursor-pointer hover:bg-white/80 dark:hover:bg-white/10 transition-colors"
+              >
+                <input
+                  type="checkbox"
+                  checked={comingSoon}
+                  onChange={(e) => updateFeature(feat.key, { comingSoon: e.target.checked })}
+                  className="w-4 h-4 accent-primary"
+                />
+                <div className="flex-1">
+                  <div className="text-xs font-semibold">{feat.label}</div>
+                </div>
+              </label>
+            );
+          })}
         </div>
       </div>
     </div>

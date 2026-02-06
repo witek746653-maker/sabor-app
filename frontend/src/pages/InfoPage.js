@@ -217,7 +217,7 @@ function InfoPage() {
       path: '/trainer/menu-trainer.html',
       type: 'html',
       description: 'Обучение и практика',
-      comingSoon: isFeatureComingSoon('waiterTrainer') || isComingSoon('waiterTrainer'),
+      comingSoon: isFeatureComingSoon('waiterTrainer'),
       allowAccess: isFeatureAccessAllowed('waiterTrainer'),
     },
     {

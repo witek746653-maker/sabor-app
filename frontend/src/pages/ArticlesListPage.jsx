@@ -75,11 +75,19 @@ export default function ArticlesListPage() {
     useEffect(() => {
         const fetchManifest = async () => {
             try {
-                const response = await fetch('/content/manifest.json');
+                const response = await fetch('/api/useful/manifest');
+                if (response.status === 401 || response.status === 302) {
+                    // Если не авторизован - просто пустой список, или можно редиректить
+                    setArticles([]);
+                    return;
+                }
+                if (!response.ok) throw new Error('Failed to fetch manifest');
+
                 const data = await response.json();
                 setArticles(data.articles || []);
             } catch (error) {
                 console.error('Error loading articles manifest:', error);
+                setArticles([]);
             } finally {
                 setLoading(false);
             }

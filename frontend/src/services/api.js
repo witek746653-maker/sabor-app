@@ -490,6 +490,30 @@ export const getBarItems = async () => {
   }
 };
 
+// ========== API ДЛЯ КАРТИН ==========
+
+export const getArtworks = async () => {
+  if (_forceBackendJsonMenuDb()) {
+      // Пока нет отдельного метода в бэкенде для json-based картин через этот endpoint,
+      // но по логике мы могли бы брать их из get_menu_json
+      // Для простоты:
+      const items = await _loadMenuDbFromBackendJson(); // это грузит всё
+      return items.filter(it => it && (it.source === "Искусство в Sabor de la Vida" || String(it.id).startsWith("09")));
+  }
+  try {
+    const response = await api.get('/api/artworks', { timeout: 8000 });
+    return response.data;
+  } catch (err) {
+    // Fallback logic if API fails
+    try {
+       const items = await _loadMenuDbFromStatic();
+       return items.filter(it => it && (it.source === "Искусство в Sabor de la Vida" || String(it.id).startsWith("09")));
+    } catch {
+       throw err;
+    }
+  }
+};
+
 // ========== API ДЛЯ МЕДИА-ЛАЙКОВ ==========
 
 export const getMediaLikes = async (ids = []) => {

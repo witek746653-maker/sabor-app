@@ -16,6 +16,13 @@ export const saveVisibilityDraft = async (config) => {
   return response.data;
 };
 
+// Индустриальный стандарт: Live Toggle
+// Сразу сохраняет и публикует изменения.
+export const updateVisibilityLive = async (config, reset_version = false) => {
+  const response = await api.post('/api/admin/visibility/update', { config, reset_version });
+  return response.data;
+};
+
 export const publishVisibilityConfig = async (version = null) => {
   const payload = Number.isInteger(version) ? { version } : {};
   const response = await api.post('/api/admin/visibility/publish', payload);
