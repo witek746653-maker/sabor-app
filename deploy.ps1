@@ -150,7 +150,7 @@ if ($SkipUpload) {
   $backendItems = @(
     "app.py", "app_factory.py", "models.py", "config.py", "extensions.py", 
     "utils.py", "migrate_to_db.py", "requirements.txt", "wsgi.py",
-    "routes", "services"
+    "routes", "services", "private"
   ) | ForEach-Object { Join-Path $PSScriptRoot ("backend\" + $_) }
 
   Run "ssh" ($CommonSshArgs + @($Remote, "sudo rm -rf $RemoteRoot/backend/* && sudo mkdir -p $RemoteRoot/backend"))

@@ -137,6 +137,7 @@ const TARGET_GROUPS = [
       { scope: 'featureAction', target: 'language.switcher', label: 'Кнопка: Язык' },
       { scope: 'pageBlock', target: 'search.input', label: 'Поле: Поиск' },
       { scope: 'featureAction', target: 'tools.pdf.share', label: 'Информация: действие Отправить' },
+      { scope: 'featureAction', target: 'tool.waiterTrainer', label: 'Инструменты: Тренажер официанта' },
     ],
   },
   {

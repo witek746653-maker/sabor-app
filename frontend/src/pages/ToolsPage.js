@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
+import { useVisibility } from '../contexts/VisibilityContext';
 import { getToolsRegistry } from '../services/api';
 
 function ToolsPage() {
     const navigate = useNavigate();
     const { isGuest } = useAuth();
     const toast = useToast();
+    const { isVisible } = useVisibility();
     const [tools, setTools] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -44,6 +46,19 @@ function ToolsPage() {
                     });
                 }
 
+                // Внедрение Тренажера официанта
+                if (!enabledTools.find(t => t.id === 'waiter-trainer')) {
+                    enabledTools.push({
+                        id: 'waiter-trainer',
+                        title: 'Тренажер официанта',
+                        description: 'Обучение и практика',
+                        type: 'trainer',
+                        url: '/trainer/menu-trainer.html',
+                        enabled: true,
+                        openMode: 'new_tab'
+                    });
+                }
+
                 setTools(enabledTools);
             } catch (error) {
                 console.error('Ошибка загрузки инструментов:', error);
@@ -56,15 +71,15 @@ function ToolsPage() {
     }, [toast]);
 
     const handleToolClick = (tool) => {
-        if (isGuest && (tool.id === 'wine-list-generator' || tool.id === 'waiter-database')) {
+        if (isGuest && (tool.id === 'wine-list-generator' || tool.id === 'waiter-database' || tool.id === 'waiter-trainer')) {
             toast.info('Этот инструмент доступен только после входа.');
             return;
         }
         if (tool.openMode === 'new_tab') {
             // В режиме разработки (порт 3000) инструменты нужно открывать на порту бэкенда (5000)
-            // Исключение: файлы из папки public/ (например, /menus/)
+            // Исключение: файлы из папки public/ (например, /menus/, /trainer/)
             let toolUrl = tool.url;
-            if (window.location.port === '3000' && toolUrl.startsWith('/') && !toolUrl.startsWith('/menus/')) {
+            if (window.location.port === '3000' && toolUrl.startsWith('/') && !toolUrl.startsWith('/menus/') && !toolUrl.startsWith('/trainer/')) {
                 toolUrl = `http://localhost:5000${toolUrl}`;
             }
             window.open(toolUrl, '_blank', 'noopener,noreferrer');
@@ -77,6 +92,7 @@ function ToolsPage() {
     const getIcon = (type) => {
         if (type === 'generator') return 'manufacturing';
         if (type === 'database') return 'database';
+        if (type === 'trainer') return 'fitness_center';
         return 'build';
     };
 
@@ -109,7 +125,12 @@ function ToolsPage() {
                     </div>
                 ) : (
                     <div className="grid grid-cols-2 gap-4">
-                        {tools.map((tool) => (
+                        {tools.filter(tool => {
+                            if (tool.id === 'waiter-trainer') {
+                                return isVisible({ scope: 'featureAction', target: 'tool.waiterTrainer' });
+                            }
+                            return true;
+                        }).map((tool) => (
                             <button
                                 key={tool.id}
                                 onClick={() => handleToolClick(tool)}

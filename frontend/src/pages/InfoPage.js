@@ -46,7 +46,7 @@ function InfoPage() {
     if (toolLower.includes('справочник')) return 'menu_book';
     if (toolLower.includes('искусство')) return 'palette';
     if (toolLower.includes('медиа') || toolLower.includes('обучение')) return 'smart_display';
-    if (toolLower.includes('тренажер')) return 'fitness_center';
+
     if (toolLower.includes('сигар') || toolLower.includes('энциклопед')) return 'smoking_rooms';
     if (toolLower.includes('комплекс') || toolLower.includes('сотрудник')) return 'business_center';
     if (toolLower.includes('инструмент')) return 'construction';
@@ -60,7 +60,7 @@ function InfoPage() {
     if (toolLower.includes('справочник')) return 'Справочные материалы';
     if (toolLower.includes('искусство')) return 'Художественные работы';
     if (toolLower.includes('медиа') || toolLower.includes('обучение')) return 'Видео и подкасты';
-    if (toolLower.includes('тренажер')) return 'Обучение и практика';
+
     if (toolLower.includes('сигар')) return 'Энциклопедия сигар';
     if (toolLower.includes('комплекс')) return 'Внутренние ресурсы';
     return '';
@@ -212,14 +212,7 @@ function InfoPage() {
       description: 'Художественные работы',
       comingSoon: false
     },
-    {
-      name: 'Тренажер официанта',
-      path: '/trainer/menu-trainer.html',
-      type: 'html',
-      description: 'Обучение и практика',
-      comingSoon: isFeatureComingSoon('waiterTrainer'),
-      allowAccess: isFeatureAccessAllowed('waiterTrainer'),
-    },
+
     {
       name: 'Комплекс для сотрудников',
       path: pdfPath,
