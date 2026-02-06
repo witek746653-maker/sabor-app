@@ -1,16 +1,16 @@
 // src/pages/wineListBuilder/catalog.js
 
 export const WINE_TYPE_LABEL = {
-    white: "🥂 Белое",
-    red: "🍷 Красное",
-    rose: "🌸 Розовое",
-    sparkling: "✨ Игристое",
-    champagne: "🥂 Шампанское",
-    orange: "🟠 Оранжевое",
-    other: "🧩 Другое",
-    fortified: "🏺 Крепленое",
-    dessert: "🍰 Десертное",
-    non_alcoholic: "🚫 Безалкогольное"
+    white: "Белое",
+    red: "Красное",
+    rose: "Розовое",
+    sparkling: "Игристое",
+    champagne: "Шампанское",
+    orange: "Оранжевое",
+    other: "Другое",
+    fortified: "Крепленое",
+    dessert: "Десертное",
+    non_alcoholic: "Безалкогольное"
 };
 /* Added extra types to be safe if they appear in future, though user requested specific list. Keeping original list + safe extras if needed, but per user request sticking to original map mostly.
    Actually, I will strictly follow the provided catalog.ts content but just strip types.

@@ -5,7 +5,7 @@ export const emptyDraft = () => ({
     name: "",
     country: "",
     region: "",
-    grape: "",
+    grapes: [], // Теперь это массив
     types: ["white"],
     tastes: [],
     quantity: 1,
@@ -54,15 +54,16 @@ export function isValidName(name) {
 
 export function normalizeDraftForCountryAndTypes(draft) {
     const regions = getRegions(draft.country);
-    const grapes = getGrapes(draft.country, draft.types);
+    const availableGrapes = getGrapes(draft.country, draft.types);
 
     const regionOk = draft.region && regions.includes(draft.region);
-    const grapeOk = draft.grape && grapes.includes(draft.grape);
+    // Теперь мы НЕ фильтруем сорта строго, чтобы оставить пользовательские вводы
+    const grapesOk = draft.grapes || [];
 
     return {
         ...draft,
         region: regionOk ? draft.region : "",
-        grape: grapeOk ? draft.grape : "",
+        grapes: grapesOk,
     };
 }
 
@@ -70,42 +71,55 @@ export function toggleTypeWithRules(current, next) {
     const has = current.includes(next);
     let updated = has ? current.filter((t) => t !== next) : [...current, next];
 
+    // Всегда должен быть выбран хотя бы один тип
     if (updated.length === 0) updated = ["white"];
 
-    const sparklingSelected = updated.includes("sparkling");
-    const max = sparklingSelected ? 2 : 1;
+    // Правило: Игристое (sparkling) может сочетаться ТОЛЬКО с белым, розовым или шампанским
+    const hasSparkling = updated.includes("sparkling");
+    const allowedExtras = ["white", "rose", "champagne"];
 
-    if (updated.length > max) {
-        const rest = updated.filter((t) => t !== next);
-        updated = [next, ...rest].slice(0, max);
-    }
-
-    if (!updated.includes("sparkling") && updated.length > 1) {
-        updated = [updated[0]];
+    if (hasSparkling) {
+        // Оставляем только игристое + один разрешенный экстра-тип
+        const extras = updated.filter(t => t !== "sparkling" && allowedExtras.includes(t));
+        // Если пользователь выбрал что-то запрещенное (например красное) к игристому, 
+        // или если выбрано слишком много - оставляем только последнее выбранное
+        if (next === "sparkling") {
+            // Если включили игристое - ищем старый разрешенный тип или оставляем только игристое
+            const oldExtra = current.find(t => allowedExtras.includes(t)) || "white";
+            updated = ["sparkling", oldExtra];
+        } else if (allowedExtras.includes(next)) {
+            // Если включили белый/розовый/шампанское к игристому
+            updated = ["sparkling", next];
+        } else {
+            // Если включили что-то другое (красное и т.д.) - оно вытесняет всё остальное
+            updated = [next];
+        }
+    } else {
+        // Если игристого нет - разрешен только один тип (последний выбранный)
+        updated = [next];
     }
 
     return updated;
 }
 
 export function buildTelegramText(items) {
-    if (items.length === 0) return "🍷 Вина\n\n(Список пуст)";
+    if (items.length === 0) return "Вина\n\n(Список пуст)";
 
     const lines = [];
-    lines.push("🍷 Вина");
+    lines.push("Collection de Vins");
     lines.push("");
 
     items.forEach((w, idx) => {
-        const flag = COUNTRY_FLAGS[w.country] || "🌍";
         const loc = [w.country || "—", w.region || "—"].join(" • ");
         const types = w.types.map((t) => WINE_TYPE_LABEL[t]).join(" + ");
-        const meta = [`🏷️ ${types}`];
-        if (w.grape) meta.push(`🍇 ${w.grape}`);
-        const tastes = w.tastes.length ? `✨ Вкус: ${w.tastes.join(", ")}` : "";
+        const meta = [`${types}`];
+        if (w.grapes && w.grapes.length) meta.push(`${w.grapes.join(" · ")}`);
+        const tastes = w.tastes.length ? `Вкус: ${w.tastes.join(", ")}` : "";
 
         const quantityStr = w.quantity > 1 ? ` (x${w.quantity})` : "";
 
         lines.push(`${idx + 1}. ${w.name}${quantityStr}`);
-        lines.push(`   ${flag} ${loc}`);
+        lines.push(`   ${loc}`);
         lines.push(`   ${meta.join(" • ")}`);
         if (tastes) lines.push(`   ${tastes}`);
         lines.push("");

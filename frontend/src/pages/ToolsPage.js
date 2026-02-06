@@ -23,11 +23,24 @@ function ToolsPage() {
                     enabledTools.push({
                         id: 'wine-list-builder',
                         title: 'Генератор списка вин',
-                        description: 'Создай список вин и отправь коллегам',
+                        description: 'Создай свой список вин',
                         type: 'generator',
                         url: '/wine-list-builder',
                         enabled: true,
                         openMode: 'self'
+                    });
+                }
+
+                // Внедрение Базы данных официанта
+                if (!enabledTools.find(t => t.id === 'waiter-database')) {
+                    enabledTools.push({
+                        id: 'waiter-database',
+                        title: 'База данных официанта',
+                        description: 'Полная информация о блюдах в одном месте',
+                        type: 'database',
+                        url: '/menus/waiter-database.html',
+                        enabled: true,
+                        openMode: 'new_tab'
                     });
                 }
 
@@ -43,15 +56,15 @@ function ToolsPage() {
     }, [toast]);
 
     const handleToolClick = (tool) => {
-        if (isGuest && tool.id === 'wine-list-generator') {
+        if (isGuest && (tool.id === 'wine-list-generator' || tool.id === 'waiter-database')) {
             toast.info('Этот инструмент доступен только после входа.');
             return;
         }
-
         if (tool.openMode === 'new_tab') {
             // В режиме разработки (порт 3000) инструменты нужно открывать на порту бэкенда (5000)
+            // Исключение: файлы из папки public/ (например, /menus/)
             let toolUrl = tool.url;
-            if (window.location.port === '3000' && toolUrl.startsWith('/')) {
+            if (window.location.port === '3000' && toolUrl.startsWith('/') && !toolUrl.startsWith('/menus/')) {
                 toolUrl = `http://localhost:5000${toolUrl}`;
             }
             window.open(toolUrl, '_blank', 'noopener,noreferrer');
@@ -63,19 +76,20 @@ function ToolsPage() {
 
     const getIcon = (type) => {
         if (type === 'generator') return 'manufacturing';
+        if (type === 'database') return 'database';
         return 'build';
     };
 
     if (loading) {
         return (
-            <div className="bg-background-light dark:bg-background-dark min-h-screen flex items-center justify-center">
+            <div className="aurora-bg min-h-screen flex items-center justify-center">
                 <div className="text-primary text-xl font-bold font-display">Загрузка...</div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-background-light dark:bg-background-dark font-display antialiased">
+        <div className="min-h-screen aurora-bg font-display antialiased">
             <header className="sticky top-0 z-50 flex items-center bg-white/95 dark:bg-[#181311]/95 backdrop-blur-sm p-4 pb-2 justify-between border-b border-orange-100/50 dark:border-gray-800 shadow-sm">
                 <button
                     onClick={() => navigate(-1)}

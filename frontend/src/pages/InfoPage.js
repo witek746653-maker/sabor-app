@@ -199,13 +199,6 @@ function InfoPage() {
       comingSoon: false
     },
     {
-      name: 'База данных официанта',
-      path: '/menus/waiter-database.html',
-      type: 'html',
-      description: 'Полная информация о блюдах',
-      comingSoon: false
-    },
-    {
       name: 'Справочник официанта',
       path: '/menus/waiter-guide.html',
       type: 'html',
