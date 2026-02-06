@@ -26,12 +26,13 @@ def submit_feedback():
     try:
         saved_attachments = FeedbackService.save_attachments(files)
         
+        import json
         fb = FeedbackMessage(
             message=clean_message,
-            contact=raw_contact, 
-            rating=int(raw_rating) if raw_rating else None,
+            name=raw_contact, 
             type=raw_type,
-            attachments=saved_attachments
+            attachments_json=json.dumps(saved_attachments),
+            meta_json=json.dumps({"rating": raw_rating}) if raw_rating else None
         )
         db.session.add(fb)
         db.session.commit()
