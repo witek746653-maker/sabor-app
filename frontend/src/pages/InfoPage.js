@@ -98,6 +98,9 @@ function InfoPage() {
     if (toolLower.includes('гайды') || toolLower.includes('памятки')) {
       return '/images/cheat-sheet.webp';
     }
+    if (toolLower.includes('инструмент')) {
+      return '/images/tools-head.webp';
+    }
     return null;
   };
 
@@ -152,6 +155,10 @@ function InfoPage() {
 
   const handlePdfDownload = () => {
     if (!selectedPdfTool) return;
+    if (isGuest) {
+      toast.info('Действие доступно только после входа');
+      return;
+    }
     // Создаем ссылку для скачивания с полным URL + анти-кэш
     const link = document.createElement('a');
     link.href = getPdfUrl(selectedPdfTool.path, { disposition: 'attachment' });
@@ -166,6 +173,10 @@ function InfoPage() {
 
   const handlePdfShare = async () => {
     if (!selectedPdfTool) return;
+    if (isGuest) {
+      toast.info('Действие доступно только после входа');
+      return;
+    }
     const fullUrl = getPdfUrl(selectedPdfTool.path, { disposition: 'attachment' });
 
     if (navigator.share) {
@@ -255,7 +266,7 @@ function InfoPage() {
       name: 'Инструменты',
       path: '/tools',
       type: 'react',
-      description: 'Генератор винного списка и др.',
+      description: 'Полезные сервисы',
       comingSoon: false
     }
   ];

@@ -494,11 +494,11 @@ export const getBarItems = async () => {
 
 export const getArtworks = async () => {
   if (_forceBackendJsonMenuDb()) {
-      // Пока нет отдельного метода в бэкенде для json-based картин через этот endpoint,
-      // но по логике мы могли бы брать их из get_menu_json
-      // Для простоты:
-      const items = await _loadMenuDbFromBackendJson(); // это грузит всё
-      return items.filter(it => it && (it.source === "Искусство в Sabor de la Vida" || String(it.id).startsWith("09")));
+    // Пока нет отдельного метода в бэкенде для json-based картин через этот endpoint,
+    // но по логике мы могли бы брать их из get_menu_json
+    // Для простоты:
+    const items = await _loadMenuDbFromBackendJson(); // это грузит всё
+    return items.filter(it => it && (it.source === "Искусство в Sabor de la Vida" || String(it.id).startsWith("09")));
   }
   try {
     const response = await api.get('/api/artworks', { timeout: 8000 });
@@ -506,10 +506,10 @@ export const getArtworks = async () => {
   } catch (err) {
     // Fallback logic if API fails
     try {
-       const items = await _loadMenuDbFromStatic();
-       return items.filter(it => it && (it.source === "Искусство в Sabor de la Vida" || String(it.id).startsWith("09")));
+      const items = await _loadMenuDbFromStatic();
+      return items.filter(it => it && (it.source === "Искусство в Sabor de la Vida" || String(it.id).startsWith("09")));
     } catch {
-       throw err;
+      throw err;
     }
   }
 };
@@ -518,10 +518,13 @@ export const getArtworks = async () => {
 
 export const getMediaLikes = async (ids = []) => {
   const list = Array.isArray(ids) ? ids.filter(Boolean) : [];
-  const idsParam = list.join(',');
-  const response = await api.get('/api/media/likes', { params: { ids: idsParam } });
+  if (!list.length) return { counts: {}, likedByMe: {} };
+
+  // Бэкенд ожидает POST /api/media/likes-batch с JSON телом { "ids": [...] }
+  const response = await api.post('/api/media/likes-batch', { ids: list });
   return response.data;
 };
+
 
 export const toggleMediaLike = async (mediaId) => {
   const id = String(mediaId || '').trim();

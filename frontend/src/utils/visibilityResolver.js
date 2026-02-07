@@ -57,34 +57,51 @@ const ruleMatchesTarget = (rule, scope, target) => {
 
 export const ruleMatchesUser = (rule, userContext) => {
   if (!rule) return false;
-  const when = rule.when;
-  if (!when || when.everyone === true) return true;
+  const when = rule.when || {}; // Защита от null
 
   const role = userContext?.role;
   const userId = userContext?.userId;
   const isGuest = Boolean(userContext?.isGuest);
-  const isAdmin = Boolean(userContext?.isAdmin);
+  const isAdminUser = Boolean(userContext?.isAdmin); // Это реальный статус пользователя
   const canWrite = Boolean(userContext?.canWrite);
   const isAuthenticated = Boolean(userContext?.isAuthenticated);
 
+  // === НОВАЯ ЛОГИКА ДЛЯ АДМИНА ===
+  // Админ видит всё по умолчанию. Правила скрытия (deny) для него работают 
+  // ТОЛЬКО если в правиле явно стоит галочка "Админ" (when.isAdmin === true).
+  // Галочка "Для всех" (when.everyone) на админа НЕ действует.
+  if (isAdminUser) {
+    if (when.isAdmin === true) return true; // Правило применяется к админу
+    return false; // Иначе админ игнорирует это правило
+  }
+
+  // === ЛОГИКА ДЛЯ ОСТАЛЬНЫХ ===
+  // Если "Для всех", то правило работает для всех (кроме админа, см. выше)
+  if (when.everyone === true) return true;
+
+  // Если правило пустое (нет условий), считаем что оно не работает ни для кого 
+  // (или для всех? По старой логике было для всех, но безопаснее требовать явного указания).
+  // Но для обратной совместимости, если объект when пуст, можно считать false, 
+  // так как в UI галочка "Для всех" создает поле everyone: true.
+  if (Object.keys(when).length === 0) return false;
+
   const conditions = [];
 
-  // Роли и ID проверяем как раньше
+  // Проверка ролей
   if (Array.isArray(when.roles) && when.roles.length > 0) {
     conditions.push(() => role && when.roles.includes(role));
   }
+  // Проверка ID
   if (Array.isArray(when.userIds) && when.userIds.length > 0) {
     const allowedIds = when.userIds.map((id) => String(id));
     conditions.push(() => userId && allowedIds.includes(String(userId)));
   }
 
-  // А вот флаги (галочки) проверяем ТОЛЬКО если они включены (true)
+  // Флаги
   if (when.isGuest === true) {
     conditions.push(() => isGuest === true);
   }
-  if (when.isAdmin === true) {
-    conditions.push(() => isAdmin === true);
-  }
+  // when.isAdmin === true уже не проверяем здесь, так как non-admin пользователь не может быть админом
   if (when.canWrite === true) {
     conditions.push(() => canWrite === true);
   }
@@ -92,7 +109,7 @@ export const ruleMatchesUser = (rule, userContext) => {
     conditions.push(() => isAuthenticated === true);
   }
 
-  if (conditions.length === 0) return true;
+  if (conditions.length === 0) return false;
 
   return conditions.some((check) => check());
 };

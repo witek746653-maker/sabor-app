@@ -157,3 +157,32 @@ def get_media_likes_batch():
         return jsonify({'counts': counts, 'likedByMe': liked_by_me})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+@bp.route('/api/admin/media/likes-counts', methods=['GET'])
+@login_required
+def get_media_likes_counts():
+    """
+    Эндпоинт для админки (отображение лайков в списке медиа).
+    Ожидает GET ?ids=media-001,media-002
+    """
+    try:
+        ids_raw = request.args.get("ids", "")
+        if not ids_raw:
+            return jsonify({})
+        
+        ids = [x.strip() for x in ids_raw.split(",") if x.strip()]
+        from sqlalchemy import func
+        rows = db.session.query(MediaLike.media_id, func.count(MediaLike.id))\
+                         .filter(MediaLike.media_id.in_(ids))\
+                         .group_by(MediaLike.media_id).all()
+        
+        counts = {r[0]: r[1] for r in rows}
+        # Убеждаемся, что все запрошенные ID есть в ответе
+        for mid in ids:
+            if mid not in counts:
+                counts[mid] = 0
+                
+        return jsonify(counts)
+    except Exception as e:
+        return jsonify({'error': 'MEDIA_COUNTS_ERROR', 'message': str(e)}), 500
+

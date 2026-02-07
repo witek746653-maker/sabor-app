@@ -36,63 +36,43 @@ $FrontendSentryDsn = "ВАШ_FRONTEND_DSN_ИЗ_SENTRY"
 
 ---
 
-## 2) Один раз скачать прод‑базу в локальную dev‑копию
-Мы сделаем безопасный бэкап на сервере и скачиваем его локально.
+## 2) Запуск окружения одной командой (БЫСТРО)
 
-Команда (PowerShell):
+Самый быстрый способ начать работу. Эта команда сделает всё сама:
+1. Скачает свежую базу с прода.
+2. Запустит локальный Backend.
+3. Запустит локальный Frontend.
+
+**Команда:**
+```powershell
+.\dev
 ```
-cd D:\GitHub\sabor-app
+
+*(Совет: нажимайте `.\dev`, затем `Tab` — консоль сама допишет команду)*
+
+Если всё успешно, вы увидите два цветных лога в одном окне (Backend + Frontend).
+Приложение откроется на `http://localhost:3000`.
+
+
+## 3) Ручной запуск (как это работает под капотом)
+Если `.\dev` не работает или нужно запустить что-то отдельно:
+
+### А. Скачать прод‑базу
+```powershell
 powershell -ExecutionPolicy Bypass -File .\tools\sync_prod_db.ps1
 ```
 
-Скрипт берёт настройки из `deploy.config.ps1` и сохраняет базу в:
-`D:\GitHub\sabor-app\backend\database.dev.db`
-
-Файл скрипта:
-```
-1:16:d:\GitHub\sabor-app\tools\sync_prod_db.ps1
-param(
-  # Куда сохранить локальную dev-базу
-  [string]$LocalDbPath = ""
-)
-...
-$RemoteDbPath = "$RemoteRoot/backend/database.db"
-```
-
-Если на сервере нет `sqlite3`, скрипт попросит сделать бэкап вручную.
-
----
-
-## 3) Запуск локального backend с dev‑базой
-Команда (PowerShell):
-```
-cd D:\GitHub\sabor-app
+### Б. Запустить Backend
+```powershell
 powershell -ExecutionPolicy Bypass -File .\tools\run_backend_dev.ps1
 ```
 
-Файл скрипта:
-```
-1:14:d:\GitHub\sabor-app\tools\run_backend_dev.ps1
-param(
-  # Путь к dev-базе
-  [string]$DbPath = ""
-)
-...
-$env:SABOR_DB_PATH = $DbPath
-```
-
-Это заставляет бэкенд использовать dev‑базу, а не прод‑данные.
-
----
-
-## 4) Локальная разработка и проверка
-1) Запускай backend (см. шаг 3).  
-2) Запускай frontend:
-```
-cd D:\GitHub\sabor-app\frontend
+### В. Запустить Frontend
+```powershell
+cd frontend
 npm start
 ```
-3) Проверяй изменения на `http://localhost:3000`.
+
 
 ---
 

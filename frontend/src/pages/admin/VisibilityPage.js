@@ -943,6 +943,10 @@ function VisibilityPage() {
                         </label>
                       ))}
                     </div>
+                    <div className="text-[10px] text-text-secondary-light dark:text-text-secondary-dark mt-1 px-1">
+                      * Если выбрано "Для всех", правило скрывается от всех, <b>кроме админа</b>.
+                      Чтобы скрыть и от админа, нажмите "Админ" тоже.
+                    </div>
                   </div>
 
                   <div className="space-y-3">
@@ -963,21 +967,26 @@ function VisibilityPage() {
                         className="px-2 py-2 rounded-lg border border-gray-200 dark:border-white/10 bg-white/80 dark:bg-white/5"
                       />
                       <span className="text-[10px] text-text-secondary-light dark:text-text-secondary-dark">
-                        Конкретные пользователи.
+                        Применить только к конкретным ID пользователей.
                       </span>
                     </label>
-                    <label className="flex items-center gap-2 mt-2">
+                    <label className="flex items-center gap-2 mt-2 p-2 rounded border border-gray-200 dark:border-white/5 bg-white/30 dark:bg-white/5" title="Позволяет видеть элементы управления редактированием (карандаши, кнопки сохранения)">
                       <input
                         type="checkbox"
                         checked={Boolean(selectedRule.when?.canWrite)}
                         onChange={(e) => updateRuleWhen(selectedRule.id, { canWrite: e.target.checked })}
                       />
-                      <span>Может редактировать</span>
+                      <div className="flex flex-col">
+                        <span>Может редактировать</span>
+                        <span className="text-[9px] text-text-secondary-light dark:text-text-secondary-dark leading-tight">
+                          Для пользователей с правами записи (редакторы).
+                        </span>
+                      </div>
                     </label>
                   </div>
 
                   <div className="md:col-span-2 p-2 bg-blue-500/10 border border-blue-500/20 rounded text-[10px]">
-                    Если ничего не выбрано, правило считается выключенным или для всех (зависит от настроек).
+                    Если ничего не выбрано, правило не применяется ни к кому.
                   </div>
                 </div>
               </div>

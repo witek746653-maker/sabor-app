@@ -22,6 +22,7 @@ import { getJSON, setJSON } from '../utils/storage';
 import { useAuth } from '../contexts/AuthContext';
 import { getMediaLikes, toggleMediaLike } from '../services/api';
 import { useFavorites } from '../contexts/FavoritesContext';
+import { useToast } from '../contexts/ToastContext';
 
 const PLAYBACK_RATES = [0.5, 1, 1.25, 1.5];
 
@@ -39,6 +40,7 @@ const MediaPage = () => {
   const [likeCounts, setLikeCounts] = useState({});
   const [likedByMe, setLikedByMe] = useState({});
   const { mediaIds, toggleMediaFavorite } = useFavorites();
+  const toast = useToast();
   const [history, setHistory] = useState(() => getJSON(STORAGE_KEYS.history, []));
   const [durations, setDurations] = useState(() => getJSON(STORAGE_KEYS.durations, {}));
   const savedPlayerState = getJSON(STORAGE_KEYS.playerState, {});
@@ -47,7 +49,6 @@ const MediaPage = () => {
   const [isMiniPlayerVisible, setIsMiniPlayerVisible] = useState(
     savedPlayerState.isMiniPlayerVisible ?? true
   );
-  const [notice, setNotice] = useState('');
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [playbackRate, setPlaybackRate] = useState(savedPlayerState.playbackRate || 1);
@@ -121,12 +122,6 @@ const MediaPage = () => {
       setCurrentId(history[0]);
     }
   }, [history, currentId]);
-
-  useEffect(() => {
-    if (!notice) return undefined;
-    const timer = setTimeout(() => setNotice(''), 2500);
-    return () => clearTimeout(timer);
-  }, [notice]);
 
   useEffect(() => {
     const player = audioRef.current;
@@ -226,7 +221,7 @@ const MediaPage = () => {
 
   const handleToggleLike = async (itemId) => {
     if (!canWrite) {
-      setNotice('Лайки доступны только после входа (не гость).');
+      toast.info('Лайки доступны только после входа (не гость).');
       return;
     }
     const prevLiked = Boolean(likedByMe[itemId]);
@@ -246,14 +241,14 @@ const MediaPage = () => {
       // Откат при ошибке
       setLikedByMe((prev) => ({ ...prev, [itemId]: prevLiked }));
       setLikeCounts((prev) => ({ ...prev, [itemId]: prevCount }));
-      setNotice('Не удалось обновить лайк. Попробуйте ещё раз.');
+      toast.error('Не удалось обновить лайк. Попробуйте ещё раз.');
     }
   };
 
   const handleToggleFavorite = (itemId) => {
     if (isGuest) {
       // Гостю нельзя добавлять в избранное.
-      setNotice('Избранное доступно только после входа.');
+      toast.info('Избранное доступно только после входа.');
       return;
     }
     toggleMediaFavorite(itemId);
@@ -262,12 +257,12 @@ const MediaPage = () => {
   const handleDownload = (item) => {
     if (!item) return;
     if (!isAuthenticated || isGuest) {
-      setNotice('Скачивание доступно только после входа.');
+      toast.info('Действие доступно только после входа');
       return;
     }
     const fileUrl = item.audioUrl || item.videoUrl;
     if (!fileUrl) {
-      setNotice('Файл для скачивания не найден.');
+      toast.error('Файл для скачивания не найден.');
       return;
     }
     // Создаём скрытую ссылку и запускаем скачивание.
@@ -281,6 +276,10 @@ const MediaPage = () => {
   };
 
   const handleShare = async (item) => {
+    if (isGuest) {
+      toast.info('Действие доступно только после входа');
+      return;
+    }
     const shareUrl = window.location.href;
     const shareData = {
       title: item.title,
@@ -299,9 +298,9 @@ const MediaPage = () => {
 
     try {
       await navigator.clipboard.writeText(shareUrl);
-      setNotice('Ссылка скопирована в буфер обмена.');
+      toast.success('Ссылка скопирована в буфер обмена.');
     } catch (err) {
-      setNotice('Не удалось скопировать ссылку.');
+      toast.error('Не удалось скопировать ссылку.');
     }
   };
 
@@ -525,12 +524,6 @@ const MediaPage = () => {
           </div>
         </section>
 
-        {notice && (
-          <div className="rounded-xl border border-orange-200/60 bg-orange-50 px-4 py-3 text-sm text-orange-700">
-            {notice}
-          </div>
-        )}
-
         {loading && (
           <section className="space-y-3">
             {[1, 2, 3, 4].map((item) => (
@@ -750,7 +743,7 @@ const MediaPage = () => {
         onLoadedMetadata={(event) => handleDurationLoaded(currentItem?.id, event)}
         onTimeUpdate={handleTimeUpdate}
         onEnded={() => setIsPlaying(false)}
-        onError={() => setNotice('Не удалось загрузить аудио. Проверьте файл.')}
+        onError={() => toast.error('Не удалось загрузить аудио. Проверьте файл.')}
         className="hidden"
       />
 

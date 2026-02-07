@@ -122,6 +122,10 @@ function WineDetailPage() {
 
   const handleShare = async () => {
     if (!wine) return;
+    if (isGuest) {
+      toast.info(language === 'EN' ? 'Sharing is available after login.' : 'Действие доступно только после входа');
+      return;
+    }
     const title = getFieldValue('title') || (language === 'EN' ? 'Wine' : 'Вино');
     const description = normalizeNewlines(getFieldValue('description') || '');
     const shareText = `${title}\n\n${description}\n\n${window.location.href}`;

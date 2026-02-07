@@ -95,3 +95,21 @@ def mark_feedback_read(msg_id):
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
+
+@bp.route('/api/admin/feedback/<int:msg_id>', methods=['DELETE'])
+@login_required
+def delete_feedback(msg_id):
+    check = check_admin_role()
+    if check: return check
+    
+    try:
+        fb = FeedbackMessage.query.get(msg_id)
+        if not fb:
+            return jsonify({'error': 'Not found'}), 404
+            
+        db.session.delete(fb)
+        db.session.commit()
+        return jsonify({'status': 'ok'})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500

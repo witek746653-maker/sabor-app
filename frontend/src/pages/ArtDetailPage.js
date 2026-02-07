@@ -82,6 +82,10 @@ function ArtDetailPage() {
   // Web Share API - это браузерный API, который позволяет делиться контентом через установленные приложения
   const handleShare = async () => {
     if (!artwork) return;
+    if (isGuest) {
+      toast.info('Действие доступно только после входа');
+      return;
+    }
 
     // Формируем текст для отправки
     const shareText = `${artwork.title}\n${artwork.author} (${artwork.year || 'год неизвестен'})\n\n${artwork.description}`;

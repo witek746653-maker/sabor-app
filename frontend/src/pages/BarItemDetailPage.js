@@ -127,6 +127,10 @@ function BarItemDetailPage() {
 
   const handleShare = async () => {
     if (!item) return;
+    if (isGuest) {
+      toast.info(language === 'EN' ? 'Sharing is available after login.' : 'Действие доступно только после входа');
+      return;
+    }
     const title = getFieldValue('title') || (language === 'EN' ? 'Drink' : 'Напиток');
     const description = normalizeNewlines(getFieldValue('description') || '');
     const shareText = `${title}\n\n${description}\n\n${window.location.href}`;
@@ -633,15 +637,15 @@ function BarItemDetailPage() {
       <nav className="fixed bottom-0 z-50 w-full sabor-fixed bg-white/95 dark:bg-surface-dark/95 backdrop-blur-md border-t border-gray-100 dark:border-gray-800 pb-safe">
         <div
           className={`grid ${(() => {
-              const showFooterMenu = isVisible({ scope: 'menuItem', target: 'footer.menu' });
-              const showFooterFavorites = isVisible({ scope: 'menuItem', target: 'footer.favorites' });
-              const showFooterSearch = isVisible({ scope: 'menuItem', target: 'footer.search' });
-              const itemCount =
-                (showFooterMenu ? 1 : 0) +
-                (showFooterFavorites ? 1 : 0) +
-                (showFooterSearch ? 1 : 0);
-              return itemCount >= 3 ? 'grid-cols-3' : 'grid-cols-2';
-            })()
+            const showFooterMenu = isVisible({ scope: 'menuItem', target: 'footer.menu' });
+            const showFooterFavorites = isVisible({ scope: 'menuItem', target: 'footer.favorites' });
+            const showFooterSearch = isVisible({ scope: 'menuItem', target: 'footer.search' });
+            const itemCount =
+              (showFooterMenu ? 1 : 0) +
+              (showFooterFavorites ? 1 : 0) +
+              (showFooterSearch ? 1 : 0);
+            return itemCount >= 3 ? 'grid-cols-3' : 'grid-cols-2';
+          })()
             } px-6 items-center h-[60px]`}
         >
           {isVisible({ scope: 'menuItem', target: 'footer.menu' }) && (

@@ -1,0 +1,26 @@
+{
+  "agent_name": "WebTester",
+  "description": "Автономный агент для проведения Playwright-тестов приложения sabor-app. Умеет проверять интерфейс, работу винного генератора и админки.",
+  "entry_point": "tools/tests/test_agent.py",
+  "tools": [
+    {
+      "name": "run_ui_tests",
+      "command": "pytest tools/tests/test_agent.py",
+      "description": "Запускает тесты браузерной автоматизации"
+    },
+    {
+      "name": "inspect_db",
+      "command": "python tools/inspect_db.py",
+      "description": "Проверяет состояние базы данных перед тестами"
+    }
+  ],
+  "capabilities": [
+    "web_browsing",
+    "terminal_access",
+    "file_management"
+  ],
+  "rules": [
+    "При падении теста всегда делать скриншот в папку images/",
+    "Использовать результаты из inspect_db.py для валидации данных в UI"
+  ]
+}

@@ -72,6 +72,10 @@ function DishDetailPage({ mode }) {
   // Функция для отправки в мессенджеры (изначальная версия с Web Share API + копирование)
   const handleShare = async () => {
     if (!dish) return;
+    if (isGuest) {
+      toast.info(language === 'EN' ? 'Sharing is available after login.' : 'Действие доступно только после входа');
+      return;
+    }
 
     const dishTitle = getFieldValue('title');
     const dishDescription = normalizeNewlines(getFieldValue('description'));
