@@ -12,7 +12,8 @@ import cardBg from '../assets/card-bg.webp';
 function IntervalTrainer() {
     const navigate = useNavigate();
     const [screen, setScreen] = useState(() => {
-        return localStorage.getItem('trainer_screen') || 'setup';
+        const saved = localStorage.getItem('trainer_screen');
+        return (saved === 'loading' || !saved) ? 'setup' : saved;
     });
     const [sessionLang, setSessionLang] = useState(() => {
         return localStorage.getItem('trainer_session_lang') || 'RU';
@@ -59,7 +60,16 @@ function IntervalTrainer() {
         setLastConfig(setupConfig);
 
         const allDishes = await loadSelectedMenus(setupConfig.menus);
-        const filtered = filterByCategory(allDishes, setupConfig.category);
+        let filtered = filterByCategory(allDishes, setupConfig.category);
+
+        // Умная фильтрация по режимам
+        if (setupConfig.mode === 'characteristics') {
+            // В режиме характеристик показываем только вино
+            filtered = filtered.filter(d => d.menu === 'Вино' || d.menu === 'Винная карта');
+        } else if (setupConfig.mode === 'composition') {
+            // В режиме состава пропускаем вино (у него нет ингредиентов)
+            filtered = filtered.filter(d => d.menu !== 'Вино' && d.menu !== 'Винная карта');
+        }
 
         const isEnglishMode = setupConfig.mode === 'english';
         const isEnglishMenuOnly = setupConfig.menus?.length === 1 && setupConfig.menus[0] === 'english';

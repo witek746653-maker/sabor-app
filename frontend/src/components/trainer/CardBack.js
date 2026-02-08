@@ -5,7 +5,7 @@ import cardBg from '../../assets/card-bg.webp';
 function CardBack({ dish, onAnswer }) {
     const [isPlaying, setIsPlaying] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
-    const isDetailed = dish.mode === 'composition' || dish.mode === 'allergens' || dish.mode === 'vocabulary';
+    const isDetailed = dish.mode === 'composition' || dish.mode === 'allergens' || dish.mode === 'vocabulary' || dish.mode === 'characteristics';
     const isEn = dish.lang === 'EN';
 
     const handlePlay = (e) => {
@@ -52,7 +52,7 @@ function CardBack({ dish, onAnswer }) {
                     onClick={() => setIsExpanded(false)}
                 >
                     <div className="relative w-full aspect-square max-w-sm rounded-3xl overflow-hidden shadow-2xl border border-white/10">
-                        <img src={dish.image} alt={title} className="w-full h-full object-cover" />
+                        <img src={dish.image} alt={title} className={`w-full h-full ${(dish.menu === 'Вино' || dish.menu === 'Винная карта') ? 'object-contain p-4' : 'object-cover'}`} />
                         <button className="absolute top-4 right-4 w-10 h-10 rounded-full bg-black/50 text-white flex items-center justify-center backdrop-blur-md">
                             <span className="material-symbols-outlined">close</span>
                         </button>
@@ -66,21 +66,21 @@ function CardBack({ dish, onAnswer }) {
                     {/* Compact Header */}
                     <div className="flex items-center gap-4 p-6 shrink-0 z-10 border-b border-white/5">
                         <div
-                            className="w-16 h-16 rounded-full overflow-hidden shrink-0 border border-white/10 shadow-lg cursor-zoom-in active:scale-95 transition-transform"
+                            className={`w-16 h-16 rounded-full overflow-hidden shrink-0 border border-white/10 shadow-lg cursor-zoom-in active:scale-95 transition-transform ${(dish.menu === 'Вино' || dish.menu === 'Винная карта') ? 'bg-white/5' : ''}`}
                             onClick={() => setIsExpanded(true)}
                         >
-                            <img alt={title} className="w-full h-full object-cover" src={dish.image} />
+                            <img alt={title} className={`w-full h-full ${(dish.menu === 'Вино' || dish.menu === 'Винная карта') ? 'object-contain p-1' : 'object-cover'}`} src={dish.image} />
                         </div>
                         <div className="flex flex-col">
                             <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-[#19e66b]/60 mb-0.5">
                                 {section}
                             </span>
                             <h3
-                                onClick={(dish.audioUrl && (isEn || dish.mode === 'english')) ? handlePlay : undefined}
-                                className={`font-black text-sm leading-tight text-white transition-all duration-300 ${(dish.audioUrl && (isEn || dish.mode === 'english')) ? 'cursor-pointer active:scale-95' : ''} ${isPlaying ? 'text-[#19e66b] scale-105' : ''}`}
+                                onClick={(dish.audioUrl && (isEn || dish.mode === 'english' || dish.mode === 'characteristics')) ? handlePlay : undefined}
+                                className={`font-black text-sm leading-tight text-white transition-all duration-300 ${(dish.audioUrl && (isEn || dish.mode === 'english' || dish.mode === 'characteristics')) ? 'cursor-pointer active:scale-95' : ''} ${isPlaying ? 'text-[#19e66b] scale-105' : ''}`}
                             >
                                 {title}
-                                {dish.audioUrl && (isEn || dish.mode === 'english') && (
+                                {dish.audioUrl && (isEn || dish.mode === 'english' || dish.mode === 'characteristics') && (
                                     <span className={`material-symbols-outlined ml-1.5 text-xs align-middle transition-opacity ${isPlaying ? 'opacity-100 animate-pulse' : 'opacity-40'}`}>
                                         volume_up
                                     </span>
@@ -95,36 +95,48 @@ function CardBack({ dish, onAnswer }) {
                             <div className="flex flex-col items-center gap-4 w-full">
                                 <span className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em]">Особенности и аллергены</span>
 
-                                {isEn ? (
-                                    dish.featuresEn && (
-                                        <div
-                                            className="text-[11px] text-white/90 leading-relaxed w-full px-6 mb-2 trainer-features-content overflow-y-auto max-h-[150px] text-center"
-                                            dangerouslySetInnerHTML={{ __html: dish.featuresEn }}
-                                        />
-                                    )
+                                {(dish.menu === 'Вино' || dish.menu === 'Винная карта') ? (
+                                    <div className="flex flex-col gap-2 w-full px-6 max-h-[180px] overflow-y-auto trainer-scrollable-area">
+                                        {dish.comments.map((comment, idx) => (
+                                            <p key={idx} className="text-[11px] text-white/80 leading-relaxed text-center">
+                                                • {comment}
+                                            </p>
+                                        ))}
+                                    </div>
                                 ) : (
-                                    dish.features && (
-                                        <div
-                                            className="text-[11px] text-white/90 leading-relaxed w-full px-6 mb-2 trainer-features-content overflow-y-auto max-h-[150px] text-center"
-                                            dangerouslySetInnerHTML={{ __html: dish.features }}
-                                        />
-                                    )
-                                )}
+                                    <>
+                                        {isEn ? (
+                                            dish.featuresEn && (
+                                                <div
+                                                    className="text-[11px] text-white/90 leading-relaxed w-full px-6 mb-2 trainer-features-content overflow-y-auto max-h-[150px] text-center"
+                                                    dangerouslySetInnerHTML={{ __html: dish.featuresEn }}
+                                                />
+                                            )
+                                        ) : (
+                                            dish.features && (
+                                                <div
+                                                    className="text-[11px] text-white/90 leading-relaxed w-full px-6 mb-2 trainer-features-content overflow-y-auto max-h-[150px] text-center"
+                                                    dangerouslySetInnerHTML={{ __html: dish.features }}
+                                                />
+                                            )
+                                        )}
 
-                                <div className="flex flex-wrap justify-center gap-1.5 max-w-[300px]">
-                                    {allergens.map((allergen, idx) => (
-                                        <span key={idx} className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-white/5 border border-white/10 text-[10px] font-bold text-[#ff9f0a] shadow-lg shadow-black/20">
-                                            <span className="material-symbols-outlined text-[14px]">warning</span>
-                                            {allergen}
-                                        </span>
-                                    ))}
-                                    {dish.tags.filter(tag => tag.includes('free') || tag.includes('без')).map((tag, idx) => (
-                                        <span key={`tag-${idx}`} className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-white/5 border border-white/10 text-[10px] font-bold text-[#19e66b] shadow-lg shadow-black/20">
-                                            <span className="material-symbols-outlined text-[14px]">check_circle</span>
-                                            {tag}
-                                        </span>
-                                    ))}
-                                </div>
+                                        <div className="flex flex-wrap justify-center gap-1.5 max-w-[300px]">
+                                            {allergens.map((allergen, idx) => (
+                                                <span key={idx} className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-white/5 border border-white/10 text-[10px] font-bold text-[#ff9f0a] shadow-lg shadow-black/20">
+                                                    <span className="material-symbols-outlined text-[14px]">warning</span>
+                                                    {allergen}
+                                                </span>
+                                            ))}
+                                            {dish.tags.filter(tag => tag.includes('free') || tag.includes('без')).map((tag, idx) => (
+                                                <span key={`tag-${idx}`} className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-white/5 border border-white/10 text-[10px] font-bold text-[#19e66b] shadow-lg shadow-black/20">
+                                                    <span className="material-symbols-outlined text-[14px]">check_circle</span>
+                                                    {tag}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </>
+                                )}
                             </div>
                         )}
 
@@ -177,6 +189,35 @@ function CardBack({ dish, onAnswer }) {
                                 )}
                             </div>
                         )}
+                        {dish.mode === 'characteristics' && (
+                            <div className="flex flex-col items-center gap-4 w-full">
+                                <span className="text-[10px] font-bold text-[#19e66b]/60 uppercase tracking-[0.2em]">Основные характеристики</span>
+
+                                <div className="flex flex-col gap-3 w-full px-6">
+                                    <div className="grid grid-cols-2 gap-4 w-full mt-2">
+                                        <div className="flex flex-col items-center gap-1 text-center">
+                                            <span className="text-[9px] text-white/30 uppercase font-bold tracking-widest">Страна и регион</span>
+                                            <p className="text-[11px] text-white/90 font-medium">{dish.origin.replace(/\.$/, '')}</p>
+                                        </div>
+                                        <div className="flex flex-col items-center gap-1 text-center">
+                                            <span className="text-[9px] text-white/30 uppercase font-bold tracking-widest">Производитель</span>
+                                            <p className="text-[11px] text-white/90 font-medium">{dish.producer.replace(/\.$/, '')}</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex flex-col items-center gap-2 mt-2">
+                                        <span className="text-[9px] text-white/30 uppercase font-bold tracking-widest">Сорта винограда</span>
+                                        <div className="flex flex-wrap justify-center gap-1.5">
+                                            {dish.grapeVarieties.map((grape, idx) => (
+                                                <span key={idx} className="px-3 py-1.5 rounded-xl bg-[#1a3329]/30 border border-[#1a3329]/50 text-[10px] font-medium text-white/90 shadow-sm">
+                                                    {grape.replace(/\.$/, '')}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </>
             ) : (
@@ -185,9 +226,9 @@ function CardBack({ dish, onAnswer }) {
                     {/* Image Section - 2/3 Height */}
                     <div
                         className={`w-full h-2/3 bg-center shrink-0 cursor-zoom-in ${dish.menu === 'Винная карта' ||
-                                dish.menu === 'Вино' ||
-                                dish.section?.includes('Пиво')
-                                ? 'bg-contain bg-no-repeat' : 'bg-cover'
+                            dish.menu === 'Вино' ||
+                            dish.section?.includes('Пиво')
+                            ? 'bg-contain bg-no-repeat' : 'bg-cover'
                             }`}
                         onClick={() => setIsExpanded(true)}
                         style={{

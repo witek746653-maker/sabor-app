@@ -67,7 +67,7 @@ function AdminPage() {
       if (authChecking) {
         return; // Ждём, пока AuthProvider проверит авторизацию
       }
-      
+
       if (isAuthenticated && currentUser) {
         loadDishes();
         loadUsers();
@@ -154,18 +154,18 @@ function AdminPage() {
     try {
       // Используем произвольную роль, если выбрано "Другое"
       let roleToUse = userForm.role === 'Другое' ? userForm.customRole.trim() : userForm.role;
-      
+
       // Проверяем, что если выбрано "Другое", то роль должна быть указана
       if (userForm.role === 'Другое' && !roleToUse) {
         toast.warning('Пожалуйста, введите произвольную роль');
         return;
       }
-      
+
       // Если роль всё равно пустая, используем роль по умолчанию
       if (!roleToUse) {
         roleToUse = 'официант';
       }
-      
+
       await createUser({
         name: userForm.name,
         username: userForm.username,
@@ -184,10 +184,10 @@ function AdminPage() {
 
   const handleEditUser = (user) => {
     // Заполняем форму данными пользователя для редактирования
-    const role = ['официант', 'администратор', 'хостес'].includes(user.role) 
-      ? user.role 
+    const role = ['официант', 'администратор', 'хостес'].includes(user.role)
+      ? user.role
       : 'Другое';
-    
+
     setUserForm({
       name: user.name,
       username: user.username,
@@ -211,30 +211,30 @@ function AdminPage() {
     try {
       // Используем произвольную роль, если выбрано "Другое"
       let roleToUse = userForm.role === 'Другое' ? userForm.customRole.trim() : userForm.role;
-      
+
       // Проверяем, что если выбрано "Другое", то роль должна быть указана
       if (userForm.role === 'Другое' && !roleToUse) {
         toast.warning('Пожалуйста, введите произвольную роль');
         return;
       }
-      
+
       // Если роль всё равно пустая, используем роль по умолчанию
       if (!roleToUse) {
         roleToUse = 'официант';
       }
-      
+
       // Подготавливаем данные для обновления
       const updateData = {
         name: userForm.name,
         username: userForm.username,
         role: roleToUse
       };
-      
+
       // Добавляем пароль только если он указан (при редактировании можно оставить пустым)
       if (userForm.password && userForm.password.trim()) {
         updateData.password = userForm.password;
       }
-      
+
       await updateUser(editingUser, updateData);
       setUserForm({ name: '', username: '', password: '', role: 'официант', customRole: '' });
       setEditingUser(null);
@@ -398,8 +398,8 @@ function AdminPage() {
               Ваша роль: <span className="font-bold">{currentUser?.role || 'не определена'}</span>
             </p>
             <div className="mt-4">
-              <Link 
-                to="/" 
+              <Link
+                to="/"
                 className="inline-block px-6 py-3 bg-primary text-white rounded-xl font-bold hover:bg-primary/90 transition-colors"
               >
                 Вернуться на главную
@@ -447,27 +447,25 @@ function AdminPage() {
               </button>
             </div>
           </div>
-          
+
           {/* Вкладки (табы) */}
           <div className="flex gap-2 px-4 pb-3">
             <button
               onClick={() => setActiveTab('dishes')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                activeTab === 'dishes'
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === 'dishes'
                   ? 'bg-primary text-white'
                   : 'bg-gray-100 dark:bg-white/10 text-text-secondary-light dark:text-text-secondary-dark hover:bg-gray-200 dark:hover:bg-white/20'
-              }`}
+                }`}
             >
               Блюда
             </button>
             {isAdmin && (
               <button
                 onClick={() => setActiveTab('users')}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  activeTab === 'users'
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === 'users'
                     ? 'bg-primary text-white'
                     : 'bg-gray-100 dark:bg-white/10 text-text-secondary-light dark:text-text-secondary-dark hover:bg-gray-200 dark:hover:bg-white/20'
-                }`}
+                  }`}
               >
                 Пользователи
               </button>
@@ -475,11 +473,10 @@ function AdminPage() {
             {isAdmin && (
               <button
                 onClick={() => setActiveTab('media')}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  activeTab === 'media'
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === 'media'
                     ? 'bg-primary text-white'
                     : 'bg-gray-100 dark:bg-white/10 text-text-secondary-light dark:text-text-secondary-dark hover:bg-gray-200 dark:hover:bg-white/20'
-                }`}
+                  }`}
               >
                 Медиа
               </button>
@@ -524,70 +521,69 @@ function AdminPage() {
                 filteredDishes.map((dish) => {
                   // Проверяем, находится ли блюдо в архиве
                   const isArchived = dish.status === 'в архиве';
-                  
+
                   return (
-                  <div
-                    key={dish.id}
-                    className={`flex flex-col bg-surface-light dark:bg-surface-dark rounded-2xl p-3 shadow-sm border border-gray-100 dark:border-white/5 relative overflow-hidden group ${
-                      isArchived ? 'opacity-50 grayscale' : ''
-                    }`}
-                  >
-                    <div className="flex gap-4">
-                      <div
-                        className="bg-center bg-no-repeat aspect-square bg-cover rounded-xl size-20 shrink-0"
-                        style={{
-                          backgroundImage: getDishImageUrl(dish)
-                            ? `url('${getDishImageUrl(dish)}')`
-                            : 'none',
-                          backgroundColor: getDishImageUrl(dish) ? 'transparent' : '#e5e7eb',
-                        }}
-                      >
-                        {!getDishImageUrl(dish) && (
-                          <div className="w-full h-full flex items-center justify-center">
-                            <span className="material-symbols-outlined text-gray-400 text-2xl">restaurant</span>
+                    <div
+                      key={dish.id}
+                      className={`flex flex-col bg-surface-light dark:bg-surface-dark rounded-2xl p-3 shadow-sm border border-gray-100 dark:border-white/5 relative overflow-hidden group ${isArchived ? 'opacity-50 grayscale' : ''
+                        }`}
+                    >
+                      <div className="flex gap-4">
+                        <div
+                          className="bg-center bg-no-repeat aspect-square bg-cover rounded-xl size-20 shrink-0"
+                          style={{
+                            backgroundImage: getDishImageUrl(dish)
+                              ? `url('${getDishImageUrl(dish)}')`
+                              : 'none',
+                            backgroundColor: getDishImageUrl(dish) ? 'transparent' : '#e5e7eb',
+                          }}
+                        >
+                          {!getDishImageUrl(dish) && (
+                            <div className="w-full h-full flex items-center justify-center">
+                              <span className="material-symbols-outlined text-gray-400 text-2xl">restaurant</span>
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex flex-1 flex-col justify-between py-0.5">
+                          <div className="flex justify-between items-start gap-2">
+                            <div className="flex flex-col">
+                              <p className="text-text-primary-light dark:text-text-primary-dark text-base font-bold leading-tight">
+                                {dish.title || 'Без названия'}
+                              </p>
+                              <p className="text-text-secondary-light dark:text-text-secondary-dark text-xs mt-0.5">
+                                {dish.description || 'Нет описания'}
+                              </p>
+                            </div>
                           </div>
-                        )}
-                      </div>
-                      <div className="flex flex-1 flex-col justify-between py-0.5">
-                        <div className="flex justify-between items-start gap-2">
-                          <div className="flex flex-col">
-                            <p className="text-text-primary-light dark:text-text-primary-dark text-base font-bold leading-tight">
-                              {dish.title || 'Без названия'}
-                            </p>
-                            <p className="text-text-secondary-light dark:text-text-secondary-dark text-xs mt-0.5">
-                              {dish.description || 'Нет описания'}
-                            </p>
+                          <div className="flex justify-between items-end mt-2">
+                            <span className="inline-flex items-center px-2 py-1 rounded-md text-[10px] font-bold bg-orange-50 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300 border border-orange-100 dark:border-orange-800/30">
+                              {dish.menu || 'БЕЗ МЕНЮ'}: {dish.section || 'БЕЗ РАЗДЕЛА'}
+                            </span>
+                            <div className="flex gap-1">
+                              <button
+                                onClick={() => navigate(`/admin/edit/${dish.id}`)}
+                                className="p-1.5 rounded-lg bg-gray-50 dark:bg-white/5 text-text-secondary-light hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
+                              >
+                                <span className="material-symbols-outlined text-[18px]">edit</span>
+                              </button>
+                              <button
+                                onClick={() => handleDelete(dish.id)}
+                                className="p-1.5 rounded-lg bg-gray-50 dark:bg-white/5 text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                              >
+                                <span className="material-symbols-outlined text-[18px]">delete</span>
+                              </button>
+                            </div>
                           </div>
                         </div>
-                        <div className="flex justify-between items-end mt-2">
-                          <span className="inline-flex items-center px-2 py-1 rounded-md text-[10px] font-bold bg-orange-50 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300 border border-orange-100 dark:border-orange-800/30">
-                            {dish.menu || 'БЕЗ МЕНЮ'}: {dish.section || 'БЕЗ РАЗДЕЛА'}
-                          </span>
-                          <div className="flex gap-1">
-                            <button
-                              onClick={() => navigate(`/admin/edit/${dish.id}`)}
-                              className="p-1.5 rounded-lg bg-gray-50 dark:bg-white/5 text-text-secondary-light hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
-                            >
-                              <span className="material-symbols-outlined text-[18px]">edit</span>
-                            </button>
-                            <button
-                              onClick={() => handleDelete(dish.id)}
-                              className="p-1.5 rounded-lg bg-gray-50 dark:bg-white/5 text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
-                            >
-                              <span className="material-symbols-outlined text-[18px]">delete</span>
-                            </button>
-                          </div>
-                        </div>
                       </div>
+                      {/* Индикатор статуса архива */}
+                      {isArchived && (
+                        <div className="absolute top-2 right-2 bg-gray-600 text-white text-[10px] font-bold px-2 py-1 rounded-md">
+                          В АРХИВЕ
+                        </div>
+                      )}
                     </div>
-                    {/* Индикатор статуса архива */}
-                    {isArchived && (
-                      <div className="absolute top-2 right-2 bg-gray-600 text-white text-[10px] font-bold px-2 py-1 rounded-md">
-                        В АРХИВЕ
-                      </div>
-                    )}
-                  </div>
-                );
+                  );
                 })
               )}
             </div>

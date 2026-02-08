@@ -10,6 +10,7 @@ const hasDataForMode = (dish, mode) => {
         case 'composition': return dish.ingredients?.length > 0 || !!dish.contains?.trim();
         case 'english': return !!dish.titleEn?.trim();
         case 'vocabulary': return dish.usefulPhrases?.length > 0 || dish.commentsEn?.length > 0;
+        case 'characteristics': return !!dish.origin || !!dish.producer;
         default: return true;
     }
 };
@@ -30,6 +31,8 @@ const getMissedInfo = (card, lang = 'RU') => {
                 return 'Forgot English name';
             case 'vocabulary':
                 return 'Forgot phrases/facts';
+            case 'characteristics':
+                return 'Forgot wine characteristics';
             default:
                 return 'Needs review';
         }
@@ -46,6 +49,8 @@ const getMissedInfo = (card, lang = 'RU') => {
             return 'Забыли английское название';
         case 'vocabulary':
             return 'Забыли факты или фразы';
+        case 'characteristics':
+            return 'Забыли характеристики вина';
         default:
             return 'Требует повторения';
     }
@@ -104,7 +109,8 @@ export const useIntervalTraining = () => {
             filteredDishes = dishes.filter(d =>
                 hasDataForMode(d, 'description') ||
                 hasDataForMode(d, 'allergens') ||
-                hasDataForMode(d, 'composition')
+                hasDataForMode(d, 'composition') ||
+                hasDataForMode(d, 'characteristics')
             );
         } else {
             filteredDishes = dishes.filter(d => hasDataForMode(d, mode));
@@ -117,7 +123,7 @@ export const useIntervalTraining = () => {
         const deckWithModes = selected.map(dish => {
             let finalMode = mode;
             if (mode === 'mix') {
-                const availableModes = ['description', 'allergens', 'composition'].filter(m => hasDataForMode(dish, m));
+                const availableModes = ['description', 'characteristics', 'allergens', 'composition'].filter(m => hasDataForMode(dish, m));
                 finalMode = availableModes[Math.floor(Math.random() * availableModes.length)];
             }
 

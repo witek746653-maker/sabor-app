@@ -56,6 +56,9 @@ export const loadMenuData = async (menuType) => {
     let data = await response.json();
     if (!Array.isArray(data)) return [];
 
+    // Фильтрация архивных позиций (только для тренажера)
+    data = data.filter(item => item && item.status !== 'в архиве');
+
     // Фильтрация по конкретному меню, если нужно
     if (MENU_FILTERS[menuType]) {
       const allowedLabels = MENU_FILTERS[menuType];
@@ -122,6 +125,7 @@ export const mapToTrainingFormat = (dish) => {
     audioUrl = `/audio/${dish.menu === 'Вино' ? 'wine' : 'en'}/${fileName}`;
   }
 
+  const usefulPhrases = toArray(dish.i18n?.en?.['useful phrases & words'] || []);
   return {
     id: dish.id,
     title: dish.title,
@@ -143,8 +147,17 @@ export const mapToTrainingFormat = (dish) => {
     containsEn: dish.i18n?.en?.['contains-en'] || dish.contains || '',
     featuresEn: dish.i18n?.en?.['features-en'] || '',
     commentsEn: toArray(dish.i18n?.en?.['comments-en'] || []),
-    usefulPhrases: toArray(dish.i18n?.en?.['useful phrases & words'] || []),
-    audioUrl: audioUrl
+    usefulPhrases: usefulPhrases,
+    audioUrl: audioUrl,
+    // Поля для виз
+    origin: dish.origin || '',
+    producer: dish.producer || '',
+    grapeVarieties: toArray(dish.grapeVarieties),
+    comments: toArray(dish.comments),
+    // Пытаемся достать произношение из первой фразы (например, "Gavi — pronounced 'GAH-vee'")
+    pronunciation: usefulPhrases[0]?.includes('pronounced')
+      ? usefulPhrases[0].split('pronounced')[1].split(',')[0].replace(/['"]/g, '').trim()
+      : ''
   };
 };
 
@@ -181,6 +194,7 @@ export const generateQuestion = (dish, mode, lang = 'RU') => {
       case 'allergens': return 'Which features would you point out to the guest?';
       case 'composition': return `Describe the full composition and cooking features`;
       case 'english': return `How would you say the name of this ${t} in English?`;
+      case 'characteristics': return `What are the main characteristics of this ${t}?`;
       case 'vocabulary': return 'Useful vocabulary and interesting facts';
       default: return `Tell about the ${t}`;
     }
@@ -195,6 +209,8 @@ export const generateQuestion = (dish, mode, lang = 'RU') => {
       return `Опишите полный состав ${getTerm('gen')} и особенности его приготовления?`;
     case 'english':
       return `Как произносится название этого ${getTerm('gen')} на английском?`;
+    case 'characteristics':
+      return `Назовите основные характеристики этого ${getTerm('gen')}?`;
     case 'vocabulary':
       return 'Полезная лексика и интересные факты';
     default:

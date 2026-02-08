@@ -18,8 +18,9 @@ const MENU_CONFIG = [
 
 const TRAINING_MODES = [
   { id: 'description', icon: 'auto_awesome', color: '#19e66b', label: 'Красочное описание', subtitle: 'Описать блюдо гостю' },
+  { id: 'characteristics', icon: 'analytics', color: '#19e66b', label: 'Основные характеристики', subtitle: 'Только для вина (страна, сорт)' },
   { id: 'allergens', icon: 'warning', color: '#19e66b', label: 'Особенности', subtitle: 'Аллергены и подача' },
-  { id: 'composition', icon: 'inventory_2', color: '#19e66b', label: 'Состав', subtitle: 'Запомнить ингредиенты' },
+  { id: 'composition', icon: 'inventory_2', color: '#19e66b', label: 'Состав', subtitle: 'Ингредиенты (кроме вина)' },
   { id: 'mix', icon: 'shuffle', color: '#19e66b', label: 'Микс режим', subtitle: 'Случайные вопросы' },
   { id: 'english', icon: 'translate', color: '#19e66b', label: 'English', subtitle: 'Перевод названий' },
   { id: 'vocabulary', icon: 'menu_book', color: '#1a332a', label: 'Полезная лексика и факты', subtitle: 'English menu only' }
@@ -45,6 +46,15 @@ function SetupScreen({ onStart, onBack, initialConfig }) {
   const filteredModesOptions = TRAINING_MODES.filter(mode => {
     const isVisibleByAdmin = isVisible({ scope: 'featureAction', target: `trainer.mode.${mode.id}` });
     if (!isVisibleByAdmin) return false;
+
+    const isWineSelected = selectedMenus.includes('wine');
+    const isOnlyWineSelected = selectedMenus.length === 1 && selectedMenus[0] === 'wine';
+
+    // Режим характеристики только для вина
+    if (mode.id === 'characteristics') return isWineSelected;
+
+    // Режим состав НЕ показываем для вина (если выбрано только вино)
+    if (mode.id === 'composition' && isOnlyWineSelected) return false;
 
     // Режим vocabulary доступен только при выборе English menu
     if (mode.id === 'vocabulary') return isEnglishMenuSelected;
