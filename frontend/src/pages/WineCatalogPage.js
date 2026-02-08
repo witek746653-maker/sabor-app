@@ -8,10 +8,10 @@ import { useVisibility } from '../contexts/VisibilityContext';
 // Функция для получения эмодзи флага по названию страны или коду страны
 const getCountryFlag = (country) => {
   if (!country) return '';
-  
+
   // Убираем лишние пробелы и приводим к нижнему регистру
   const countryLower = country.toLowerCase().trim();
-  
+
   // Карта соответствий: название страны (на русском и английском) и коды стран -> эмодзи флаг
   // Используем Unicode коды для эмодзи флагов, чтобы избежать проблем с кодировкой
   const flagMap = {
@@ -61,25 +61,25 @@ const getCountryFlag = (country) => {
     'au': '\u{1F1E6}\u{1F1FA}',
     'ge': '\u{1F1EC}\u{1F1EA}',
   };
-  
+
   // Сначала проверяем точное совпадение (самый надежный способ)
   if (flagMap[countryLower]) {
     return flagMap[countryLower];
   }
-  
+
   // Проверяем, начинается ли строка с кода страны (2 буквы + пробел)
   // Это случай: "IT Италия", "US США" и т.д.
   const codeMatch = countryLower.match(/^([a-z]{2})\s/);
   if (codeMatch && flagMap[codeMatch[1]]) {
     return flagMap[codeMatch[1]];
   }
-  
+
   // Проверяем код страны в начале с разделителем (запятая или двоеточие)
   const codeWithSeparator = countryLower.match(/^([a-z]{2})[,:]/);
   if (codeWithSeparator && flagMap[codeWithSeparator[1]]) {
     return flagMap[codeWithSeparator[1]];
   }
-  
+
   // Пытаемся найти название страны в строке (если код не найден)
   // Ищем по ключевым словам в строке (только для названий, не кодов)
   for (const [key, flag] of Object.entries(flagMap)) {
@@ -87,7 +87,7 @@ const getCountryFlag = (country) => {
       return flag;
     }
   }
-  
+
   // Если не найдено, возвращаем флаг по умолчанию
   return '\u{1F30D}'; // 🌍
 };
@@ -96,24 +96,24 @@ const getCountryFlag = (country) => {
 // Обрабатывает различные форматы: "Италия, Вéнето", "IT, Италия, Вéнето", "IT Италия, Вéнето" и т.д.
 const parseOrigin = (originStr, wineData) => {
   if (!originStr && !wineData?.region) return { country: null, region: null };
-  
+
   const cleaned = originStr ? originStr.replace(/\.$/, '').trim() : '';
   const parts = cleaned.split(',').map(p => p.trim()).filter(p => p); // Убираем пустые части
-  
+
   if (parts.length === 0) return { country: null, region: wineData?.region || null };
-  
+
   let country = null;
   let countryIndex = 0;
-  
+
   // Проверяем первую часть
   const firstPart = parts[0];
-  
+
   // Если первая часть - это только код страны (2 буквы), пропускаем её
   if (parts.length > 1 && /^[A-Z]{2}$/i.test(firstPart)) {
     // Первая часть - код страны, пропускаем и берём следующую
     countryIndex = 1;
     country = parts[countryIndex] || null;
-  } 
+  }
   // Если первая часть содержит код страны и название (например, "IT Италия")
   else if (/^[A-Z]{2}\s+/i.test(firstPart)) {
     // Извлекаем название страны, убирая код в начале
@@ -123,15 +123,15 @@ const parseOrigin = (originStr, wineData) => {
       country = parts.length > 1 ? parts[1] : null;
       countryIndex = 1;
     }
-  } 
+  }
   // Иначе первая часть - это название страны
   else {
     country = firstPart;
   }
-  
+
   // Регион берём из wineData.region или из оставшихся частей
   const region = wineData?.region || parts.slice(countryIndex + 1).join(', ') || null;
-  
+
   return {
     country: country,
     region: region,
@@ -143,8 +143,8 @@ const getLightness = (wine) => {
   const tags = wine.tags || [];
   const tagsLower = tags.map(t => t.toLowerCase()).join(' ');
   if (tagsLower.includes('легкое') || tagsLower.includes('light')) return 20; // легкое = зеленый
-  if (tagsLower.includes('средне') || tagsLower.includes('medium') || 
-      tagsLower.includes('средне-полнотелое') || tagsLower.includes('medium-bodied')) return 50; // среднее = желтый
+  if (tagsLower.includes('средне') || tagsLower.includes('medium') ||
+    tagsLower.includes('средне-полнотелое') || tagsLower.includes('medium-bodied')) return 50; // среднее = желтый
   if (tagsLower.includes('полнотелое') || tagsLower.includes('full-bodied')) return 90; // полнотелое = красный
   return 50; // по умолчанию среднее
 };
@@ -155,15 +155,15 @@ const getAcidity = (wine) => {
   const description = (wine.description || '').toLowerCase();
   const tagsLower = tags.map(t => t.toLowerCase()).join(' ');
   const allText = tagsLower + ' ' + description;
-  
-  if (allText.includes('яркая кислотность') || allText.includes('bright acidity') || 
-      allText.includes('высокая кислотность') || allText.includes('high acidity') ||
-      allText.includes('высокая кислотность')) return 90; // высокая = красный
+
+  if (allText.includes('яркая кислотность') || allText.includes('bright acidity') ||
+    allText.includes('высокая кислотность') || allText.includes('high acidity') ||
+    allText.includes('высокая кислотность')) return 90; // высокая = красный
   if (allText.includes('хорошая кислотность') || allText.includes('good acidity') ||
-      allText.includes('гармоничная кислотность') || allText.includes('harmonious acidity') ||
-      allText.includes('сбалансированная кислотность')) return 50; // средняя = желтый
+    allText.includes('гармоничная кислотность') || allText.includes('harmonious acidity') ||
+    allText.includes('сбалансированная кислотность')) return 50; // средняя = желтый
   if (allText.includes('низкая кислотность') || allText.includes('low acidity') ||
-      allText.includes('мягкая кислотность') || allText.includes('soft acidity')) return 20; // низкая = зеленый
+    allText.includes('мягкая кислотность') || allText.includes('soft acidity')) return 20; // низкая = зеленый
   return 50; // по умолчанию средняя
 };
 
@@ -173,17 +173,17 @@ const getTannin = (wine) => {
   const description = (wine.description || '').toLowerCase();
   const tagsLower = tags.map(t => t.toLowerCase()).join(' ');
   const allText = tagsLower + ' ' + description;
-  
+
   if (allText.includes('танинное') || allText.includes('tannic') ||
-      allText.includes('плотные танины') || allText.includes('dense tannins') ||
-      allText.includes('сильные танины') || allText.includes('strong tannins')) return 90; // высокая = красный
+    allText.includes('плотные танины') || allText.includes('dense tannins') ||
+    allText.includes('сильные танины') || allText.includes('strong tannins')) return 90; // высокая = красный
   if (allText.includes('мягкие танины') || allText.includes('soft tannins') ||
-      allText.includes('шелковистые танины') || allText.includes('silky tannins') ||
-      allText.includes('зрелые танины') || allText.includes('mature tannins') ||
-      allText.includes('сбалансированные танины')) return 50; // средняя = желтый
+    allText.includes('шелковистые танины') || allText.includes('silky tannins') ||
+    allText.includes('зрелые танины') || allText.includes('mature tannins') ||
+    allText.includes('сбалансированные танины')) return 50; // средняя = желтый
   if (allText.includes('легкие танины') || allText.includes('light tannins') ||
-      allText.includes('нежные танины') || allText.includes('delicate tannins') ||
-      allText.includes('слабо выраженные танины')) return 20; // низкая = зеленый
+    allText.includes('нежные танины') || allText.includes('delicate tannins') ||
+    allText.includes('слабо выраженные танины')) return 20; // низкая = зеленый
   return 50; // по умолчанию средняя
 };
 
@@ -192,10 +192,10 @@ const getTannin = (wine) => {
 const getGradientColor = (value) => {
   // Ограничиваем значение от 0 до 100
   const clampedValue = Math.max(0, Math.min(100, value));
-  
+
   // Создаем градиент от зеленого к красному через желтый
   let r, g, b;
-  
+
   if (clampedValue <= 50) {
     // От зеленого (0, 200, 0) к желтому (255, 255, 0)
     const ratio = clampedValue / 50;
@@ -209,7 +209,7 @@ const getGradientColor = (value) => {
     g = Math.round(255 - (255 - 0) * ratio);
     b = 0;
   }
-  
+
   return `rgb(${r}, ${g}, ${b})`;
 };
 
@@ -219,10 +219,10 @@ const getWineType = (wine) => {
   const tagsLower = tags.map(t => t.toLowerCase()).join(' ');
   const section = (wine.section || '').toLowerCase();
   const allText = tagsLower + ' ' + section;
-  
+
   if (allText.includes('белое') || allText.includes('white') ||
-      allText.includes('игристое') || allText.includes('sparkling') ||
-      allText.includes('розовое') || allText.includes('rosé') || allText.includes('rose')) {
+    allText.includes('игристое') || allText.includes('sparkling') ||
+    allText.includes('розовое') || allText.includes('rosé') || allText.includes('rose')) {
     return 'white'; // для белых, игристых и розовых - шкала легкость-кислотность
   }
   if (allText.includes('красное') || allText.includes('red')) {
@@ -282,7 +282,7 @@ function WineCatalogPage() {
       try {
         // Если есть category, загружаем вина по категории, иначе все вина
         const data = category ? await getWinesByCategory(category) : await getWines();
-        
+
         // Показываем ВСЕ вина (включая "в архиве") — архивные затемняем в UI
         // Термин **архив**: позиция неактивна, но мы её не прячем.
         setWines(data);
@@ -312,13 +312,13 @@ function WineCatalogPage() {
           // Определяем базовую категорию для каждого раздела
           const getBaseCategory = (section) => {
             const sectionLower = section.toLowerCase();
-            if (sectionLower.includes('бокальные позиции') || sectionLower.includes('wines by the glass') || 
-                sectionLower.includes('glass selections')) {
+            if (sectionLower.includes('бокальные позиции') || sectionLower.includes('wines by the glass') ||
+              sectionLower.includes('glass selections')) {
               return 'Бокальные позиции';
             } else if (sectionLower.includes('coravin')) {
               return 'Coravin';
             } else if (sectionLower.includes('полубутылки') || sectionLower.includes('half bottles') ||
-                       sectionLower.includes('375 мл')) {
+              sectionLower.includes('375 мл')) {
               return 'Полубутылки';
             }
             return section; // Если не подходит ни под одну категорию, возвращаем сам раздел
@@ -326,17 +326,17 @@ function WineCatalogPage() {
 
           const categoryA = getBaseCategory(a);
           const categoryB = getBaseCategory(b);
-          
+
           // Порядок базовых категорий
           const order = { 'Бокальные позиции': 1, 'Coravin': 2, 'Полубутылки': 3 };
           const orderA = order[categoryA] || 99;
           const orderB = order[categoryB] || 99;
-          
+
           // Сначала сортируем по базовой категории
           if (orderA !== orderB) {
             return orderA - orderB;
           }
-          
+
           // Если базовая категория одинаковая, сортируем по алфавиту
           return a.localeCompare(b, 'ru');
         });
@@ -383,7 +383,7 @@ function WineCatalogPage() {
       setShowGrapeFilter(false);
       setShowPairingFilter(false);
     };
-    
+
     if (showSectionFilter || showGrapeFilter || showPairingFilter) {
       document.addEventListener('click', handleClickOutside);
       return () => document.removeEventListener('click', handleClickOutside);
@@ -392,7 +392,7 @@ function WineCatalogPage() {
 
   // Получаем все уникальные сорта винограда и перинги
   const allGrapeVarieties = [...new Set(wines.flatMap(w => w.grapeVarieties || []))].filter(Boolean);
-  
+
   // Получаем все уникальные перинги
   const allPairings = [
     'жирная рыба',
@@ -414,27 +414,27 @@ function WineCatalogPage() {
         // Если точного совпадения нет, проверяем базовые категории для обратной совместимости
         const categoryLower = wine.category?.toLowerCase() || '';
         const sectionLower = wine.section?.toLowerCase() || '';
-        
+
         if (selectedSection === 'Бокальные позиции') {
           matchesSection = categoryLower === 'by-glass' || categoryLower === 'by_glass' ||
-                          sectionLower.includes('бокальные позиции') || 
-                          sectionLower.includes('wines by the glass') ||
-                          sectionLower.includes('glass selections');
+            sectionLower.includes('бокальные позиции') ||
+            sectionLower.includes('wines by the glass') ||
+            sectionLower.includes('glass selections');
         } else if (selectedSection === 'Coravin') {
           matchesSection = categoryLower === 'coravin' ||
-                          sectionLower.includes('coravin');
+            sectionLower.includes('coravin');
         } else if (selectedSection === 'Полубутылки') {
           matchesSection = categoryLower === 'half-bottles' || categoryLower === 'half_bottles' ||
-                          sectionLower.includes('полубутылки') || 
-                          sectionLower.includes('half bottles') ||
-                          sectionLower.includes('375 мл');
+            sectionLower.includes('полубутылки') ||
+            sectionLower.includes('half bottles') ||
+            sectionLower.includes('375 мл');
         } else {
           // Для всех остальных случаев проверяем точное совпадение
           matchesSection = wine.section === selectedSection;
         }
       }
     }
-    
+
     // Фильтр по поисковому запросу
     const queryLower = searchQuery.toLowerCase();
     const wineTitle = wine.title || '';
@@ -442,7 +442,7 @@ function WineCatalogPage() {
     const wineOrigin = wine.origin || '';
     const wineProducer = wine.producer || '';
     const wineGrapeVarieties = (wine.grapeVarieties || []).join(' ');
-    
+
     const matchesSearch =
       !searchQuery ||
       wineTitle.toLowerCase().includes(queryLower) ||
@@ -450,28 +450,28 @@ function WineCatalogPage() {
       wineOrigin.toLowerCase().includes(queryLower) ||
       wineProducer.toLowerCase().includes(queryLower) ||
       wineGrapeVarieties.toLowerCase().includes(queryLower);
-    
+
     // Фильтр по сортам винограда
     const matchesGrapeVarieties =
       selectedGrapeVarieties.length === 0 ||
-      selectedGrapeVarieties.some(selected => 
-        (wine.grapeVarieties || []).some(g => 
+      selectedGrapeVarieties.some(selected =>
+        (wine.grapeVarieties || []).some(g =>
           g.toLowerCase().includes(selected.toLowerCase()) ||
           selected.toLowerCase().includes(g.toLowerCase())
         )
       );
-    
+
     // Фильтр по перингу
     const matchesPairings =
       selectedPairings.length === 0 ||
       selectedPairings.some(selected => {
         const pairings = wine.pairings?.dishes || [];
-        return pairings.some(p => 
+        return pairings.some(p =>
           p.toLowerCase().includes(selected.toLowerCase()) ||
           selected.toLowerCase().includes(p.toLowerCase())
         );
       });
-    
+
     const isArchived = wine?.status === 'в архиве';
     if (isArchived && !isVisible({ scope: 'contentItem', target: 'status.archived' })) {
       return false;
@@ -486,6 +486,30 @@ function WineCatalogPage() {
     if (!title) return '';
     if (title.length <= maxLength) return title;
     return title.substring(0, maxLength - 3) + '...';
+  };
+
+  const handleAudioPlay = (wine) => {
+    const audioPath = wine?.i18n?.en?.['audio-en'];
+    const API_URL = process.env.REACT_APP_API_URL || '';
+
+    let audioUrl;
+    if (audioPath) {
+      const normalizedPath = String(audioPath).trim().replace(/%20/g, '-').replace(/\s+/g, '-');
+      if (normalizedPath.startsWith('../audio/')) {
+        audioUrl = `${API_URL}/audio/${normalizedPath.replace('../audio/', '')}`;
+      } else if (normalizedPath.startsWith('/audio/')) {
+        audioUrl = `${API_URL}/audio/${normalizedPath.replace('/audio/', '')}`;
+      } else if (normalizedPath.startsWith('audio/')) {
+        audioUrl = `${API_URL}/audio/${normalizedPath.replace('audio/', '')}`;
+      } else {
+        audioUrl = normalizedPath.startsWith('http') ? normalizedPath : `/${normalizedPath}`;
+      }
+    } else {
+      audioUrl = `${API_URL}/audio/wine/${wine.id}.mp3`;
+    }
+
+    const audio = new Audio(audioUrl);
+    audio.play().catch(err => console.error('Audio play error:', { url: audioUrl, err }));
   };
 
   if (loading) {
@@ -512,17 +536,16 @@ function WineCatalogPage() {
           </h2>
           <div className="flex w-12 items-center justify-end">
             {isVisible({ scope: 'featureAction', target: 'language.switcher' }) && (
-              <button 
+              <button
                 onClick={() => {
                   const newLanguage = language === 'RU' ? 'EN' : 'RU';
                   setLanguage(newLanguage);
                   localStorage.setItem('menuLanguage', newLanguage);
                 }}
-                className={`text-xs font-bold leading-normal tracking-[0.015em] shrink-0 border rounded-lg px-2 py-1 transition-colors ${
-                  language === 'EN' 
-                    ? 'bg-primary text-white border-primary' 
-                    : 'text-primary border-primary/30 hover:bg-primary hover:text-white'
-                }`}
+                className={`text-xs font-bold leading-normal tracking-[0.015em] shrink-0 border rounded-lg px-2 py-1 transition-colors ${language === 'EN'
+                  ? 'bg-primary text-white border-primary'
+                  : 'text-primary border-primary/30 hover:bg-primary hover:text-white'
+                  }`}
               >
                 {language === 'RU' ? 'EN' : 'RU'}
               </button>
@@ -557,18 +580,17 @@ function WineCatalogPage() {
         <div className="relative">
           <div className="flex gap-2 px-4 py-2 overflow-x-auto no-scrollbar items-center pb-3 border-t border-gray-100/50 dark:border-gray-800/50 mt-1">
             {sections.length > 0 && (
-              <button 
+              <button
                 onClick={(e) => {
                   e.stopPropagation();
                   setShowSectionFilter(!showSectionFilter);
                   setShowGrapeFilter(false);
                   setShowPairingFilter(false);
                 }}
-                className={`flex h-8 shrink-0 items-center justify-center gap-x-1 rounded-full border px-3 transition-transform active:scale-95 shadow-sm ${
-                  selectedSection !== 'all' 
-                    ? 'bg-primary text-white border-primary' 
-                    : 'bg-white dark:bg-surface-dark border-gray-200 dark:border-gray-700'
-                }`}
+                className={`flex h-8 shrink-0 items-center justify-center gap-x-1 rounded-full border px-3 transition-transform active:scale-95 shadow-sm ${selectedSection !== 'all'
+                  ? 'bg-primary text-white border-primary'
+                  : 'bg-white dark:bg-surface-dark border-gray-200 dark:border-gray-700'
+                  }`}
               >
                 <p className={`text-xs font-medium ${selectedSection !== 'all' ? 'text-white' : 'text-[#181311] dark:text-gray-200'}`}>
                   {language === 'EN' ? 'Category' : 'Раздел'}
@@ -578,18 +600,17 @@ function WineCatalogPage() {
                 </span>
               </button>
             )}
-            <button 
+            <button
               onClick={(e) => {
                 e.stopPropagation();
                 setShowGrapeFilter(!showGrapeFilter);
                 setShowSectionFilter(false);
                 setShowPairingFilter(false);
               }}
-              className={`flex h-8 shrink-0 items-center justify-center gap-x-1 rounded-full border px-3 transition-transform active:scale-95 shadow-sm ${
-                selectedGrapeVarieties.length > 0 
-                  ? 'bg-primary text-white border-primary' 
-                  : 'bg-white dark:bg-surface-dark border-gray-200 dark:border-gray-700'
-              }`}
+              className={`flex h-8 shrink-0 items-center justify-center gap-x-1 rounded-full border px-3 transition-transform active:scale-95 shadow-sm ${selectedGrapeVarieties.length > 0
+                ? 'bg-primary text-white border-primary'
+                : 'bg-white dark:bg-surface-dark border-gray-200 dark:border-gray-700'
+                }`}
             >
               <p className={`text-xs font-medium ${selectedGrapeVarieties.length > 0 ? 'text-white' : 'text-[#181311] dark:text-gray-200'}`}>
                 {language === 'EN' ? 'Grape' : 'Сорт'}
@@ -598,18 +619,17 @@ function WineCatalogPage() {
                 expand_more
               </span>
             </button>
-            <button 
+            <button
               onClick={(e) => {
                 e.stopPropagation();
                 setShowPairingFilter(!showPairingFilter);
                 setShowSectionFilter(false);
                 setShowGrapeFilter(false);
               }}
-              className={`flex h-8 shrink-0 items-center justify-center gap-x-1 rounded-full border px-3 shadow-sm transition-transform active:scale-95 ${
-                selectedPairings.length > 0 
-                  ? 'bg-primary text-white border-primary' 
-                  : 'bg-white dark:bg-surface-dark border-gray-200 dark:border-gray-700'
-              }`}
+              className={`flex h-8 shrink-0 items-center justify-center gap-x-1 rounded-full border px-3 shadow-sm transition-transform active:scale-95 ${selectedPairings.length > 0
+                ? 'bg-primary text-white border-primary'
+                : 'bg-white dark:bg-surface-dark border-gray-200 dark:border-gray-700'
+                }`}
             >
               <p className={`text-xs font-semibold ${selectedPairings.length > 0 ? 'text-white' : 'text-[#181311] dark:text-gray-200'}`}>
                 {language === 'EN' ? 'Pairing' : 'Перинг'}
@@ -619,10 +639,10 @@ function WineCatalogPage() {
               </span>
             </button>
           </div>
-          
+
           {/* Выпадающее меню для категорий */}
           {showSectionFilter && sections.length > 0 && (
-            <div 
+            <div
               className="absolute top-full left-4 right-4 mt-1 bg-white dark:bg-surface-dark rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 z-50 max-h-64 overflow-y-auto"
               onClick={(e) => e.stopPropagation()}
             >
@@ -631,9 +651,8 @@ function WineCatalogPage() {
                   setSelectedSection('all');
                   setShowSectionFilter(false);
                 }}
-                className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors ${
-                  selectedSection === 'all' ? 'bg-primary/10 text-primary font-semibold' : ''
-                }`}
+                className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors ${selectedSection === 'all' ? 'bg-primary/10 text-primary font-semibold' : ''
+                  }`}
               >
                 {language === 'EN' ? 'All Categories' : 'Все категории'}
               </button>
@@ -644,19 +663,18 @@ function WineCatalogPage() {
                     setSelectedSection(section);
                     setShowSectionFilter(false);
                   }}
-                  className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors ${
-                    selectedSection === section ? 'bg-primary/10 text-primary font-semibold' : ''
-                  }`}
+                  className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors ${selectedSection === section ? 'bg-primary/10 text-primary font-semibold' : ''
+                    }`}
                 >
                   {section}
                 </button>
               ))}
             </div>
           )}
-          
+
           {/* Выпадающее меню для сортов винограда */}
           {showGrapeFilter && (
-            <div 
+            <div
               className="absolute top-full left-4 right-4 mt-1 bg-white dark:bg-surface-dark rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 z-50 max-h-64 overflow-y-auto p-2"
               onClick={(e) => e.stopPropagation()}
             >
@@ -673,9 +691,8 @@ function WineCatalogPage() {
                           setSelectedGrapeVarieties([...selectedGrapeVarieties, grape]);
                         }
                       }}
-                      className={`text-left px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors flex items-center gap-2 rounded-lg ${
-                        isSelected ? 'bg-primary/10 text-primary font-semibold' : ''
-                      }`}
+                      className={`text-left px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors flex items-center gap-2 rounded-lg ${isSelected ? 'bg-primary/10 text-primary font-semibold' : ''
+                        }`}
                     >
                       <span className={`material-symbols-outlined text-[14px] flex-shrink-0 ${isSelected ? 'text-primary' : 'text-gray-400'}`}>
                         {isSelected ? 'check_box' : 'check_box_outline_blank'}
@@ -687,10 +704,10 @@ function WineCatalogPage() {
               </div>
             </div>
           )}
-          
+
           {/* Выпадающее меню для перинга */}
           {showPairingFilter && (
-            <div 
+            <div
               className="absolute top-full left-4 right-4 mt-1 bg-white dark:bg-surface-dark rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 z-50 max-h-64 overflow-y-auto p-2"
               onClick={(e) => e.stopPropagation()}
             >
@@ -707,9 +724,8 @@ function WineCatalogPage() {
                           setSelectedPairings([...selectedPairings, pairing]);
                         }
                       }}
-                      className={`text-left px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors flex items-center gap-2 rounded-lg ${
-                        isSelected ? 'bg-primary/10 text-primary font-semibold' : ''
-                      }`}
+                      className={`text-left px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors flex items-center gap-2 rounded-lg ${isSelected ? 'bg-primary/10 text-primary font-semibold' : ''
+                        }`}
                     >
                       <span className={`material-symbols-outlined text-[14px] flex-shrink-0 ${isSelected ? 'text-primary' : 'text-gray-400'}`}>
                         {isSelected ? 'check_box' : 'check_box_outline_blank'}
@@ -734,9 +750,9 @@ function WineCatalogPage() {
             {filteredWines.length} {language === 'EN' ? 'wines' : 'вин'}
           </span>
         </div>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-3 gap-2">
           {filteredWines.length === 0 ? (
-            <div className="col-span-2 text-center py-8 text-[#896f61] dark:text-gray-400">
+            <div className="col-span-3 text-center py-8 text-[#896f61] dark:text-gray-400">
               {language === 'EN' ? 'No wines found' : 'Вина не найдены'}
             </div>
           ) : (
@@ -749,7 +765,7 @@ function WineCatalogPage() {
               const acidity = getAcidity(wine);
               const tannin = getTannin(wine);
               const isArchived = wine.status === 'в архиве';
-              
+
               // Отладка: проверяем, что флаг определяется правильно (только если не найден)
               if (country && (!countryFlag || countryFlag === '\u{1F30D}' || /^[A-Z]{2}$/i.test(countryFlag))) {
                 console.warn('⚠️ Флаг не найден для страны:', country, 'origin:', wine.origin);
@@ -763,7 +779,7 @@ function WineCatalogPage() {
                 >
                   {/* Затемняем ТОЛЬКО контент карточки, чтобы бейдж "В АРХИВЕ" был читабельным */}
                   <div className={`flex flex-col h-full ${isArchived ? 'opacity-50 grayscale' : ''}`}>
-                    <div className="relative w-full aspect-[3/4] overflow-hidden bg-gray-100 dark:bg-gray-800">
+                    <div className="relative w-full aspect-square overflow-hidden bg-gray-100 dark:bg-gray-800">
                       {imageUrl ? (
                         <img
                           src={imageUrl}
@@ -775,24 +791,33 @@ function WineCatalogPage() {
                           <span className="material-symbols-outlined text-gray-400 text-4xl">wine_bar</span>
                         </div>
                       )}
+
+                      {wine.i18n?.en?.['audio-en'] && language === 'EN' && (
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleAudioPlay(wine);
+                          }}
+                          className="absolute top-1 right-1 flex h-7 w-7 items-center justify-center rounded-full bg-black/40 backdrop-blur-md border border-white/20 shadow-lg z-10 active:scale-90 transition-transform"
+                        >
+                          <span className="material-symbols-outlined text-white text-[16px]">volume_up</span>
+                        </button>
+                      )}
                     </div>
-                    <div className="p-3 flex flex-col flex-grow">
-                      <h3 className="font-bold text-sm leading-[1.2] dark:text-white line-clamp-2 mb-2 group-hover:text-primary transition-colors duration-200">
-                        {shortenTitle(wine.title || (language === 'EN' ? 'No title' : 'Без названия'))}
+                    <div className="p-2 flex flex-col flex-grow">
+                      <h3 className="font-bold text-[11px] leading-[1.2] dark:text-white line-clamp-2 mb-1 group-hover:text-primary transition-colors duration-200">
+                        {wine.title || (language === 'EN' ? 'No title' : 'Без названия')}
                       </h3>
-                      
+
                       {/* Страна и регион с флагом */}
                       {country && (
-                        <div className="flex items-center gap-1.5 mb-1.5">
+                        <div className="flex items-center gap-1 mb-1">
                           {countryFlag && countryFlag !== '🌍' && (
-                            <span 
-                              className="text-base leading-none inline-block" 
-                              style={{ 
-                                fontFamily: 'Apple Color Emoji, Segoe UI Emoji, Noto Color Emoji, sans-serif',
-                                minWidth: '20px',
-                                fontSize: '16px',
-                                lineHeight: '1',
-                                display: 'inline-block'
+                            <span
+                              className="text-[12px] leading-none inline-block flex-shrink-0"
+                              style={{
+                                fontFamily: 'Apple Color Emoji, Segoe UI Emoji, Noto Color Emoji, sans-serif'
                               }}
                               role="img"
                               aria-label={`Флаг ${country}`}
@@ -800,131 +825,19 @@ function WineCatalogPage() {
                               {countryFlag}
                             </span>
                           )}
-                          <p className="text-[10px] text-[#896f61] dark:text-gray-400 line-clamp-1 leading-tight">
-                            {country}{region ? `, ${region}` : ''}
+                          <p className="text-[9px] text-[#896f61] dark:text-gray-400 line-clamp-1 leading-tight font-medium">
+                            {country}
                           </p>
                         </div>
                       )}
-                      
+
                       {/* Производитель */}
                       {wine.producer && (
                         <p className="text-[9px] text-[#896f61] dark:text-gray-400 line-clamp-1 mb-2 leading-tight opacity-75">
                           {wine.producer.replace(/\.$/, '')}
                         </p>
                       )}
-                      
-                      {/* Шкала легкость-кислотность (для белых, игристых, розовых) или легкость-танинность (для красных) */}
-                      {wineType === 'white' ? (
-                        <div className="mt-auto pt-2 border-t border-dashed border-gray-100 dark:border-gray-700">
-                          <div className="flex items-center justify-between mb-1.5">
-                            <span className="text-[8px] text-gray-400 uppercase font-semibold">Легкость</span>
-                            <span className="text-[8px] text-gray-400 uppercase font-semibold">Кислотность</span>
-                          </div>
-                          <div className="flex gap-2">
-                            {/* Шкала легкости - сплошная градиентная */}
-                            <div className="flex-1 relative">
-                              <div 
-                                className="w-full h-2.5 rounded-full overflow-hidden border border-gray-200 dark:border-gray-700"
-                                style={{
-                                  background: `linear-gradient(to right, 
-                                    rgb(0, 200, 0) 0%, 
-                                    rgb(255, 255, 0) 50%, 
-                                    rgb(255, 0, 0) 100%)`
-                                }}
-                              />
-                              {/* Индикатор текущего значения */}
-                              <div 
-                                className="absolute top-0 h-2.5 rounded-full bg-white dark:bg-gray-800 border-2"
-                                style={{
-                                  left: `${lightness}%`,
-                                  width: '3px',
-                                  marginLeft: '-1.5px',
-                                  borderColor: getGradientColor(lightness),
-                                  boxShadow: `0 0 4px ${getGradientColor(lightness)}`
-                                }}
-                              />
-                            </div>
-                            {/* Шкала кислотности - сплошная градиентная */}
-                            <div className="flex-1 relative">
-                              <div 
-                                className="w-full h-2.5 rounded-full overflow-hidden border border-gray-200 dark:border-gray-700"
-                                style={{
-                                  background: `linear-gradient(to right, 
-                                    rgb(0, 200, 0) 0%, 
-                                    rgb(255, 255, 0) 50%, 
-                                    rgb(255, 0, 0) 100%)`
-                                }}
-                              />
-                              {/* Индикатор текущего значения */}
-                              <div 
-                                className="absolute top-0 h-2.5 rounded-full bg-white dark:bg-gray-800 border-2"
-                                style={{
-                                  left: `${acidity}%`,
-                                  width: '3px',
-                                  marginLeft: '-1.5px',
-                                  borderColor: getGradientColor(acidity),
-                                  boxShadow: `0 0 4px ${getGradientColor(acidity)}`
-                                }}
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="mt-auto pt-2 border-t border-dashed border-gray-100 dark:border-gray-700">
-                          <div className="flex items-center justify-between mb-1.5">
-                            <span className="text-[8px] text-gray-400 uppercase font-semibold">Легкость</span>
-                            <span className="text-[8px] text-gray-400 uppercase font-semibold">Танинность</span>
-                          </div>
-                          <div className="flex gap-2">
-                            {/* Шкала легкости - сплошная градиентная */}
-                            <div className="flex-1 relative">
-                              <div 
-                                className="w-full h-2.5 rounded-full overflow-hidden border border-gray-200 dark:border-gray-700"
-                                style={{
-                                  background: `linear-gradient(to right, 
-                                    rgb(0, 200, 0) 0%, 
-                                    rgb(255, 255, 0) 50%, 
-                                    rgb(255, 0, 0) 100%)`
-                                }}
-                              />
-                              {/* Индикатор текущего значения */}
-                              <div 
-                                className="absolute top-0 h-2.5 rounded-full bg-white dark:bg-gray-800 border-2"
-                                style={{
-                                  left: `${lightness}%`,
-                                  width: '3px',
-                                  marginLeft: '-1.5px',
-                                  borderColor: getGradientColor(lightness),
-                                  boxShadow: `0 0 4px ${getGradientColor(lightness)}`
-                                }}
-                              />
-                            </div>
-                            {/* Шкала танинности - сплошная градиентная */}
-                            <div className="flex-1 relative">
-                              <div 
-                                className="w-full h-2.5 rounded-full overflow-hidden border border-gray-200 dark:border-gray-700"
-                                style={{
-                                  background: `linear-gradient(to right, 
-                                    rgb(0, 200, 0) 0%, 
-                                    rgb(255, 255, 0) 50%, 
-                                    rgb(255, 0, 0) 100%)`
-                                }}
-                              />
-                              {/* Индикатор текущего значения */}
-                              <div 
-                                className="absolute top-0 h-2.5 rounded-full bg-white dark:bg-gray-800 border-2"
-                                style={{
-                                  left: `${tannin}%`,
-                                  width: '3px',
-                                  marginLeft: '-1.5px',
-                                  borderColor: getGradientColor(tannin),
-                                  boxShadow: `0 0 4px ${getGradientColor(tannin)}`
-                                }}
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      )}
+
                     </div>
                   </div>
 
@@ -944,23 +857,22 @@ function WineCatalogPage() {
       {/* Footer */}
       <div className="fixed bottom-0 z-50 w-full sabor-fixed bg-white/95 dark:bg-surface-dark/95 backdrop-blur-md border-t border-gray-100 dark:border-gray-800 pb-safe">
         <div
-          className={`grid ${
-            (() => {
-              const showFooterMenu = isVisible({ scope: 'menuItem', target: 'footer.menu' });
-              const showFooterFavorites = isVisible({ scope: 'menuItem', target: 'footer.favorites' });
-              const showFooterSearch = isVisible({ scope: 'menuItem', target: 'footer.search' });
-              const showFooterAdmin =
-                isAuthenticated &&
-                currentUser?.role === 'администратор' &&
-                isVisible({ scope: 'menuItem', target: 'footer.admin' });
-              const itemCount =
-                (showFooterMenu ? 1 : 0) +
-                (showFooterFavorites ? 1 : 0) +
-                (showFooterSearch ? 1 : 0) +
-                (showFooterAdmin ? 1 : 0);
-              return itemCount >= 4 ? 'grid-cols-4' : 'grid-cols-3';
-            })()
-          } px-6 items-center h-[60px]`}
+          className={`grid ${(() => {
+            const showFooterMenu = isVisible({ scope: 'menuItem', target: 'footer.menu' });
+            const showFooterFavorites = isVisible({ scope: 'menuItem', target: 'footer.favorites' });
+            const showFooterSearch = isVisible({ scope: 'menuItem', target: 'footer.search' });
+            const showFooterAdmin =
+              isAuthenticated &&
+              currentUser?.role === 'администратор' &&
+              isVisible({ scope: 'menuItem', target: 'footer.admin' });
+            const itemCount =
+              (showFooterMenu ? 1 : 0) +
+              (showFooterFavorites ? 1 : 0) +
+              (showFooterSearch ? 1 : 0) +
+              (showFooterAdmin ? 1 : 0);
+            return itemCount >= 4 ? 'grid-cols-4' : 'grid-cols-3';
+          })()
+            } px-6 items-center h-[60px]`}
         >
           {isVisible({ scope: 'menuItem', target: 'footer.menu' }) && (
             <Link to="/" className="flex flex-col items-center justify-center gap-1 text-primary">
@@ -975,7 +887,7 @@ function WineCatalogPage() {
             </button>
           )}
           {isVisible({ scope: 'menuItem', target: 'footer.search' }) && (
-            <button 
+            <button
               onClick={() => {
                 // Открываем глобальный поиск отдельной страницей.
                 navigate('/search');

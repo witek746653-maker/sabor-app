@@ -94,32 +94,44 @@ export const useVisibility = () => {
     [currentUser, isAuthenticated, isGuest, isAdmin, canWrite]
   );
 
-  const isVisible = ({ scope, target, userContext: overrideContext } = {}) => {
-    const effectiveContext = overrideContext || userContext;
-    return resolveVisibility({
-      config: context.config,
-      scope,
-      target,
-      userContext: effectiveContext,
-    });
-  };
+  const isVisible = React.useCallback(
+    ({ scope, target, userContext: overrideContext } = {}) => {
+      const effectiveContext = overrideContext || userContext;
+      return resolveVisibility({
+        config: context.config,
+        scope,
+        target,
+        userContext: effectiveContext,
+      });
+    },
+    [context.config, userContext]
+  );
 
   // ===== Feature flags: "В разработке" =====
-  // Термин **feature flag**: переключатель, который включает/выключает функцию без переписывания кода.
-  const getFeature = (featureKey) => {
-    const key = String(featureKey || '').trim();
-    if (!key) return { comingSoon: false, allowAccess: true };
+  const getFeature = React.useCallback(
+    (featureKey) => {
+      const key = String(featureKey || '').trim();
+      if (!key) return { comingSoon: false, allowAccess: true };
 
-    const fromConfig = context.config?.features?.[key];
-    const fallback = DEFAULT_FEATURE_FLAGS?.[key];
-    return {
-      comingSoon: (fromConfig?.comingSoon ?? fallback?.comingSoon) === true,
-      allowAccess: (fromConfig?.allowAccess ?? fallback?.allowAccess) === true,
-    };
-  };
+      const fromConfig = context.config?.features?.[key];
+      const fallback = DEFAULT_FEATURE_FLAGS?.[key];
+      return {
+        comingSoon: (fromConfig?.comingSoon ?? fallback?.comingSoon) === true,
+        allowAccess: (fromConfig?.allowAccess ?? fallback?.allowAccess) === true,
+      };
+    },
+    [context.config]
+  );
 
-  const isFeatureComingSoon = (featureKey) => getFeature(featureKey).comingSoon;
-  const isFeatureAccessAllowed = (featureKey) => getFeature(featureKey).allowAccess;
+  const isFeatureComingSoon = React.useCallback(
+    (featureKey) => getFeature(featureKey).comingSoon,
+    [getFeature]
+  );
+
+  const isFeatureAccessAllowed = React.useCallback(
+    (featureKey) => getFeature(featureKey).allowAccess,
+    [getFeature]
+  );
 
   return {
     ...context,
@@ -129,3 +141,4 @@ export const useVisibility = () => {
     isFeatureAccessAllowed,
   };
 };
+

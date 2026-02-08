@@ -67,7 +67,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   // Функция выхода
-  const logout = async () => {
+  const logout = React.useCallback(async () => {
     try {
       await apiLogout();
       setIsAuthenticated(false);
@@ -75,25 +75,24 @@ export const AuthProvider = ({ children }) => {
       localStorage.removeItem(OFFLINE_GUEST_KEY);
     } catch (error) {
       console.error('Ошибка выхода:', error);
-      // Даже если ошибка, сбрасываем состояние на клиенте
       setIsAuthenticated(false);
       setCurrentUser(null);
       localStorage.removeItem(OFFLINE_GUEST_KEY);
     }
-  };
+  }, []);
 
-  // Функция для обновления состояния после входа (вызывается из AdminPage)
-  const setAuth = (user) => {
+  // Функция для обновления состояния после входа
+  const setAuth = React.useCallback((user) => {
     setIsAuthenticated(true);
     setCurrentUser(user);
-  };
+  }, []);
 
-  // Включить офлайн-гостя (только просмотр меню, без сервера)
-  const enableOfflineGuest = () => {
+  // Включить офлайн-гостя
+  const enableOfflineGuest = React.useCallback(() => {
     try {
       localStorage.setItem(OFFLINE_GUEST_KEY, 'true');
     } catch {
-      // если localStorage недоступен — всё равно можно жить в рамках текущей вкладки
+      // ignore
     }
     setIsAuthenticated(true);
     setCurrentUser({
@@ -103,14 +102,14 @@ export const AuthProvider = ({ children }) => {
       role: 'guest',
     });
     setChecking(false);
-  };
+  }, []);
 
   // Вспомогательные функции для проверки роли пользователя
   const isGuest = currentUser?.role === 'guest';
   const isAdmin = currentUser?.role === 'администратор';
-  const canWrite = isAuthenticated && !isGuest; // Гость может только читать
+  const canWrite = isAuthenticated && !isGuest;
 
-  const value = {
+  const value = React.useMemo(() => ({
     isAuthenticated,
     currentUser,
     checking,
@@ -120,7 +119,18 @@ export const AuthProvider = ({ children }) => {
     isGuest,
     isAdmin,
     canWrite
-  };
+  }), [
+    isAuthenticated,
+    currentUser,
+    checking,
+    logout,
+    setAuth,
+    enableOfflineGuest,
+    isGuest,
+    isAdmin,
+    canWrite
+  ]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
+

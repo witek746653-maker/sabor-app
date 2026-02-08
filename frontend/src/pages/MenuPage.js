@@ -32,6 +32,37 @@ function MenuPage({ mode }) {
   const menuFiltersStorageKey = `menuFilters:${mode === 'tea' ? 'tea' : (menuName || 'all')}`;
   const [filtersLoaded, setFiltersLoaded] = useState(false);
 
+  // Функция для воспроизведения аудио (Pronunciation)
+  const handleAudioPlay = (dish) => {
+    const audioPath = dish?.i18n?.en?.['audio-en'];
+    const API_URL = process.env.REACT_APP_API_URL || '';
+    const isWine = dish.menu?.toLowerCase().includes('вин') || dish.section?.toLowerCase().includes('вин');
+
+    let audioUrl;
+    if (audioPath) {
+      // Нормализуем путь (убираем лишние пробелы и ..)
+      const normalizedPath = String(audioPath).trim().replace(/%20/g, '-').replace(/\s+/g, '-');
+
+      if (normalizedPath.startsWith('../audio/')) {
+        audioUrl = `${API_URL}/audio/${normalizedPath.replace('../audio/', '')}`;
+      } else if (normalizedPath.startsWith('/audio/')) {
+        audioUrl = `${API_URL}/audio/${normalizedPath.replace('/audio/', '')}`;
+      } else if (normalizedPath.startsWith('audio/')) {
+        audioUrl = `${API_URL}/audio/${normalizedPath.replace('audio/', '')}`;
+      } else {
+        audioUrl = normalizedPath.startsWith('http') ? normalizedPath : `/${normalizedPath}`;
+      }
+    } else {
+      // Фолбэк на ID-ориентированный путь
+      audioUrl = `${API_URL}/audio/${isWine ? 'wine' : 'en'}/${dish.id}.mp3`;
+    }
+
+    const audio = new Audio(audioUrl);
+    audio.play().catch(err => {
+      console.error('Ошибка воспроизведения аудио:', { url: audioUrl, err });
+    });
+  };
+
   const isArtItem = (item) => {
     const idNumber = Number(String(item?.id || '').replace(/\D/g, ''));
     const source = String(item?.source || '').toLowerCase();
@@ -792,8 +823,7 @@ function MenuPage({ mode }) {
                             onClick={(e) => {
                               e.preventDefault();
                               e.stopPropagation();
-                              const url = `/audio/en/${dish.id}.mp3`;
-                              new Audio(url).play();
+                              handleAudioPlay(dish);
                             }}
                             className="absolute top-1 right-1 flex h-7 w-7 items-center justify-center rounded-full bg-black/40 backdrop-blur-md border border-white/20 shadow-lg z-10 active:scale-90 transition-transform"
                           >
@@ -863,8 +893,7 @@ function MenuPage({ mode }) {
                           onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
-                            const url = `/audio/${isWine ? 'wine' : 'en'}/${dish.id}.mp3`;
-                            new Audio(url).play();
+                            handleAudioPlay(dish);
                           }}
                           className="absolute top-1 right-1 flex h-7 w-7 items-center justify-center rounded-full bg-black/40 backdrop-blur-md border border-white/20 shadow-lg z-10 active:scale-90 transition-transform"
                         >
