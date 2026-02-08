@@ -253,26 +253,63 @@ html.dark .aurora-bg {
   margin-bottom: 0.25rem;
 }
 
-.trainer-contains-content strong {
+.trainer-contains-content strong,
+.trainer-features-content strong {
   color: #19e66b;
   font-weight: 800;
 }
 
-/* Кастомный скроллбар для темной темы карточек */
-.trainer-contains-content::-webkit-scrollbar {
-  width: 4px;
+/* Кастомный скроллбар */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
 }
 
-.trainer-contains-content::-webkit-scrollbar-track {
+.custom-scrollbar::-webkit-scrollbar-track {
   background: rgba(255, 255, 255, 0.05);
   border-radius: 10px;
 }
 
-.trainer-contains-content::-webkit-scrollbar-thumb {
-  background: rgba(25, 230, 107, 0.3);
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(25, 230, 107, 0.2);
+  border-radius: 10px;
+  transition: all 0.3s;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(25, 230, 107, 0.5);
+}
+
+/* Применяем к элементам тренажера */
+.trainer-contains-content,
+.trainer-features-content,
+.trainer-scrollable-area {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(25, 230, 107, 0.25) rgba(255, 255, 255, 0.02);
+}
+
+.trainer-contains-content::-webkit-scrollbar,
+.trainer-features-content::-webkit-scrollbar,
+.trainer-scrollable-area::-webkit-scrollbar {
+  width: 4px;
+}
+
+.trainer-contains-content::-webkit-scrollbar-track,
+.trainer-features-content::-webkit-scrollbar-track,
+.trainer-scrollable-area::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
   border-radius: 10px;
 }
 
-.trainer-contains-content::-webkit-scrollbar-thumb:hover {
-  background: rgba(25, 230, 107, 0.5);
+.trainer-contains-content::-webkit-scrollbar-thumb,
+.trainer-features-content::-webkit-scrollbar-thumb,
+.trainer-scrollable-area::-webkit-scrollbar-thumb {
+  background: rgba(25, 230, 107, 0.25);
+  border-radius: 10px;
+}
+
+.trainer-contains-content::-webkit-scrollbar-thumb:hover,
+.trainer-features-content::-webkit-scrollbar-thumb:hover,
+.trainer-scrollable-area::-webkit-scrollbar-thumb:hover {
+  background: rgba(25, 230, 107, 0.45);
 }

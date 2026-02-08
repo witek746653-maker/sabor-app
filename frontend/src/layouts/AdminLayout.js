@@ -109,6 +109,7 @@ function AdminLayout() {
     if (path.includes('/admin/bar')) return 'bar';
     if (path.includes('/admin/tea')) return 'tea';
     if (path.includes('/admin/paintings')) return 'art';
+    if (path.includes('/admin/trainer')) return 'trainer';
     return 'kitchen';
   };
 
@@ -151,8 +152,8 @@ function AdminLayout() {
           to="/admin/kitchen"
           onClick={handleNavClick}
           className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors ${activeSection === 'kitchen'
-              ? 'bg-primary text-white'
-              : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
+            ? 'bg-primary text-white'
+            : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
             }`}
         >
           <span className="material-symbols-outlined text-xl">restaurant_menu</span>
@@ -164,8 +165,8 @@ function AdminLayout() {
           to="/admin/wine"
           onClick={handleNavClick}
           className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors ${activeSection === 'wine'
-              ? 'bg-primary text-white'
-              : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
+            ? 'bg-primary text-white'
+            : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
             }`}
         >
           <span className="material-symbols-outlined text-xl">wine_bar</span>
@@ -177,8 +178,8 @@ function AdminLayout() {
           to="/admin/bar"
           onClick={handleNavClick}
           className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors ${activeSection === 'bar'
-              ? 'bg-primary text-white'
-              : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
+            ? 'bg-primary text-white'
+            : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
             }`}
         >
           <span className="material-symbols-outlined text-xl">local_bar</span>
@@ -190,8 +191,8 @@ function AdminLayout() {
           to="/admin/tea"
           onClick={handleNavClick}
           className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors ${activeSection === 'tea'
-              ? 'bg-primary text-white'
-              : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
+            ? 'bg-primary text-white'
+            : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
             }`}
         >
           <span className="material-symbols-outlined text-xl">local_cafe</span>
@@ -203,13 +204,25 @@ function AdminLayout() {
           to="/admin/paintings"
           onClick={handleNavClick}
           className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors ${activeSection === 'art'
-              ? 'bg-primary text-white'
-              : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
+            ? 'bg-primary text-white'
+            : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
             }`}
         >
           <span className="material-symbols-outlined text-xl">palette</span>
           <span className="font-medium">Картины</span>
           <Badge value={sidebarStats.artItems} />
+        </Link>
+
+        <Link
+          to="/admin/trainer"
+          onClick={handleNavClick}
+          className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors ${activeSection === 'trainer'
+            ? 'bg-primary text-white'
+            : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
+            }`}
+        >
+          <span className="material-symbols-outlined text-xl">school</span>
+          <span className="font-medium">Тренажер</span>
         </Link>
 
         <button
@@ -225,8 +238,8 @@ function AdminLayout() {
             navigate(qs ? `/admin/add?${qs}` : '/admin/add');
           }}
           className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors ${activeSection === 'dish-edit'
-              ? 'bg-primary text-white'
-              : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
+            ? 'bg-primary text-white'
+            : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
             }`}
         >
           <span className="material-symbols-outlined text-xl">add_circle</span>
@@ -264,8 +277,8 @@ function AdminLayout() {
           to="/admin/users"
           onClick={handleNavClick}
           className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors ${activeSection === 'users'
-              ? 'bg-primary text-white'
-              : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
+            ? 'bg-primary text-white'
+            : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
             }`}
         >
           <span className="material-symbols-outlined text-xl">people</span>
@@ -277,8 +290,8 @@ function AdminLayout() {
           to="/admin/feedback"
           onClick={handleNavClick}
           className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors relative ${activeSection === 'feedback'
-              ? 'bg-primary text-white'
-              : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
+            ? 'bg-primary text-white'
+            : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
             }`}
         >
           <span className="material-symbols-outlined text-xl">feedback</span>
@@ -290,8 +303,8 @@ function AdminLayout() {
           to="/admin/notifications"
           onClick={handleNavClick}
           className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors ${activeSection === 'notifications'
-              ? 'bg-primary text-white'
-              : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
+            ? 'bg-primary text-white'
+            : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
             }`}
         >
           <span className="material-symbols-outlined text-xl">notifications</span>
@@ -303,8 +316,8 @@ function AdminLayout() {
           to="/admin/media"
           onClick={handleNavClick}
           className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors ${activeSection === 'media'
-              ? 'bg-primary text-white'
-              : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
+            ? 'bg-primary text-white'
+            : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
             }`}
         >
           <span className="material-symbols-outlined text-xl">favorite</span>
@@ -316,8 +329,8 @@ function AdminLayout() {
           to="/admin/visibility"
           onClick={handleNavClick}
           className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors ${activeSection === 'visibility'
-              ? 'bg-primary text-white'
-              : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
+            ? 'bg-primary text-white'
+            : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
             }`}
         >
           <span className="material-symbols-outlined text-xl">visibility</span>
@@ -329,8 +342,8 @@ function AdminLayout() {
           to="/admin/deploy"
           onClick={handleNavClick}
           className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors ${activeSection === 'deploy'
-              ? 'bg-primary text-white'
-              : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
+            ? 'bg-primary text-white'
+            : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
             }`}
         >
           <span className="material-symbols-outlined text-xl">sync</span>
@@ -341,8 +354,8 @@ function AdminLayout() {
           to="/admin/help"
           onClick={handleNavClick}
           className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors ${activeSection === 'help'
-              ? 'bg-primary text-white'
-              : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
+            ? 'bg-primary text-white'
+            : 'text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-white/5'
             }`}
         >
           <span className="material-symbols-outlined text-xl">help</span>

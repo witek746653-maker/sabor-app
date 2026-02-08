@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { loadMenuData, getCategories } from '../../utils/menuDataLoader';
+import { useVisibility } from '../../contexts/VisibilityContext';
 import trainerBg from '../../assets/trainer-bg.webp';
 
 
@@ -20,15 +21,36 @@ const TRAINING_MODES = [
   { id: 'allergens', icon: 'warning', color: '#19e66b', label: 'Особенности', subtitle: 'Аллергены и подача' },
   { id: 'composition', icon: 'inventory_2', color: '#19e66b', label: 'Состав', subtitle: 'Запомнить ингредиенты' },
   { id: 'mix', icon: 'shuffle', color: '#19e66b', label: 'Микс режим', subtitle: 'Случайные вопросы' },
-  { id: 'english', icon: 'translate', color: '#19e66b', label: 'English', subtitle: 'Перевод названий' }
+  { id: 'english', icon: 'translate', color: '#19e66b', label: 'English', subtitle: 'Перевод названий' },
+  { id: 'vocabulary', icon: 'menu_book', color: '#1a332a', label: 'Полезная лексика и факты', subtitle: 'English menu only' }
 ];
 
 const CARD_COUNTS = [10, 20, 30, 50];
 
 function SetupScreen({ onStart, onBack, initialConfig }) {
+  const { isVisible } = useVisibility();
+
   const [selectedMenus, setSelectedMenus] = useState(initialConfig?.menus || []);
   const [selectedCategories, setSelectedCategories] = useState(initialConfig?.category || []);
   const [selectedMode, setSelectedMode] = useState(initialConfig?.mode || 'description');
+
+  // Фильтруем меню
+  const filteredMenusOptions = MENU_CONFIG.filter(menu =>
+    isVisible({ scope: 'menuItem', target: `trainer.menu.${menu.id}` })
+  );
+
+  const isEnglishMenuSelected = selectedMenus.includes('english');
+
+  // Фильтруем режимы
+  const filteredModesOptions = TRAINING_MODES.filter(mode => {
+    const isVisibleByAdmin = isVisible({ scope: 'featureAction', target: `trainer.mode.${mode.id}` });
+    if (!isVisibleByAdmin) return false;
+
+    // Режим vocabulary доступен только при выборе English menu
+    if (mode.id === 'vocabulary') return isEnglishMenuSelected;
+
+    return true;
+  });
   const [selectedCount, setSelectedCount] = useState(initialConfig?.count || 20);
   const [categories, setCategories] = useState(['Все']);
   const [loading, setLoading] = useState(false);
@@ -47,7 +69,9 @@ function SetupScreen({ onStart, onBack, initialConfig }) {
           allDishes.push(...dishes);
         } catch (e) { console.error(e); }
       }
-      const uniqueCats = getCategories(allDishes);
+      const uniqueCats = getCategories(allDishes).filter(cat =>
+        isVisible({ scope: 'menuSection', target: `trainer.cat.${cat}` })
+      );
       setCategories(uniqueCats);
 
       setSelectedCategories(prev => {
@@ -62,10 +86,10 @@ function SetupScreen({ onStart, onBack, initialConfig }) {
   };
 
   const handleAllMenusAction = () => {
-    if (selectedMenus.length === MENU_CONFIG.length) {
+    if (selectedMenus.length === filteredMenusOptions.length) {
       setSelectedMenus([]);
     } else {
-      setSelectedMenus(MENU_CONFIG.map(m => m.id));
+      setSelectedMenus(filteredMenusOptions.map(m => m.id));
     }
   };
 
@@ -113,7 +137,7 @@ function SetupScreen({ onStart, onBack, initialConfig }) {
     });
   };
 
-  const isAllMenusSelected = selectedMenus.length === MENU_CONFIG.length && MENU_CONFIG.length > 0;
+  const isAllMenusSelected = selectedMenus.length === filteredMenusOptions.length && filteredMenusOptions.length > 0;
   const availableCats = categories.filter(c => c !== 'Все');
   const isAllCategoriesSelected = availableCats.length > 0 &&
     (selectedCategories.includes('Все') || availableCats.every(c => selectedCategories.includes(c)));
@@ -150,7 +174,7 @@ function SetupScreen({ onStart, onBack, initialConfig }) {
             </button>
           </div>
           <div className="grid grid-cols-3 gap-2">
-            {MENU_CONFIG.map(menu => {
+            {filteredMenusOptions.map(menu => {
               const isSelected = selectedMenus.includes(menu.id);
               return (
                 <div key={menu.id} onClick={() => toggleMenu(menu.id)} className={`relative p-3 pt-4 rounded-2xl transition-all duration-300 border-2 cursor-pointer flex flex-col items-center text-center ${isSelected ? 'bg-[#16221c] border-[#19e66b] shadow-[0_0_15px_rgba(25,230,107,0.15)]' : 'bg-[#16221c] border-transparent opacity-60'
@@ -215,7 +239,7 @@ function SetupScreen({ onStart, onBack, initialConfig }) {
         <section className="pb-32">
           <h3 className="text-xl font-bold mb-4 px-1">Режим</h3>
           <div className="flex flex-col gap-2">
-            {TRAINING_MODES.map(mode => {
+            {filteredModesOptions.map(mode => {
               const isSelected = selectedMode === mode.id;
               return (
                 <div key={mode.id} onClick={() => setSelectedMode(mode.id)} className={`flex items-center gap-4 p-4 rounded-2xl border-2 transition-all cursor-pointer ${isSelected ? 'bg-[#16221c] border-[#19e66b]' : 'bg-[#16221c] border-transparent opacity-60'

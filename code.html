@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="ru"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Администрирование функций</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Config -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#19e66b",
+                        "background-light": "#f6f8f7",
+                        "background-dark": "#112117",
+                        "card-dark": "#1a2e22",
+                        "card-light": "#ffffff",
+                        "border-dark": "#244732",
+                        "border-light": "#e5e7eb",
+                    },
+                    fontFamily: {
+                        "display": ["Work Sans", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Work Sans', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        /* Custom scrollbar for webkit */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+        }
+        
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #19e66b;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #19e66b;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-gray-900 dark:text-white min-h-screen flex flex-col font-display antialiased overflow-x-hidden selection:bg-primary selection:text-black">
+<!-- Header -->
+<div class="sticky top-0 z-50 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md border-b border-border-light dark:border-border-dark px-4 py-3 flex items-center justify-between">
+<button class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined text-2xl">arrow_back</span>
+</button>
+<h1 class="text-lg font-bold tracking-tight flex-1 text-center">Администрирование</h1>
+<button class="text-sm font-semibold text-emerald-600 dark:text-primary hover:opacity-80 transition-opacity">
+            Сбросить
+        </button>
+</div>
+<!-- Main Content -->
+<main class="flex-1 px-4 py-6 space-y-8 pb-32 max-w-2xl mx-auto w-full">
+<!-- Section 1: Управление Меню -->
+<section>
+<h2 class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-3 px-1">Управление Меню</h2>
+<div class="bg-card-light dark:bg-card-dark rounded-xl overflow-hidden shadow-sm border border-border-light dark:border-border-dark divide-y divide-border-light dark:divide-border-dark">
+<!-- Toggle Item: Основное меню -->
+<div class="flex items-center justify-between p-4 hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer group">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-emerald-100 dark:bg-[#244732] flex items-center justify-center text-emerald-600 dark:text-white">
+<span class="material-symbols-outlined">restaurant_menu</span>
+</div>
+<span class="font-medium text-base">Основное меню</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-emerald-300 dark:peer-focus:ring-emerald-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+</label>
+</div>
+<!-- Toggle Item: Завтраки -->
+<div class="flex items-center justify-between p-4 hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer group">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-emerald-100 dark:bg-[#244732] flex items-center justify-center text-emerald-600 dark:text-white">
+<span class="material-symbols-outlined">bakery_dining</span>
+</div>
+<span class="font-medium text-base">Завтраки</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-emerald-300 dark:peer-focus:ring-emerald-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+</label>
+</div>
+<!-- Toggle Item: Винная карта -->
+<div class="flex items-center justify-between p-4 hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer group">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-emerald-100 dark:bg-[#244732] flex items-center justify-center text-emerald-600 dark:text-white">
+<span class="material-symbols-outlined">wine_bar</span>
+</div>
+<span class="font-medium text-base">Винная карта</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-emerald-300 dark:peer-focus:ring-emerald-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+</label>
+</div>
+</div>
+</section>
+<!-- Section 2: Видимость разделов (Searchable Checklist) -->
+<section>
+<div class="flex items-center justify-between mb-3 px-1">
+<h2 class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">Видимость разделов</h2>
+<span class="text-xs text-primary font-medium cursor-pointer">Выбрать все</span>
+</div>
+<div class="bg-card-light dark:bg-card-dark rounded-xl overflow-hidden shadow-sm border border-border-light dark:border-border-dark flex flex-col">
+<!-- Search Bar -->
+<div class="p-3 border-b border-border-light dark:border-border-dark bg-gray-50 dark:bg-black/20">
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-gray-400 text-[20px]">search</span>
+</div>
+<input class="block w-full pl-10 pr-3 py-2 border-none rounded-lg leading-5 bg-white dark:bg-[#112117] text-gray-900 dark:text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-primary sm:text-sm shadow-sm" placeholder="Найти раздел..." type="text"/>
+</div>
+</div>
+<!-- Checklist -->
+<div class="divide-y divide-border-light dark:divide-border-dark max-h-60 overflow-y-auto">
+<!-- Item 1 -->
+<label class="flex items-center px-4 py-3 hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer">
+<input checked="" class="form-checkbox h-5 w-5 text-primary rounded border-gray-300 focus:ring-primary dark:bg-gray-700 dark:border-gray-600 transition duration-150 ease-in-out" type="checkbox"/>
+<span class="ml-3 text-sm font-medium">Супы</span>
+<span class="ml-auto text-xs text-gray-400">8 поз.</span>
+</label>
+<!-- Item 2 -->
+<label class="flex items-center px-4 py-3 hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer bg-primary/5">
+<input checked="" class="form-checkbox h-5 w-5 text-primary rounded border-gray-300 focus:ring-primary dark:bg-gray-700 dark:border-gray-600 transition duration-150 ease-in-out" type="checkbox"/>
+<span class="ml-3 text-sm font-medium">Салаты</span>
+<span class="ml-auto text-xs text-gray-400">12 поз.</span>
+</label>
+<!-- Item 3 -->
+<label class="flex items-center px-4 py-3 hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer">
+<input class="form-checkbox h-5 w-5 text-primary rounded border-gray-300 focus:ring-primary dark:bg-gray-700 dark:border-gray-600 transition duration-150 ease-in-out" type="checkbox"/>
+<span class="ml-3 text-sm font-medium text-gray-400 line-through">Десерты</span>
+<span class="ml-auto text-xs text-gray-500">Скрыто</span>
+</label>
+<!-- Item 4 -->
+<label class="flex items-center px-4 py-3 hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer">
+<input checked="" class="form-checkbox h-5 w-5 text-primary rounded border-gray-300 focus:ring-primary dark:bg-gray-700 dark:border-gray-600 transition duration-150 ease-in-out" type="checkbox"/>
+<span class="ml-3 text-sm font-medium">Горячее</span>
+<span class="ml-auto text-xs text-gray-400">15 поз.</span>
+</label>
+<!-- Item 5 -->
+<label class="flex items-center px-4 py-3 hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer">
+<input checked="" class="form-checkbox h-5 w-5 text-primary rounded border-gray-300 focus:ring-primary dark:bg-gray-700 dark:border-gray-600 transition duration-150 ease-in-out" type="checkbox"/>
+<span class="ml-3 text-sm font-medium">Напитки б/а</span>
+<span class="ml-auto text-xs text-gray-400">20 поз.</span>
+</label>
+</div>
+</div>
+</section>
+<!-- Section 3: Режимы обучения -->
+<section>
+<h2 class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-3 px-1">Режимы обучения</h2>
+<div class="bg-card-light dark:bg-card-dark rounded-xl overflow-hidden shadow-sm border border-border-light dark:border-border-dark divide-y divide-border-light dark:divide-border-dark">
+<!-- Toggle Item: English Mode -->
+<div class="flex items-center justify-between p-4 hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
+<span class="material-symbols-outlined">language</span>
+</div>
+<div class="flex flex-col">
+<span class="font-medium text-base">English Mode</span>
+<span class="text-xs text-gray-500">Названия и описания на EN</span>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+</label>
+</div>
+<!-- Toggle Item: Аллергены -->
+<div class="flex items-center justify-between p-4 hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center text-orange-600 dark:text-orange-400">
+<span class="material-symbols-outlined">warning</span>
+</div>
+<div class="flex flex-col">
+<span class="font-medium text-base">Аллергены</span>
+<span class="text-xs text-gray-500">Тестирование на знание состава</span>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-emerald-300 dark:peer-focus:ring-emerald-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+</label>
+</div>
+<!-- Toggle Item: Пейринг -->
+<div class="flex items-center justify-between p-4 hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 dark:text-purple-400">
+<span class="material-symbols-outlined">join_inner</span>
+</div>
+<span class="font-medium text-base">Пейринг</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-emerald-300 dark:peer-focus:ring-emerald-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+</label>
+</div>
+</div>
+</section>
+<!-- Section 4: Глобальные настройки -->
+<section>
+<h2 class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-3 px-1">Глобальные настройки</h2>
+<div class="bg-card-light dark:bg-card-dark rounded-xl overflow-hidden shadow-sm border border-border-light dark:border-border-dark divide-y divide-border-light dark:divide-border-dark">
+<!-- Setting: Session Length -->
+<div class="flex items-center justify-between p-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-600 dark:text-gray-400">
+<span class="material-symbols-outlined text-lg">timer</span>
+</div>
+<span class="font-medium text-sm">Длительность сессии</span>
+</div>
+<div class="flex items-center bg-gray-100 dark:bg-black/30 rounded-lg p-1">
+<button class="w-8 h-8 flex items-center justify-center rounded-md hover:bg-white dark:hover:bg-white/10 text-gray-500 transition-colors">
+<span class="material-symbols-outlined text-sm">remove</span>
+</button>
+<span class="px-2 font-mono font-bold text-sm min-w-[3rem] text-center">10 мин</span>
+<button class="w-8 h-8 flex items-center justify-center rounded-md hover:bg-white dark:hover:bg-white/10 text-gray-500 transition-colors">
+<span class="material-symbols-outlined text-sm">add</span>
+</button>
+</div>
+</div>
+<!-- Setting: Scoring Logic -->
+<div class="flex items-center justify-between p-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-600 dark:text-gray-400">
+<span class="material-symbols-outlined text-lg">hotel_class</span>
+</div>
+<span class="font-medium text-sm">Логика оценки</span>
+</div>
+<div class="relative">
+<select class="appearance-none bg-gray-100 dark:bg-black/30 border-none text-sm font-medium rounded-lg py-2 pl-3 pr-8 focus:ring-1 focus:ring-primary cursor-pointer text-gray-700 dark:text-gray-200">
+<option>Строгая</option>
+<option selected="">Мягкая</option>
+<option>Обучение</option>
+</select>
+<div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
+<span class="material-symbols-outlined text-sm">expand_more</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Sticky Footer -->
+<div class="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-background-light dark:from-background-dark via-background-light/95 dark:via-background-dark/95 to-transparent z-40">
+<div class="max-w-2xl mx-auto w-full">
+<button class="w-full bg-primary hover:bg-emerald-400 text-black font-bold py-4 px-6 rounded-xl shadow-lg transform transition active:scale-[0.98] flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-xl">save</span>
+                Сохранить изменения
+            </button>
+</div>
+</div>
+</body></html>

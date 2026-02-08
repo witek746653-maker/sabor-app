@@ -26,6 +26,7 @@ import DeployPage from './pages/admin/DeployPage';
 import AdminHelpPage from './pages/admin/AdminHelpPage';
 import VisibilityPage from './pages/admin/VisibilityPage';
 import MediaLikesPage from './pages/admin/MediaLikesPage';
+import TrainerAdminPage from './pages/admin/TrainerAdminPage';
 import WineMenuPage from './pages/WineMenuPage';
 import WineCatalogPage from './pages/WineCatalogPage';
 import InfoPage from './pages/InfoPage';
@@ -256,6 +257,7 @@ function App() {
                           <Route path="media" element={<MediaLikesPage />} />
                           <Route path="deploy" element={<DeployPage />} />
                           <Route path="visibility" element={<VisibilityPage />} />
+                          <Route path="trainer" element={<TrainerAdminPage />} />
                           <Route path="help" element={<AdminHelpPage />} />
                         </Route>
                       </Routes>

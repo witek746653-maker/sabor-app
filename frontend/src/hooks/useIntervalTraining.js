@@ -9,6 +9,7 @@ const hasDataForMode = (dish, mode) => {
         case 'allergens': return dish.allergens?.length > 0;
         case 'composition': return dish.ingredients?.length > 0 || !!dish.contains?.trim();
         case 'english': return !!dish.titleEn?.trim();
+        case 'vocabulary': return dish.usefulPhrases?.length > 0 || dish.commentsEn?.length > 0;
         default: return true;
     }
 };
@@ -27,6 +28,8 @@ const getMissedInfo = (card, lang = 'RU') => {
                 return 'Forgot description';
             case 'english':
                 return 'Forgot English name';
+            case 'vocabulary':
+                return 'Forgot phrases/facts';
             default:
                 return 'Needs review';
         }
@@ -41,6 +44,8 @@ const getMissedInfo = (card, lang = 'RU') => {
             return 'Забыли описание';
         case 'english':
             return 'Забыли английское название';
+        case 'vocabulary':
+            return 'Забыли факты или фразы';
         default:
             return 'Требует повторения';
     }

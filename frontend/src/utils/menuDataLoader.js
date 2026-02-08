@@ -107,14 +107,29 @@ export const getCategories = (dishes) => {
  * Маппит данные блюда в формат для тренажера
  */
 export const mapToTrainingFormat = (dish) => {
+  // Утилита для обеспечения массива (некоторые поля в i18n могут быть строками)
+  const toArray = (val) => {
+    if (Array.isArray(val)) return val;
+    if (typeof val === 'string') return val.split(',').map(s => s.trim()).filter(Boolean);
+    return [];
+  };
+
+  const audioPath = dish.i18n?.en?.['audio-en'];
+  let audioUrl = null;
+  if (audioPath) {
+    // Если путь есть, убираем ../ и берем имя файла или формируем путь
+    const fileName = audioPath.split('/').pop();
+    audioUrl = `/audio/${dish.menu === 'Вино' ? 'wine' : 'en'}/${fileName}`;
+  }
+
   return {
     id: dish.id,
     title: dish.title,
     description: dish.description,
     image: dish.image?.src || '/images/zaglushka.webp',
-    ingredients: dish.ingredients || [],
-    allergens: dish.allergens || [],
-    tags: dish.tags || [],
+    ingredients: toArray(dish.ingredients),
+    allergens: toArray(dish.allergens),
+    tags: toArray(dish.tags),
     contains: dish.contains || '',
     features: dish.features || '',
     section: dish.section || '',
@@ -123,11 +138,13 @@ export const mapToTrainingFormat = (dish) => {
     titleEn: dish.i18n?.en?.['title-en'] || dish.title || '',
     descriptionEn: dish.i18n?.en?.['description-en'] || dish.description || '',
     sectionEn: dish.i18n?.en?.['section-en'] || dish.section || '',
-    ingredientsEn: dish.i18n?.en?.['ingredients-en'] || dish.ingredients || [],
-    allergensEn: dish.i18n?.en?.['allergens-en'] || dish.allergens || [],
+    ingredientsEn: toArray(dish.i18n?.en?.['ingredients-en'] || dish.ingredients),
+    allergensEn: toArray(dish.i18n?.en?.['allergens-en'] || dish.allergens),
     containsEn: dish.i18n?.en?.['contains-en'] || dish.contains || '',
-    audioUrl: dish.i18n?.en?.['audio-en'] ?
-      `/audio/${dish.menu === 'Вино' ? 'wine' : 'en'}/${dish.id}.mp3` : null
+    featuresEn: dish.i18n?.en?.['features-en'] || '',
+    commentsEn: toArray(dish.i18n?.en?.['comments-en'] || []),
+    usefulPhrases: toArray(dish.i18n?.en?.['useful phrases & words'] || []),
+    audioUrl: audioUrl
   };
 };
 
@@ -135,32 +152,53 @@ export const mapToTrainingFormat = (dish) => {
  * Генерирует вопрос в зависимости от режима
  */
 export const generateQuestion = (dish, mode, lang = 'RU') => {
+  const menu = dish.menu || '';
+  const section = dish.section || '';
+  const isWine = menu === 'Вино' || menu === 'Винная карта';
+  const isTea = menu === 'Чай';
+  const isBeer = section.includes('Пиво') || section.includes('Beer');
+  const isCocktail = (menu === 'Барное меню' || menu === 'Коктейли') && !isBeer;
+
+  const getTerm = (caseType = 'acc') => {
+    if (lang === 'EN') {
+      return isWine ? 'wine' : isTea ? 'tea' : isCocktail ? 'cocktail' : isBeer ? 'beer' : 'dish';
+    }
+    const terms = {
+      wine: { acc: 'вино', gen: 'вина', prep: 'вине' },
+      tea: { acc: 'чай', gen: 'чая', prep: 'чае' },
+      cocktail: { acc: 'коктейль', gen: 'коктейля', prep: 'коктейле' },
+      beer: { acc: 'пиво', gen: 'пива', prep: 'пиве' },
+      dish: { acc: 'блюдо', gen: 'блюда', prep: 'блюде' }
+    };
+    const key = isWine ? 'wine' : isTea ? 'tea' : isCocktail ? 'cocktail' : isBeer ? 'beer' : 'dish';
+    return terms[key][caseType];
+  };
+
   if (lang === 'EN') {
+    const t = getTerm();
     switch (mode) {
-      case 'description':
-        return 'Describe the dish to the guest beautifully';
-      case 'allergens':
-        return 'Which features would you point out to the guest?';
-      case 'composition':
-        return 'Describe the full composition and cooking features';
-      case 'english':
-        return 'How would you say the name of this dish in English?';
-      default:
-        return 'Tell about the dish';
+      case 'description': return `Describe the ${t} to the guest beautifully`;
+      case 'allergens': return 'Which features would you point out to the guest?';
+      case 'composition': return `Describe the full composition and cooking features`;
+      case 'english': return `How would you say the name of this ${t} in English?`;
+      case 'vocabulary': return 'Useful vocabulary and interesting facts';
+      default: return `Tell about the ${t}`;
     }
   }
 
   switch (mode) {
     case 'description':
-      return 'Красиво опишите блюдо гостю';
+      return `Красиво опишите ${getTerm('acc')} гостю`;
     case 'allergens':
       return 'На какие особенности вы бы обратили внимание гостя?';
     case 'composition':
-      return 'Опишите полный состав блюда и особенности его приготовления?';
+      return `Опишите полный состав ${getTerm('gen')} и особенности его приготовления?`;
     case 'english':
-      return 'Как произносится название этого блюда на английском?';
+      return `Как произносится название этого ${getTerm('gen')} на английском?`;
+    case 'vocabulary':
+      return 'Полезная лексика и интересные факты';
     default:
-      return 'Расскажите о блюде';
+      return `Расскажите о ${getTerm('prep')}`;
   }
 };
 

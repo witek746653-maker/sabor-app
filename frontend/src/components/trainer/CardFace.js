@@ -20,7 +20,11 @@ function CardFace({ dish, onShowAnswer, progress }) {
         >
             {/* Image Section */}
             <div
-                className="w-full h-2/3 bg-cover bg-center"
+                className={`w-full h-2/3 bg-center ${dish.menu === 'Винная карта' ||
+                        dish.menu === 'Вино' ||
+                        dish.section?.includes('Пиво')
+                        ? 'bg-contain bg-no-repeat' : 'bg-cover'
+                    }`}
                 style={{
                     backgroundImage: `url(${dish.image})`,
                     maskImage: 'linear-gradient(to top, transparent 0%, black 30%)',

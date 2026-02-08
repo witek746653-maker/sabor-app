@@ -5,7 +5,7 @@ import cardBg from '../../assets/card-bg.webp';
 function CardBack({ dish, onAnswer }) {
     const [isPlaying, setIsPlaying] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
-    const isDetailed = dish.mode === 'composition' || dish.mode === 'allergens';
+    const isDetailed = dish.mode === 'composition' || dish.mode === 'allergens' || dish.mode === 'vocabulary';
     const isEn = dish.lang === 'EN';
 
     const handlePlay = (e) => {
@@ -76,11 +76,11 @@ function CardBack({ dish, onAnswer }) {
                                 {section}
                             </span>
                             <h3
-                                onClick={handlePlay}
-                                className={`font-black text-sm leading-tight text-white transition-all duration-300 ${dish.audioUrl ? 'cursor-pointer active:scale-95' : ''} ${isPlaying ? 'text-[#19e66b] scale-105' : ''}`}
+                                onClick={(dish.audioUrl && (isEn || dish.mode === 'english')) ? handlePlay : undefined}
+                                className={`font-black text-sm leading-tight text-white transition-all duration-300 ${(dish.audioUrl && (isEn || dish.mode === 'english')) ? 'cursor-pointer active:scale-95' : ''} ${isPlaying ? 'text-[#19e66b] scale-105' : ''}`}
                             >
                                 {title}
-                                {dish.audioUrl && (
+                                {dish.audioUrl && (isEn || dish.mode === 'english') && (
                                     <span className={`material-symbols-outlined ml-1.5 text-xs align-middle transition-opacity ${isPlaying ? 'opacity-100 animate-pulse' : 'opacity-40'}`}>
                                         volume_up
                                     </span>
@@ -92,8 +92,25 @@ function CardBack({ dish, onAnswer }) {
                     {/* Main Content: Perfectly Centered */}
                     <div className="flex-1 flex flex-col items-center justify-center p-6 text-center z-10">
                         {dish.mode === 'allergens' && (
-                            <div className="flex flex-col items-center gap-4">
+                            <div className="flex flex-col items-center gap-4 w-full">
                                 <span className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em]">Особенности и аллергены</span>
+
+                                {isEn ? (
+                                    dish.featuresEn && (
+                                        <div
+                                            className="text-[11px] text-white/90 leading-relaxed w-full px-6 mb-2 trainer-features-content overflow-y-auto max-h-[150px] text-center"
+                                            dangerouslySetInnerHTML={{ __html: dish.featuresEn }}
+                                        />
+                                    )
+                                ) : (
+                                    dish.features && (
+                                        <div
+                                            className="text-[11px] text-white/90 leading-relaxed w-full px-6 mb-2 trainer-features-content overflow-y-auto max-h-[150px] text-center"
+                                            dangerouslySetInnerHTML={{ __html: dish.features }}
+                                        />
+                                    )
+                                )}
+
                                 <div className="flex flex-wrap justify-center gap-1.5 max-w-[300px]">
                                     {allergens.map((allergen, idx) => (
                                         <span key={idx} className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-white/5 border border-white/10 text-[10px] font-bold text-[#ff9f0a] shadow-lg shadow-black/20">
@@ -131,6 +148,35 @@ function CardBack({ dish, onAnswer }) {
                                 </div>
                             </div>
                         )}
+                        {dish.mode === 'vocabulary' && (
+                            <div className="flex flex-col items-center gap-4 w-full">
+                                {dish.usefulPhrases?.length > 0 && (
+                                    <div className="flex flex-col items-center gap-2 w-full">
+                                        <span className="text-[10px] font-bold text-[#19e66b]/60 uppercase tracking-[0.2em]">Useful phrases & words</span>
+                                        <div className="flex flex-wrap justify-center gap-1.5 max-w-[320px]">
+                                            {dish.usefulPhrases.map((phrase, idx) => (
+                                                <span key={idx} className="px-3 py-1.5 rounded-xl bg-[#19e66b]/5 border border-[#19e66b]/20 text-[10px] font-medium text-white/90 shadow-sm italic">
+                                                    {phrase}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {dish.commentsEn?.length > 0 && (
+                                    <div className="flex flex-col items-center gap-2 w-full">
+                                        <span className="text-[10px] font-bold text-[#ff9f0a]/60 uppercase tracking-[0.2em] mt-2">Interesting facts & tips</span>
+                                        <div className="flex flex-col gap-2 w-full px-6 max-h-[150px] overflow-y-auto trainer-scrollable-area">
+                                            {dish.commentsEn.map((comment, idx) => (
+                                                <p key={idx} className="text-[11px] text-white/80 leading-relaxed text-center">
+                                                    • {comment}
+                                                </p>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
                     </div>
                 </>
             ) : (
@@ -138,7 +184,11 @@ function CardBack({ dish, onAnswer }) {
                 <>
                     {/* Image Section - 2/3 Height */}
                     <div
-                        className="w-full h-2/3 bg-cover bg-center shrink-0 cursor-zoom-in"
+                        className={`w-full h-2/3 bg-center shrink-0 cursor-zoom-in ${dish.menu === 'Винная карта' ||
+                                dish.menu === 'Вино' ||
+                                dish.section?.includes('Пиво')
+                                ? 'bg-contain bg-no-repeat' : 'bg-cover'
+                            }`}
                         onClick={() => setIsExpanded(true)}
                         style={{
                             backgroundImage: `url(${dish.image})`,
