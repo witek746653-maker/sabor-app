@@ -193,7 +193,20 @@ export const generateQuestion = (dish, mode, lang = 'RU') => {
       case 'description': return `Describe the ${t} to the guest beautifully`;
       case 'allergens': return 'Which features would you point out to the guest?';
       case 'composition': return `Describe the full composition and cooking features`;
-      case 'english': return `How would you say the name of this ${t} in English?`;
+      case 'english': {
+        const variants = [
+          `How would you say the name of this ${t} in English?`,
+          `How about this ${t}?`,
+          `And this?`,
+          `What's this ${t} called in English?`,
+          `Name this ${t} for the guest.`
+        ];
+        // Детерминированный выбор на основе ID (чексумма для равномерного распределения)
+        const idStr = String(dish.id || '');
+        const checksum = idStr.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+        const seed = checksum % variants.length;
+        return variants[seed];
+      }
       case 'characteristics': return `What are the main characteristics of this ${t}?`;
       case 'vocabulary': return 'Useful vocabulary and interesting facts';
       default: return `Tell about the ${t}`;
