@@ -116,8 +116,8 @@ export default function WineForm({ onAdd }) {
                                 key={type.id}
                                 onClick={() => handleChange('type', type.id)}
                                 className={`flex h-10 shrink-0 items-center gap-x-2 rounded-xl px-4 transition-all ${formData.type === type.id
-                                        ? 'bg-primary text-white shadow-lg shadow-primary/30'
-                                        : 'bg-chip-bg text-white/80 border border-transparent hover:border-border-dark'
+                                    ? 'bg-primary text-white shadow-lg shadow-primary/30'
+                                    : 'bg-chip-bg text-white/80 border border-transparent hover:border-border-dark'
                                     }`}
                             >
                                 <span className="material-symbols-outlined text-[18px]">{type.icon}</span>
@@ -138,8 +138,8 @@ export default function WineForm({ onAdd }) {
                                     key={tag}
                                     onClick={() => toggleTaste(tag)}
                                     className={`rounded-lg px-3 py-2 text-sm font-semibold transition-transform active:scale-95 ${isActive
-                                            ? 'bg-primary/20 border border-primary text-primary'
-                                            : 'bg-chip-bg border border-transparent text-white/70 hover:text-white hover:border-border-dark'
+                                        ? 'bg-primary/20 border border-primary text-primary'
+                                        : 'bg-chip-bg border border-transparent text-white/70 hover:text-white hover:border-border-dark'
                                         }`}
                                 >
                                     {tag}

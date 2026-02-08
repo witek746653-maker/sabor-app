@@ -13,6 +13,22 @@ body {
   /* Блокирует «резиновый» скролл и обновление страницы потянув вниз */
 }
 
+/* Фикс артефактов на iOS при тапе */
+* {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Разрешаем выделение текста где нужно */
+input,
+textarea,
+[contenteditable] {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
@@ -226,7 +242,7 @@ html.dark .aurora-bg {
   text-align: left;
 }
 
-.trainer-contains-content ol, 
+.trainer-contains-content ol,
 .trainer-contains-content ul {
   list-style-position: outside;
   padding-left: 1.25rem;

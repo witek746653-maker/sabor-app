@@ -356,52 +356,35 @@ export default function WineListBuilderPage() {
         <div className="w-full min-h-screen font-display text-[#181311] dark:text-gray-100 pb-40 aurora-bg relative overflow-hidden">
             {/* Декоративные фоновые изображения */}
             <div className="fixed inset-0 pointer-events-none z-[1]">
-                {/* Красное вино - верхний левый угол */}
                 <img
-                    src="/images/wine-generator-background-red.webp?v=3"
+                    src="/images/wine-generator-background.webp?v=4"
                     alt=""
-                    className="absolute -top-32 -left-32 w-[500px] h-[500px] object-contain opacity-80"
-                    style={{ mixBlendMode: 'multiply', filter: 'saturate(1.3)' }}
-                />
-
-                {/* Белое вино - правая сторона, середина */}
-                <img
-                    src="/images/wine-generator-background-white.webp?v=3"
-                    alt=""
-                    className="absolute top-1/2 -translate-y-1/2 -right-32 w-[550px] h-[550px] object-contain opacity-70"
-                    style={{ mixBlendMode: 'multiply', filter: 'saturate(1.2)' }}
-                />
-
-                {/* Бокалы - внизу по центру */}
-                <img
-                    src="/images/wine-generator-background-glasess.webp?v=3"
-                    alt=""
-                    className="absolute bottom-20 left-1/2 -translate-x-1/2 w-[450px] h-[450px] object-contain opacity-60"
-                    style={{ mixBlendMode: 'multiply', filter: 'saturate(1.1)' }}
+                    className="absolute inset-0 w-full h-full object-cover opacity-100"
+                    style={{ mixBlendMode: 'multiply' }}
                 />
             </div>
 
-            <header className="sticky top-0 z-50 flex items-center bg-white/95 dark:bg-[#181311]/95 backdrop-blur-sm p-4 pb-2 justify-between border-b border-orange-100/50 dark:border-gray-800 shadow-sm mb-4">
+            <header className="sticky top-0 z-50 flex items-center bg-[#5a2d3d] dark:bg-[#5a2d3d] backdrop-blur-sm p-4 pb-2 justify-between border-b border-[#4a1d2d] shadow-lg mb-4">
                 <button
                     onClick={() => navigate(-1)}
-                    className="text-[#181311] dark:text-white flex size-10 items-center justify-center rounded-full hover:bg-orange-50 dark:hover:bg-white/5"
+                    className="text-white flex size-10 items-center justify-center rounded-full hover:bg-white/10"
                     aria-label="Назад"
                 >
                     <span className="material-symbols-outlined">arrow_back</span>
                 </button>
-                <h1 className="text-[#181311] dark:text-white text-lg font-bold text-center flex-1">Генератор списка вин</h1>
+                <h1 className="text-white text-lg font-bold text-center flex-1">Генератор списка вин</h1>
                 <div className="w-10"></div>
             </header>
 
             <div className="px-4 space-y-6 relative z-10">
 
-                <section aria-label="Форма добавления вина" className="bg-white dark:bg-[#1b1412] p-6 rounded-xl shadow-sm border border-orange-100/50 dark:border-gray-800 space-y-6">
+                <section aria-label="Форма добавления вина" className="bg-white/40 dark:bg-[#1b1412]/40 backdrop-blur-md p-6 rounded-xl shadow-xl border border-white/20 dark:border-white/10 space-y-6 [&_label]:drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)] [&_label]:text-white">
                     <div>
                         <label className="block text-sm font-semibold mb-2">
                             Название вина*:
                         </label>
                         <input
-                            className="w-full p-2 border rounded-lg bg-gray-50 dark:bg-[#2a201d] dark:border-gray-700"
+                            className="w-full p-2 border rounded-lg bg-white/10 dark:bg-white/5 backdrop-blur-sm border-white/30 dark:border-white/20 transition-all focus:bg-white/20 focus:border-primary"
                             value={draft.name}
                             onChange={(e) => updateDraft({ name: e.target.value })}
                             placeholder="Например: Riesling Estate"
@@ -421,7 +404,7 @@ export default function WineListBuilderPage() {
                         </div>
                         <input
                             list="countries"
-                            className="w-full p-2 border rounded-lg bg-gray-50 dark:bg-[#2a201d] dark:border-gray-700"
+                            className="w-full p-2 border rounded-lg bg-white/10 dark:bg-white/5 backdrop-blur-sm border-white/30 dark:border-white/20 transition-all focus:bg-white/20 focus:border-primary"
                             value={draft.country}
                             onChange={(e) => updateDraft({ country: e.target.value })}
                             placeholder="Выберите страну..."
@@ -442,15 +425,15 @@ export default function WineListBuilderPage() {
                                     </div>
                                 </div>
                             </div>
-                            <div className="flex flex-wrap gap-2 min-h-[40px] p-2 border rounded-lg bg-gray-50 dark:bg-[#2a201d] dark:border-gray-700 mb-2">
+                            <div className="flex flex-wrap gap-2 min-h-[40px] p-2 border rounded-lg bg-white/10 dark:bg-white/5 backdrop-blur-sm border-white/30 dark:border-white/20 mb-2">
                                 {grapes.map((g) => (
                                     <button
                                         key={g}
                                         type="button"
                                         onClick={() => toggleGrape(g)}
-                                        className={`px-3 py-1 rounded-full text-xs transition-colors ${(draft.grapes || []).includes(g)
-                                            ? 'bg-primary text-white font-medium'
-                                            : 'bg-white/50 dark:bg-white/5 hover:bg-white dark:hover:bg-white/10 border dark:border-gray-700'
+                                        className={`px-3 py-1 rounded-full text-xs transition-all ${(draft.grapes || []).includes(g)
+                                            ? 'bg-gradient-to-br from-yellow-300 to-yellow-500 text-yellow-900 font-bold shadow-lg'
+                                            : 'bg-white/10 dark:bg-white/5 backdrop-blur-sm hover:bg-white/20 dark:hover:bg-white/10 border border-white/30 dark:border-white/20'
                                             }`}
                                     >
                                         {g}
@@ -471,7 +454,7 @@ export default function WineListBuilderPage() {
                                 <input
                                     type="text"
                                     placeholder="Свой сорт..."
-                                    className="flex-1 p-2 text-sm border rounded-lg bg-white dark:bg-[#120d0b] dark:border-gray-700"
+                                    className="flex-1 p-2 text-sm border rounded-lg bg-white/10 dark:bg-white/5 backdrop-blur-sm border-white/30 dark:border-white/20"
                                     value={customGrape}
                                     onChange={(e) => setCustomGrape(e.target.value)}
                                     onKeyDown={(e) => {
@@ -494,7 +477,7 @@ export default function WineListBuilderPage() {
                                             setCustomGrape("");
                                         }
                                     }}
-                                    className="px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-lg text-xs font-bold hover:bg-gray-200 dark:hover:bg-gray-700"
+                                    className="size-10 flex items-center justify-center rounded-full bg-gradient-to-br from-yellow-300 to-yellow-500 text-yellow-900 text-xl font-bold hover:from-yellow-400 hover:to-yellow-600 shadow-lg transition-all active:scale-95"
                                 >
                                     +
                                 </button>
@@ -511,15 +494,15 @@ export default function WineListBuilderPage() {
                                     </div>
                                 </div>
                             </div>
-                            <div className="flex flex-wrap gap-2 min-h-[40px] p-2 border rounded-lg bg-gray-50 dark:bg-[#2a201d] dark:border-gray-700 mb-2">
+                            <div className="flex flex-wrap gap-2 min-h-[40px] p-2 border rounded-lg bg-white/10 dark:bg-white/5 backdrop-blur-sm border-white/30 dark:border-white/20 mb-2">
                                 {regions.map((r) => (
                                     <button
                                         key={r}
                                         type="button"
                                         onClick={() => selectRegion(r)}
-                                        className={`px-3 py-1 rounded-full text-xs transition-colors ${draft.region === r
-                                            ? 'bg-primary text-white font-medium'
-                                            : 'bg-white/50 dark:bg-white/5 hover:bg-white dark:hover:bg-white/10 border dark:border-gray-700'
+                                        className={`px-3 py-1 rounded-full text-xs transition-all ${draft.region === r
+                                            ? 'bg-gradient-to-br from-yellow-300 to-yellow-500 text-yellow-900 font-bold shadow-lg'
+                                            : 'bg-white/10 dark:bg-white/5 backdrop-blur-sm hover:bg-white/20 dark:hover:bg-white/10 border border-white/30 dark:border-white/20'
                                             }`}
                                     >
                                         {r}
@@ -539,7 +522,7 @@ export default function WineListBuilderPage() {
                                 <input
                                     type="text"
                                     placeholder="Свой регион..."
-                                    className="flex-1 p-2 text-sm border rounded-lg bg-white dark:bg-[#120d0b] dark:border-gray-700 disabled:opacity-50"
+                                    className="flex-1 p-2 text-sm border rounded-lg bg-white/10 dark:bg-white/5 backdrop-blur-sm border-white/30 dark:border-white/20 disabled:opacity-50"
                                     value={customRegion}
                                     onChange={(e) => setCustomRegion(e.target.value)}
                                     disabled={!draft.country}
@@ -564,7 +547,7 @@ export default function WineListBuilderPage() {
                                         }
                                     }}
                                     disabled={!draft.country}
-                                    className="px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-lg text-xs font-bold hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-30"
+                                    className="size-10 flex items-center justify-center rounded-full bg-gradient-to-br from-yellow-300 to-yellow-500 text-yellow-900 text-xl font-bold hover:from-yellow-400 hover:to-yellow-600 shadow-lg transition-all active:scale-95 disabled:opacity-30"
                                 >
                                     +
                                 </button>
@@ -574,7 +557,7 @@ export default function WineListBuilderPage() {
 
                     <div>
                         <div className="flex items-center gap-2 mb-2">
-                            <div className="text-sm font-semibold">Тип вина:</div>
+                            <div className="text-sm font-semibold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">Тип вина:</div>
                             <div className="group relative">
                                 <span className="cursor-help text-xs bg-gray-200 dark:bg-gray-700 w-4 h-4 rounded-full flex items-center justify-center opacity-60">?</span>
                                 <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 w-[calc(100vw-2rem)] max-w-64 p-3 bg-black text-white text-[11px] rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 shadow-xl leading-relaxed whitespace-normal text-center">
@@ -589,9 +572,9 @@ export default function WineListBuilderPage() {
                                     type="button"
                                     aria-pressed={draft.types.includes(t)}
                                     onClick={() => toggleType(t)}
-                                    className={`px-3 py-1.5 rounded-full text-sm transition-colors ${draft.types.includes(t)
-                                        ? 'bg-primary text-white font-medium'
-                                        : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700'
+                                    className={`px-3 py-1.5 rounded-full text-sm transition-all ${draft.types.includes(t)
+                                        ? 'bg-gradient-to-br from-yellow-300 to-yellow-500 text-yellow-900 font-bold shadow-lg scale-105'
+                                        : 'bg-white/10 dark:bg-white/5 backdrop-blur-sm hover:bg-white/20 dark:hover:bg-white/10 border border-white/30 dark:border-white/20'
                                         }`}
                                 >
                                     {WINE_TYPE_LABEL[t]}
@@ -601,7 +584,7 @@ export default function WineListBuilderPage() {
                     </div>
 
                     <div>
-                        <div className="text-sm font-semibold mb-2">Вкус:</div>
+                        <div className="text-sm font-semibold mb-2 text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">Вкус:</div>
                         <div className="flex flex-wrap gap-2">
                             {TASTE_TAGS.map((tag) => (
                                 <button
@@ -609,9 +592,9 @@ export default function WineListBuilderPage() {
                                     type="button"
                                     aria-pressed={draft.tastes.includes(tag)}
                                     onClick={() => toggleTaste(tag)}
-                                    className={`px-3 py-1.5 rounded-full text-sm transition-colors ${draft.tastes.includes(tag)
-                                        ? 'bg-primary text-white font-medium'
-                                        : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700'
+                                    className={`px-3 py-1.5 rounded-full text-sm transition-all ${draft.tastes.includes(tag)
+                                        ? 'bg-gradient-to-br from-yellow-300 to-yellow-500 text-yellow-900 font-bold shadow-lg'
+                                        : 'bg-white/10 dark:bg-white/5 backdrop-blur-sm hover:bg-white/20 dark:hover:bg-white/10 border border-white/30 dark:border-white/20'
                                         }`}
                                 >
                                     {tag}
@@ -639,7 +622,7 @@ export default function WineListBuilderPage() {
                                 <button
                                     type="button"
                                     onClick={() => updateDraft({ quantity: (draft.quantity || 1) + 1 })}
-                                    className="w-12 h-10 flex items-center justify-center rounded-full bg-primary text-white hover:bg-primary-dark transition-colors shadow-sm"
+                                    className="w-12 h-10 flex items-center justify-center rounded-full bg-gradient-to-br from-yellow-300 to-yellow-500 text-yellow-900 hover:from-yellow-400 hover:to-yellow-600 transition-colors shadow-lg font-bold text-xl"
                                 >
                                     +
                                 </button>
@@ -651,7 +634,7 @@ export default function WineListBuilderPage() {
                                 type="button"
                                 onClick={addToList}
                                 disabled={!canAdd}
-                                className="flex-1 py-3 bg-primary text-white rounded-xl hover:bg-primary-dark disabled:opacity-50 disabled:cursor-not-allowed font-medium text-lg shadow-sm"
+                                className="flex-1 py-3 bg-gradient-to-br from-yellow-300 to-yellow-500 text-yellow-900 rounded-3xl hover:from-yellow-400 hover:to-yellow-600 disabled:opacity-50 disabled:cursor-not-allowed font-bold text-lg shadow-lg"
                             >
                                 Добавить в список
                             </button>
@@ -667,26 +650,27 @@ export default function WineListBuilderPage() {
                 </section>
 
                 <section aria-label="Список" className="mt-12 space-y-6 pb-20">
-                    <div className="flex items-center justify-between">
-                        <h2 className="text-xl font-bold">Ваш список вин ({items.length})</h2>
+                    <div className="flex items-center justify-between bg-white/40 dark:bg-[#1b1412]/40 backdrop-blur-md p-4 rounded-xl shadow-lg border border-white/20 dark:border-white/10">
+                        <h2 className="text-xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">Ваш список вин ({items.length})</h2>
                         <button
                             type="button"
                             onClick={requestClearList}
                             disabled={items.length === 0}
-                            className="text-red-500 hover:text-red-600 disabled:opacity-50 text-sm font-medium"
+                            className="px-3 py-1 bg-red-500 text-white rounded-full hover:bg-red-600 disabled:opacity-50 text-xs font-bold shadow-lg transition-all active:scale-95"
+                            style={{ backgroundColor: '#ef4444', opacity: 1 }}
                         >
                             Очистить список
                         </button>
                     </div>
 
                     {items.length === 0 ? (
-                        <div className="text-center py-12 bg-gray-50 dark:bg-white/5 rounded-xl border border-dashed border-gray-300 dark:border-gray-700">
-                            <p className="text-gray-500">Список пуст. Добавьте первое вино через форму выше.</p>
+                        <div className="text-center py-12 bg-white/40 dark:bg-[#1b1412]/40 backdrop-blur-md rounded-xl border border-white/20 dark:border-white/10 shadow-lg">
+                            <p className="text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)] font-medium">Список пуст. Добавьте первое вино через форму выше.</p>
                         </div>
                     ) : (
                         <div className="space-y-4">
                             {items.map((w) => (
-                                <article key={w.id} className="bg-white dark:bg-[#1b1412] p-4 rounded-xl shadow-sm border border-orange-100/50 dark:border-gray-800 relative group">
+                                <article key={w.id} className="bg-white/40 dark:bg-[#1b1412]/40 backdrop-blur-md p-4 rounded-xl shadow-lg border border-white/20 dark:border-white/10 relative group [&_h3]:text-[#5a2d3d] [&_h3]:drop-shadow-[0_1px_2px_rgba(255,255,255,0.8)] [&_.text-sm]:text-black [&_.text-sm]:drop-shadow-[0_1px_2px_rgba(255,255,255,0.8)]">
                                     <div className="pr-20">
                                         <h3 className="font-bold text-lg break-words overflow-hidden">
                                             {w.name}
@@ -699,7 +683,7 @@ export default function WineListBuilderPage() {
                                             {w.types.map((t) => WINE_TYPE_LABEL[t]).join(" + ")} {w.grapes && w.grapes.length > 0 && `· ${w.grapes.join(" · ")}`}
                                         </div>
                                         {w.tastes.length > 0 && (
-                                            <div className="mt-2 text-sm bg-gray-50 dark:bg-white/5 p-2 rounded-lg inline-block italic">
+                                            <div className="mt-2 text-sm bg-white/20 dark:bg-white/10 backdrop-blur-sm p-2 rounded-lg inline-block italic text-black drop-shadow-[0_1px_2px_rgba(255,255,255,0.8)]">
                                                 {w.tastes.join(" · ")}
                                             </div>
                                         )}
@@ -709,7 +693,7 @@ export default function WineListBuilderPage() {
                                         <button
                                             type="button"
                                             onClick={() => openEdit(w.id)}
-                                            className="p-2 bg-gray-100 dark:bg-gray-800 rounded-full hover:bg-blue-50 dark:hover:bg-blue-900/20 text-blue-600 dark:text-blue-400"
+                                            className="p-2 bg-white/20 dark:bg-white/10 backdrop-blur-sm rounded-full hover:bg-white/30 dark:hover:bg-white/20 text-blue-600 dark:text-blue-400 shadow-lg"
                                             title="Редактировать"
                                         >
                                             ✏️
@@ -717,7 +701,7 @@ export default function WineListBuilderPage() {
                                         <button
                                             type="button"
                                             onClick={() => removeItem(w.id)}
-                                            className="p-2 bg-gray-100 dark:bg-gray-800 rounded-full hover:bg-red-50 dark:hover:bg-red-900/20 text-red-500"
+                                            className="p-2 bg-white/20 dark:bg-white/10 backdrop-blur-sm rounded-full hover:bg-white/30 dark:hover:bg-white/20 text-red-500 shadow-lg"
                                             title="Удалить"
                                         >
                                             🗑️
@@ -730,7 +714,7 @@ export default function WineListBuilderPage() {
                 </section>
 
                 {/* Панель экспорта и предпросмотра */}
-                <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-[#1b1412] border-t dark:border-gray-800 shadow-[0_-8px_30px_rgb(0,0,0,0.12)] z-40">
+                <div className="fixed bottom-0 left-0 right-0 bg-[#d4c4b0] dark:bg-[#d4c4b0] border-t border-[#b8a890] shadow-[0_-8px_30px_rgb(0,0,0,0.12)] z-40 rounded-t-3xl">
                     <div className="w-full">
                         {/* Окно предпросмотра (раскрывается вверх) */}
                         {showPreview && items.length > 0 && (
@@ -767,17 +751,17 @@ export default function WineListBuilderPage() {
 
                         <div className="p-4 space-y-4">
                             <div className="flex justify-between items-center">
-                                <h3 className="font-bold text-base">Экспорт списка</h3>
-                                <div className="bg-gray-100 dark:bg-white/5 p-1 rounded-full flex text-xs border dark:border-gray-800">
+                                <h3 className="font-bold text-base text-[#3d1f1f]">Экспорт списка</h3>
+                                <div className="bg-white/60 p-1 rounded-full flex text-xs border border-[#b8a890]">
                                     <button
                                         onClick={() => setExportMode("text")}
-                                        className={`px-4 py-1.5 rounded-full transition-all ${exportMode === "text" ? "bg-primary text-white shadow-sm font-medium" : "text-gray-500"}`}
+                                        className={`px-4 py-1.5 rounded-full transition-all ${exportMode === "text" ? "bg-gradient-to-br from-amber-300 to-amber-500 text-amber-900 shadow-md font-bold" : "text-gray-600"}`}
                                     >
                                         Text
                                     </button>
                                     <button
                                         onClick={() => setExportMode("image")}
-                                        className={`px-4 py-1.5 rounded-full transition-all ${exportMode === "image" ? "bg-primary text-white shadow-sm font-medium" : "text-gray-500"}`}
+                                        className={`px-4 py-1.5 rounded-full transition-all ${exportMode === "image" ? "bg-gradient-to-br from-amber-300 to-amber-500 text-amber-900 shadow-md font-bold" : "text-gray-600"}`}
                                     >
                                         Image
                                     </button>
@@ -788,32 +772,32 @@ export default function WineListBuilderPage() {
                                 <button
                                     onClick={() => setShowPreview(!showPreview)}
                                     disabled={items.length === 0}
-                                    className={`flex flex-col items-center justify-center gap-1 p-2 rounded-xl transition-all border ${showPreview ? 'bg-primary/10 border-primary text-primary' : 'bg-gray-50 dark:bg-white/5 border-transparent'}`}
+                                    className={`flex flex-col items-center justify-center gap-2 p-4 rounded-3xl transition-all ${showPreview ? 'bg-[#5a2d3d] text-white' : 'bg-[#5a2d3d] text-white'} shadow-lg hover:shadow-xl active:scale-95`}
                                 >
-                                    <span className="text-xl">👁️</span>
-                                    <span className="text-[10px] font-bold uppercase tracking-wide">Preview</span>
+                                    <span className="text-2xl">👁️</span>
+                                    <span className="text-[9px] font-bold uppercase tracking-wide">Preview</span>
                                 </button>
 
                                 <button
                                     onClick={handleShare}
                                     disabled={items.length === 0 || (exportMode === "image" && busy.png)}
-                                    className="flex flex-col items-center justify-center gap-1 p-2 rounded-xl bg-gray-50 dark:bg-white/5 hover:bg-green-50 dark:hover:bg-green-900/10 transition-all group disabled:opacity-50"
+                                    className="flex flex-col items-center justify-center gap-2 p-4 rounded-3xl bg-[#5a2d3d] text-white shadow-lg hover:shadow-xl transition-all active:scale-95 disabled:opacity-50"
                                 >
-                                    <div className="text-xl group-hover:scale-110 transition-transform">
+                                    <div className="text-2xl transition-transform">
                                         {busy.png && exportMode === "image" ? (
-                                            <div className="w-5 h-5 border-2 border-green-500/30 border-t-green-500 rounded-full animate-spin" />
+                                            <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                                         ) : "📤"}
                                     </div>
-                                    <span className="text-[10px] font-bold uppercase tracking-wide">Send</span>
+                                    <span className="text-[9px] font-bold uppercase tracking-wide">Send</span>
                                 </button>
 
                                 <button
                                     onClick={copyToClipboard}
                                     disabled={busy.copy || items.length === 0}
-                                    className="flex flex-col items-center justify-center gap-1 p-2 rounded-xl bg-gray-50 dark:bg-white/5 hover:bg-yellow-50 dark:hover:bg-yellow-900/10 transition-all group disabled:opacity-50"
+                                    className="flex flex-col items-center justify-center gap-2 p-4 rounded-3xl bg-[#5a2d3d] text-white shadow-lg hover:shadow-xl transition-all active:scale-95 disabled:opacity-50"
                                 >
-                                    <span className="text-xl group-hover:scale-110 transition-transform">📋</span>
-                                    <span className="text-[10px] font-bold uppercase tracking-wide">{busy.copy ? "..." : "Copy"}</span>
+                                    <span className="text-2xl transition-transform">📋</span>
+                                    <span className="text-[9px] font-bold uppercase tracking-wide">{busy.copy ? "..." : "Copy"}</span>
                                 </button>
                             </div>
                         </div>

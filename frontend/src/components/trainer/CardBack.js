@@ -7,8 +7,7 @@ function CardBack({ dish, onAnswer }) {
     const isEn = dish.lang === 'EN';
 
     const handlePlay = (e) => {
-        const canPlay = dish.audioUrl && (dish.mode === 'english' || isEn);
-        if (!canPlay || isPlaying) return;
+        if (!dish.audioUrl || isPlaying) return;
         e.stopPropagation();
 
         const audio = new Audio(dish.audioUrl);
@@ -75,10 +74,10 @@ function CardBack({ dish, onAnswer }) {
                             </span>
                             <h3
                                 onClick={handlePlay}
-                                className={`font-black text-sm leading-tight text-white transition-all duration-300 ${(dish.audioUrl && isEn) ? 'cursor-pointer active:scale-95' : ''} ${isPlaying ? 'text-[#19e66b] scale-105' : ''}`}
+                                className={`font-black text-sm leading-tight text-white transition-all duration-300 ${dish.audioUrl ? 'cursor-pointer active:scale-95' : ''} ${isPlaying ? 'text-[#19e66b] scale-105' : ''}`}
                             >
                                 {title}
-                                {dish.audioUrl && isEn && (
+                                {dish.audioUrl && (
                                     <span className={`material-symbols-outlined ml-1.5 text-xs align-middle transition-opacity ${isPlaying ? 'opacity-100 animate-pulse' : 'opacity-40'}`}>
                                         volume_up
                                     </span>
@@ -166,12 +165,11 @@ function CardBack({ dish, onAnswer }) {
                                 <div className="flex flex-col items-center gap-1 w-full">
                                     <h1
                                         onClick={handlePlay}
-                                        className={`font-black text-white tracking-wider uppercase drop-shadow-xl transition-all duration-300 ${dish.audioUrl ? 'cursor-pointer active:scale-95' : ''
-                                            } ${isPlaying ? 'text-[#19e66b] scale-105' : ''} ${dish.titleEn.length > 90 ? 'text-xs' :
-                                                dish.titleEn.length > 65 ? 'text-sm' :
-                                                    dish.titleEn.length > 45 ? 'text-base' :
-                                                        dish.titleEn.length > 30 ? 'text-lg' :
-                                                            dish.titleEn.length > 15 ? 'text-xl' : 'text-2xl'
+                                        className={`font-black text-white tracking-wider uppercase drop-shadow-xl transition-all duration-300 ${dish.audioUrl ? 'cursor-pointer active:scale-95' : ''} ${isPlaying ? 'text-[#19e66b] scale-105' : ''} ${dish.titleEn.length > 90 ? 'text-xs' :
+                                            dish.titleEn.length > 65 ? 'text-sm' :
+                                                dish.titleEn.length > 45 ? 'text-base' :
+                                                    dish.titleEn.length > 30 ? 'text-lg' :
+                                                        dish.titleEn.length > 15 ? 'text-xl' : 'text-2xl'
                                             }`}
                                     >
                                         {dish.titleEn}

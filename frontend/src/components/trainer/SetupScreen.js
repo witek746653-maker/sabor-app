@@ -122,12 +122,11 @@ function SetupScreen({ onStart, onBack, initialConfig }) {
       style={{
         backgroundImage: `linear-gradient(rgba(10, 20, 15, 0.4), rgba(10, 20, 15, 0.6)), url("/trainer-bg.webp")`,
         backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundAttachment: 'fixed'
+        backgroundPosition: 'center'
       }}
     >
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-[#0a140f]/80 backdrop-blur-lg flex items-center p-4 h-16">
+      <header className="sticky top-0 z-50 bg-[#0a140f] flex items-center p-4 h-16">
         <button onClick={onBack} className="flex size-10 items-center justify-center rounded-full active:bg-white/10 transition-colors -ml-2">
           <span className="material-symbols-outlined text-white">arrow_back</span>
         </button>
@@ -234,10 +233,10 @@ function SetupScreen({ onStart, onBack, initialConfig }) {
       </main>
 
       {/* Footer */}
-      <footer className="fixed bottom-0 left-0 right-0 p-4 pb-8 bg-[#0a140f]/95 backdrop-blur-xl border-t border-white/5 z-50 max-w-md mx-auto">
+      <footer className="fixed bottom-0 left-0 right-0 p-4 pb-8 bg-[#0a140f] border-t border-white/5 z-50 max-w-md mx-auto">
         <div className="flex items-center gap-3">
           {/* Компактный выбор количества */}
-          <div className="flex bg-[#16221c]/60 p-1 rounded-2xl border border-white/5 h-16 items-center px-1.5 gap-1 backdrop-blur-md">
+          <div className="flex bg-[#16221c] p-1 rounded-2xl border border-white/5 h-16 items-center px-1.5 gap-1">
             {CARD_COUNTS.map(count => (
               <button
                 key={count}
