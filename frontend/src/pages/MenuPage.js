@@ -787,6 +787,19 @@ function MenuPage({ mode }) {
                             <span className="material-symbols-outlined text-gray-400 text-4xl">emoji_food_beverage</span>
                           </div>
                         )}
+                        {dish.i18n?.en?.['audio-en'] && language === 'EN' && (
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              const url = `/audio/en/${dish.id}.mp3`;
+                              new Audio(url).play();
+                            }}
+                            className="absolute top-1 right-1 flex h-7 w-7 items-center justify-center rounded-full bg-black/40 backdrop-blur-md border border-white/20 shadow-lg z-10 active:scale-90 transition-transform"
+                          >
+                            <span className="material-symbols-outlined text-white text-[16px]">volume_up</span>
+                          </button>
+                        )}
                       </div>
                       <div className="p-2 flex flex-col flex-grow">
                         <h3 className="font-bold text-[11px] leading-[1.2] dark:text-white line-clamp-2 mb-1 group-hover:text-primary transition-colors duration-200">
@@ -844,6 +857,21 @@ function MenuPage({ mode }) {
                           <span className="material-symbols-outlined text-gray-400 text-4xl">restaurant</span>
                         </div>
                       )}
+
+                      {dish.i18n?.en?.['audio-en'] && language === 'EN' && (
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            const url = `/audio/${isWine ? 'wine' : 'en'}/${dish.id}.mp3`;
+                            new Audio(url).play();
+                          }}
+                          className="absolute top-1 right-1 flex h-7 w-7 items-center justify-center rounded-full bg-black/40 backdrop-blur-md border border-white/20 shadow-lg z-10 active:scale-90 transition-transform"
+                        >
+                          <span className="material-symbols-outlined text-white text-[16px]">volume_up</span>
+                        </button>
+                      )}
+
                       {tags.length > 0 && (
                         <div className="absolute top-1.5 left-1.5 flex flex-wrap gap-1">
                           {tags.map((tag, idx) => (

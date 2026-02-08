@@ -220,3 +220,43 @@ html.dark .aurora-bg {
   background-size: 400% 400% !important;
   animation: aurora 15s ease infinite !important;
 }
+
+/* Стили для состава в тренажере */
+.trainer-contains-content {
+  text-align: left;
+}
+
+.trainer-contains-content ol, 
+.trainer-contains-content ul {
+  list-style-position: outside;
+  padding-left: 1.25rem;
+  margin: 0.5rem 0;
+}
+
+.trainer-contains-content li {
+  margin-bottom: 0.25rem;
+}
+
+.trainer-contains-content strong {
+  color: #19e66b;
+  font-weight: 800;
+}
+
+/* Кастомный скроллбар для темной темы карточек */
+.trainer-contains-content::-webkit-scrollbar {
+  width: 4px;
+}
+
+.trainer-contains-content::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+}
+
+.trainer-contains-content::-webkit-scrollbar-thumb {
+  background: rgba(25, 230, 107, 0.3);
+  border-radius: 10px;
+}
+
+.trainer-contains-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(25, 230, 107, 0.5);
+}

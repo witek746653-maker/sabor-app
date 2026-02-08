@@ -353,7 +353,34 @@ export default function WineListBuilderPage() {
     const canAdd = isValidName(draft.name);
 
     return (
-        <div className="w-full min-h-screen font-display text-[#181311] dark:text-gray-100 pb-40 aurora-bg">
+        <div className="w-full min-h-screen font-display text-[#181311] dark:text-gray-100 pb-40 aurora-bg relative overflow-hidden">
+            {/* Декоративные фоновые изображения */}
+            <div className="fixed inset-0 pointer-events-none z-[1]">
+                {/* Красное вино - верхний левый угол */}
+                <img
+                    src="/images/wine-generator-background-red.webp?v=3"
+                    alt=""
+                    className="absolute -top-32 -left-32 w-[500px] h-[500px] object-contain opacity-80"
+                    style={{ mixBlendMode: 'multiply', filter: 'saturate(1.3)' }}
+                />
+
+                {/* Белое вино - правая сторона, середина */}
+                <img
+                    src="/images/wine-generator-background-white.webp?v=3"
+                    alt=""
+                    className="absolute top-1/2 -translate-y-1/2 -right-32 w-[550px] h-[550px] object-contain opacity-70"
+                    style={{ mixBlendMode: 'multiply', filter: 'saturate(1.2)' }}
+                />
+
+                {/* Бокалы - внизу по центру */}
+                <img
+                    src="/images/wine-generator-background-glasess.webp?v=3"
+                    alt=""
+                    className="absolute bottom-20 left-1/2 -translate-x-1/2 w-[450px] h-[450px] object-contain opacity-60"
+                    style={{ mixBlendMode: 'multiply', filter: 'saturate(1.1)' }}
+                />
+            </div>
+
             <header className="sticky top-0 z-50 flex items-center bg-white/95 dark:bg-[#181311]/95 backdrop-blur-sm p-4 pb-2 justify-between border-b border-orange-100/50 dark:border-gray-800 shadow-sm mb-4">
                 <button
                     onClick={() => navigate(-1)}
@@ -366,7 +393,7 @@ export default function WineListBuilderPage() {
                 <div className="w-10"></div>
             </header>
 
-            <div className="px-4 space-y-6">
+            <div className="px-4 space-y-6 relative z-10">
 
                 <section aria-label="Форма добавления вина" className="bg-white dark:bg-[#1b1412] p-6 rounded-xl shadow-sm border border-orange-100/50 dark:border-gray-800 space-y-6">
                     <div>

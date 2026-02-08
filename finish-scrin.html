@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html class="dark" lang="ru"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Итоги интервального повторения</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700;FILL@0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#19e66b",
+                        "primary-hover": "#14b856",
+                        "easy": "#19e66b",
+                        "normal": "#ff9f0a",
+                        "hard": "#ff453a",
+                        "background-dark": "#112117",
+                        "surface-dark": "#1c3326",
+                        "surface-highlight": "#244732",
+                    },
+                    fontFamily: {
+                        "display": ["Work Sans", "Noto Sans", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #244732;
+            border-radius: 10px;
+        }
+        body {
+            min-height: 100dvh;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-dark text-white font-display overflow-x-hidden selection:bg-primary selection:text-background-dark">
+<div class="relative flex h-full min-h-screen w-full flex-col max-w-md mx-auto shadow-2xl overflow-hidden bg-background-dark">
+<header class="flex items-center justify-between p-4 pb-2 sticky top-0 bg-background-dark/80 backdrop-blur-lg z-30">
+<div class="w-8"></div>
+<h2 class="text-base font-bold leading-tight tracking-tight text-center">Итоги повторения</h2>
+<div class="w-8 flex justify-end">
+<button class="text-white/40 hover:text-white transition-colors">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+</header>
+<main class="flex-1 flex flex-col gap-8 px-5 pt-4 pb-48">
+<section class="flex flex-col items-center justify-center">
+<div class="relative flex items-center justify-center w-52 h-52">
+<svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+<circle cx="50" cy="50" fill="none" r="42" stroke="#244732" stroke-width="10"></circle>
+<circle cx="50" cy="50" fill="none" r="42" stroke="#ff453a" stroke-dasharray="263.89" stroke-dashoffset="0" stroke-linecap="round" stroke-width="10"></circle>
+<circle cx="50" cy="50" fill="none" r="42" stroke="#ff9f0a" stroke-dasharray="65.97 263.89" stroke-dashoffset="-39.58" stroke-linecap="round" stroke-width="10"></circle>
+<circle cx="50" cy="50" fill="none" r="42" stroke="#19e66b" stroke-dasharray="158.33 263.89" stroke-dashoffset="-105.55" stroke-linecap="round" stroke-width="10"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="text-4xl font-extrabold tracking-tight text-white">85%</span>
+<span class="text-[10px] uppercase tracking-widest text-white/40 font-bold">Успех</span>
+</div>
+</div>
+</section>
+<section class="grid grid-cols-3 gap-3">
+<div class="flex flex-col gap-1 rounded-2xl p-3 bg-surface-highlight/50 border border-white/5">
+<span class="text-[10px] font-bold uppercase tracking-wider text-white/40">Карточек</span>
+<p class="text-xl font-bold">20</p>
+<span class="text-[9px] text-white/30">Всего</span>
+</div>
+<div class="flex flex-col gap-1 rounded-2xl p-3 bg-surface-highlight/50 border border-white/5">
+<span class="text-[10px] font-bold uppercase tracking-wider text-white/40">Время</span>
+<p class="text-xl font-bold">04:12</p>
+<span class="text-[9px] text-white/30">Сессия</span>
+</div>
+<div class="flex flex-col gap-1 rounded-2xl p-3 bg-surface-highlight/50 border border-white/5">
+<span class="text-[10px] font-bold uppercase tracking-wider text-white/40">Прогресс</span>
+<p class="text-xl font-bold text-easy">60%</p>
+<span class="text-[9px] text-white/30">Освоено</span>
+</div>
+</section>
+<section class="flex flex-col gap-3">
+<h3 class="text-sm font-bold text-white/50 uppercase tracking-widest px-1">Результаты по кнопкам</h3>
+<div class="flex flex-col gap-2">
+<div class="flex items-center justify-between p-3.5 rounded-xl bg-surface-dark border-l-4 border-easy">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-easy">sentiment_very_satisfied</span>
+<span class="font-medium">Легко</span>
+</div>
+<span class="font-bold text-lg">12</span>
+</div>
+<div class="flex items-center justify-between p-3.5 rounded-xl bg-surface-dark border-l-4 border-normal">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-normal">sentiment_neutral</span>
+<span class="font-medium">Нормально</span>
+</div>
+<span class="font-bold text-lg">5</span>
+</div>
+<div class="flex items-center justify-between p-3.5 rounded-xl bg-surface-dark border-l-4 border-hard">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-hard">sentiment_very_dissatisfied</span>
+<span class="font-medium">Сложно</span>
+</div>
+<span class="font-bold text-lg">3</span>
+</div>
+</div>
+</section>
+<section class="flex flex-col gap-4">
+<div class="flex items-center justify-between">
+<h3 class="text-sm font-bold text-white/50 uppercase tracking-widest px-1">Работа над ошибками</h3>
+<span class="text-[10px] bg-hard/20 text-hard px-2 py-0.5 rounded-full font-bold">3 ошибки</span>
+</div>
+<div class="flex flex-col gap-3">
+<div class="flex gap-4 p-3 rounded-2xl bg-surface-highlight/30 border border-white/5 items-center">
+<div class="h-14 w-14 shrink-0 rounded-xl bg-gray-700 overflow-hidden relative">
+<img alt="Dish" class="h-full w-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB6n2JDu5lvS9ROoAXw8ipiOPWL_xeE81frApoyZnsbch-gqMH7rwvxSQB1syjzaJxzZsl__Aqa2XhExOprwHL77PfERh96lWljSC9gIowPSOFixpnb-Qy6UBL4YEyisoVVv0XWspxGWUuDIAyBYRpPfWmeuTeRiDkGoqJfSFIbbGNx68uob0vr1xP4nDbiKjmeDk7hdIfOi8qLoiRVzWO79yhVVut_wpBFDYrFp9438p36T61NIZf5nlsT86oOsbZ9qkXzRe5aKAM"/>
+</div>
+<div class="flex flex-col flex-1 gap-0.5">
+<p class="text-sm font-bold text-white">Салат Нисуаз</p>
+<p class="text-[12px] text-white/50 leading-snug italic">Забыли: <span class="text-hard not-italic font-medium">Анчоусы</span></p>
+</div>
+<span class="material-symbols-outlined text-hard/30">chevron_right</span>
+</div>
+<div class="flex gap-4 p-3 rounded-2xl bg-surface-highlight/30 border border-white/5 items-center">
+<div class="h-14 w-14 shrink-0 rounded-xl bg-gray-700 overflow-hidden relative">
+<img alt="Drink" class="h-full w-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCO26nW2xhwPwb4QEkgNaw--gsx2bbelmZZSkr56UGJyWlfHMXkSGfVl5FrY_no--TdrzkQVSx-fkMqd1Q9NZBrqFXeXdTsN3WStvY9iEQS9FgX-viliV8jEkPRv9nFUKkY0fCdhvKn-lVtgo2J5FLaXd9nDrhXwZfUnsrtJS7WUKanEHe-IaEVemSXNstqtvBje-KjX1kEAhfvTONVt3VNvlDHleu67l-MhCT1PJOJLLjf43KpWm_MMaudNuQUiADexV5VCPVoAew"/>
+</div>
+<div class="flex flex-col flex-1 gap-0.5">
+<p class="text-sm font-bold text-white">Негрони</p>
+<p class="text-[12px] text-white/50 leading-snug italic">Вместо водки: <span class="text-easy not-italic font-medium">Джин</span></p>
+</div>
+<span class="material-symbols-outlined text-hard/30">chevron_right</span>
+</div>
+</div>
+</section>
+</main>
+<div class="fixed bottom-0 left-0 right-0 p-5 pb-8 bg-background-dark/90 backdrop-blur-xl border-t border-white/5 z-40 max-w-md mx-auto">
+<div class="flex flex-col gap-3">
+<button class="flex w-full items-center justify-center gap-2 rounded-2xl bg-primary h-14 px-5 hover:bg-primary-hover active:scale-[0.98] transition-all shadow-lg shadow-primary/10">
+<span class="text-background-dark text-base font-bold tracking-tight">Новая тренировка</span>
+<span class="material-symbols-outlined text-background-dark text-[20px]">play_arrow</span>
+</button>
+<button class="flex w-full items-center justify-center gap-2 rounded-2xl bg-transparent h-14 px-5 border border-white/10 hover:bg-white/5 active:scale-[0.98] transition-all">
+<span class="text-white/70 text-base font-medium tracking-tight">На главный экран</span>
+</button>
+</div>
+</div>
+</div>
+
+</body></html>

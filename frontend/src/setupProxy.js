@@ -5,7 +5,7 @@ module.exports = function (app) {
 
     // Проксируем основные API и статические пути
     app.use(
-        ['/api', '/images', '/audio', '/scripts', '/menus', '/trainer', '/tools'],
+        ['/api', '/images', '/scripts', '/menus', '/trainer', '/tools'],
         createProxyMiddleware({
             target: target,
             changeOrigin: true,

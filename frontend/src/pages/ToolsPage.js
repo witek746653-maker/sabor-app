@@ -46,16 +46,16 @@ function ToolsPage() {
                     });
                 }
 
-                // Внедрение Тренажера официанта
-                if (!enabledTools.find(t => t.id === 'waiter-trainer')) {
+                // Внедрение Интервального тренинга
+                if (!enabledTools.find(t => t.id === 'interval-trainer')) {
                     enabledTools.push({
-                        id: 'waiter-trainer',
-                        title: 'Тренажер официанта',
-                        description: 'Обучение и практика',
+                        id: 'interval-trainer',
+                        title: 'Интервальный тренинг',
+                        description: 'Изучение меню с интервальным повторением',
                         type: 'trainer',
-                        url: '/trainer/menu-trainer.html',
+                        url: '/interval-trainer',
                         enabled: true,
-                        openMode: 'new_tab'
+                        openMode: 'self'
                     });
                 }
 
@@ -71,7 +71,7 @@ function ToolsPage() {
     }, [toast]);
 
     const handleToolClick = (tool) => {
-        if (isGuest && (tool.id === 'wine-list-generator' || tool.id === 'waiter-database' || tool.id === 'waiter-trainer')) {
+        if (isGuest && (tool.id === 'wine-list-generator' || tool.id === 'waiter-database' || tool.id === 'interval-trainer')) {
             toast.info('Этот инструмент доступен только после входа.');
             return;
         }
@@ -108,7 +108,7 @@ function ToolsPage() {
         <div className="min-h-screen aurora-bg font-display antialiased">
             <header className="sticky top-0 z-50 flex items-center bg-white/95 dark:bg-[#181311]/95 backdrop-blur-sm p-4 pb-2 justify-between border-b border-orange-100/50 dark:border-gray-800 shadow-sm">
                 <button
-                    onClick={() => navigate(-1)}
+                    onClick={() => navigate('/info')}
                     className="text-[#181311] dark:text-white flex size-10 items-center justify-center rounded-full hover:bg-orange-50 dark:hover:bg-white/5"
                 >
                     <span className="material-symbols-outlined">arrow_back</span>

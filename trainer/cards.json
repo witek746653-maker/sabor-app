@@ -36,7 +36,7 @@
       },
       "en": {
         "title": "Imperial Oyster (Russia)",
-        "description": "Фраза для быстрой презентации гостю: \n“These are Imperial oysters from Vladivostok, served raw with lemon, shallots, red wine vinegar, butter, and croutons. \nThey have a fresh, pronounced sea flavor — please note they contain onion and citrus.”"
+        "description": " \n“These are Imperial oysters from Vladivostok, served raw with lemon, shallots, red wine vinegar, butter, and croutons. \nThey have a fresh, pronounced sea flavor — please note they contain onion and citrus.”"
       }
     },
     "status": "draft",
@@ -82,7 +82,7 @@
       },
       "en": {
         "title": "Jolie Pink Oyster (Namibia, Africa)",
-        "description": "Фраза для быстрой презентации гостю:\n\"This is a Jolie oyster from Namibia. It has a delicate, creamy, and slightly sweet taste with a gentle sea salt note — often called the ‘Atlantic salted caramel’.\""
+        "description": "\n\"This is a Jolie oyster from Namibia. It has a delicate, creamy, and slightly sweet taste with a gentle sea salt note — often called the ‘Atlantic salted caramel’.\""
       }
     },
     "status": "draft",
@@ -128,7 +128,7 @@
       },
       "en": {
         "title": "Oyster “Fine de Claire No.3” (France)",
-        "description": "Фраза для быстрой презентации гостю:\n“Classic French oysters with a delicate creamy and nutty taste, perfectly balanced between sweetness and salinity.”"
+        "description": "\n“Classic French oysters with a delicate creamy and nutty taste, perfectly balanced between sweetness and salinity.”"
       }
     },
     "status": "draft",
@@ -266,7 +266,7 @@
       },
       "en": {
         "title": "Bruschetta with burrata, tomatoes, and pesto",
-        "description": "Фраза для быстрой презентации гостю:\n\"This is a crispy potato brioche with creamy burrata, fresh tomatoes, and classic basil pesto.\""
+        "description": "\n\"This is a crispy potato brioche with creamy burrata, fresh tomatoes, and classic basil pesto.\""
       }
     },
     "status": "draft",
@@ -312,7 +312,7 @@
       },
       "en": {
         "title": "Bruschetta with wild mushrooms in a creamy sauce",
-        "description": "Фраза для быстрой презентации гостю:\n\"This is a potato brioche topped with sautéed mushrooms in cream sauce, finished with herbs.\""
+        "description": "\n\"This is a potato brioche topped with sautéed mushrooms in cream sauce, finished with herbs.\""
       }
     },
     "status": "draft",
@@ -360,7 +360,7 @@
       },
       "en": {
         "title": "Tapas with Jamón and Soft Cheese",
-        "description": "Фраза для быстрой презентации гостю:\n“This is a Spanish-style tapas — crispy ciabatta topped with creamy burrata, jamón, and basil pesto, finished with molecular olives and arugula.”"
+        "description": "\n“This is a Spanish-style tapas — crispy ciabatta topped with creamy burrata, jamón, and basil pesto, finished with molecular olives and arugula.”"
       }
     },
     "status": "draft",
@@ -406,7 +406,7 @@
       },
       "en": {
         "title": "Tapas with Scallop and Creamy Sauce",
-        "description": "Фраза для быстрой презентации гостю:\n“Elegant tapas with seared scallop on toasted ciabatta, creamy sauce, and delicate citrus notes.”"
+        "description": "\n“Elegant tapas with seared scallop on toasted ciabatta, creamy sauce, and delicate citrus notes.”"
       }
     },
     "status": "draft",
@@ -501,7 +501,7 @@
       },
       "en": {
         "title": "Selection of fine cured meats (Also, Meat Platter)",
-        "description": "Фраза для быстрой презентации гостю:\nThis is an assortment of Spanish-style cured meats, including Serrano ham and spicy chorizo, all made with pork.\"\nThe assortment includes:\n1. Jamón Serrano (Reserva)\n2. Spicy Chorizo\n3. Venison and Bear Sausages (оленина и медведь)\n4. Beef Sausage\n5. Cured Duck Breast (Cured = вяленый/выдержанный)\n6. Wild Boar belly (also, Fat = жир/сало).\n\nGarnished with Red Currants (красная смородина) and Bay Leaves (Bay Leaf = лавровый лист)."
+        "description": "\nThis is an assortment of Spanish-style cured meats, including Serrano ham and spicy chorizo, all made with pork.\"\nThe assortment includes:\n1. Jamón Serrano (Reserva)\n2. Spicy Chorizo\n3. Venison and Bear Sausages (оленина и медведь)\n4. Beef Sausage\n5. Cured Duck Breast (Cured = вяленый/выдержанный)\n6. Wild Boar belly (also, Fat = жир/сало).\n\nGarnished with Red Currants (красная смородина) and Bay Leaves (Bay Leaf = лавровый лист)."
       }
     },
     "status": "draft",
@@ -547,7 +547,7 @@
       },
       "en": {
         "title": "Tomato & Crab",
-        "description": "Фраза для быстрой презентации гостю:\n\"This is a dish of ripe tomatoes with fresh crab meat, complemented by herbs and a light dressing.\""
+        "description": "\n\"This is a dish of ripe tomatoes with fresh crab meat, complemented by herbs and a light dressing.\""
       }
     },
     "status": "draft",
@@ -595,7 +595,7 @@
       },
       "en": {
         "title": "Тартар из тунца с испанскими оливками, кедровыми орехами и зеленью",
-        "description": "Фраза для быстрой презентации гостю:\n\"This is a tartare of yellowfin tuna, combined with Spanish olives, pine nuts, and fresh herbs, finished with lemon juice.\""
+        "description": "\n\"This is a tartare of yellowfin tuna, combined with Spanish olives, pine nuts, and fresh herbs, finished with lemon juice.\""
       }
     },
     "status": "draft",
@@ -643,7 +643,7 @@
       },
       "en": {
         "title": "Salmon and Oyster Tartare",
-        "description": "Фраза для быстрой презентации гостю:\n“Fresh tartare of salmon and oysters with creamy avocado, citrus dressing, and a touch of sea flavor.”"
+        "description": "\n“Fresh tartare of salmon and oysters with creamy avocado, citrus dressing, and a touch of sea flavor.”"
       }
     },
     "status": "draft",
@@ -694,7 +694,7 @@
       },
       "en": {
         "title": "Shrimp carpaccio with eggplant cream, tomatoes, and mango–chia sauce",
-        "description": "Фраза для быстрой презентации гостю:\n\"This is a shrimp carpaccio with eggplant cream, fresh tomatoes, and a bright mango-chia sauce.\""
+        "description": "\n\"This is a shrimp carpaccio with eggplant cream, fresh tomatoes, and a bright mango-chia sauce.\""
       }
     },
     "status": "draft",
@@ -743,7 +743,7 @@
       },
       "en": {
         "title": "Sea bass ceviche with tomatoes, avocado, and chili",
-        "description": "Фраза для быстрой презентации гостю:\n\"This is a ceviche of fresh seabass, marinated with citrus, served with creamy avocado, sweet tomatoes, and chili pepper.\""
+        "description": "\n\"This is a ceviche of fresh seabass, marinated with citrus, served with creamy avocado, sweet tomatoes, and chili pepper.\""
       }
     },
     "status": "draft",
@@ -792,7 +792,7 @@
       },
       "en": {
         "title": "Roasted beet carpaccio with cream cheese, pine nuts, and smoked oil",
-        "description": "Фраза для быстрой презентации гостю:\n\"This is a carpaccio of oven-baked beetroot, served with cream cheese, pine nuts, salad leaves, and a touch of smoked oil.\""
+        "description": "\n\"This is a carpaccio of oven-baked beetroot, served with cream cheese, pine nuts, salad leaves, and a touch of smoked oil.\""
       }
     },
     "status": "draft",
@@ -841,7 +841,7 @@
       },
       "en": {
         "title": "Cherry Tomato Kimchi with Creamy Stracciatella",
-        "description": "Фраза для быстрой презентации гостю:\n“This is cherry tomatoes gently simmered in a spicy kimchi sauce, served with creamy stracciatella, crispy potato straw, unagi sauce, and herb oil.”"
+        "description": "\n“This is cherry tomatoes gently simmered in a spicy kimchi sauce, served with creamy stracciatella, crispy potato straw, unagi sauce, and herb oil.”"
       }
     },
     "status": "draft",
@@ -888,7 +888,7 @@
       },
       "en": {
         "title": "Selection of six fine cheeses — served with natural honey, pear confiture, walnuts, and red currants (Also, Cheese Platter)",
-        "description": "Фраза для быстрой презентации гостю:\n\"This is an assortment of six noble cheeses, served with natural honey, pear confiture, walnuts, and red currants.\""
+        "description": "\n\"This is an assortment of six noble cheeses, served with natural honey, pear confiture, walnuts, and red currants.\""
       }
     },
     "status": "draft",
@@ -933,7 +933,7 @@
       },
       "en": {
         "title": "Foie gras escalope with Packham pear and berry–rum sauce",
-        "description": "Фраза для быстрой презентации гостю:\n\"This is a delicate foie gras escalope with stewed Packham pear, flamed with rum, and finished with a berry-rum sauce.\""
+        "description": "\n\"This is a delicate foie gras escalope with stewed Packham pear, flamed with rum, and finished with a berry-rum sauce.\""
       }
     },
     "status": "draft",
@@ -981,7 +981,7 @@
       },
       "en": {
         "title": "Baked mussels with spinach under cheese–truffle fondue",
-        "description": "Фраза для быстрой презентации гостю:\n\"These are baked mussels, filled with spinach stewed in shallots, garlic, and white wine, then topped with cheese-truffle fondue.\""
+        "description": "\n\"These are baked mussels, filled with spinach stewed in shallots, garlic, and white wine, then topped with cheese-truffle fondue.\""
       }
     },
     "status": "draft",
@@ -1027,7 +1027,7 @@
       },
       "en": {
         "title": "Baked oysters with Chablis sauce, nutmeg, and shallot",
-        "description": "Фраза для быстрой презентации гостю:\n\"These are African oysters baked under a creamy Chablis sauce with nutmeg and shallots.\""
+        "description": "\n\"These are African oysters baked under a creamy Chablis sauce with nutmeg and shallots.\""
       }
     },
     "status": "draft",
@@ -1071,7 +1071,7 @@
       },
       "en": {
         "title": "Burgundy snails with garlic butter, fresh herbs and crispy ciabatta (also, Escargots)",
-        "description": "Фраза для быстрой презентации гостю:\n\"These are traditional French escargots, baked in garlic butter with fresh herbs.\""
+        "description": "\n\"These are traditional French escargots, baked in garlic butter with fresh herbs.\""
       }
     },
     "status": "draft",
@@ -1118,7 +1118,7 @@
       },
       "en": {
         "title": "Shrimp in wasabi sauce",
-        "description": "Фраза для быстрой презентации гостю:\n\"These are juicy prawns flambéed with cognac, served with fresh salad leaves and a spicy wasabi sauce.\""
+        "description": "\n\"These are juicy prawns flambéed with cognac, served with fresh salad leaves and a spicy wasabi sauce.\""
       }
     },
     "status": "draft",
@@ -1167,7 +1167,7 @@
       },
       "en": {
         "title": "Eggplant, glazed with Sweet Chili Sauce and Smoked Eel, paired with Tomatoes, Stratchatella, and Yudzu Sesame",
-        "description": "Фраза для быстрой презентации гостю:\n\"This is eggplant glazed with sweet chili sauce, topped with smoked unagi eel, creamy stracciatella, ripe tomatoes, and yuzu sesame.\""
+        "description": "\n\"This is eggplant glazed with sweet chili sauce, topped with smoked unagi eel, creamy stracciatella, ripe tomatoes, and yuzu sesame.\""
       }
     },
     "status": "draft",
@@ -1215,7 +1215,7 @@
       },
       "en": {
         "title": "Eggplant tartare with tomatoes, herbs, and vegan pesto",
-        "description": "Eggplant Tartare with Tomatoes, Herbs & Vegan Pesto\n\nФраза для быстрой презентации гостю:\n\"This is a tartare of caramelized eggplants with ripe tomatoes, fresh herbs, and vegan pesto with pine nuts.\""
+        "description": "Eggplant Tartare with Tomatoes, Herbs & Vegan Pesto\n\n\n\"This is a tartare of caramelized eggplants with ripe tomatoes, fresh herbs, and vegan pesto with pine nuts.\""
       }
     },
     "status": "draft",
@@ -1264,7 +1264,7 @@
       },
       "en": {
         "title": "Roast Beef Salad with Tomatoes, Cottage Cheese Mousse, and Honey Mustard Dressing",
-        "description": "Фраза для быстрой презентации гостю:\n\"This is a salad of roasted beef with fresh greens, Uzbek tomatoes, cream cheese, and honey-mustard dressing with chimichurri sauce.\""
+        "description": "\n\"This is a salad of roasted beef with fresh greens, Uzbek tomatoes, cream cheese, and honey-mustard dressing with chimichurri sauce.\""
       }
     },
     "status": "draft",
@@ -1315,7 +1315,7 @@
       },
       "en": {
         "title": "Veal Salad with Tomatoes and Aromatic Mushrooms, served with Honey Mustard Dressing",
-        "description": "Фраза для быстрой презентации гостю:\n\"This is a salad with slices of sous-vide veal, roasted vegetables, shiitake mushrooms, capers, and fresh greens, dressed with honey-mustard sauce and parmesan.\""
+        "description": "\n\"This is a salad with slices of sous-vide veal, roasted vegetables, shiitake mushrooms, capers, and fresh greens, dressed with honey-mustard sauce and parmesan.\""
       }
     },
     "status": "draft",
@@ -1363,7 +1363,7 @@
       },
       "en": {
         "title": "Cardini salad with quail, tomatoes, quail egg, and garlic croutons",
-        "description": "Фраза для быстрой презентации гостю:\n\"This is our signature variation of the Caesar salad with golden roasted quail, Grana Padano cheese, cherry tomatoes, quail egg, and garlic croutons. The dressing has a rich anchovy flavor.\""
+        "description": "\n\"This is our signature variation of the Caesar salad with golden roasted quail, Grana Padano cheese, cherry tomatoes, quail egg, and garlic croutons. The dressing has a rich anchovy flavor.\""
       }
     },
     "status": "draft",
@@ -1404,7 +1404,7 @@
       },
       "en": {
         "title": "Warm salad with foie gras, quail, and caramelized apple",
-        "description": "Фраза для быстрой презентации гостю:\n\"This is a warm salad of foie gras terrine with roasted quail, served on crispy toasts with fresh salad leaves, fried onions, and caramelized apple flamed with Calvados.\""
+        "description": "\n\"This is a warm salad of foie gras terrine with roasted quail, served on crispy toasts with fresh salad leaves, fried onions, and caramelized apple flamed with Calvados.\""
       }
     },
     "status": "draft",
@@ -1502,7 +1502,7 @@
       },
       "en": {
         "title": "Seafood Salad with Cream Sauce, Mashed Avocado, and Balsamic Dressing",
-        "description": "Фраза для быстрой презентации гостю:\n\"This is a fresh salad with assorted seafood, creamy mashed avocado, tomatoes, and herbs, dressed with citrus sauce.\""
+        "description": "\n\"This is a fresh salad with assorted seafood, creamy mashed avocado, tomatoes, and herbs, dressed with citrus sauce.\""
       }
     },
     "status": "draft",
@@ -1597,7 +1597,7 @@
       },
       "en": {
         "title": "Burrata with olives and sweet tomato tartare",
-        "description": "Фраза для быстрой презентации гостю:\n\"This is creamy burrata served with a tartare of sweet tomatoes, fresh olives, and olive oil.\""
+        "description": "\n\"This is creamy burrata served with a tartare of sweet tomatoes, fresh olives, and olive oil.\""
       }
     },
     "status": "draft",
@@ -1644,7 +1644,7 @@
       },
       "en": {
         "title": "Traditional french onion soup with tender bacon and fragrant cumin, topped with a gruyère cheese crust",
-        "description": "Фраза для быстрой презентации гостю:\n\"This is a traditional onion soup with bacon, flavored with cumin, and topped with a Gruyère cheese crust.\""
+        "description": "\n\"This is a traditional onion soup with bacon, flavored with cumin, and topped with a Gruyère cheese crust.\""
       }
     },
     "status": "draft",
@@ -1694,7 +1694,7 @@
       },
       "en": {
         "title": "Spicy Tom Yum with scallops and shrimp",
-        "description": "Фраза для быстрой презентации гостю:\n\"This is our signature interpretation of Tom Yam soup with scallops, shrimps, mushrooms, carrot, and celery — rich in citrusy and herbal flavors.\""
+        "description": "\n\"This is our signature interpretation of Tom Yam soup with scallops, shrimps, mushrooms, carrot, and celery — rich in citrusy and herbal flavors.\""
       }
     },
     "status": "draft",
@@ -1787,7 +1787,7 @@
       },
       "en": {
         "title": "Silky chestnut cream soup with porcini mushrooms",
-        "description": "Фраза для быстрой презентации гостю:\n\"This is a silky cream soup made with chestnuts and fragrant porcini mushrooms.\""
+        "description": "\n\"This is a silky cream soup made with chestnuts and fragrant porcini mushrooms.\""
       }
     },
     "status": "draft",
@@ -1930,7 +1930,7 @@
       },
       "en": {
         "title": "House-made ravioli with farm chicken and cumin under cheese–truffle fondue",
-        "description": "Фраза для быстрой презентации гостю:\n\"This is homemade ravioli filled with farm chicken, seasoned with cumin, and served with a cheese and truffle fondue.\""
+        "description": "\n\"This is homemade ravioli filled with farm chicken, seasoned with cumin, and served with a cheese and truffle fondue.\""
       }
     },
     "status": "draft",
@@ -1978,7 +1978,7 @@
       },
       "en": {
         "title": "Black Fettuccine with Crab Meat in a Delicate Cream Sauce, paired with Fragrant Fennel, Leek, Fresh Herbs, and Grana Padano Cheese",
-        "description": "Фраза для быстрой презентации гостю:\n\"Black fettuccine pasta with tender crab meat, fennel, and leek.\""
+        "description": "\n\"Black fettuccine pasta with tender crab meat, fennel, and leek.\""
       }
     },
     "status": "draft",
@@ -2024,7 +2024,7 @@
       },
       "en": {
         "title": "Spicy Spaghetti Arrabbiata with Sautéed Shrimps and Scallops, served in a Sauce of Uzbek Tomatoes with Chili Pepper and Fresh Herbs",
-        "description": "Фраза для быстрой презентации гостю:\n\"A spicy arrabbiata pasta in tomato sauce with shrimp and scallops.\""
+        "description": "\n\"A spicy arrabbiata pasta in tomato sauce with shrimp and scallops.\""
       }
     },
     "status": "draft",
@@ -2070,7 +2070,7 @@
       },
       "en": {
         "title": "Creamy Risotto with Tender Rabbit, Fragrant Porcini Mushrooms, and Pine Nuts",
-        "description": "Фраза для быстрой презентации гостю:\n\"Creamy risotto with tender rabbit, mushrooms, and pesto.\""
+        "description": "\n\"Creamy risotto with tender rabbit, mushrooms, and pesto.\""
       }
     },
     "status": "draft",
@@ -2118,7 +2118,7 @@
       },
       "en": {
         "title": "Seafood Paella",
-        "description": "Фраза для быстрой презентации гостю:\n“A classic saffron seafood paella with shrimp, scallops, squid, and mussels, finished with sweet peppers, lime, and a touch of chili.”\nPortion: serves 2, approx. 800 g."
+        "description": "\n“A classic saffron seafood paella with shrimp, scallops, squid, and mussels, finished with sweet peppers, lime, and a touch of chili.”\nPortion: serves 2, approx. 800 g."
       }
     },
     "status": "draft",
@@ -2165,7 +2165,7 @@
       },
       "en": {
         "title": "Green Risotto with Tender Zucchini Purée, Young Green Peas, and Sweet Pepper Sauce",
-        "description": "Фраза для быстрой презентации гостю:\n\"Green risotto with zucchini purée, young green peas, and sweet pepper sauce.\""
+        "description": "\n\"Green risotto with zucchini purée, young green peas, and sweet pepper sauce.\""
       }
     },
     "status": "draft",
@@ -2213,7 +2213,7 @@
       },
       "en": {
         "title": "Beefsteak of marbled beef with fried potatoes, mushrooms and spinach, Gorgonzola mousse and truffle cream",
-        "description": "Фраза для быстрой презентации гостю:\n\"Marbled beefsteak cooked medium, served with golden potatoes, mushrooms, spinach, gorgonzola mousse, and truffle cream.\""
+        "description": "\n\"Marbled beefsteak cooked medium, served with golden potatoes, mushrooms, spinach, gorgonzola mousse, and truffle cream.\""
       }
     },
     "status": "draft",
@@ -2358,7 +2358,7 @@
       },
       "en": {
         "title": "Black burger with marbled beef patty, Camembert, onion confit, and spicy jalapeño",
-        "description": "Фраза для быстрой презентации гостю:\n\"Black burger with marbled beef patty, creamy Camembert, onion confit, and spicy jalapeño.\""
+        "description": "\n\"Black burger with marbled beef patty, creamy Camembert, onion confit, and spicy jalapeño.\""
       }
     },
     "status": "draft",
@@ -2405,7 +2405,7 @@
       },
       "en": {
         "title": "Braised Lamb Shank with Roasted Eggplant and Yogurt Mousse flavored with Fragrant Tarragon",
-        "description": "Фраза для быстрой презентации гостю:\n\"Braised lamb shank with roasted eggplant and a light yogurt mousse flavored with tarragon.\""
+        "description": "\n\"Braised lamb shank with roasted eggplant and a light yogurt mousse flavored with tarragon.\""
       }
     },
     "status": "draft",
@@ -2449,7 +2449,7 @@
       },
       "en": {
         "title": "Farm chicken grilled over open fire",
-        "description": "Фраза для быстрой презентации гостю:\n\"Farm-raised chicken grilled over open fire, marinated with homemade mayonnaise, barbecue, and Worcestershire sauce.\""
+        "description": "\n\"Farm-raised chicken grilled over open fire, marinated with homemade mayonnaise, barbecue, and Worcestershire sauce.\""
       }
     },
     "status": "draft",
@@ -2497,7 +2497,7 @@
       },
       "en": {
         "title": "Braised Duck Leg with Orange Sauce, served on a Bed of Fried Potatoes with Bacon, Onion, and Fresh Herbs",
-        "description": "Фраза для быстрой презентации гостю:\n\"Braised duck leg with orange sauce, served on a bed of fried potatoes with bacon.\""
+        "description": "\n\"Braised duck leg with orange sauce, served on a bed of fried potatoes with bacon.\""
       }
     },
     "status": "draft",
@@ -2544,7 +2544,7 @@
       },
       "en": {
         "title": "Baked Sea Bass Fillet with Spinach, served with Fluffy Herb Mashed Potatoes and Citrus Sauce",
-        "description": "Фраза для быстрой презентации гостю:\n\"Seabass fillet with spinach, herbed mashed potatoes, and a light citrus sauce.\""
+        "description": "\n\"Seabass fillet with spinach, herbed mashed potatoes, and a light citrus sauce.\""
       }
     },
     "status": "draft",
@@ -2594,7 +2594,7 @@
       },
       "en": {
         "title": "Juicy Salmon Steak baked with Honey, served with Herbed Mashed Potatoes and a Vibrant Tomato–Olive Salsa",
-        "description": "Фраза для быстрой презентации гостю:\n\"Salmon steak baked with honey, served with creamy mashed potatoes and fresh tomato salsa.\""
+        "description": "\n\"Salmon steak baked with honey, served with creamy mashed potatoes and fresh tomato salsa.\""
       }
     },
     "status": "draft",
@@ -2690,7 +2690,7 @@
       },
       "en": {
         "title": "Grilled Octopus Tentacles glazed with Sweet Chili Sauce, served with Golden Potatoes, Sun-Dried Tomatoes, Sunflower Sprouts, and Spicy Chimichurri",
-        "description": "Фраза для быстрой презентации гостю:\n\"Grilled octopus tentacles glazed with sweet chili sauce, served with golden potatoes, sun-dried tomatoes, sunflower sprouts, and chimichurri.\""
+        "description": "\n\"Grilled octopus tentacles glazed with sweet chili sauce, served with golden potatoes, sun-dried tomatoes, sunflower sprouts, and chimichurri.\""
       }
     },
     "status": "draft",
@@ -2780,7 +2780,7 @@
       },
       "en": {
         "title": "Prime Beef Tenderloin Fillet (Filet Mignon)",
-        "description": "Фраза для быстрой презентации гостю:\n\"Prime beef tenderloin fillet, grilled to your preferred doneness, served with garnish and sauce of your choice.\""
+        "description": "\n\"Prime beef tenderloin fillet, grilled to your preferred doneness, served with garnish and sauce of your choice.\""
       }
     },
     "status": "draft",
@@ -2823,7 +2823,7 @@
       },
       "en": {
         "title": "Ribeye steak",
-        "description": "Фраза для быстрой презентации гостю:\n\"Ribeye steak, well-marbled and juicy, grilled to your preferred doneness, served with garnish and sauce of your choice.\""
+        "description": "\n\"Ribeye steak, well-marbled and juicy, grilled to your preferred doneness, served with garnish and sauce of your choice.\""
       }
     },
     "status": "draft",
@@ -2866,7 +2866,7 @@
       },
       "en": {
         "title": "Striploin steak",
-        "description": "Фраза для быстрой презентации гостю:\n\"Striploin steak, tender with a rich meaty flavor, grilled to your preferred doneness, served with garnish and sauce of your choice.\""
+        "description": "\n\"Striploin steak, tender with a rich meaty flavor, grilled to your preferred doneness, served with garnish and sauce of your choice.\""
       }
     },
     "status": "draft",
@@ -2909,7 +2909,7 @@
       },
       "en": {
         "title": "Rack of Young Lamb",
-        "description": "Фраза для быстрой презентации гостю:\n\"Lamb rack, tender and juicy, grilled and served with garnish and sauce of your choice.\""
+        "description": "\n\"Lamb rack, tender and juicy, grilled and served with garnish and sauce of your choice.\""
       }
     },
     "status": "draft",
@@ -2952,7 +2952,7 @@
       },
       "en": {
         "title": "Salmon",
-        "description": "Фраза для быстрой презентации гостю:\n\"Salmon fillet, tender and juicy, prepared on the grill or steamed, and served with your choice of garnish and sauce.\""
+        "description": "\n\"Salmon fillet, tender and juicy, prepared on the grill or steamed, and served with your choice of garnish and sauce.\""
       }
     },
     "status": "draft",
@@ -2995,7 +2995,7 @@
       },
       "en": {
         "title": "Sea bass",
-        "description": "Фраза для быстрой презентации гостю:\n\"Seabass fillet, tender and delicate, prepared on the grill or steamed, and served with your choice of garnish and sauce.\""
+        "description": "\n\"Seabass fillet, tender and delicate, prepared on the grill or steamed, and served with your choice of garnish and sauce.\""
       }
     },
     "status": "draft",
@@ -3036,7 +3036,7 @@
       },
       "en": {
         "title": "Tuna",
-        "description": "Фраза для быстрой презентации гостю:\n\"Tuna steak, firm and meaty, prepared grilled or steamed to your preference, and served with your choice of garnish and sauce.\""
+        "description": "\n\"Tuna steak, firm and meaty, prepared grilled or steamed to your preference, and served with your choice of garnish and sauce.\""
       }
     },
     "status": "draft",
@@ -3077,7 +3077,7 @@
       },
       "en": {
         "title": "Squid",
-        "description": "Фраза для быстрой презентации гостю:\n\"Tender squid, prepared grilled or steamed, and served with your choice of garnish and sauce.\""
+        "description": "\n\"Tender squid, prepared grilled or steamed, and served with your choice of garnish and sauce.\""
       }
     },
     "status": "draft",
@@ -3118,7 +3118,7 @@
       },
       "en": {
         "title": "Octopus",
-        "description": "Фраза для быстрой презентации гостю:\n\"Tender octopus (octopus tentacles), prepared grilled or steamed, and served with your choice of garnish and sauce.\""
+        "description": "\n\"Tender octopus (octopus tentacles), prepared grilled or steamed, and served with your choice of garnish and sauce.\""
       }
     },
     "status": "draft",
@@ -3161,7 +3161,7 @@
       },
       "en": {
         "title": "King prawns (also, shrimps)",
-        "description": "Фраза для быстрой презентации гостю:\n\"Shrimp, prepared grilled or steamed, and served with your choice of garnish and sauce.\""
+        "description": "\n\"Shrimp, prepared grilled or steamed, and served with your choice of garnish and sauce.\""
       }
     },
     "status": "draft",
@@ -3204,7 +3204,7 @@
       },
       "en": {
         "title": "Sea scallops",
-        "description": "Фраза для быстрой презентации гостю:\n\"Sea scallops, prepared pan-seared or steamed, and served with your choice of garnish and sauce.\""
+        "description": "\n\"Sea scallops, prepared pan-seared or steamed, and served with your choice of garnish and sauce.\""
       }
     },
     "status": "draft",
@@ -3251,7 +3251,7 @@
       },
       "en": {
         "title": "Fried potatoes with bacon",
-        "description": "Фраза для быстрой презентации гостю:\n\"Golden fried potatoes with crispy bacon.\""
+        "description": "\n\"Golden fried potatoes with crispy bacon.\""
       }
     },
     "status": "draft",
@@ -3298,7 +3298,7 @@
       },
       "en": {
         "title": "Fried potatoes with mushrooms in a creamy cheese sauce",
-        "description": "Фраза для быстрой презентации гостю:\n\"Golden fried potatoes with mushrooms in a creamy cheese sauce.\""
+        "description": "\n\"Golden fried potatoes with mushrooms in a creamy cheese sauce.\""
       }
     },
     "status": "draft",
@@ -3344,7 +3344,7 @@
       },
       "en": {
         "title": "Fried potatoes with shallots and herbs",
-        "description": "Фраза для быстрой презентации гостю:\n\"Golden fried potatoes with caramelized shallots and fresh herbs.\""
+        "description": "\n\"Golden fried potatoes with caramelized shallots and fresh herbs.\""
       }
     },
     "status": "draft",
@@ -3387,7 +3387,7 @@
       },
       "en": {
         "title": "French fries",
-        "description": "Фраза для быстрой презентации гостю:\n\"Crispy golden French fries, served with your choice of sauce.\""
+        "description": "\n\"Crispy golden French fries, served with your choice of sauce.\""
       }
     },
     "status": "draft",
@@ -3432,7 +3432,7 @@
       },
       "en": {
         "title": "Herb mashed potatoes",
-        "description": "Фраза для быстрой презентации гостю:\n\"Creamy mashed potatoes with fresh herbs.\""
+        "description": "\n\"Creamy mashed potatoes with fresh herbs.\""
       }
     },
     "status": "draft",
@@ -3473,7 +3473,7 @@
       },
       "en": {
         "title": "Home-style potatoes on the Josper",
-        "description": "Фраза для быстрой презентации гостю:\n\"Homestyle potato wedges, baked golden in the Josper grill.\""
+        "description": "\n\"Homestyle potato wedges, baked golden in the Josper grill.\""
       }
     },
     "status": "draft",
@@ -3514,7 +3514,7 @@
       },
       "en": {
         "title": "Boiled rice",
-        "description": "Фраза для быстрой презентации гостю:\n\"Light boiled rice, served as a side dish.\""
+        "description": "\n\"Light boiled rice, served as a side dish.\""
       }
     },
     "status": "draft",
@@ -3596,7 +3596,7 @@
       },
       "en": {
         "title": "Asparagus",
-        "description": "Фраза для быстрой презентации гостю:\n\"Fresh asparagus, prepared grilled or steamed, and served as a side dish.\""
+        "description": "\n\"Fresh asparagus, prepared grilled or steamed, and served as a side dish.\""
       }
     },
     "status": "draft",
@@ -3641,7 +3641,7 @@
       },
       "en": {
         "title": "Stewed spinach with garlic and cheese",
-        "description": "Фраза для быстрой презентации гостю:\n\"Braised spinach with garlic and cheese, served as a side dish.\""
+        "description": "\n\"Braised spinach with garlic and cheese, served as a side dish.\""
       }
     },
     "status": "draft",
@@ -3682,7 +3682,7 @@
       },
       "en": {
         "title": "Bell pepper",
-        "description": "Фраза для быстрой презентации гостю:\n\"Fresh bell peppers, prepared grilled or steamed, and served as a side dish.\""
+        "description": "\n\"Fresh bell peppers, prepared grilled or steamed, and served as a side dish.\""
       }
     },
     "status": "draft",
@@ -3723,7 +3723,7 @@
       },
       "en": {
         "title": "Zucchini",
-        "description": "Фраза для быстрой презентации гостю:\n\"Fresh zucchini, prepared grilled or steamed, and served as a side dish.\""
+        "description": "\n\"Fresh zucchini, prepared grilled or steamed, and served as a side dish.\""
       }
     },
     "status": "draft",
@@ -3764,7 +3764,7 @@
       },
       "en": {
         "title": "Uzbek tomatoes",
-        "description": "Фраза для быстрой презентации гостю:\n\"Fresh Uzbek tomatoes, sweet and juicy, served as a side or starter.\""
+        "description": "\n\"Fresh Uzbek tomatoes, sweet and juicy, served as a side or starter.\""
       }
     },
     "status": "draft",
@@ -3805,7 +3805,7 @@
       },
       "en": {
         "title": "Cherry tomatoes",
-        "description": "Фраза для быстрой презентации гостю:\n\"Sweet cherry tomatoes, prepared grilled or steamed, and served as a side dish.\""
+        "description": "\n\"Sweet cherry tomatoes, prepared grilled or steamed, and served as a side dish.\""
       }
     },
     "status": "draft",
@@ -3851,7 +3851,7 @@
       },
       "en": {
         "title": "Yogurt Mousse with Herb Cream, White Chocolate Glaze, and Lemon–Mint Gel",
-        "description": "Фраза для быстрой презентации гостю:\n\"Light mousse with aromatic herbs on a delicate biscuit base.\""
+        "description": "\n\"Light mousse with aromatic herbs on a delicate biscuit base.\""
       }
     },
     "status": "draft",
@@ -3898,7 +3898,7 @@
       },
       "en": {
         "title": "Honey-Glazed Apples with Allspice, served with Crunchy Caramelized Walnuts and Pepper Mousse",
-        "description": "Фраза для быстрой презентации гостю:\n\"Honey-glazed wild apples with allspice, caramelized walnuts, and pepper mousse.\""
+        "description": "\n\"Honey-glazed wild apples with allspice, caramelized walnuts, and pepper mousse.\""
       }
     },
     "status": "draft",
@@ -3942,7 +3942,7 @@
       },
       "en": {
         "title": "Anna Pavlova - the Legendary Russian Dessert. Crispy Meringue with a Vanilla Cream Center, served with Juicy Mango and Strawberry Pieces, and Raspberry–Basil Sauce",
-        "description": "Фраза для быстрой презентации гостю:\n\"Crispy meringue with vanilla cream, fresh mango and strawberries, raspberry sauce, and a hint of basil.\""
+        "description": "\n\"Crispy meringue with vanilla cream, fresh mango and strawberries, raspberry sauce, and a hint of basil.\""
       }
     },
     "status": "draft",
@@ -3989,7 +3989,7 @@
       },
       "en": {
         "title": "Bird cherry honey cake with chamomile ice cream",
-        "description": "Фраза для быстрой презентации гостю:\n\"Tender bird cherry honey cake with creamy frosting, chamomile ice cream, salted pistachios, and lemon caramel.\""
+        "description": "\n\"Tender bird cherry honey cake with creamy frosting, chamomile ice cream, salted pistachios, and lemon caramel.\""
       }
     },
     "status": "draft",
@@ -4035,7 +4035,7 @@
       },
       "en": {
         "title": "Chocolate fondant  — Warm Chocolate Cake with a White Chocolate and Pistachio Filling, served with Vanilla Ice Cream and Fresh Berrie",
-        "description": "Фраза для быстрой презентации гостю:\n\"Warm chocolate cake with a flowing center of white chocolate and pistachios, served with vanilla ice cream and fresh berries.\""
+        "description": "\n\"Warm chocolate cake with a flowing center of white chocolate and pistachios, served with vanilla ice cream and fresh berries.\""
       }
     },
     "status": "draft",
@@ -4080,7 +4080,7 @@
       },
       "en": {
         "title": "Elegant “Cigar” filled with White Chocolate, Black Truffle, and Salted Caramel Cream, served on Almond and Cocoa Crumble",
-        "description": "Фраза для быстрой презентации гостю:\n\"Elegant chocolate 'cigar' filled with white chocolate cream, black truffle, and salted caramel, served on almond–cocoa crumble and presented under a smoke dome.\""
+        "description": "\n\"Elegant chocolate 'cigar' filled with white chocolate cream, black truffle, and salted caramel, served on almond–cocoa crumble and presented under a smoke dome.\""
       }
     },
     "status": "draft",
@@ -4125,7 +4125,7 @@
       },
       "en": {
         "title": "Cheese Soufflé",
-        "description": "Фраза для быстрой презентации гостю:\n“Fluffy baked cheese soufflé with a soft caramel center, pitahaya jelly, and pistachio cream.”"
+        "description": "\n“Fluffy baked cheese soufflé with a soft caramel center, pitahaya jelly, and pistachio cream.”"
       }
     },
     "status": "draft",
@@ -4170,7 +4170,7 @@
       },
       "en": {
         "title": "Homemade ice cream: vanilla, chocolate, pistachio, chamomile, banana–coconut–lime (vegan).",
-        "description": "Фраза для быстрой презентации гостю:\n\"Homemade ice cream in a variety of flavors: from classic vanilla and chocolate, pistachio, chamomile, and vegan banana–coconut–lime.\""
+        "description": "\n\"Homemade ice cream in a variety of flavors: from classic vanilla and chocolate, pistachio, chamomile, and vegan banana–coconut–lime.\""
       }
     },
     "status": "draft",
@@ -4214,7 +4214,7 @@
       },
       "en": {
         "title": "Fruit sorbet: lime–prosecco, orange–campari, melon–mint, blood orange.",
-        "description": "Фраза для быстрой презентации гостю:\n\"Light and refreshing fruit sorbet — dairy-free, with pure fruit flavor such as Lime–Prosecco, Orange–Campari, Melon–Mint, and Blood Orange.\""
+        "description": "\n\"Light and refreshing fruit sorbet — dairy-free, with pure fruit flavor such as Lime–Prosecco, Orange–Campari, Melon–Mint, and Blood Orange.\""
       }
     },
     "status": "draft",
@@ -4255,7 +4255,7 @@
       },
       "en": {
         "title": "Assorted Candies and Fruit Jellies",
-        "description": "Фраза для быстрой презентации гостю:\n“Handcrafted candies and fruit jellies — a delicate sweet selection served at the end of the meal.”"
+        "description": "\n“Handcrafted candies and fruit jellies — a delicate sweet selection served at the end of the meal.”"
       }
     },
     "status": "draft",
@@ -4302,7 +4302,7 @@
       },
       "en": {
         "title": "Macaron Assortment",
-        "description": "Фраза для быстрой презентации гостю:\n“An elegant assortment of classic French macarons with delicate flavors and light almond texture.”"
+        "description": "\n“An elegant assortment of classic French macarons with delicate flavors and light almond texture.”"
       }
     },
     "status": "draft",
@@ -4343,7 +4343,7 @@
       },
       "en": {
         "title": "Café gourmet",
-        "description": "Фраза для быстрой презентации гостю:\n“A classic French-style café gourmand — espresso served with an assortment of miniature desserts.”"
+        "description": "\n“A classic French-style café gourmand — espresso served with an assortment of miniature desserts.”"
       }
     },
     "status": "draft",
@@ -4384,7 +4384,7 @@
       },
       "en": {
         "title": "Tea Set",
-        "description": "Фраза для быстрой презентации гостю:\n“A refined tea set with a selection of premium loose-leaf teas, served with homemade sweets.”"
+        "description": "\n“A refined tea set with a selection of premium loose-leaf teas, served with homemade sweets.”"
       }
     },
     "status": "draft",

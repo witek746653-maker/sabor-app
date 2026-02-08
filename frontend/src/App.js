@@ -38,6 +38,7 @@ import ArticlesListPage from './pages/ArticlesListPage';
 import ArticleReaderPage from './pages/ArticleReaderPage';
 import ToolsPage from './pages/ToolsPage';
 import WineListBuilderPage from './pages/WineListBuilder/WineListBuilderPage';
+import IntervalTrainer from './pages/IntervalTrainer';
 import './App.css';
 import { useFavorites } from './contexts/FavoritesContext';
 
@@ -226,6 +227,7 @@ function App() {
                         <Route path="/article/:articleKey" element={<ArticleReaderPage />} />
                         <Route path="/tools" element={<ToolsPage />} />
                         <Route path="/wine-list-builder" element={<WineListBuilderPage />} />
+                        <Route path="/interval-trainer" element={<IntervalTrainer />} />
 
                         {/* Страница входа в админ-панель */}
                         <Route path="/admin/login" element={<AdminLoginPage />} />
