@@ -5,6 +5,9 @@ import { loadSelectedMenus, filterByCategory } from '../utils/menuDataLoader';
 import SetupScreen from '../components/trainer/SetupScreen';
 import TrainingCard from '../components/trainer/TrainingCard';
 import FinishScreen from '../components/trainer/FinishScreen';
+import trainerBg from '../assets/trainer-bg.webp';
+import cardBg from '../assets/card-bg.webp';
+
 
 function IntervalTrainer() {
     const navigate = useNavigate();
@@ -154,7 +157,7 @@ function IntervalTrainer() {
                 <div
                     className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/40 backdrop-blur-md"
                     style={{
-                        backgroundImage: `linear-gradient(rgba(10, 24, 18, 0.45), rgba(10, 24, 18, 0.95)), url("/trainer-bg.webp")`,
+                        backgroundImage: `linear-gradient(rgba(10, 24, 18, 0.45), rgba(10, 24, 18, 0.95)), url("${trainerBg}")`,
                         backgroundSize: 'cover',
                         backgroundPosition: 'center'
                     }}
@@ -162,7 +165,7 @@ function IntervalTrainer() {
                     <div
                         className="w-full max-w-xs border border-[#19e66b]/30 rounded-[32px] p-8 shadow-2xl animate-in fade-in zoom-in duration-300 relative overflow-hidden"
                         style={{
-                            backgroundImage: `linear-gradient(rgba(10, 24, 18, 0.7), rgba(10, 24, 18, 0.85)), url("/card-bg.webp")`,
+                            backgroundImage: `linear-gradient(rgba(10, 24, 18, 0.7), rgba(10, 24, 18, 0.85)), url("${cardBg}")`,
                             backgroundSize: 'cover',
                             backgroundPosition: 'center'
                         }}

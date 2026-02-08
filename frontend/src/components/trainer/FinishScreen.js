@@ -1,4 +1,7 @@
 import React from 'react';
+import trainerBg from '../../assets/trainer-bg.webp';
+import cardBg from '../../assets/card-bg.webp';
+
 
 function FinishScreen({ stats, mistakes, successRate, progressPercentage, sessionTime, onRestart, onExit, lang = 'RU' }) {
     const isEn = lang === 'EN';
@@ -29,8 +32,9 @@ function FinishScreen({ stats, mistakes, successRate, progressPercentage, sessio
                 backgroundImage: `
                     linear-gradient(to bottom, rgba(13, 31, 23, 0.7) 0%, rgba(13, 31, 23, 0.95) 100%),
                     linear-gradient(to bottom, transparent 67%, #0d1f17 95%),
-                    url("/trainer-bg.webp"),
-                    url("/card-bg.webp")
+                    url("${trainerBg}"),
+                    url("${cardBg}")
+
                 `,
                 backgroundSize: 'cover, 100% 100%, 100% 80vh, 300px',
                 backgroundPosition: 'center, center, top center, center',

@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { loadMenuData, getCategories } from '../../utils/menuDataLoader';
+import trainerBg from '../../assets/trainer-bg.webp';
+
 
 const MENU_CONFIG = [
   { id: 'kitchen', icon: 'restaurant_menu', label: 'Основное' },
@@ -120,8 +122,9 @@ function SetupScreen({ onStart, onBack, initialConfig }) {
     <div
       className="min-h-screen text-white font-display max-w-md mx-auto shadow-2xl border-x border-white/5 pb-20 bg-[#0a140f]"
       style={{
-        backgroundImage: `linear-gradient(rgba(10, 20, 15, 0.4), rgba(10, 20, 15, 0.6)), url("/trainer-bg.webp")`,
+        backgroundImage: `linear-gradient(rgba(10, 20, 15, 0.4), rgba(10, 20, 15, 0.6)), url("${trainerBg}")`,
         backgroundSize: 'cover',
+
         backgroundPosition: 'center'
       }}
     >

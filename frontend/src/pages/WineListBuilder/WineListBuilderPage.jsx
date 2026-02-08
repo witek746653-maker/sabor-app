@@ -1,18 +1,11 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { COUNTRIES, TASTE_TAGS, WINE_TYPE_LABEL, COUNTRY_FLAGS } from "./catalog";
-import {
-    buildTelegramText,
-    emptyDraft,
-    getGrapes,
-    getRegions,
-    isValidName,
-    makeId,
-    normalizeDraftForCountryAndTypes,
-    toggleTypeWithRules,
-} from "./utils";
-
+import { buildTelegramText, emptyDraft, getGrapes, getRegions, isValidName, makeId, normalizeDraftForCountryAndTypes, toggleTypeWithRules } from "./utils";
 import { toPng } from "html-to-image";
+import bgImage from "../../assets/wine-bg.webp";
+import wineBgPreview from "../../assets/wine-background.jpg";
+
 
 export default function WineListBuilderPage() {
     const navigate = useNavigate();
@@ -34,6 +27,7 @@ export default function WineListBuilderPage() {
     const [busy, setBusy] = useState({ png: false, copy: false });
     const [showShareMenu, setShowShareMenu] = useState(false);
     const [showPreview, setShowPreview] = useState(false);
+    const [isExportExpanded, setIsExportExpanded] = useState(false);
 
     const regions = useMemo(() => getRegions(draft.country), [draft.country]);
     const grapes = useMemo(() => getGrapes(draft.country, draft.types), [draft.country, draft.types]);
@@ -357,10 +351,9 @@ export default function WineListBuilderPage() {
             {/* Декоративные фоновые изображения */}
             <div className="fixed inset-0 pointer-events-none z-[1]">
                 <img
-                    src="/images/wine-generator-background.webp?v=4"
+                    src={bgImage}
                     alt=""
-                    className="absolute inset-0 w-full h-full object-cover opacity-100"
-                    style={{ mixBlendMode: 'multiply' }}
+                    className="absolute inset-0 w-full h-full object-cover opacity-100 scale-110 origin-top"
                 />
             </div>
 
@@ -378,7 +371,7 @@ export default function WineListBuilderPage() {
 
             <div className="px-4 space-y-6 relative z-10">
 
-                <section aria-label="Форма добавления вина" className="bg-white/40 dark:bg-[#1b1412]/40 backdrop-blur-md p-6 rounded-xl shadow-xl border border-white/20 dark:border-white/10 space-y-6 [&_label]:drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)] [&_label]:text-white">
+                <section aria-label="Форма добавления вина" className="bg-white/60 dark:bg-[#fdfbf7]/80 backdrop-blur-md p-6 rounded-xl shadow-xl border border-white/20 space-y-6 [&_label]:text-[#5a2d3d]">
                     <div>
                         <label className="block text-sm font-semibold mb-2">
                             Название вина*:
@@ -557,7 +550,7 @@ export default function WineListBuilderPage() {
 
                     <div>
                         <div className="flex items-center gap-2 mb-2">
-                            <div className="text-sm font-semibold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">Тип вина:</div>
+                            <div className="text-sm font-semibold text-[#5a2d3d]">Тип вина:</div>
                             <div className="group relative">
                                 <span className="cursor-help text-xs bg-gray-200 dark:bg-gray-700 w-4 h-4 rounded-full flex items-center justify-center opacity-60">?</span>
                                 <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 w-[calc(100vw-2rem)] max-w-64 p-3 bg-black text-white text-[11px] rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 shadow-xl leading-relaxed whitespace-normal text-center">
@@ -584,7 +577,7 @@ export default function WineListBuilderPage() {
                     </div>
 
                     <div>
-                        <div className="text-sm font-semibold mb-2 text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">Вкус:</div>
+                        <div className="text-sm font-semibold mb-2 text-[#5a2d3d]">Вкус:</div>
                         <div className="flex flex-wrap gap-2">
                             {TASTE_TAGS.map((tag) => (
                                 <button
@@ -607,7 +600,7 @@ export default function WineListBuilderPage() {
                     <div className="pt-4 flex flex-col gap-4">
                         {/* Quantity Counter */}
                         <div className="flex flex-col gap-2">
-                            <label className="text-sm font-semibold">Quantity (Bottles)</label>
+                            <label className="text-sm font-semibold">Количество (бутылок):</label>
                             <div className="flex bg-gray-800/5 dark:bg-gray-800 rounded-full p-1 w-48 border border-gray-200 dark:border-gray-700">
                                 <button
                                     type="button"
@@ -651,7 +644,7 @@ export default function WineListBuilderPage() {
 
                 <section aria-label="Список" className="mt-12 space-y-6 pb-20">
                     <div className="flex items-center justify-between bg-white/40 dark:bg-[#1b1412]/40 backdrop-blur-md p-4 rounded-xl shadow-lg border border-white/20 dark:border-white/10">
-                        <h2 className="text-xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">Ваш список вин ({items.length})</h2>
+                        <h2 className="text-xl font-bold text-[#5a2d3d]">Ваш список вин ({items.length})</h2>
                         <button
                             type="button"
                             onClick={requestClearList}
@@ -713,93 +706,103 @@ export default function WineListBuilderPage() {
                     )}
                 </section>
 
-                {/* Панель экспорта и предпросмотра */}
-                <div className="fixed bottom-0 left-0 right-0 bg-[#d4c4b0] dark:bg-[#d4c4b0] border-t border-[#b8a890] shadow-[0_-8px_30px_rgb(0,0,0,0.12)] z-40 rounded-t-3xl">
-                    <div className="w-full">
-                        {/* Окно предпросмотра (раскрывается вверх) */}
+                {/* Панель экспорта и предпросмотра (Bottom Sheet) */}
+                <div
+                    className={`fixed bottom-0 left-0 right-0 bg-[#d4c4b0]/80 dark:bg-[#1b1412]/80 backdrop-blur-xl border-t border-white/20 shadow-[0_-10px_40px_rgba(0,0,0,0.2)] z-40 rounded-t-[2.5rem] transition-all duration-500 ease-in-out ${isExportExpanded ? 'translate-y-0' : 'translate-y-[calc(100%-60px)]'
+                        } ${items.length === 0 ? 'translate-y-full' : ''}`}
+                >
+                    {/* Handle / Toggle */}
+                    <button
+                        onClick={() => setIsExportExpanded(!isExportExpanded)}
+                        className="w-full h-[60px] flex items-center justify-between px-6 cursor-pointer group"
+                    >
+                        <div className="flex items-center gap-3">
+                            <span className="text-xl">📤</span>
+                            <h3 className="font-bold text-base text-[#3d1f1f] dark:text-white/90">Экспорт списка</h3>
+                            <span className="px-2 py-0.5 bg-black/10 dark:bg-white/10 rounded-full text-[10px] font-bold">
+                                {items.length}
+                            </span>
+                        </div>
+                        <span className={`material-symbols-outlined transition-transform duration-500 ${isExportExpanded ? 'rotate-180' : ''}`}>
+                            keyboard_arrow_up
+                        </span>
+                    </button>
+
+                    <div className="w-full px-4 pb-8 space-y-4">
+                        {/* Окно предпросмотра */}
                         {showPreview && items.length > 0 && (
-                            <div className="p-4 bg-gray-50/50 dark:bg-[#120d0b] border-b dark:border-gray-800 max-h-[60vh] overflow-auto">
+                            <div className="p-4 bg-white/30 dark:bg-black/20 rounded-2xl border border-white/20 overflow-hidden animate-slideUp">
                                 {exportMode === 'text' ? (
                                     <div className="relative">
-                                        <pre className="text-[10px] break-all whitespace-pre-wrap font-mono p-4 bg-white dark:bg-black/30 rounded-xl border dark:border-gray-700 leading-relaxed shadow-inner">
+                                        <pre className="text-[10px] break-all whitespace-pre-wrap font-mono p-4 bg-white/50 dark:bg-black/50 rounded-xl leading-relaxed">
                                             {buildTelegramText(items)}
                                         </pre>
-                                        <div className="absolute top-2 right-2 text-[8px] text-gray-400 uppercase font-bold tracking-widest">
-                                            Telegram Text
-                                        </div>
                                     </div>
                                 ) : (
                                     <div className="flex flex-col items-center gap-3 py-2">
-                                        <div className="relative bg-white shadow-2xl rounded-sm overflow-hidden border border-gray-200 dark:border-gray-700" style={{
-                                            width: '260px',
-                                            height: '346px',
-                                        }}>
+                                        <div className="relative bg-white shadow-2xl rounded-sm overflow-hidden border border-gray-200" style={{ width: '240px', height: '320px' }}>
                                             {busy.png && !pngDataUrl ? (
-                                                <div className="w-full h-full flex flex-col items-center justify-center gap-3">
+                                                <div className="w-full h-full flex flex-col items-center justify-center gap-2">
                                                     <div className="w-6 h-6 border-2 border-primary/20 border-t-primary rounded-full animate-spin" />
-                                                    <span className="text-[8px] font-bold uppercase tracking-widest opacity-50">Drawing...</span>
                                                 </div>
                                             ) : pngDataUrl ? (
                                                 <img src={pngDataUrl} alt="Preview" className="w-full h-full object-contain" />
                                             ) : null}
                                         </div>
-                                        <p className="text-[9px] font-bold uppercase tracking-widest opacity-40">675x900 Image</p>
                                     </div>
                                 )}
                             </div>
                         )}
 
-                        <div className="p-4 space-y-4">
-                            <div className="flex justify-between items-center">
-                                <h3 className="font-bold text-base text-[#3d1f1f]">Экспорт списка</h3>
-                                <div className="bg-white/60 p-1 rounded-full flex text-xs border border-[#b8a890]">
-                                    <button
-                                        onClick={() => setExportMode("text")}
-                                        className={`px-4 py-1.5 rounded-full transition-all ${exportMode === "text" ? "bg-gradient-to-br from-amber-300 to-amber-500 text-amber-900 shadow-md font-bold" : "text-gray-600"}`}
-                                    >
-                                        Text
-                                    </button>
-                                    <button
-                                        onClick={() => setExportMode("image")}
-                                        className={`px-4 py-1.5 rounded-full transition-all ${exportMode === "image" ? "bg-gradient-to-br from-amber-300 to-amber-500 text-amber-900 shadow-md font-bold" : "text-gray-600"}`}
-                                    >
-                                        Image
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-3 gap-3">
+                        <div className="flex justify-between items-center bg-black/5 dark:bg-white/5 p-2 rounded-2xl">
+                            <span className="text-xs font-bold uppercase tracking-wider ml-2 opacity-60">Формат</span>
+                            <div className="flex bg-white/40 dark:bg-black/40 p-1 rounded-xl border border-white/20">
                                 <button
-                                    onClick={() => setShowPreview(!showPreview)}
-                                    disabled={items.length === 0}
-                                    className={`flex flex-col items-center justify-center gap-2 p-4 rounded-3xl transition-all ${showPreview ? 'bg-[#5a2d3d] text-white' : 'bg-[#5a2d3d] text-white'} shadow-lg hover:shadow-xl active:scale-95`}
+                                    onClick={() => setExportMode("text")}
+                                    className={`px-4 py-1.5 rounded-lg text-xs transition-all ${exportMode === "text" ? "bg-gradient-to-br from-yellow-300 to-yellow-500 text-yellow-900 shadow-md font-bold" : "text-gray-600 dark:text-gray-400"}`}
                                 >
-                                    <span className="text-2xl">👁️</span>
-                                    <span className="text-[9px] font-bold uppercase tracking-wide">Preview</span>
+                                    Text
                                 </button>
-
                                 <button
-                                    onClick={handleShare}
-                                    disabled={items.length === 0 || (exportMode === "image" && busy.png)}
-                                    className="flex flex-col items-center justify-center gap-2 p-4 rounded-3xl bg-[#5a2d3d] text-white shadow-lg hover:shadow-xl transition-all active:scale-95 disabled:opacity-50"
+                                    onClick={() => setExportMode("image")}
+                                    className={`px-4 py-1.5 rounded-lg text-xs transition-all ${exportMode === "image" ? "bg-gradient-to-br from-yellow-300 to-yellow-500 text-yellow-900 shadow-md font-bold" : "text-gray-600 dark:text-gray-400"}`}
                                 >
-                                    <div className="text-2xl transition-transform">
-                                        {busy.png && exportMode === "image" ? (
-                                            <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                        ) : "📤"}
-                                    </div>
-                                    <span className="text-[9px] font-bold uppercase tracking-wide">Send</span>
-                                </button>
-
-                                <button
-                                    onClick={copyToClipboard}
-                                    disabled={busy.copy || items.length === 0}
-                                    className="flex flex-col items-center justify-center gap-2 p-4 rounded-3xl bg-[#5a2d3d] text-white shadow-lg hover:shadow-xl transition-all active:scale-95 disabled:opacity-50"
-                                >
-                                    <span className="text-2xl transition-transform">📋</span>
-                                    <span className="text-[9px] font-bold uppercase tracking-wide">{busy.copy ? "..." : "Copy"}</span>
+                                    Image
                                 </button>
                             </div>
+                        </div>
+
+                        <div className="grid grid-cols-3 gap-3">
+                            <button
+                                onClick={() => {
+                                    setShowPreview(!showPreview);
+                                    setIsExportExpanded(true);
+                                }}
+                                className={`flex flex-col items-center justify-center gap-2 p-4 rounded-3xl bg-[#5a2d3d] text-white shadow-lg active:scale-95 transition-all`}
+                            >
+                                <span className="text-xl">👁️</span>
+                                <span className="text-[9px] font-bold uppercase">Превью</span>
+                            </button>
+
+                            <button
+                                onClick={handleShare}
+                                disabled={busy.png && exportMode === "image"}
+                                className="flex flex-col items-center justify-center gap-2 p-4 rounded-3xl bg-[#5a2d3d] text-white shadow-lg active:scale-95 transition-all disabled:opacity-50"
+                            >
+                                {busy.png && exportMode === "image" ? (
+                                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                ) : <span className="text-xl">📤</span>}
+                                <span className="text-[9px] font-bold uppercase">Отправить</span>
+                            </button>
+
+                            <button
+                                onClick={copyToClipboard}
+                                disabled={busy.copy}
+                                className="flex flex-col items-center justify-center gap-2 p-4 rounded-3xl bg-[#5a2d3d] text-white shadow-lg active:scale-95 transition-all disabled:opacity-50"
+                            >
+                                <span className="text-xl">{busy.copy ? "⌛" : "📋"}</span>
+                                <span className="text-[9px] font-bold uppercase">Копия</span>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -819,7 +822,8 @@ export default function WineListBuilderPage() {
                         style={{
                             width: '675px',
                             height: '900px',
-                            backgroundImage: 'url(/images/wine-background.jpg)',
+                            backgroundImage: `url(${wineBgPreview})`,
+
                             backgroundSize: '100% 100%',
                             backgroundRepeat: 'no-repeat',
                             position: 'relative',

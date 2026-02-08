@@ -1,5 +1,7 @@
 import React from 'react';
 import { generateQuestion } from '../../utils/menuDataLoader';
+import cardBg from '../../assets/card-bg.webp';
+
 
 function CardFace({ dish, onShowAnswer, progress }) {
     const question = generateQuestion(dish, dish.mode, dish.lang);
@@ -10,8 +12,9 @@ function CardFace({ dish, onShowAnswer, progress }) {
         <div
             className="w-full flex flex-col h-full max-h-[85vh] bg-[#0d1f17] rounded-[2rem] shadow-[0_30px_60px_-12px_rgba(0,0,0,0.8)] border border-[#1a3329]/50 overflow-hidden transform transition-transform"
             style={{
-                backgroundImage: `linear-gradient(rgba(10, 24, 18, 0.7), rgba(10, 24, 18, 0.85)), url("/card-bg.webp")`,
+                backgroundImage: `linear-gradient(rgba(10, 24, 18, 0.7), rgba(10, 24, 18, 0.85)), url("${cardBg}")`,
                 backgroundSize: '300px',
+
                 backgroundRepeat: 'repeat'
             }}
         >

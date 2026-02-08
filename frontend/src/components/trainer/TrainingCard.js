@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import CardFace from './CardFace';
 import CardBack from './CardBack';
+import trainerBg from '../../assets/trainer-bg.webp';
+
 
 function TrainingCard({ dish, onAnswer, onBack, onExit, progress }) {
     const [isFlipped, setIsFlipped] = useState(false);
@@ -27,8 +29,9 @@ function TrainingCard({ dish, onAnswer, onBack, onExit, progress }) {
         <div
             className="relative flex h-screen w-full flex-col overflow-hidden max-w-md mx-auto border-x border-[#1a3329]/50 shadow-2xl bg-[#0a1812]"
             style={{
-                backgroundImage: `linear-gradient(rgba(10, 24, 18, 0.4), rgba(10, 24, 18, 0.6)), url("/trainer-bg.webp")`,
+                backgroundImage: `linear-gradient(rgba(10, 24, 18, 0.4), rgba(10, 24, 18, 0.6)), url("${trainerBg}")`,
                 backgroundSize: 'cover',
+
                 backgroundPosition: 'center'
             }}
         >
