@@ -351,7 +351,7 @@ function FavoritesPage() {
                     <RemoveFavoriteButton onClick={() => toggleArticleFavorite(item.key)} />
                     <div
                       className="absolute inset-0 bg-cover bg-center"
-                      style={{ backgroundImage: `url('${item.image || '/articles/placeholder.jpg'}')` }}
+                      style={{ backgroundImage: `url('${item.image || '/images/zaglushka.webp'}')` }}
                     />
                   </div>
                   <div className="p-2">

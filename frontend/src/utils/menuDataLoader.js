@@ -11,7 +11,12 @@ const MENU_PATHS = {
   'bar': '/data/menu-bar.json',
   'wine': '/data/menu-wine.json',
   'tea': '/data/menu-tea.json',
-  'english': '/data/menu-database.json'
+  'english': [
+    '/data/menu-kitchen.json',
+    '/data/menu-bar.json',
+    '/data/menu-tea.json',
+    '/data/menu-wine.json'
+  ]
 };
 
 const MENU_FILTERS = {
@@ -48,12 +53,16 @@ export const loadMenuData = async (menuType) => {
       throw new Error(`Unknown menu type: ${menuType}`);
     }
 
-    const response = await fetch(path);
-    if (!response.ok) {
-      throw new Error(`Failed to load menu: ${response.statusText}`);
+    const paths = Array.isArray(path) ? path : [path];
+    const responses = await Promise.all(paths.map(p => fetch(p)));
+
+    for (const res of responses) {
+      if (!res.ok) throw new Error(`Failed to load menu: ${res.statusText}`);
     }
 
-    let data = await response.json();
+    const results = await Promise.all(responses.map(res => res.json()));
+    let data = results.flat();
+
     if (!Array.isArray(data)) return [];
 
     // Фильтрация архивных позиций (только для тренажера)

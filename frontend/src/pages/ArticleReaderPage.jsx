@@ -277,7 +277,12 @@ export default function ArticleReaderPage() {
                         {/* Кнопка "В начало" */}
                         <div className="max-w-reader mx-auto w-full px-6 mt-8 mb-8 flex justify-center">
                             <button
-                                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                                onClick={() => {
+                                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                                    // Дополнительная страховка для некоторых мобильных браузеров
+                                    document.body.scrollTo({ top: 0, behavior: 'smooth' });
+                                    document.documentElement.scrollTo({ top: 0, behavior: 'smooth' });
+                                }}
                                 className="flex items-center gap-2 px-6 py-3 rounded-full bg-primary/10 text-primary font-medium hover:bg-primary/20 transition-all active:scale-[0.98]"
                             >
                                 <ArrowUp className="h-5 w-5" />

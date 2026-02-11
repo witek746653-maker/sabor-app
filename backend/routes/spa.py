@@ -13,6 +13,11 @@ def serve_frontend(path):
        path.startswith('trainer/') or path.startswith('tools/'):
         return jsonify({'error': 'Not found'}), 404
     
+    # Не отдаем HTML для файлов, которые явно должны быть картинками/данными
+    static_extensions = ('.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg', '.json', '.js', '.css')
+    if path.lower().endswith(static_extensions):
+        return jsonify({'error': 'Static file not found'}), 404
+    
     if path:
         requested_file = Config.FRONTEND_BUILD_DIR / path
         if requested_file.exists() and requested_file.is_file():

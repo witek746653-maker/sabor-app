@@ -90,12 +90,17 @@ foreach ($f in $menuFiles) {
     }
 }
 
-Info "Sync content into frontend/public"
-$publicContentDir = Join-Path $PSScriptRoot "frontend\public\content"
-if (!(Test-Path $publicContentDir)) {
-  New-Item -ItemType Directory -Path $publicContentDir | Out-Null
+Info "Sync content into frontend/public (legacy check)"
+$sourceContent = Join-Path $PSScriptRoot "content"
+if (Test-Path $sourceContent) {
+    $publicContentDir = Join-Path $PSScriptRoot "frontend\public\content"
+    if (!(Test-Path $publicContentDir)) {
+      New-Item -ItemType Directory -Path $publicContentDir | Out-Null
+    }
+    Copy-Item -Force -Recurse (Join-Path $sourceContent "*") $publicContentDir
+} else {
+    Write-Host "Skipping content sync: 'content' folder no longer exists." -ForegroundColor Gray
 }
-Copy-Item -Force -Recurse (Join-Path $PSScriptRoot "content\*") $publicContentDir
 
 if (-not $SkipBuild) {
   Info "Build frontend (npm run build)"

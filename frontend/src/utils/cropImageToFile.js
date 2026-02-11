@@ -15,7 +15,7 @@
  * @param {number} quality
  * @returns {Promise<File>}
  */
-export function cropImageToFile(image, rect, fileName, mimeType = 'image/png', quality = 0.92) {
+export function cropImageToFile(image, rect, fileName, mimeType = 'image/jpeg', quality = 0.85) {
   const canvas = document.createElement('canvas');
   canvas.width = Math.max(1, Math.round(rect.w));
   canvas.height = Math.max(1, Math.round(rect.h));

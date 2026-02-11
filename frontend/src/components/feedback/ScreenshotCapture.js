@@ -3,9 +3,9 @@ import CropperFullScreen from './CropperFullScreen';
 import styles from './FeedbackWidget.module.css';
 
 /**
- * @param {{onAdd: (file: File) => void}} props
+ * @param {{onAdd: (file: File) => void, disabled?: boolean}} props
  */
-export default function ScreenshotCapture({ onAdd }) {
+export default function ScreenshotCapture({ onAdd, disabled }) {
   const [captureSrc, setCaptureSrc] = useState('');
   const [error, setError] = useState('');
 
@@ -47,7 +47,12 @@ export default function ScreenshotCapture({ onAdd }) {
 
   return (
     <>
-      <button className={styles.btn} type="button" onClick={takeScreenshot}>
+      <button
+        className={styles.btn}
+        type="button"
+        onClick={takeScreenshot}
+        disabled={disabled}
+      >
         Скриншот
       </button>
       {error && <div className={styles.metaNote}>{error}</div>}

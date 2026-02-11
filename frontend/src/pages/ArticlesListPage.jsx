@@ -18,7 +18,7 @@ const ArticleCard = ({ article, onClick }) => {
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                         onError={(e) => {
                             e.target.onerror = null;
-                            e.target.src = '/articles/placeholder.jpg';
+                            e.target.src = '/images/zaglushka.webp';
                             e.target.classList.add('opacity-40', 'grayscale');
                         }}
                     />

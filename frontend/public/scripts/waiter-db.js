@@ -718,26 +718,35 @@ async function loadData(showMessage = false) {
   } catch (error) {
     console.error(error);
     try {
-      const fallback = await fetch('../data/menu-database.json', { cache: 'no-store' });
-      const data = await fallback.json();
-      state.dataSource = 'menu-database.json';
+      const files = [
+        '../data/menu-kitchen.json',
+        '../data/menu-bar.json',
+        '../data/menu-tea.json',
+        '../data/menu-wine.json'
+      ];
+      
+      const responses = await Promise.all(files.map(url => fetch(url, { cache: 'no-store' })));
+      const results = await Promise.all(responses.map(res => res.json()));
+      const combined = results.flat();
+
+      state.dataSource = 'local-files';
       state.dataLoadedAt = new Date();
-      state.dishes = Array.isArray(data)
+      state.dishes = Array.isArray(combined)
         ? decorateDatasetWithUpdateMeta(
-            data.filter((item) => !('_menu' in item)),
+            combined.filter((item) => item && !('_menu' in item)),
             state.dataSource
           )
         : [];
       refreshViewData();
       setEditAvailability(false);
-      showToast('Показаны данные из файла. Для сохранения изменений запустите сервер API.', true);
+      showToast('Показаны данные из локальных файлов. Для сохранения изменений запустите сервер API.', true);
     } catch (fallbackError) {
       console.error(fallbackError);
       cardsContainer.innerHTML = '';
       resultsCount.textContent = '0 позиций';
       emptyState.style.display = 'block';
       setEditAvailability(false);
-      showToast('Не удалось загрузить данные.', true);
+      showToast('Не удалось загрузить данные (ошибка файлов).', true);
     }
   } finally {
     refreshBtn.disabled = false;

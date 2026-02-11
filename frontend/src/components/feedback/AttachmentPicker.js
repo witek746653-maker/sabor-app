@@ -1,5 +1,6 @@
 import React, { useRef, useState } from 'react';
 import ScreenshotCapture from './ScreenshotCapture';
+import { compressImage } from '../../utils/compressImage';
 import styles from './FeedbackWidget.module.css';
 
 /**
@@ -19,24 +20,40 @@ import styles from './FeedbackWidget.module.css';
 export default function AttachmentPicker({ attachments, onChange }) {
   const inputRef = useRef(null);
   const [reshootId, setReshootId] = useState('');
+  const [isCompressing, setIsCompressing] = useState(false);
 
-  const addFiles = (files, source) => {
-    const list = Array.from(files || []);
+  const addFiles = async (files, source) => {
+    setIsCompressing(true);
+    try {
+      const list = Array.from(files || []);
 
-    // Проверка размера (15МБ на один файл)
-    const tooBig = list.find(f => f.size > 15 * 1024 * 1024);
-    if (tooBig) {
-      alert(`Файл "${tooBig.name}" слишком большой. Пожалуйста, сожмите его или выберите другой.`);
-      return;
+      const processed = await Promise.all(
+        list.map(async (file) => {
+          // Если файл > 1MB, пробуем сжать
+          if (file.size > 1024 * 1024) {
+            return await compressImage(file);
+          }
+          return file;
+        })
+      );
+
+      // Проверка размера (теперь проверяем уже после сжатия, 10МБ - за глаза)
+      const tooBig = processed.find(f => f.size > 10 * 1024 * 1024);
+      if (tooBig) {
+        alert(`Файл "${tooBig.name}" всё еще слишком большой (>10MB) даже после сжатия.`);
+        return;
+      }
+
+      const next = processed.map((file) => ({
+        id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+        file,
+        previewUrl: URL.createObjectURL(file),
+        source,
+      }));
+      onChange([...attachments, ...next]);
+    } finally {
+      setIsCompressing(false);
     }
-
-    const next = list.map((file) => ({
-      id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
-      file,
-      previewUrl: URL.createObjectURL(file),
-      source,
-    }));
-    onChange([...attachments, ...next]);
   };
 
   const handleAttach = (e) => {
@@ -74,13 +91,21 @@ export default function AttachmentPicker({ attachments, onChange }) {
   return (
     <div className={styles.attachmentsBlock}>
       <div className={styles.attachmentButtons}>
-        <button className={styles.btn} type="button" onClick={() => inputRef.current?.click()}>
-          Прикрепить
+        <button
+          className={styles.btn}
+          type="button"
+          onClick={() => inputRef.current?.click()}
+          disabled={isCompressing}
+        >
+          {isCompressing ? 'Сжатие...' : 'Прикрепить'}
         </button>
-        <ScreenshotCapture onAdd={handleScreenshotAdd} />
+        <ScreenshotCapture
+          onAdd={handleScreenshotAdd}
+          disabled={isCompressing}
+        />
         {!canCapture && (
           <div className={styles.mobileHint}>
-            Можно прикрепить скриншот из галереи
+            {isCompressing ? 'Обработка изображения...' : 'Можно прикрепить скриншот из галереи'}
           </div>
         )}
         <input
