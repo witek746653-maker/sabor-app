@@ -71,48 +71,29 @@ function SshArgs() {
 
 $CommonSshArgs = @(SshArgs)
 
-Info "Check Split JSON files (data/)"
-$menuFiles = @("menu-kitchen.json", "menu-wine.json", "menu-bar.json", "menu-tea.json")
-$publicDataDir = Join-Path $PSScriptRoot "frontend\public\data"
-if (!(Test-Path $publicDataDir)) {
-  New-Item -ItemType Directory -Path $publicDataDir | Out-Null
-}
-
-foreach ($f in $menuFiles) {
-  $path = Join-Path $PSScriptRoot "data\$f"
-  if (Test-Path $path) {
-    # Validate JSON
-    Run "node" @("-e", "const fs=require('fs'); JSON.parse(fs.readFileSync('$($path.Replace('\','/'))','utf8')); console.log('OK: $f');")
-    # Sync to frontend/public for fallback
-    Copy-Item -Force $path (Join-Path $publicDataDir $f)
-  }
-  else {
-    Write-Host "Warning: $f not found" -ForegroundColor Yellow
+Info "Syncing Resources (Root -> Frontend Public)"
+function Sync-Folder($Src, $Dest) {
+  if (Test-Path $Src) {
+    if (!(Test-Path $Dest)) { New-Item -ItemType Directory -Path $Dest | Out-Null }
+    Write-Host "  [Sync] $Src -> $Dest" -ForegroundColor Gray
+    Copy-Item -Force -Recurse (Join-Path $Src "*") $Dest
   }
 }
 
-Info "Sync images into frontend/public"
-$sourceImages = Join-Path $PSScriptRoot "images"
-$publicImagesDir = Join-Path $PSScriptRoot "frontend\public\images"
-if (Test-Path $sourceImages) {
-  if (!(Test-Path $publicImagesDir)) {
-    New-Item -ItemType Directory -Path $publicImagesDir | Out-Null
-  }
-  Copy-Item -Force -Recurse (Join-Path $sourceImages "*") $publicImagesDir
-}
+# 1. JSON-Данные (из корня /data)
+Sync-Folder (Join-Path $PSScriptRoot "data") (Join-Path $PSScriptRoot "frontend\public\data")
 
-Info "Sync content into frontend/public (legacy check)"
-$sourceContent = Join-Path $PSScriptRoot "content"
-if (Test-Path $sourceContent) {
-  $publicContentDir = Join-Path $PSScriptRoot "frontend\public\content"
-  if (!(Test-Path $publicContentDir)) {
-    New-Item -ItemType Directory -Path $publicContentDir | Out-Null
-  }
-  Copy-Item -Force -Recurse (Join-Path $sourceContent "*") $publicContentDir
-}
-else {
-  Write-Host "Skipping content sync: 'content' folder no longer exists." -ForegroundColor Gray
-}
+# 2. Изображения (из корня /images)
+Sync-Folder (Join-Path $PSScriptRoot "images") (Join-Path $PSScriptRoot "frontend\public\images")
+
+# 3. Аудио (из корня /audio)
+Sync-Folder (Join-Path $PSScriptRoot "audio") (Join-Path $PSScriptRoot "frontend\public\audio")
+
+# 4. Иконки (из корня /icons)
+Sync-Folder (Join-Path $PSScriptRoot "icons") (Join-Path $PSScriptRoot "frontend\public\icons")
+
+# 5. Контент (из корня /content)
+Sync-Folder (Join-Path $PSScriptRoot "content") (Join-Path $PSScriptRoot "frontend\public\content")
 
 if (-not $SkipBuild) {
   Info "Build frontend (npm run build)"

@@ -1,18 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import cardBg from '../../assets/card-bg.webp';
 
 
 function CardBack({ dish, onAnswer }) {
     const [isPlaying, setIsPlaying] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
-    const isDetailed = dish.mode === 'composition' || dish.mode === 'allergens' || dish.mode === 'vocabulary' || dish.mode === 'characteristics';
+    const isDetailed = dish.mode === 'composition' || dish.mode === 'allergens' || dish.mode === 'vocabulary' || dish.mode === 'characteristics' || dish.mode === 'qa';
     const isEn = dish.lang === 'EN';
 
+    // Автовоспроизведение аудио при открытии
+    useEffect(() => {
+        if (dish.audioBack) {
+            const audio = new Audio(dish.audioBack);
+            audio.play().catch(e => console.warn("Autoplay blocked:", e));
+        }
+    }, [dish.id, dish.audioBack]);
+
     const handlePlay = (e) => {
-        if (!dish.audioUrl || isPlaying) return;
+        const audioUrl = dish.audioBack || dish.audioUrl;
+        if (!audioUrl || isPlaying) return;
         e.stopPropagation();
 
-        const audio = new Audio(dish.audioUrl);
+        const audio = new Audio(audioUrl);
         audio.onplay = () => setIsPlaying(true);
         audio.onended = () => setIsPlaying(false);
         audio.onerror = () => setIsPlaying(false);
@@ -37,7 +46,7 @@ function CardBack({ dish, onAnswer }) {
 
     return (
         <div
-            className="w-full flex flex-col h-full max-h-[85vh] bg-[#0d1f17] rounded-[2rem] overflow-hidden shadow-[0_30px_60px_-12px_rgba(0,0,0,0.8)] border border-[#1a3329]/50 relative"
+            className="w-full flex flex-col h-full max-h-[82vh] bg-[#0d1f17] rounded-[2rem] overflow-hidden shadow-[0_30px_60px_-12px_rgba(0,0,0,0.8)] border border-[#1a3329]/50 relative"
             style={{
                 backgroundImage: `linear-gradient(rgba(10, 24, 18, 0.7), rgba(10, 24, 18, 0.85)), url("${cardBg}")`,
                 backgroundSize: '300px',
@@ -63,13 +72,16 @@ function CardBack({ dish, onAnswer }) {
             {isDetailed ? (
                 // LAYOUT 2: COMPOSITION / ALLERGENS (Compact Header)
                 <>
-                    {/* Compact Header */}
-                    <div className="flex items-center gap-4 p-6 shrink-0 z-10 border-b border-white/5">
+                    <div className="flex items-center gap-4 p-4 shrink-0 z-10 border-b border-white/5">
                         <div
-                            className={`w-16 h-16 rounded-full overflow-hidden shrink-0 border border-white/10 shadow-lg cursor-zoom-in active:scale-95 transition-transform ${(dish.menu === 'Вино' || dish.menu === 'Винная карта') ? 'bg-white/5' : ''}`}
-                            onClick={() => setIsExpanded(true)}
+                            className={`w-16 h-16 rounded-full flex items-center justify-center shrink-0 border border-white/10 shadow-lg transition-transform ${dish.mode === 'qa' ? 'bg-[#19e66b]/10' : (dish.menu === 'Вино' || dish.menu === 'Винная карта') ? 'bg-white/5' : ''}`}
+                            onClick={(dish.imageBack || dish.image) ? (dish.mode !== 'qa' || dish.imageBack ? () => setIsExpanded(true) : undefined) : undefined}
                         >
-                            <img alt={title} className={`w-full h-full ${(dish.menu === 'Вино' || dish.menu === 'Винная карта') ? 'object-contain p-1' : 'object-cover'}`} src={dish.image} />
+                            {dish.mode === 'qa' && !dish.imageBack ? (
+                                <span className="material-symbols-outlined text-[#19e66b] text-3xl">quiz</span>
+                            ) : (
+                                (dish.image || dish.imageBack) && <img alt={title} className={`w-full h-full ${(dish.menu === 'Вино' || dish.menu === 'Винная карта') ? 'object-contain p-1' : 'object-cover'}`} src={dish.imageBack || dish.image} />
+                            )}
                         </div>
                         <div className="flex flex-col">
                             <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-[#19e66b]/60 mb-0.5">
@@ -90,7 +102,7 @@ function CardBack({ dish, onAnswer }) {
                     </div>
 
                     {/* Main Content: Perfectly Centered */}
-                    <div className="flex-1 flex flex-col items-center justify-center p-6 text-center z-10">
+                    <div className={`flex-1 flex flex-col items-center ${dish.mode === 'qa' ? 'justify-start pt-4' : 'justify-center'} p-6 text-center z-10 overflow-hidden`}>
                         {dish.mode === 'allergens' && (
                             <div className="flex flex-col items-center gap-4 w-full">
                                 <span className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em]">Особенности и аллергены</span>
@@ -216,6 +228,29 @@ function CardBack({ dish, onAnswer }) {
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+                        )}
+                        {dish.mode === 'qa' && (
+                            <div className="flex flex-col items-center gap-2 w-full px-6 overflow-hidden">
+                                <span className="text-[10px] font-bold text-[#19e66b]/60 uppercase tracking-[0.2em] mb-1">Ответ</span>
+                                {Array.isArray(dish.description) ? (
+                                    <div className="flex flex-col gap-3 w-full text-left overflow-y-auto max-h-[calc(82vh-230px)] pr-2 custom-scrollbar trainer-qa-content">
+                                        {dish.description.map((item, idx) => (
+                                            <div key={idx} className="flex gap-3 text-sm leading-relaxed">
+                                                <span className="text-[#19e66b] font-bold shrink-0">•</span>
+                                                <span
+                                                    className="text-white/90"
+                                                    dangerouslySetInnerHTML={{ __html: item }}
+                                                />
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div
+                                        className="text-base text-white/90 font-medium leading-relaxed text-center trainer-qa-content"
+                                        dangerouslySetInnerHTML={{ __html: description }}
+                                    />
+                                )}
                             </div>
                         )}
                     </div>

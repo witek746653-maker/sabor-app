@@ -11,6 +11,7 @@ const MENU_PATHS = {
   'bar': '/data/menu-bar.json',
   'wine': '/data/menu-wine.json',
   'tea': '/data/menu-tea.json',
+  'general': '/data/questions-general.json',
   'english': [
     '/data/menu-kitchen.json',
     '/data/menu-bar.json',
@@ -27,7 +28,8 @@ const MENU_FILTERS = {
   'season': ['Зимнее меню', 'Постное меню'],
   'bar': ['Барное меню'],
   'wine': ['Вино'],
-  'tea': ['Чай']
+  'tea': ['Чай'],
+  'general': ['Сервис и знания']
 };
 
 const MENU_NAMES = {
@@ -40,6 +42,7 @@ const MENU_NAMES = {
   'wine': 'Винная карта',
   'bar': 'Коктейли',
   'tea': 'Чай',
+  'general': 'Сервис и знания',
   'english': 'English'
 };
 
@@ -65,8 +68,8 @@ export const loadMenuData = async (menuType) => {
 
     if (!Array.isArray(data)) return [];
 
-    // Фильтрация архивных позиций (только для тренажера)
-    data = data.filter(item => item && item.status !== 'в архиве');
+    // Фильтрация неактивных и архивных позиций
+    data = data.filter(item => item && item.status !== 'в архиве' && item.status !== 'неактивно');
 
     // Фильтрация по конкретному меню, если нужно
     if (MENU_FILTERS[menuType]) {
@@ -166,7 +169,13 @@ export const mapToTrainingFormat = (dish) => {
     // Пытаемся достать произношение из первой фразы (например, "Gavi — pronounced 'GAH-vee'")
     pronunciation: usefulPhrases[0]?.includes('pronounced')
       ? usefulPhrases[0].split('pronounced')[1].split(',')[0].replace(/['"]/g, '').trim()
-      : ''
+      : '',
+    // Новые медиа-поля для Q&A
+    imageFront: dish.imageFront || null,
+    audioFront: dish.audioFront || null,
+    imageBack: dish.imageBack || null,
+    audioBack: dish.audioBack || null,
+    hint: dish.hint || null
   };
 };
 
@@ -235,6 +244,8 @@ export const generateQuestion = (dish, mode, lang = 'RU') => {
       return `Назовите основные характеристики этого ${getTerm('gen')}?`;
     case 'vocabulary':
       return 'Полезная лексика и интересные факты';
+    case 'qa':
+      return section === 'Ассортимент' ? 'Вопрос по ассортименту' : 'Общий вопрос';
     default:
       return `Расскажите о ${getTerm('prep')}`;
   }

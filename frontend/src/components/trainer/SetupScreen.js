@@ -246,7 +246,7 @@ function SetupScreen({ onStart, onBack, initialConfig }) {
         </section>
 
         {/* 3. Блок Режим */}
-        <section className="pb-32">
+        <section>
           <h3 className="text-xl font-bold mb-4 px-1">Режим</h3>
           <div className="flex flex-col gap-2">
             {filteredModesOptions.map(mode => {
@@ -266,6 +266,24 @@ function SetupScreen({ onStart, onBack, initialConfig }) {
               );
             })}
           </div>
+        </section>
+
+        {/* 4. Специальная практика (Автономная) */}
+        <section className="pb-32">
+          <h3 className="text-xl font-bold mb-4 px-1 text-[#ff6b35]">Специальная практика</h3>
+          <button
+            onClick={() => onStart({ mode: 'qa', count: 20 })}
+            className="w-full flex items-center gap-4 p-4 rounded-2xl border-2 border-[#ff6b35]/30 bg-[#ff6b35]/5 active:scale-95 transition-all group"
+          >
+            <div className="size-10 rounded-xl bg-[#ff6b35]/20 text-[#ff6b35] flex items-center justify-center group-hover:scale-110 transition-transform">
+              <span className="material-symbols-outlined">quiz</span>
+            </div>
+            <div className="text-left flex-1">
+              <p className="font-bold text-sm tracking-tight">Общие знания и сервис</p>
+              <p className="text-[10px] text-white/40 font-bold uppercase tracking-widest">Автономный режим • 20 вопросов</p>
+            </div>
+            <span className="material-symbols-outlined text-[#ff6b35]/40 group-hover:text-[#ff6b35] transition-colors">arrow_forward_ios</span>
+          </button>
         </section>
       </main>
 

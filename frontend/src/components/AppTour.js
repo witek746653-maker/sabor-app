@@ -57,7 +57,7 @@ function AppTour({ isOpen, onClose, onThemeToggle, onToggleLoginModal }) {
         },
         {
             title: '❤️ Избранное',
-            description: 'Нажимай сердечко — позиция улетит в Избранное и больше не нужно искать.',
+            description: 'Нажимай сердечко — позиция улетит в Избранное и останется в твоём сердечке.',
             icon: 'favorite',
             gradient: 'from-red-500 to-rose-500',
             mode: 'spotlight',

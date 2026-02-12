@@ -11,6 +11,12 @@ const hasDataForMode = (dish, mode) => {
         case 'english': return !!dish.titleEn?.trim();
         case 'vocabulary': return dish.usefulPhrases?.length > 0 || dish.commentsEn?.length > 0;
         case 'characteristics': return !!dish.origin || !!dish.producer;
+        case 'qa':
+            const hasTitle = !!dish.title?.trim();
+            const hasDesc = Array.isArray(dish.description)
+                ? dish.description.length > 0
+                : !!dish.description?.trim();
+            return hasTitle && hasDesc;
         default: return true;
     }
 };
@@ -51,6 +57,8 @@ const getMissedInfo = (card, lang = 'RU') => {
             return 'Забыли факты или фразы';
         case 'characteristics':
             return 'Забыли характеристики вина';
+        case 'qa':
+            return 'Забыли ответ на вопрос';
         default:
             return 'Требует повторения';
     }

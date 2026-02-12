@@ -1,12 +1,22 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { generateQuestion } from '../../utils/menuDataLoader';
 import cardBg from '../../assets/card-bg.webp';
 
 
 function CardFace({ dish, onShowAnswer, progress }) {
+    const [showHint, setShowHint] = React.useState(false);
     const question = generateQuestion(dish, dish.mode, dish.lang);
-    const firstThreeWords = dish.title.split(' ').slice(0, 3).join(' ');
+    const firstThreeWords = dish.title?.split(' ').slice(0, 3).join(' ');
     const isEn = dish.lang === 'EN';
+
+    // Автовоспроизведение аудио при открытии
+    useEffect(() => {
+        if (dish.audioFront) {
+            const audio = new Audio(dish.audioFront);
+            audio.play().catch(e => console.warn("Autoplay blocked:", e));
+        }
+        setShowHint(false); // Сбрасываем подсказку при смене карточки
+    }, [dish.id, dish.audioFront]);
 
     return (
         <div
@@ -14,31 +24,59 @@ function CardFace({ dish, onShowAnswer, progress }) {
             style={{
                 backgroundImage: `linear-gradient(rgba(10, 24, 18, 0.7), rgba(10, 24, 18, 0.85)), url("${cardBg}")`,
                 backgroundSize: '300px',
-
                 backgroundRepeat: 'repeat'
             }}
         >
             {/* Image Section */}
-            <div
-                className={`w-full h-2/3 bg-center ${dish.menu === 'Винная карта' ||
+            {(dish.image || dish.imageFront) ? (
+                <div
+                    className={`w-full h-2/3 bg-center ${dish.menu === 'Винная карта' ||
                         dish.menu === 'Вино' ||
                         dish.section?.includes('Пиво')
                         ? 'bg-contain bg-no-repeat' : 'bg-cover'
-                    }`}
-                style={{
-                    backgroundImage: `url(${dish.image})`,
-                    maskImage: 'linear-gradient(to top, transparent 0%, black 30%)',
-                    WebkitMaskImage: 'linear-gradient(to top, transparent 0%, black 30%)'
-                }}
-            />
+                        }`}
+                    style={{
+                        backgroundImage: `url(${dish.imageFront || dish.image})`,
+                        maskImage: 'linear-gradient(to top, transparent 0%, black 30%)',
+                        WebkitMaskImage: 'linear-gradient(to top, transparent 0%, black 30%)'
+                    }}
+                />
+            ) : (
+                <div className="w-full h-1/3 flex items-center justify-center bg-[#1a3329]/10">
+                    <span className="material-symbols-outlined text-[#19e66b]/10 text-8xl">quiz</span>
+                </div>
+            )}
 
             {/* Content Section */}
-            <div className="flex-1 flex flex-col items-center justify-center p-6 gap-4">
-                <h1 className="text-2xl font-bold text-center tracking-tight text-white px-2">
-                    {question}
+            <div className="flex-1 flex flex-col items-center justify-center p-6 gap-4 relative">
+                {dish.mode !== 'qa' && (
+                    <p className="text-[10px] font-bold text-[#19e66b]/40 uppercase tracking-[0.2em]">{question}</p>
+                )}
+                <h1 className={`${dish.mode === 'qa' ? 'text-xl' : 'text-2xl'} font-bold text-center tracking-tight text-white px-2`}>
+                    {dish.mode === 'qa' ? dish.title : question}
                 </h1>
 
-                {dish.mode === 'description' && (
+                {/* Hint Logic */}
+                {dish.hint && (
+                    <div className="flex flex-col items-center gap-2">
+                        {!showHint ? (
+                            <button
+                                onClick={(e) => { e.stopPropagation(); setShowHint(true); }}
+                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 text-white/30 text-[10px] font-bold uppercase tracking-widest border border-white/10 active:scale-95 transition-all"
+                            >
+                                <span className="material-symbols-outlined text-sm">lightbulb</span>
+                                Подсказка
+                            </button>
+                        ) : (
+                            <div
+                                className="px-4 py-2 rounded-2xl bg-[#19e66b]/10 border border-[#19e66b]/20 text-[#19e66b] text-xs font-medium text-center animate-in fade-in zoom-in duration-300 trainer-qa-content"
+                                dangerouslySetInnerHTML={{ __html: dish.hint }}
+                            />
+                        )}
+                    </div>
+                )}
+
+                {dish.mode === 'description' && firstThreeWords && (
                     <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#1a3329]/30 text-[#19e66b]/80 text-sm font-medium border border-[#1a3329]/50">
                         <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>lightbulb</span>
                         {firstThreeWords}...

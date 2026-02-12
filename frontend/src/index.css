@@ -254,7 +254,11 @@ html.dark .aurora-bg {
 }
 
 .trainer-contains-content strong,
-.trainer-features-content strong {
+.trainer-features-content strong,
+.trainer-contains-content b,
+.trainer-features-content b,
+.trainer-qa-content b,
+.trainer-qa-content strong {
   color: #19e66b;
   font-weight: 800;
 }

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useIntervalTraining } from '../hooks/useIntervalTraining';
-import { loadSelectedMenus, filterByCategory } from '../utils/menuDataLoader';
+import { loadSelectedMenus, filterByCategory, loadMenuData, mapToTrainingFormat } from '../utils/menuDataLoader';
 import SetupScreen from '../components/trainer/SetupScreen';
 import TrainingCard from '../components/trainer/TrainingCard';
 import FinishScreen from '../components/trainer/FinishScreen';
@@ -79,21 +79,27 @@ function IntervalTrainer() {
         setScreen('loading');
         setLastConfig(setupConfig);
 
-        const allDishes = await loadSelectedMenus(setupConfig.menus);
-        let filtered = filterByCategory(allDishes, setupConfig.category);
+        let filtered = [];
+        if (setupConfig.mode === 'qa') {
+            // АВТОНОМНЫЙ РЕЖИМ: грузим только общие вопросы
+            const data = await loadMenuData('general');
+            filtered = data.map(mapToTrainingFormat);
+        } else {
+            // СТАНДАРТНЫЙ РЕЖИМ: фильтрация по меню и категориям
+            const allDishes = await loadSelectedMenus(setupConfig.menus);
+            filtered = filterByCategory(allDishes, setupConfig.category);
 
-        // Умная фильтрация по режимам
-        if (setupConfig.mode === 'characteristics') {
-            // В режиме характеристик показываем только вино
-            filtered = filtered.filter(d => d.menu === 'Вино' || d.menu === 'Винная карта');
-        } else if (setupConfig.mode === 'composition') {
-            // В режиме состава пропускаем вино (у него нет ингредиентов)
-            filtered = filtered.filter(d => d.menu !== 'Вино' && d.menu !== 'Винная карта');
+            // Умная фильтрация по режимам
+            if (setupConfig.mode === 'characteristics') {
+                filtered = filtered.filter(d => d.menu === 'Вино' || d.menu === 'Винная карта');
+            } else if (setupConfig.mode === 'composition') {
+                filtered = filtered.filter(d => d.menu !== 'Вино' && d.menu !== 'Винная карта');
+            }
         }
 
         const isEnglishMode = setupConfig.mode === 'english';
         const isEnglishMenuOnly = setupConfig.menus?.length === 1 && setupConfig.menus[0] === 'english';
-        const lang = (isEnglishMode || isEnglishMenuOnly) ? 'EN' : 'RU';
+        const lang = (isEnglishMode || (setupConfig.menus && isEnglishMenuOnly)) ? 'EN' : 'RU';
         setSessionLang(lang);
 
         initializeDeck(filtered, setupConfig.count, setupConfig.mode, setupConfig);
