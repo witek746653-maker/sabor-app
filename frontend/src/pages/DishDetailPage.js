@@ -159,7 +159,12 @@ function DishDetailPage({ mode }) {
       }
       return Array.isArray(allergensEn) ? allergensEn : [];
     }
-    return dish.allergens || [];
+
+    const raw = dish.allergens;
+    if (typeof raw === 'string') {
+      return raw.split(',').map(a => a.trim()).filter(Boolean);
+    }
+    return Array.isArray(raw) ? raw : [];
   };
 
   // Функция для подсветки текста при поиске
