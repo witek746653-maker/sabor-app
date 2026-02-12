@@ -489,24 +489,10 @@ function WineCatalogPage() {
   };
 
   const handleAudioPlay = (wine) => {
-    const audioPath = wine?.i18n?.en?.['audio-en'];
     const API_URL = process.env.REACT_APP_API_URL || '';
 
-    let audioUrl;
-    if (audioPath) {
-      const normalizedPath = String(audioPath).trim().replace(/%20/g, '-').replace(/\s+/g, '-');
-      if (normalizedPath.startsWith('../audio/')) {
-        audioUrl = `${API_URL}/audio/${normalizedPath.replace('../audio/', '')}`;
-      } else if (normalizedPath.startsWith('/audio/')) {
-        audioUrl = `${API_URL}/audio/${normalizedPath.replace('/audio/', '')}`;
-      } else if (normalizedPath.startsWith('audio/')) {
-        audioUrl = `${API_URL}/audio/${normalizedPath.replace('audio/', '')}`;
-      } else {
-        audioUrl = normalizedPath.startsWith('http') ? normalizedPath : `/${normalizedPath}`;
-      }
-    } else {
-      audioUrl = `${API_URL}/audio/wine/${wine.id}.mp3`;
-    }
+    // Всегда используем ID вина для пути к аудио, так как файлы переименованы в {id}.mp3
+    const audioUrl = `${API_URL}/audio/wine/${wine.id}.mp3`;
 
     const audio = new Audio(audioUrl);
     audio.play().catch(err => console.error('Audio play error:', { url: audioUrl, err }));
