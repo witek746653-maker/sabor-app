@@ -87,7 +87,16 @@ foreach ($f in $menuFiles) {
         Copy-Item -Force $path (Join-Path $publicDataDir $f)
     } else {
         Write-Host "Warning: $f not found" -ForegroundColor Yellow
+}
+
+Info "Sync images into frontend/public"
+$sourceImages = Join-Path $PSScriptRoot "images"
+$publicImagesDir = Join-Path $PSScriptRoot "frontend\public\images"
+if (Test-Path $sourceImages) {
+    if (!(Test-Path $publicImagesDir)) {
+      New-Item -ItemType Directory -Path $publicImagesDir | Out-Null
     }
+    Copy-Item -Force -Recurse (Join-Path $sourceImages "*") $publicImagesDir
 }
 
 Info "Sync content into frontend/public (legacy check)"

@@ -415,7 +415,7 @@ function InfoPage() {
               )}
             </div>
             <button
-              onClick={() => setShowPdfModal(false)}
+              onClick={() => setSelectedPdfTool(null)}
               className="mt-4 w-full py-2 px-4 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors text-[#181311] dark:text-white font-medium"
             >
               Отмена

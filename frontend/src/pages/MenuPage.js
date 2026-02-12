@@ -37,6 +37,23 @@ function MenuPage({ mode }) {
   const menuFiltersStorageKey = `menuFilters:${mode === 'tea' ? 'tea' : (menuName || 'all')}`;
   const [filtersLoaded, setFiltersLoaded] = useState(false);
 
+  // Словарь для автоперевода фильтров
+  const RU_TO_EN = {
+    'цитрусы': 'citrus', 'специи': 'spices', 'орехи': 'nuts', 'лактоза': 'lactose',
+    'глютен': 'gluten', 'яйца': 'eggs', 'рыба': 'fish', 'морепродукты': 'seafood',
+    'алкоголь': 'alcohol', 'грибы': 'mushrooms', 'мёд': 'honey', 'чеснок': 'garlic',
+    'лук': 'onion', 'кинза': 'cilantro', 'зелень': 'herbs', 'острый': 'spicy',
+    'веган': 'vegan', 'вегетарианский': 'vegetarian', 'белый чай': 'white tea',
+    'зелёный чай': 'green tea', 'чёрный чай': 'black tea', 'улун': 'oolong',
+    'пуэр': 'pu-erh', 'травяной чай': 'herbal tea', 'без кофеина': 'caffeine-free'
+  };
+
+  const translateTerm = (term) => {
+    if (!term || language !== 'EN') return term;
+    const key = String(term).toLowerCase().trim();
+    return RU_TO_EN[key] || term;
+  };
+
   // Функция для воспроизведения аудио (Pronunciation)
   const handleAudioPlay = (dish) => {
     // Блокировка аудио для гостей
@@ -368,39 +385,38 @@ function MenuPage({ mode }) {
 
   // Функция для получения тегов в зависимости от языка
   const getTagsForLanguage = (dish) => {
+    let list = [];
     if (language === 'EN' && dish.i18n?.en?.['tags-en']) {
       const tagsEn = dish.i18n.en['tags-en'];
-      if (typeof tagsEn === 'string') {
-        return tagsEn.split(',').map(t => t.trim()).filter(Boolean);
-      }
-      return Array.isArray(tagsEn) ? tagsEn : [];
+      list = typeof tagsEn === 'string' ? tagsEn.split(',').map(t => t.trim()) : (Array.isArray(tagsEn) ? tagsEn : []);
+    } else {
+      list = dish.tags || [];
     }
-    return dish.tags || [];
+    return list.map(t => translateTerm(t)).filter(Boolean);
   };
 
   // Функция для получения аллергенов в зависимости от языка
   const getAllergensForLanguage = (dish) => {
+    let list = [];
     if (language === 'EN' && dish.i18n?.en?.['allergens-en']) {
       const allergensEn = dish.i18n.en['allergens-en'];
-      if (typeof allergensEn === 'string') {
-        return allergensEn.split(',').map(a => a.trim()).filter(Boolean);
-      }
-      return Array.isArray(allergensEn) ? allergensEn : [];
+      list = typeof allergensEn === 'string' ? allergensEn.split(',').map(a => a.trim()) : (Array.isArray(allergensEn) ? allergensEn : []);
+    } else {
+      const raw = dish.allergens;
+      list = typeof raw === 'string' ? raw.split(',').map(a => a.trim()) : (Array.isArray(raw) ? raw : []);
     }
-
-    const raw = dish.allergens;
-    if (typeof raw === 'string') {
-      return raw.split(',').map(a => a.trim()).filter(Boolean);
-    }
-    return Array.isArray(raw) ? raw : [];
+    return list.map(a => translateTerm(a)).filter(Boolean);
   };
 
   // Получаем все уникальные аллергены и теги из блюд (с учетом языка)
   // Если показываем избранное, используем все блюда, иначе только из текущего меню
   const visibleAllDishes = allDishes.filter((dish) => isContentVisible(dish));
   const dishesForFilters = showFavorites ? visibleAllDishes : dishes;
-  const allAllergens = [...new Set(dishesForFilters.flatMap(d => getAllergensForLanguage(d)))].filter(Boolean);
-  const allTags = [...new Set(dishesForFilters.flatMap(d => getTagsForLanguage(d)))].filter(Boolean);
+  const availableAllergens = [...new Set(dishesForFilters.flatMap(d => getAllergensForLanguage(d)))].filter(Boolean);
+  const allAllergens = [...new Set([...availableAllergens, ...selectedAllergens])].sort();
+
+  const availableTags = [...new Set(dishesForFilters.flatMap(d => getTagsForLanguage(d)))].filter(Boolean);
+  const allTags = [...new Set([...availableTags, ...selectedTags])].sort();
 
   // Фильтруем блюда с учетом избранного
   // Если показываем избранное, берем все блюда из всех меню, иначе только из текущего меню
@@ -595,6 +611,10 @@ function MenuPage({ mode }) {
                   const newLanguage = language === 'RU' ? 'EN' : 'RU';
                   setLanguage(newLanguage);
                   localStorage.setItem('menuLanguage', newLanguage);
+                  // Сбрасываем фильтры при смене языка для чистоты данных
+                  setSelectedAllergens([]);
+                  setSelectedTags([]);
+                  setSearchQuery('');
                 }}
                 className={`text-xs font-bold leading-normal tracking-[0.015em] shrink-0 border rounded-lg px-2 py-1 transition-colors ${language === 'EN'
                   ? 'bg-primary text-white border-primary'
@@ -742,6 +762,17 @@ function MenuPage({ mode }) {
               className="absolute top-full left-4 right-4 mt-1 bg-white dark:bg-surface-dark rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 z-50 max-h-64 overflow-y-auto p-2"
               onClick={(e) => e.stopPropagation()}
             >
+              <div className="flex justify-between items-center px-2 pb-2 mb-2 border-b border-gray-100 dark:border-gray-800">
+                <span className="text-[10px] uppercase font-bold text-gray-400">{language === 'EN' ? 'Allergens' : 'Аллергены'}</span>
+                {selectedAllergens.length > 0 && (
+                  <button
+                    onClick={() => setSelectedAllergens([])}
+                    className="text-[10px] font-bold text-primary hover:underline"
+                  >
+                    {language === 'EN' ? 'Reset' : 'Сбросить'}
+                  </button>
+                )}
+              </div>
               <div className="grid grid-cols-2 gap-1">
                 {allAllergens.map((allergen) => {
                   const isSelected = selectedAllergens.includes(allergen);
@@ -775,6 +806,17 @@ function MenuPage({ mode }) {
               className="absolute top-full left-4 right-4 mt-1 bg-white dark:bg-surface-dark rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 z-50 max-h-64 overflow-y-auto p-2"
               onClick={(e) => e.stopPropagation()}
             >
+              <div className="flex justify-between items-center px-2 pb-2 mb-2 border-b border-gray-100 dark:border-gray-800">
+                <span className="text-[10px] uppercase font-bold text-gray-400">{language === 'EN' ? 'Tags' : 'Теги'}</span>
+                {selectedTags.length > 0 && (
+                  <button
+                    onClick={() => setSelectedTags([])}
+                    className="text-[10px] font-bold text-primary hover:underline"
+                  >
+                    {language === 'EN' ? 'Reset' : 'Сбросить'}
+                  </button>
+                )}
+              </div>
               <div className="grid grid-cols-2 gap-1">
                 {allTags.map((tag) => {
                   const isSelected = selectedTags.includes(tag);
@@ -830,8 +872,24 @@ function MenuPage({ mode }) {
         </div>
         <div className="grid grid-cols-3 gap-2">
           {filteredDishes.length === 0 ? (
-            <div className="col-span-3 text-center py-8 text-[#896f61] dark:text-gray-400">
-              {language === 'EN' ? 'No dishes found' : 'Блюда не найдены'}
+            <div className="col-span-3 text-center py-12 px-4 flex flex-col items-center justify-center">
+              <span className="material-symbols-outlined text-gray-300 text-5xl mb-3">search_off</span>
+              <p className="text-sm font-medium text-[#896f61] dark:text-gray-400 mb-4">
+                {language === 'EN' ? 'No dishes found matching your filters' : 'Блюда не найдены по вашим фильтрам'}
+              </p>
+              {(selectedAllergens.length > 0 || selectedTags.length > 0 || selectedSection !== 'all' || searchQuery) && (
+                <button
+                  onClick={() => {
+                    setSelectedAllergens([]);
+                    setSelectedTags([]);
+                    setSelectedSection('all');
+                    setSearchQuery('');
+                  }}
+                  className="px-4 py-2 bg-primary/10 text-primary text-xs font-bold rounded-lg hover:bg-primary/20 transition-colors"
+                >
+                  {language === 'EN' ? 'Clear all filters' : 'Сбросить все фильтры'}
+                </button>
+              )}
             </div>
           ) : (
             filteredDishes.map((dish) => {
