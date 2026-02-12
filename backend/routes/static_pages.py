@@ -74,9 +74,16 @@ def serve_image(filename):
 @bp.route('/audio/<path:filename>')
 def serve_audio(filename):
     try:
+        # 1. Сначала ищем в сборке фронтенда (для продакшена)
+        build_audio_dir = Config.FRONTEND_BUILD_DIR / "audio"
+        if build_audio_dir.exists() and (build_audio_dir / filename).exists():
+            return send_from_directory(str(build_audio_dir), filename)
+
+        # 2. Затем ищем в папке audio в корне (для локальной разработки или если вынесено отдельно)
         audio_file = Config.AUDIO_DIR / filename
         if Config.AUDIO_DIR.exists() and audio_file.exists() and audio_file.is_file():
             return send_from_directory(str(audio_file.parent), audio_file.name)
+            
         return jsonify({'error': f'Audio file not found: {filename}'}), 404
     except Exception as e:
         return jsonify({'error': str(e)}), 500
