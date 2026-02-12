@@ -605,7 +605,7 @@
     "menu": "Вино",
     "section": "Бокальные позиции — Розовые вина",
     "category": "by-glass",
-    "title": "Reserve de Perly Rose d'Anjou (полусладкое)",
+    "title": "Reserve de Perly Rose d'Anjou",
     "description": "Лёгкое полусладкое розе из Анжу, имеющее малиново‑розовый цвет и мягкий, окутывающий вкус с освежающей кислотностью и сладковатыми тонами красных ягод и фруктов; аромат раскрывает нотки малины, клубники и крыжовника с лёгкой пряностью.",
     "features": "Нежный аромат малины, клубники, крыжовника и пряностей; вкус мягкий, со сладковатыми тонами красных ягод, сбалансированный свежей кислотностью и шёлковистой текстурой; пряный финиш.",
     "origin": "Франция, Долина Луары.",
@@ -1725,97 +1725,6 @@
   },
   {
     "id": "0627",
-    "status": "актуально",
-    "menu": "Вино",
-    "section": "Безалкогольные вина",
-    "category": "non-alcoholic",
-    "title": "Convivi Milano Bianco",
-    "description": "Итальянский безалкогольный напиток (инфузия) на основе виноградного сока, средиземноморских цитрусов и трав. Обладает свежим вкусом с нотками миндаля и пряностей.",
-    "features": "100% натуральные ингредиенты, без добавленного сахара, сделано в Италии.",
-    "origin": "Италия, Милан.",
-    "region": "Ломбардия",
-    "producer": "Convivi",
-    "grapeVarieties": [
-      "Grape Juice",
-      "Herbal Infusion"
-    ],
-    "tags": [
-      "Италия",
-      "безалкгольное",
-      "аперитив"
-    ],
-    "sweetness": "сухое",
-    "alcoholContent": "0.0%",
-    "comments": [
-      "Холодная инфузия трав более 30 дней."
-    ],
-    "pairings": {
-      "dishes": [
-        "аперитив",
-        "легкие закуски"
-      ]
-    },
-    "image": {
-      "src": "../images/wine/convivi-na.webp",
-      "alt": "Convivi"
-    },
-    "i18n": {
-      "en": {
-        "title-en": "Convivi Milano Bianco (Non-Alcoholic)",
-        "tags-en": "Italy, non-alcoholic, aperitif",
-        "audio-en": "../audio/wine/0627.mp3"
-      }
-    }
-  },
-  {
-    "id": "0628",
-    "status": "актуально",
-    "menu": "Вино",
-    "section": "Безалкогольные вина",
-    "category": "non-alcoholic",
-    "title": "Le Grand Noir Grenache Blanc-Chardonnay",
-    "description": "Освежающее безалкогольное белое вино из Лангедока. Обладает ярким ароматом лимона, лайма, дыни и ананаса. Во вкусе свежее и сбалансированное, с приятной кислинкой.",
-    "features": "Аромат цитрусовых и тропических фруктов; легкое тело, сухой профиль (13 г/л сахара).",
-    "origin": "Франция, Лангедок-Руссильон.",
-    "region": "Лангедок-Руссильон",
-    "producer": "Les Celliers Jean d'Alibert",
-    "grapeVarieties": [
-      "Grenache Blanc",
-      "Chardonnay",
-      "Viognier"
-    ],
-    "tags": [
-      "Франция",
-      "белое",
-      "безалкогольное",
-      "легкое"
-    ],
-    "sweetness": "сухое",
-    "alcoholContent": "0.0%",
-    "comments": [
-      "Произведено методом вакуумной дистилляции."
-    ],
-    "pairings": {
-      "dishes": [
-        "морепродукты",
-        "салаты",
-        "курица"
-      ]
-    },
-    "image": {
-      "src": "../images/wine/le-grand-noir-na.webp",
-      "alt": "Le Grand Noir"
-    },
-    "i18n": {
-      "en": {
-        "title-en": "Le Grand Noir (Non-Alcoholic)",
-        "tags-en": "France, white, non-alcoholic",
-        "audio-en": "../audio/wine/0628.mp3"
-      }
-    }
-  },
-  {
-    "id": "0629",
     "status": "в архиве",
     "menu": "Вино",
     "section": "Полубутылки (375 мл) — Красные вина",
@@ -1872,7 +1781,7 @@
         "contains-en": "",
         "allergens-en": "",
         "tags-en": "France, dry, red, full-bodied, tannic",
-        "audio-en": "../audio/wine/0629.mp3",
+        "audio-en": "../audio/wine/0627.mp3",
         "comments-en": "The wine is produced from young vines (6–15 years) of Château d'Angludet estate; aged in oak and ready to drink young, but has aging potential.",
         "useful phrases & words": [
           "Margaux — pronounced 'mahr-GOH', prestigious Bordeaux appellation",
@@ -1886,7 +1795,7 @@
     }
   },
   {
-    "id": "0630",
+    "id": "0628",
     "status": "актуально",
     "menu": "Вино",
     "section": "Coravin — Розовые вина",
@@ -1940,7 +1849,7 @@
         "contains-en": "",
         "allergens-en": "",
         "tags-en": "France, dry, rosé, full-bodied, aperitif",
-        "audio-en": "../audio/wine/0630.mp3",
+        "audio-en": "../audio/wine/0628.mp3",
         "comments-en": "Tavel is the only dry rosé appellation in the Rhône Valley; the blend consists of Grenache, Cinsault, Cleret, Syrah, and other varieties.",
         "useful phrases & words": [
           "Tavel — pronounced 'tah-VEHL', prestigious rosé appellation in Rhône Valley",
@@ -1954,12 +1863,12 @@
     }
   },
   {
-    "id": "0631",
+    "id": "0629",
     "status": "актуально",
     "menu": "Вино",
     "section": "Полубутылки (375 мл) — Белые вина",
     "category": "half-bottles",
-    "title": "Brolettino Lugana, Ca dei Frati (полусухое)",
+    "title": "Brolettino Lugana, Ca dei Frati",
     "description": "Роскошное белое вино из Ломбардии с ярко‑жёлтым цветом; в аромате спелый персик, жёлтое яблоко, розовые лепестки и свежие бальзамические нотки; вкус свежий, элегантный и солоноватый с долгим финишем; с возрастом появляются тона сена, ванили и миндаля.",
     "features": "Ароматы спелых персиков, жёлтых яблок, розовых лепестков, сена и ванили; вкус свежий, минеральный, с солоноватой ноткой и длинным, элегантным послевкусием.",
     "origin": "Италия, Венето (апелласьон Лугана).",
@@ -1975,7 +1884,7 @@
       "среднетелое",
       "аперитив"
     ],
-    "sweetness": "сухое",
+    "sweetness": "полусухое",
     "alcoholContent": null,
     "comments": [
       "Произведено из сорта Турбиана (Треббиано ди Лугана), выдерживается на осадке; развивается в бутылке, проявляя ореховые оттенки."
@@ -2006,7 +1915,7 @@
         "contains-en": "",
         "allergens-en": "",
         "tags-en": "Italy, dry, white, medium-bodied, aperitif",
-        "audio-en": "../audio/wine/0631.mp3",
+        "audio-en": "../audio/wine/0629.mp3",
         "comments-en": "Produced from the Turbiana (Trebbiano di Lugana) grape variety, aged on lees; develops in the bottle, showing nutty notes.",
         "useful phrases & words": [
           "Lugana — pronounced 'loo-GAH-nah', prestigious white wine region near Lake Garda",
@@ -2020,7 +1929,7 @@
     }
   },
   {
-    "id": "0632",
+    "id": "0630",
     "status": "в архиве",
     "menu": "Вино",
     "section": "Полубутылки (375 мл) — Красные вина",
@@ -2072,7 +1981,7 @@
         "contains-en": "",
         "allergens-en": "",
         "tags-en": "Italy, dry, red, full-bodied, tannic",
-        "audio-en": "../audio/wine/0632.mp3",
+        "audio-en": "../audio/wine/0630.mp3",
         "comments-en": "The wine is aged for about 18 months in French barriques and released in limited quantities; each bottle is numbered.",
         "useful phrases & words": [
           "Solare — pronounced 'soh-LAH-reh', premium Tuscan wine",
@@ -2086,7 +1995,7 @@
     }
   },
   {
-    "id": "0633",
+    "id": "0631",
     "status": "актуально",
     "menu": "Вино",
     "section": "Полубутылки (375 мл) — Красные вина",
@@ -2138,7 +2047,7 @@
         "contains-en": "",
         "allergens-en": "",
         "tags-en": "France, dry, red, light, soft",
-        "audio-en": "../audio/wine/0633.mp3",
+        "audio-en": "../audio/wine/0631.mp3",
         "comments-en": "The wine comes from the village of Thauvenay in Sancerre and demonstrates the classic Pinot Noir style of the Loire Valley.",
         "useful phrases & words": [
           "Sancerre Rouge — pronounced 'sahn-SEHR roozh', red wine from Sancerre (more famous for white)",
@@ -2152,7 +2061,7 @@
     }
   },
   {
-    "id": "0634",
+    "id": "0632",
     "status": "актуально",
     "menu": "Вино",
     "section": "Полубутылки (375 мл) — Белые вина",
@@ -2208,7 +2117,7 @@
         "contains-en": "",
         "allergens-en": "",
         "tags-en": "Italy, dry, white, light, aperitif",
-        "audio-en": "../audio/wine/0634.mp3",
+        "audio-en": "../audio/wine/0632.mp3",
         "comments-en": "The wine is made from vines over 60 years old of the Cortese variety; strict grape selection ensures a bright mineral character; aging develops notes of flint and nuts.",
         "useful phrases & words": [
           "Gavi dei Gavi — pronounced 'GAH-vee day GAH-vee', premium Gavi wine",
@@ -2222,7 +2131,7 @@
     }
   },
   {
-    "id": "0635",
+    "id": "0633",
     "status": "актуально",
     "menu": "Вино",
     "section": "Полубутылки (375 мл) — Шампанское",
@@ -2274,7 +2183,7 @@
         "contains-en": "",
         "allergens-en": "",
         "tags-en": "France, brut, white, aperitif",
-        "audio-en": "../audio/wine/0635.mp3",
+        "audio-en": "../audio/wine/0633.mp3",
         "comments-en": "Classic Champagne cuvée, aged on lees for at least 24 months; dosage around 8 g/l.",
         "useful phrases & words": [
           "Piper-Heidsieck — pronounced 'PEE-per HIDE-sik', prestigious Champagne house",
@@ -2288,7 +2197,7 @@
     }
   },
   {
-    "id": "0636",
+    "id": "0634",
     "status": "актуально",
     "menu": "Вино",
     "section": "Полубутылки (375 мл) — Красные вина",
@@ -2340,7 +2249,7 @@
         "contains-en": "",
         "allergens-en": "",
         "tags-en": "Italy, dry, red, light, soft",
-        "audio-en": "../audio/wine/0636.mp3",
+        "audio-en": "../audio/wine/0634.mp3",
         "comments-en": "A blend of traditional varieties Corvina, Rondinella, and Molinara; low residual sugar content (≈3.7 g/l).",
         "useful phrases & words": [
           "Valpolicella — pronounced 'vahl-poh-lee-CHEH-lah', classic Italian red wine region",
@@ -2350,6 +2259,128 @@
           "ideal for drinking young — best consumed within a few years",
           "Would you like to try our Valpolicella? It's light and pairs beautifully with pasta dishes."
         ]
+      }
+    }
+  },
+  {
+    "id": "0635",
+    "status": "актуально",
+    "menu": "Вино",
+    "section": "Безалкогольные вина",
+    "category": "non-alcoholic",
+    "title": "Convivi Merlot",
+    "description": "Это мягкое, фруктовое вино с освежающей кислотностью и пленительными ароматами малины, вишни и ежевики, переплетенными с выдержанными пряными нюансами. Благодаря щадящим методам удаления алкоголя оно сохраняет освежающую кислотность и выразительную фруктовость. ",
+    "features": "Convivi — линейка итальянских безалкогольных вин, созданных по классической технологии: они проходят все традиционные стадии винификации, а алкоголь удаляют настолько деликатно, что вкус и аромат сохраняют свою глубину и выразительность. Это отличный выбор для тех, кто по каким-либо причинам избегает алкоголя, но ценит ритуалы и хочет поддержать атмосферу за столом.",
+    "origin": "Италия, Фриули-Венеция-Джулия",
+    "region": "Фриули-Венеция-Джулия",
+    "producer": "Lea Winery",
+    "grapeVarieties": [
+      "Merlot (100%)"
+    ],
+    "tags": [
+      "Италия",
+      "безалкгольное",
+      "красное",
+      "сухое",
+      "фруктовое",
+      "мягкое"
+    ],
+    "sweetness": "сухое",
+    "alcoholContent": "< 0.5%",
+    "comments": [
+      "Для удаления алкоголя проводят мягкую мембранную фильтрацию (обратный осмос).",
+      "Выдержка в бочке 6 месяцев.",
+      "Бокальная позиция. Срок хранения после вскрытия бутылки всего 2-3 дня."
+    ],
+    "pairings": {
+      "dishes": [
+        "Мясные закуски (хамон, чоризо). ",
+        "Запечённые овощи и грибы"
+      ],
+      "notes": [
+        "Сочетается с мясными закусками, грибами, овощами на гриле и блюдами итальянской кухни."
+      ]
+    },
+    "reference_info": "<strong>Безалкогольное вино</strong> — это настоящее вино из винограда, которое сначала делают обычным способом (брожение), а затем удаляют алкоголь полностью или частично (strong>дезалкоголизация</strong>). Чаще всего в категории остаётся до ~0,5% об., реже встречается 0,0%. <p>Алкоголь в обычном вине даёт тело, “тепло”, округлость и длину вкуса. После удаления спирта часто ощущается: больше кислотности, меньше плотности и “объёма”, короче послевкусие, иногда лёгкая нота “компота/варёности” (если деалкоголизация была не очень щадящей).</p> <p>Лучше всего в безалкогольной версии часто звучат: ароматные белые, розе, игристые (кислотность и пузырьки помогают держать структуру). Сложнее всего — плотные красные с танинами: без спирта они чаще теряют баланс.</p>",
+    "image": {
+      "src": "../images/wine/vino-convivi -merlot.webp",
+      "alt": "Convivi"
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Wine",
+        "section-en": "Non-Alcoholic",
+        "title-en": "",
+        "description-en": "",
+        "contains-en": "",
+        "allergens-en": "",
+        "tags-en": "",
+        "audio-en": "../audio/wine/0635.mp3",
+        "comments-en": "",
+        "useful phrases & words": [
+          ""
+        ]
+      }
+    }
+  },
+  {
+    "id": "0636",
+    "status": "актуально",
+    "menu": "Вино",
+    "section": "Безалкогольные вина",
+    "category": "non-alcoholic",
+    "title": "Le Grand Noir Grenache Blanc-Chardonnay",
+    "description": "Безалкогольное вино Le Grand Noir Grenache Blanc-Chardonnay — гармоничный дуэт двух знаменитых французских сортов, рождённый под солнцем Лангедока. Этот напиток сохранил душу и характер классического белого вина, предлагая чистый вкус и свежесть в формате, подходящем для любого момента. Вино обладает мягким вкусом, который раскрывается спелыми нотами дыни, сочного ананаса и нежной сладостью абрикоса, создавая гармоничное и приятное послевкусие.",
+    "features": "Аромат цитрусовых и тропических фруктов; легкое тело, сухой профиль (13 г/л сахара).",
+    "origin": "Франция, Лангедок-Руссильон.",
+    "region": "Лангедок-Руссильон",
+    "producer": "Les Celliers Jean d'Alibert",
+    "grapeVarieties": [
+      "Grenache Blanc",
+      "Chardonnay"
+    ],
+    "tags": [
+      "Франция",
+      "белое",
+      "безалкогольное",
+      "легкое",
+      "сухое"
+    ],
+    "sweetness": "сухое",
+    "alcoholContent": "< 0,5%",
+    "comments": [
+      "Произведено методом вакуумной дистилляции.",
+      "Позиция доступна только в бутылках."
+    ],
+    "pairings": {
+      "dishes": [
+        "Свежие морепродукты и устрицы.",
+        "Рыба на пару или на гриле",
+        "Лёгкие закуски и овощные тарталетки."
+      ],
+      "notes": [
+        "Идеально в качестве аперитива или к лёгким блюдам."
+      ]
+    },
+    "reference_info": "<strong>Безалкогольное вино</strong> — это настоящее вино из винограда, которое сначала делают обычным способом (брожение), а затем удаляют алкоголь полностью или частично (strong>дезалкоголизация</strong>). Чаще всего в категории остаётся до ~0,5% об., реже встречается 0,0%. <p>Алкоголь в обычном вине даёт тело, “тепло”, округлость и длину вкуса. После удаления спирта часто ощущается: больше кислотности, меньше плотности и “объёма”, короче послевкусие, иногда лёгкая нота “компота/варёности” (если деалкоголизация была не очень щадящей).</p> <p>Лучше всего в безалкогольной версии часто звучат: ароматные белые, розе, игристые (кислотность и пузырьки помогают держать структуру). Сложнее всего — плотные красные с танинами: без спирта они чаще теряют баланс.</p>",
+    "image": {
+      "src": "../images/wine/vino-le-grand-noir-grenache-blanc-chardonnay.webp",
+      "alt": "Le Grand Noir Grenache Blanc-Chardonnay"
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Wine",
+        "section-en": "Non-Alcoholic",
+        "category-en": "Non-Alcoholic",
+        "title-en": "Le Grand Noir (Non-Alcoholic)",
+        "description-en": "Harmonious duet of two famous French varieties born under the sun of Languedoc-Roussillon. This drink has preserved the soul and character of a classic white wine, offering a fresh and crispy taste in a format suitable for any moment. The wine has a soft taste that unfolds with ripe notes of melon, juicy pineapple, and tender sweetness of apricot, creating a harmonious and pleasant aftertaste.",
+        "features-en": "",
+        "tags-en": "France, white, non-alcoholic, dry",
+        "comments-en": "Only in bottles. Not served by glass.",
+        "useful phrases & words": [
+          ""
+        ],
+        "audio-en": "../audio/wine/0636.mp3"
       }
     }
   }
