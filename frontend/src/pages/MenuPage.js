@@ -2,16 +2,21 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { getDishes } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../contexts/ToastContext';
 import { useVisibility } from '../contexts/VisibilityContext';
 import { getDishImageUrl } from '../utils/imageUtils';
 import { useFavorites } from '../contexts/FavoritesContext';
+import GuestBlocker from '../components/GuestBlocker';
 
 function MenuPage({ mode }) {
   const { menuName } = useParams();
   const navigate = useNavigate();
   const { isAuthenticated, currentUser, isGuest } = useAuth();
+  const toast = useToast();
   const { isVisible } = useVisibility();
   const { catalogIds } = useFavorites();
+  // Гость: заблокированы данные, фильтры, поиск, аудио
+  const guestBlocked = !isAuthenticated || isGuest;
   const [dishes, setDishes] = useState([]);
   const [allDishes, setAllDishes] = useState([]); // Все блюда из всех меню для избранного
   const [sections, setSections] = useState([]);
@@ -34,6 +39,12 @@ function MenuPage({ mode }) {
 
   // Функция для воспроизведения аудио (Pronunciation)
   const handleAudioPlay = (dish) => {
+    // Блокировка аудио для гостей
+    if (guestBlocked) {
+      toast.warning('Прослушивание доступно только после авторизации', { title: '🔒 Требуется вход' });
+      return;
+    }
+
     const audioPath = dish?.i18n?.en?.['audio-en'];
     const API_URL = process.env.REACT_APP_API_URL || '';
     const isWine = dish.menu?.toLowerCase().includes('вин') || dish.section?.toLowerCase().includes('вин');
@@ -605,10 +616,13 @@ function MenuPage({ mode }) {
             </nav>
           </div>
         )}
-        {/* Search */}
+        {/* Search — заблокирован для гостей */}
         {isVisible({ scope: 'pageBlock', target: 'search.input' }) && (
           <div className="px-4 py-2">
-            <div className="flex w-full items-stretch rounded-xl h-10 bg-white dark:bg-surface-dark shadow-sm border border-gray-100 dark:border-gray-700/50 group focus-within:border-primary/50 transition-colors">
+            <div
+              className={`flex w-full items-stretch rounded-xl h-10 bg-white dark:bg-surface-dark shadow-sm border border-gray-100 dark:border-gray-700/50 group focus-within:border-primary/50 transition-colors ${guestBlocked ? 'opacity-50 cursor-not-allowed' : ''}`}
+              onClick={() => guestBlocked && toast.warning('Поиск доступен только после авторизации', { title: '🔒 Требуется вход' })}
+            >
               <div className="text-[#896f61] dark:text-gray-400 flex items-center justify-center pl-3 pr-2 group-focus-within:text-primary transition-colors">
                 <span className="material-symbols-outlined text-[20px]">search</span>
               </div>
@@ -622,7 +636,8 @@ function MenuPage({ mode }) {
                       : (language === 'EN' ? 'Search dishes...' : 'Поиск блюд...')
                 }
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => !guestBlocked && setSearchQuery(e.target.value)}
+                disabled={guestBlocked}
               />
             </div>
           </div>
@@ -791,6 +806,14 @@ function MenuPage({ mode }) {
 
       {/* Dishes Grid */}
       <div className="flex-1 overflow-y-auto px-3 pb-24 pt-3">
+        {/* Баннер для гостей */}
+        {guestBlocked && (
+          <div className="mb-3 mx-1">
+            <GuestBlocker lines={0}>
+              <span />
+            </GuestBlocker>
+          </div>
+        )}
         <div className="flex justify-between items-center mb-3 px-1">
           <h3 className="font-bold text-base dark:text-white">
             {showFavorites
@@ -848,26 +871,36 @@ function MenuPage({ mode }) {
                         )}
                       </div>
                       <div className="p-2 flex flex-col flex-grow">
-                        <h3 className="font-bold text-[11px] leading-[1.2] dark:text-white line-clamp-2 mb-1 group-hover:text-primary transition-colors duration-200">
-                          {getFieldValue(dish, 'title') || (language === 'EN' ? 'No title' : 'Без названия')}
-                        </h3>
-                        {isFilled(getFieldValue(dish, 'section')) && (
-                          <p className="text-[9px] text-primary/80 uppercase tracking-wide font-semibold mb-1">
-                            {getFieldValue(dish, 'section')}
-                          </p>
+                        {guestBlocked ? (
+                          /* Гость: skeleton вместо текста */
+                          <div className="space-y-1.5">
+                            <div className="h-2.5 rounded bg-gray-200 dark:bg-gray-700 animate-pulse w-3/4" />
+                            <div className="h-2 rounded bg-gray-200 dark:bg-gray-700 animate-pulse w-1/2" />
+                          </div>
+                        ) : (
+                          <>
+                            <h3 className="font-bold text-[11px] leading-[1.2] dark:text-white line-clamp-2 mb-1 group-hover:text-primary transition-colors duration-200">
+                              {getFieldValue(dish, 'title') || (language === 'EN' ? 'No title' : 'Без названия')}
+                            </h3>
+                            {isFilled(getFieldValue(dish, 'section')) && (
+                              <p className="text-[9px] text-primary/80 uppercase tracking-wide font-semibold mb-1">
+                                {getFieldValue(dish, 'section')}
+                              </p>
+                            )}
+                            <div className="mt-auto space-y-1.5 pt-1.5 border-t border-dashed border-gray-100 dark:border-gray-700">
+                              {isFilled(dish.origin) && (
+                                <p className="text-[9px] text-gray-500 dark:text-gray-400">
+                                  <span className="font-semibold">Страна:</span> {dish.origin}
+                                </p>
+                              )}
+                              {isFilled(dish.caffeine) && (
+                                <p className="text-[9px] text-gray-500 dark:text-gray-400">
+                                  <span className="font-semibold">Кофеин:</span> {dish.caffeine}
+                                </p>
+                              )}
+                            </div>
+                          </>
                         )}
-                        <div className="mt-auto space-y-1.5 pt-1.5 border-t border-dashed border-gray-100 dark:border-gray-700">
-                          {isFilled(dish.origin) && (
-                            <p className="text-[9px] text-gray-500 dark:text-gray-400">
-                              <span className="font-semibold">Страна:</span> {dish.origin}
-                            </p>
-                          )}
-                          {isFilled(dish.caffeine) && (
-                            <p className="text-[9px] text-gray-500 dark:text-gray-400">
-                              <span className="font-semibold">Кофеин:</span> {dish.caffeine}
-                            </p>
-                          )}
-                        </div>
                       </div>
                     </div>
 
@@ -932,32 +965,41 @@ function MenuPage({ mode }) {
                       )}
                     </div>
                     <div className="p-2 flex flex-col flex-grow">
-                      <h3 className="font-bold text-[11px] leading-[1.2] dark:text-white line-clamp-2 mb-1 group-hover:text-primary transition-colors duration-200">
-                        {getFieldValue(dish, 'title') || (language === 'EN' ? 'No title' : 'Без названия')}
-                      </h3>
-
-                      {isBar ? (
-                        cardIngredients.length > 0 && (
-                          <div className="flex flex-wrap gap-1 mb-2">
-                            {cardIngredients.map((item, idx) => (
-                              <span
-                                key={`${dish.id}-card-${idx}`}
-                                className="text-[8px] uppercase font-semibold px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-600 dark:bg-white/10 dark:text-gray-300"
-                              >
-                                {item}
-                              </span>
-                            ))}
-                          </div>
-                        )
+                      {guestBlocked ? (
+                        /* Гость: skeleton вместо текста */
+                        <div className="space-y-1.5">
+                          <div className="h-2.5 rounded bg-gray-200 dark:bg-gray-700 animate-pulse w-3/4" />
+                          <div className="h-2 rounded bg-gray-200 dark:bg-gray-700 animate-pulse w-1/2" />
+                        </div>
                       ) : (
-                        isWine &&
-                        getFieldValue(dish, 'description') && (
-                          <p className="text-[9px] text-[#896f61] dark:text-gray-400 line-clamp-2 mb-2 leading-tight opacity-90">
-                            {getFieldValue(dish, 'description')}
-                          </p>
-                        )
-                      )}
+                        <>
+                          <h3 className="font-bold text-[11px] leading-[1.2] dark:text-white line-clamp-2 mb-1 group-hover:text-primary transition-colors duration-200">
+                            {getFieldValue(dish, 'title') || (language === 'EN' ? 'No title' : 'Без названия')}
+                          </h3>
 
+                          {isBar ? (
+                            cardIngredients.length > 0 && (
+                              <div className="flex flex-wrap gap-1 mb-2">
+                                {cardIngredients.map((item, idx) => (
+                                  <span
+                                    key={`${dish.id}-card-${idx}`}
+                                    className="text-[8px] uppercase font-semibold px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-600 dark:bg-white/10 dark:text-gray-300"
+                                  >
+                                    {item}
+                                  </span>
+                                ))}
+                              </div>
+                            )
+                          ) : (
+                            isWine &&
+                            getFieldValue(dish, 'description') && (
+                              <p className="text-[9px] text-[#896f61] dark:text-gray-400 line-clamp-2 mb-2 leading-tight opacity-90">
+                                {getFieldValue(dish, 'description')}
+                              </p>
+                            )
+                          )}
+                        </>
+                      )}
                     </div>
                   </div>
 

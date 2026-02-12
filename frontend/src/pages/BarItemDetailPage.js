@@ -6,6 +6,7 @@ import { useToast } from '../contexts/ToastContext';
 import { useVisibility } from '../contexts/VisibilityContext';
 import { getDishImageUrl } from '../utils/imageUtils';
 import { useFavorites } from '../contexts/FavoritesContext';
+import GuestBlocker from '../components/GuestBlocker';
 import './DishDetailPage.css';
 
 const isNonEmpty = (v) => {
@@ -29,7 +30,8 @@ const parseCardIngredients = (cardIngredients, fallbackIngredients) => {
 function BarItemDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { isGuest } = useAuth();
+  const { isGuest, isAuthenticated } = useAuth();
+  const guestBlocked = !isAuthenticated || isGuest;
   const toast = useToast();
   const { isVisible } = useVisibility();
   const { catalogIds, toggleCatalogFavorite } = useFavorites();
@@ -318,7 +320,7 @@ function BarItemDetailPage() {
             </button>
           )}
 
-          {isVisible({ scope: 'pageBlock', target: 'search.input' }) && (
+          {!guestBlocked && isVisible({ scope: 'pageBlock', target: 'search.input' }) && (
             <div className="relative">
               <input
                 type="text"
@@ -391,6 +393,13 @@ function BarItemDetailPage() {
 
       {/* Контент */}
       <div className="px-5 pt-1 pb-24">
+        {/* Баннер для гостей */}
+        {guestBlocked && (
+          <div className="mb-4">
+            <GuestBlocker lines={0} message={language === 'EN' ? 'Details available after login' : 'Детали доступны после авторизации'} />
+          </div>
+        )}
+
         {isArchived && (
           <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-gray-800 text-white px-3 py-1 text-xs font-bold">
             <span className="material-symbols-outlined text-[16px]">archive</span>
@@ -405,18 +414,31 @@ function BarItemDetailPage() {
             }}
             className="text-[28px] font-bold leading-tight text-gray-900 dark:text-white mb-3"
           >
-            {searchQuery ? highlightText(getFieldValue('title') || 'Без названия', searchQuery) : getFieldValue('title') || 'Без названия'}
+            {guestBlocked
+              ? <div className="h-7 w-3/4 rounded bg-gray-200 dark:bg-gray-700 animate-pulse" />
+              : (searchQuery ? highlightText(getFieldValue('title') || 'Без названия', searchQuery) : getFieldValue('title') || 'Без названия')}
           </h1>
 
-          {getFieldValue('section') && (
+          {getFieldValue('section') && !guestBlocked && (
             <div className="flex flex-wrap gap-2 mb-4">
               <div className="flex items-center justify-center rounded-full bg-primary/10 dark:bg-primary/20 px-3 py-1">
                 <span className="text-primary text-xs font-semibold uppercase tracking-wide">{getFieldValue('section')}</span>
               </div>
             </div>
           )}
+          {guestBlocked && (
+            <div className="flex flex-wrap gap-2 mb-4">
+              <div className="h-5 w-24 rounded-full bg-gray-200 dark:bg-gray-700 animate-pulse" />
+            </div>
+          )}
 
-          {getFieldValue('description') && isVisible({ scope: 'pageBlock', target: 'barDetail.description' }) && (
+          {guestBlocked ? (
+            <div className="mb-8 space-y-2">
+              <div className="h-3 w-full rounded bg-gray-200 dark:bg-gray-700 animate-pulse" />
+              <div className="h-3 w-5/6 rounded bg-gray-200 dark:bg-gray-700 animate-pulse" />
+              <div className="h-3 w-4/6 rounded bg-gray-200 dark:bg-gray-700 animate-pulse" />
+            </div>
+          ) : getFieldValue('description') && isVisible({ scope: 'pageBlock', target: 'barDetail.description' }) && (
             <div
               ref={(el) => {
                 if (el) searchRefs.current['description'] = el;
@@ -443,7 +465,7 @@ function BarItemDetailPage() {
           )}
 
           {/* Короткий состав для карточки (cardIngredients) */}
-          {cardIngredients.length > 0 && isVisible({ scope: 'pageBlock', target: 'barDetail.ingredients' }) && (
+          {!guestBlocked && cardIngredients.length > 0 && isVisible({ scope: 'pageBlock', target: 'barDetail.ingredients' }) && (
             <div
               ref={(el) => {
                 if (el) searchRefs.current['cardIngredients'] = el;
@@ -464,7 +486,7 @@ function BarItemDetailPage() {
           )}
 
           {/* Подробный состав (ingredients) */}
-          {ingredients.length > 0 && isVisible({ scope: 'pageBlock', target: 'barDetail.ingredients' }) && (
+          {!guestBlocked && ingredients.length > 0 && isVisible({ scope: 'pageBlock', target: 'barDetail.ingredients' }) && (
             <div
               ref={(el) => {
                 if (el) searchRefs.current['ingredients'] = el;
@@ -485,7 +507,7 @@ function BarItemDetailPage() {
           )}
 
           {/* Contains (часто длинный текст/HTML) */}
-          {isNonEmpty(getFieldValue('contains')) && isVisible({ scope: 'pageBlock', target: 'barDetail.ingredients' }) && (
+          {!guestBlocked && isNonEmpty(getFieldValue('contains')) && isVisible({ scope: 'pageBlock', target: 'barDetail.ingredients' }) && (
             <div
               ref={(el) => {
                 if (el) searchRefs.current['contains'] = el;
@@ -515,7 +537,7 @@ function BarItemDetailPage() {
           )}
 
           {/* Аллергены */}
-          {allergens.length > 0 && isVisible({ scope: 'pageBlock', target: 'barDetail.allergens' }) && (
+          {!guestBlocked && allergens.length > 0 && isVisible({ scope: 'pageBlock', target: 'barDetail.allergens' }) && (
             <div
               ref={(el) => {
                 if (el) searchRefs.current['allergens'] = el;
@@ -541,7 +563,7 @@ function BarItemDetailPage() {
           )}
 
           {/* Особенности */}
-          {isNonEmpty(item.features) && (
+          {!guestBlocked && isNonEmpty(item.features) && (
             <div
               ref={(el) => {
                 if (el) searchRefs.current['features'] = el;
@@ -566,7 +588,7 @@ function BarItemDetailPage() {
           )}
 
           {/* Комментарии */}
-          {comments.length > 0 && (
+          {!guestBlocked && comments.length > 0 && (
             <div
               ref={(el) => {
                 if (el) searchRefs.current['comments'] = el;
@@ -597,7 +619,7 @@ function BarItemDetailPage() {
           )}
 
           {/* Справочная информация */}
-          {isNonEmpty(getFieldValue('reference_info')) && (
+          {!guestBlocked && isNonEmpty(getFieldValue('reference_info')) && (
             <div
               ref={(el) => {
                 if (el) searchRefs.current['reference'] = el;
@@ -627,7 +649,7 @@ function BarItemDetailPage() {
           )}
 
           {/* Теги */}
-          {tags.length > 0 && (
+          {!guestBlocked && tags.length > 0 && (
             <div className="flex flex-wrap gap-2 mb-4">
               {tags.map((tag, idx) => (
                 <div key={idx} className="flex items-center justify-center rounded-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 px-3 py-1">

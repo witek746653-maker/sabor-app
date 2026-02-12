@@ -2,6 +2,8 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, BookOpen, Clock, ArrowRight, Search, X } from 'lucide-react';
 import { cn } from '../utils/readerUtils';
+import { useAuth } from '../contexts/AuthContext';
+import GuestBlocker from '../components/GuestBlocker';
 
 // Вспомогательный компонент карточки статьи
 const ArticleCard = ({ article, onClick }) => {
@@ -65,6 +67,8 @@ const ArticleCard = ({ article, onClick }) => {
 
 export default function ArticlesListPage() {
     const navigate = useNavigate();
+    const { isGuest, isAuthenticated } = useAuth();
+    const guestBlocked = !isAuthenticated || isGuest;
     const [articles, setArticles] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -167,7 +171,11 @@ export default function ArticlesListPage() {
             </header>
 
             <main className="px-4 pt-6">
-                {loading ? (
+                {guestBlocked ? (
+                    <div className="p-4">
+                        <GuestBlocker lines={5} message="Гайды и инструкции доступны после авторизации" />
+                    </div>
+                ) : loading ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {[...Array(4)].map((_, i) => (
                             <div key={i} className="h-64 bg-gray-100 dark:bg-gray-900 rounded-2xl animate-pulse" />

@@ -459,16 +459,11 @@ function InfoPage() {
           )}
           {isVisible({ scope: 'menuItem', target: 'footer.favorites' }) && (
             <Link
-              to={isGuest ? '/info' : '/favorites'}
+              to={isGuest ? '/' : '/favorites'}
+              state={isGuest ? { showLogin: true } : undefined}
               title={isGuest ? 'Доступно после входа' : 'Избранное'}
-              onClick={(e) => {
-                if (!isGuest) return;
-                // Гостевой режим: избранное недоступно.
-                e.preventDefault();
-                toast.info('Доступно после входа. Гостевой режим поддерживает только просмотр данных.');
-              }}
               className={`flex flex-col items-center justify-center gap-1 transition-colors ${isGuest
-                ? 'opacity-50 cursor-not-allowed text-gray-400 dark:text-gray-600'
+                ? 'text-gray-400 dark:text-gray-600'
                 : 'text-gray-400 dark:text-gray-500 hover:text-primary dark:hover:text-primary'
                 }`}
             >

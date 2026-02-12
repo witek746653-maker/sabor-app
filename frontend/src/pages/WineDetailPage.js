@@ -6,6 +6,7 @@ import { useToast } from '../contexts/ToastContext';
 import { useVisibility } from '../contexts/VisibilityContext';
 import { getDishImageUrl } from '../utils/imageUtils';
 import { useFavorites } from '../contexts/FavoritesContext';
+import GuestBlocker from '../components/GuestBlocker';
 import './DishDetailPage.css';
 
 // Термин **парсинг**: простыми словами “разобрать строку на кусочки”.
@@ -37,7 +38,8 @@ const isNonEmpty = (v) => {
 function WineDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { isGuest } = useAuth();
+  const { isGuest, isAuthenticated } = useAuth();
+  const guestBlocked = !isAuthenticated || isGuest;
   const toast = useToast();
   const { isVisible } = useVisibility();
   const { catalogIds, toggleCatalogFavorite } = useFavorites();
@@ -154,6 +156,10 @@ function WineDetailPage() {
   };
 
   const handleAudioPlay = () => {
+    if (guestBlocked) {
+      toast.info(language === 'EN' ? 'Audio is available after login.' : 'Аудио доступно после авторизации');
+      return;
+    }
     const audioPath = wine?.i18n?.en?.['audio-en'];
     if (!audioPath) return;
 
@@ -364,7 +370,7 @@ function WineDetailPage() {
             </button>
           )}
 
-          {isVisible({ scope: 'pageBlock', target: 'search.input' }) && (
+          {!guestBlocked && isVisible({ scope: 'pageBlock', target: 'search.input' }) && (
             <div className="relative">
               <input
                 type="text"
@@ -463,6 +469,13 @@ function WineDetailPage() {
           </div>
         )}
 
+        {/* Баннер для гостей */}
+        {guestBlocked && (
+          <div className="mb-4">
+            <GuestBlocker lines={0} message={language === 'EN' ? 'Details available after login' : 'Детали доступны после авторизации'} />
+          </div>
+        )}
+
         <div className={isArchived ? 'opacity-60' : ''}>
           <h1
             ref={(el) => {
@@ -470,18 +483,31 @@ function WineDetailPage() {
             }}
             className="text-[28px] font-bold leading-tight text-gray-900 dark:text-white mb-3"
           >
-            {searchQuery ? highlightText(getFieldValue('title') || 'Без названия', searchQuery) : getFieldValue('title') || 'Без названия'}
+            {guestBlocked
+              ? <div className="h-7 w-3/4 rounded bg-gray-200 dark:bg-gray-700 animate-pulse" />
+              : (searchQuery ? highlightText(getFieldValue('title') || 'Без названия', searchQuery) : getFieldValue('title') || 'Без названия')}
           </h1>
 
-          {getFieldValue('section') && (
+          {getFieldValue('section') && !guestBlocked && (
             <div className="flex flex-wrap gap-2 mb-4">
               <div className="flex items-center justify-center rounded-full bg-primary/10 dark:bg-primary/20 px-3 py-1">
                 <span className="text-primary text-xs font-semibold uppercase tracking-wide">{getFieldValue('section')}</span>
               </div>
             </div>
           )}
+          {guestBlocked && (
+            <div className="flex flex-wrap gap-2 mb-4">
+              <div className="h-5 w-24 rounded-full bg-gray-200 dark:bg-gray-700 animate-pulse" />
+            </div>
+          )}
 
-          {getFieldValue('description') && isVisible({ scope: 'pageBlock', target: 'wineDetail.description' }) && (
+          {guestBlocked ? (
+            <div className="mb-8 space-y-2">
+              <div className="h-3 w-full rounded bg-gray-200 dark:bg-gray-700 animate-pulse" />
+              <div className="h-3 w-5/6 rounded bg-gray-200 dark:bg-gray-700 animate-pulse" />
+              <div className="h-3 w-4/6 rounded bg-gray-200 dark:bg-gray-700 animate-pulse" />
+            </div>
+          ) : getFieldValue('description') && isVisible({ scope: 'pageBlock', target: 'wineDetail.description' }) && (
             <div
               ref={(el) => {
                 if (el) searchRefs.current['description'] = el;
@@ -507,7 +533,7 @@ function WineDetailPage() {
             </div>
           )}
 
-          {wine.features && isVisible({ scope: 'pageBlock', target: 'wineDetail.features' }) && (
+          {!guestBlocked && wine.features && isVisible({ scope: 'pageBlock', target: 'wineDetail.features' }) && (
             <div
               ref={(el) => {
                 if (el) searchRefs.current['features'] = el;
@@ -524,7 +550,7 @@ function WineDetailPage() {
           )}
 
           {/* Карточки характеристик: показываем только то, что реально заполнено */}
-          {(isNonEmpty(country) || isNonEmpty(region) || isNonEmpty(origin) || isNonEmpty(producer) || isNonEmpty(grapeVarietiesText) || isNonEmpty(sweetness) || isNonEmpty(alcoholContent)) &&
+          {!guestBlocked && (isNonEmpty(country) || isNonEmpty(region) || isNonEmpty(origin) || isNonEmpty(producer) || isNonEmpty(grapeVarietiesText) || isNonEmpty(sweetness) || isNonEmpty(alcoholContent)) &&
             isVisible({ scope: 'pageBlock', target: 'wineDetail.characteristics' }) && (
               <div className="grid grid-cols-2 gap-4 mb-8">
                 {(country || origin) && (
@@ -583,7 +609,7 @@ function WineDetailPage() {
             )}
 
           {/* Пэринг */}
-          {(pairingsDishes.length > 0 || pairingsNotes.length > 0) &&
+          {!guestBlocked && (pairingsDishes.length > 0 || pairingsNotes.length > 0) &&
             isVisible({ scope: 'pageBlock', target: 'wineDetail.pairings' }) && (
               <div
                 ref={(el) => {
@@ -633,7 +659,7 @@ function WineDetailPage() {
             )}
 
           {/* Комментарии */}
-          {comments.length > 0 && (
+          {!guestBlocked && comments.length > 0 && (
             <div
               ref={(el) => {
                 if (el) searchRefs.current['comments'] = el;
@@ -664,7 +690,7 @@ function WineDetailPage() {
           )}
 
           {/* Справочная информация */}
-          {getFieldValue('reference_info') && String(getFieldValue('reference_info')).trim() && (
+          {!guestBlocked && getFieldValue('reference_info') && String(getFieldValue('reference_info')).trim() && (
             <div
               ref={(el) => {
                 if (el) searchRefs.current['reference'] = el;
@@ -695,7 +721,7 @@ function WineDetailPage() {
           )}
 
           {/* Теги */}
-          {getTagsForLanguage().length > 0 && (
+          {!guestBlocked && getTagsForLanguage().length > 0 && (
             <div className="flex flex-wrap gap-2 mb-4">
               {getTagsForLanguage().map((tag, idx) => (
                 <div key={idx} className="flex items-center justify-center rounded-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 px-3 py-1">

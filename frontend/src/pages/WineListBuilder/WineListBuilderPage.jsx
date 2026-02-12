@@ -5,10 +5,30 @@ import { buildTelegramText, emptyDraft, getGrapes, getRegions, isValidName, make
 import { toPng } from "html-to-image";
 import bgImage from "../../assets/wine-bg.webp";
 import wineBgPreview from "../../assets/wine-background.jpg";
+import { useAuth } from "../../contexts/AuthContext";
+import GuestBlocker from "../../components/GuestBlocker";
 
 
 export default function WineListBuilderPage() {
     const navigate = useNavigate();
+    const { isGuest } = useAuth();
+
+    if (isGuest) {
+        return (
+            <div className="w-full min-h-screen aurora-bg p-8 flex flex-col items-center justify-center">
+                <div className="w-full max-w-sm bg-white/60 dark:bg-[#fdfbf7]/80 backdrop-blur-md p-8 rounded-[32px] border border-white/20 shadow-2xl">
+                    <GuestBlocker lines={5} message="Генератор доступен только после авторизации" />
+                    <button
+                        onClick={() => navigate('/tools')}
+                        className="w-full mt-6 py-4 rounded-2xl bg-[#5a2d3d] text-white font-bold border border-[#4a1d2d] active:scale-95 transition-all text-xs uppercase tracking-widest"
+                    >
+                        Назад к инструментам
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
     const [items, setItems] = useState(() => {
         const saved = localStorage.getItem("sabor_wine_list_v1");
         return saved ? JSON.parse(saved) : [];

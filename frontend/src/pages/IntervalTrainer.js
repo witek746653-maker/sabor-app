@@ -7,10 +7,30 @@ import TrainingCard from '../components/trainer/TrainingCard';
 import FinishScreen from '../components/trainer/FinishScreen';
 import trainerBg from '../assets/trainer-bg.webp';
 import cardBg from '../assets/card-bg.webp';
+import { useAuth } from '../contexts/AuthContext';
+import GuestBlocker from '../components/GuestBlocker';
 
 
 function IntervalTrainer() {
     const navigate = useNavigate();
+    const { isGuest } = useAuth();
+
+    if (isGuest) {
+        return (
+            <div className="min-h-screen aurora-bg p-8 flex flex-col items-center justify-center">
+                <div className="w-full max-w-sm bg-white/10 backdrop-blur-md p-8 rounded-[32px] border border-white/20 shadow-2xl">
+                    <GuestBlocker lines={5} message="Тренажер доступен только после авторизации" />
+                    <button
+                        onClick={() => navigate('/tools')}
+                        className="w-full mt-6 py-4 rounded-2xl bg-white/5 text-white/60 font-bold border border-white/10 active:scale-95 transition-all text-xs uppercase tracking-widest"
+                    >
+                        Назад к инструментам
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
     const [screen, setScreen] = useState(() => {
         const saved = localStorage.getItem('trainer_screen');
         return (saved === 'loading' || !saved) ? 'setup' : saved;

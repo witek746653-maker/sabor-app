@@ -71,8 +71,14 @@ function ToolsPage() {
     }, [toast]);
 
     const handleToolClick = (tool) => {
-        if (isGuest && (tool.id === 'wine-list-generator' || tool.id === 'waiter-database' || tool.id === 'interval-trainer')) {
-            toast.info('Этот инструмент доступен только после входа.');
+        if (isGuest) {
+            toast.warning('Раздел доступен только после входа', {
+                title: '🔒 Требуется вход',
+                action: {
+                    label: 'Войти',
+                    onClick: () => navigate('/', { state: { showLogin: true } })
+                }
+            });
             return;
         }
         if (tool.openMode === 'new_tab') {

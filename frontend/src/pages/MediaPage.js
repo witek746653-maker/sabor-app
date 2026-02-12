@@ -23,6 +23,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { getMediaLikes, toggleMediaLike } from '../services/api';
 import { useFavorites } from '../contexts/FavoritesContext';
 import { useToast } from '../contexts/ToastContext';
+import GuestBlocker from '../components/GuestBlocker';
 
 const PLAYBACK_RATES = [0.5, 1, 1.25, 1.5];
 
@@ -207,6 +208,16 @@ const MediaPage = () => {
   }, [items, currentId]);
 
   const handleOpen = (item) => {
+    if (isGuest) {
+      toast.warning('Прослушивание доступно только после входа', {
+        title: '🔒 Требуется вход',
+        action: {
+          label: 'Войти',
+          onClick: () => navigate('/', { state: { showLogin: true } })
+        }
+      });
+      return;
+    }
     setCurrentId(item.id);
     setHistory((prev) => {
       const next = [item.id, ...prev.filter((id) => id !== item.id)];
@@ -547,7 +558,13 @@ const MediaPage = () => {
           </section>
         )}
 
-        {!loading && !isEmpty && (
+        {!loading && !isEmpty && isGuest && (
+          <section className="rounded-2xl border border-orange-100/60 dark:border-gray-800 bg-white dark:bg-[#1b1412] p-6">
+            <GuestBlocker lines={4} message="Медиа-контент доступен после авторизации" />
+          </section>
+        )}
+
+        {!loading && !isEmpty && !isGuest && (
           <section className="space-y-3">
             {items.map((item) => {
               const Icon = getTypeIcon(item.type);

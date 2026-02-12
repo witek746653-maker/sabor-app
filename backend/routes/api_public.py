@@ -1,10 +1,40 @@
 
 from flask import Blueprint, jsonify, request
+from flask_login import current_user
 from backend.services.menu_service import MenuService
 from backend.models import VisibilityConfig, Artwork
 from backend.utils import text_contains
 
 bp = Blueprint('api_public', __name__)
+
+# Поля, которые отдаём гостям (остальное — пусто)
+GUEST_ALLOWED_FIELDS = {'id', 'title', 'section', 'menu', 'image', 'status', 'category'}
+
+def _is_guest():
+    """Проверяем, является ли текущий пользователь гостем."""
+    if not current_user.is_authenticated:
+        return True
+    return getattr(current_user, 'id', None) in (0, 'guest', '0')
+
+def _strip_for_guest(item_dict):
+    """Для гостя оставляем только базовые поля и цензурим названия для определенных категорий."""
+    if not _is_guest() or not isinstance(item_dict, dict):
+        return item_dict
+    
+    # Список слов, при которых заголовок должен быть скрыт
+    RESTRICTED_KEYWORDS = {'вино', 'wine', 'useful', 'статьи', 'media', 'подкаст'}
+    
+    res = {k: v for k, v in item_dict.items() if k in GUEST_ALLOWED_FIELDS}
+    
+    # Проверяем, нужно ли скрыть название
+    menu = str(item_dict.get('menu') or '').lower()
+    section = str(item_dict.get('section') or '').lower()
+    category = str(item_dict.get('category') or '').lower()
+    
+    if any(k in menu or k in section or k in category for k in RESTRICTED_KEYWORDS):
+        res['title'] = '🔒 Заблокировано'
+    
+    return res
 
 @bp.route('/api/health', methods=['GET'])
 def health_check():
@@ -74,7 +104,10 @@ def get_menu_json():
 @bp.route('/api/dishes', methods=['GET'])
 def get_dishes():
     try:
-        return jsonify(MenuService.get_all_dishes_dicts_with_json_fallback())
+        items = MenuService.get_all_dishes_dicts_with_json_fallback()
+        if _is_guest():
+            items = [_strip_for_guest(it) for it in items]
+        return jsonify(items)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -94,12 +127,13 @@ def get_dish(dish_id):
         if found:
             base = found.to_dict()
             full = MenuService.load_menu_db_by_id().get(dish_id_norm)
-            return jsonify(MenuService.enrich_wine_dict(MenuService.deep_merge_dicts(full or {}, base)))
+            result = MenuService.enrich_wine_dict(MenuService.deep_merge_dicts(full or {}, base))
+            return jsonify(_strip_for_guest(result))
 
         # 2) Fallback JSON
         from_json = MenuService.load_menu_db_by_id().get(dish_id_norm)
         if isinstance(from_json, dict):
-            return jsonify(from_json)
+            return jsonify(_strip_for_guest(from_json))
 
         return jsonify({'error': 'Dish not found'}), 404
     except Exception as e:
@@ -134,7 +168,10 @@ def get_sections():
 @bp.route('/api/wines', methods=['GET'])
 def get_wines():
     try:
-        return jsonify(MenuService.get_wines_dicts())
+        wines = MenuService.get_wines_dicts()
+        if _is_guest():
+            wines = [_strip_for_guest(w) for w in wines]
+        return jsonify(wines)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -143,6 +180,8 @@ def get_wines_by_category(category):
     try:
         wines = MenuService.get_wines_dicts()
         filtered = [w for w in wines if isinstance(w, dict) and w.get("category") == category]
+        if _is_guest():
+            filtered = [_strip_for_guest(w) for w in filtered]
         return jsonify(filtered)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -151,26 +190,21 @@ def get_wines_by_category(category):
 def get_wine(wine_id):
     try:
         wine_id_norm = str(wine_id or "").strip()
-        # Same logic as get_dish but specific to wine? The previous app used separate endpoints.
-        # Reuse get_dish logic but specialized return?
-        # app.py code for this:
         from backend.models import WineItem
         wine = WineItem.query.get(wine_id_norm)
         if wine:
             base = wine.to_dict()
             full = MenuService.load_menu_db_by_id().get(base.get("id"))
             merged = MenuService.deep_merge_dicts(full or {}, base)
-            return jsonify(MenuService.enrich_wine_dict(merged))
+            result = MenuService.enrich_wine_dict(merged)
+            return jsonify(_strip_for_guest(result))
         
         wine_dict = MenuService.load_menu_db_by_id().get(wine_id_norm)
         if wine_dict and (text_contains(wine_dict.get("menu"), MenuService.WINE_KEYWORDS) or 
                           text_contains(wine_dict.get("section"), MenuService.WINE_KEYWORDS)):
-            return jsonify(wine_dict)
+            return jsonify(_strip_for_guest(wine_dict))
 
         return jsonify({'error': 'Wine not found'}), 404
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 

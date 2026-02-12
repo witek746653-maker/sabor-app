@@ -658,11 +658,14 @@ function GlobalSearch({ isOpen, onClose, searchQuery: externalQuery = null }) {
               <button
                 type="button"
                 onClick={() => {
-                  if (isGuest) return;
+                  if (isGuest) {
+                    if (!isSearchRoute) onClose?.();
+                    setTimeout(() => navigate('/', { state: { showLogin: true } }), !isSearchRoute ? 50 : 0);
+                    return;
+                  }
                   if (!isSearchRoute) onClose?.();
                   setTimeout(() => navigate('/favorites'), !isSearchRoute ? 50 : 0);
                 }}
-                disabled={isGuest}
                 title={isGuest ? 'Доступно после входа' : 'Избранное'}
                 className={`flex flex-col items-center justify-center gap-1 transition-colors ${isGuest
                   ? 'opacity-50 cursor-not-allowed text-gray-400'

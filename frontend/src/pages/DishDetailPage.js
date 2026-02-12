@@ -6,12 +6,14 @@ import { useToast } from '../contexts/ToastContext';
 import { useVisibility } from '../contexts/VisibilityContext';
 import { getDishImageUrl } from '../utils/imageUtils';
 import { useFavorites } from '../contexts/FavoritesContext';
+import GuestBlocker from '../components/GuestBlocker';
 import './DishDetailPage.css';
 
 function DishDetailPage({ mode }) {
   const { id } = useParams();
   const navigate = useNavigate();
   const { isAuthenticated, currentUser, isGuest, canWrite } = useAuth();
+  const guestBlocked = !isAuthenticated || isGuest;
   const toast = useToast();
   const { isVisible } = useVisibility();
   const { catalogIds, toggleCatalogFavorite } = useFavorites();
@@ -412,7 +414,7 @@ function DishDetailPage({ mode }) {
               <span className="text-xs font-bold">{language === 'RU' ? 'EN' : 'RU'}</span>
             </button>
           )}
-          {isVisible({ scope: 'pageBlock', target: 'search.input' }) && (
+          {!guestBlocked && isVisible({ scope: 'pageBlock', target: 'search.input' }) && (
             <div className="relative">
               <input
                 type="text"
@@ -499,6 +501,13 @@ function DishDetailPage({ mode }) {
 
       {/* Content */}
       <div className="px-5 pt-1 pb-24">
+        {/* Баннер для гостей */}
+        {guestBlocked && (
+          <div className="mb-4">
+            <GuestBlocker lines={0} message={language === 'EN' ? 'Details available after login' : 'Детали доступны после авторизации'} />
+          </div>
+        )}
+
         {/* Плашка архива */}
         {isArchived && (
           <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-gray-800 text-white px-3 py-1 text-xs font-bold">
@@ -514,20 +523,34 @@ function DishDetailPage({ mode }) {
             ref={(el) => { if (el) searchRefs.current['title'] = el; }}
             className="text-[28px] font-bold leading-tight text-gray-900 dark:text-white mb-3"
           >
-            {searchQuery ? highlightText(getFieldValue('title') || (language === 'EN' ? 'No title' : 'Без названия'), searchQuery) : (getFieldValue('title') || (language === 'EN' ? 'No title' : 'Без названия'))}
+            {guestBlocked
+              ? <div className="h-7 w-3/4 rounded bg-gray-200 dark:bg-gray-700 animate-pulse" />
+              : (searchQuery ? highlightText(getFieldValue('title') || (language === 'EN' ? 'No title' : 'Без названия'), searchQuery) : (getFieldValue('title') || (language === 'EN' ? 'No title' : 'Без названия')))
+            }
           </h1>
 
           {/* Section (сразу после названия) */}
-          {getFieldValue('section') && (
+          {getFieldValue('section') && !guestBlocked && (
             <div className="flex flex-wrap gap-2 mb-4">
               <div className="flex items-center justify-center rounded-full bg-primary/10 dark:bg-primary/20 px-3 py-1">
                 <span className="text-primary text-xs font-semibold uppercase tracking-wide">{getFieldValue('section')}</span>
               </div>
             </div>
           )}
+          {guestBlocked && (
+            <div className="flex flex-wrap gap-2 mb-4">
+              <div className="h-5 w-24 rounded-full bg-gray-200 dark:bg-gray-700 animate-pulse" />
+            </div>
+          )}
 
           {/* 2. Красочное описание */}
-          {getFieldValue('description') && isVisible({ scope: 'pageBlock', target: 'dishDetail.description' }) && (
+          {guestBlocked ? (
+            <div className="mb-8 space-y-2">
+              <div className="h-3 w-full rounded bg-gray-200 dark:bg-gray-700 animate-pulse" />
+              <div className="h-3 w-5/6 rounded bg-gray-200 dark:bg-gray-700 animate-pulse" />
+              <div className="h-3 w-4/6 rounded bg-gray-200 dark:bg-gray-700 animate-pulse" />
+            </div>
+          ) : getFieldValue('description') && isVisible({ scope: 'pageBlock', target: 'dishDetail.description' }) && (
             <div
               ref={(el) => { if (el) searchRefs.current['description'] = el; }}
               className="mb-8"
@@ -552,7 +575,7 @@ function DishDetailPage({ mode }) {
           )}
 
           {/* 2.1 Поля чая (показываем только заполненные) */}
-          {isTea && (
+          {isTea && !guestBlocked && (
             <div className="grid grid-cols-1 gap-4 mb-8">
               {(isFilled(dish.origin) || isFilled(dish.caffeine)) && (
                 <div className="bg-emerald-50 dark:bg-emerald-900/20 p-5 rounded-xl border border-emerald-200 dark:border-emerald-800/50 shadow-md">
@@ -593,7 +616,7 @@ function DishDetailPage({ mode }) {
           )}
 
           {/* 3. Аллергены и особенности */}
-          {(() => {
+          {!guestBlocked && (() => {
             const allergens = getAllergensForLanguage();
             const hasAllergens = allergens && allergens.length > 0;
             const hasFeatures = dish.features;
@@ -692,7 +715,7 @@ function DishDetailPage({ mode }) {
           })()}
 
           {/* 4. Состав блюда */}
-          {((dish.ingredients && dish.ingredients.length > 0) || dish.contains) &&
+          {!guestBlocked && ((dish.ingredients && dish.ingredients.length > 0) || dish.contains) &&
             isVisible({ scope: 'pageBlock', target: 'dishDetail.composition' }) ? (
             <div
               ref={(el) => { if (el) searchRefs.current['composition'] = el; }}
@@ -745,7 +768,7 @@ function DishDetailPage({ mode }) {
           ) : null}
 
           {/* Комментарии */}
-          {dish.comments && dish.comments.length > 0 && (
+          {!guestBlocked && dish.comments && dish.comments.length > 0 && (
             <div
               ref={(el) => { if (el) searchRefs.current['comments'] = el; }}
               className="mb-8"
@@ -785,7 +808,7 @@ function DishDetailPage({ mode }) {
           )}
 
           {/* Reference Info - перед тегами */}
-          {getFieldValue('reference_info') && String(getFieldValue('reference_info')).trim() && (
+          {!guestBlocked && getFieldValue('reference_info') && String(getFieldValue('reference_info')).trim() && (
             <div
               ref={(el) => { if (el) searchRefs.current['reference'] = el; }}
               className="mb-4"
@@ -822,7 +845,7 @@ function DishDetailPage({ mode }) {
           )}
 
           {/* 5. Тэги (в самом конце) */}
-          {getTagsForLanguage().length > 0 && (
+          {!guestBlocked && getTagsForLanguage().length > 0 && (
             <div className="flex flex-wrap gap-2 mb-4">
               {getTagsForLanguage().map((tag, idx) => {
                 const tagLower = tag.toLowerCase();

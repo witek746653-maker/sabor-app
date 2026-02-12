@@ -4,6 +4,7 @@ import { getWines, getWinesByCategory } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import { getDishImageUrl } from '../utils/imageUtils';
 import { useVisibility } from '../contexts/VisibilityContext';
+import GuestBlocker from '../components/GuestBlocker';
 
 // Функция для получения эмодзи флага по названию страны или коду страны
 const getCountryFlag = (country) => {
@@ -234,7 +235,7 @@ const getWineType = (wine) => {
 function WineCatalogPage() {
   const { category } = useParams(); // category опционален
   const navigate = useNavigate();
-  const { isAuthenticated, currentUser } = useAuth();
+  const { isAuthenticated, currentUser, isGuest } = useAuth();
   const { isVisible } = useVisibility();
   const [wines, setWines] = useState([]);
   const [allWines, setAllWines] = useState([]);
@@ -737,7 +738,11 @@ function WineCatalogPage() {
           </span>
         </div>
         <div className="grid grid-cols-3 gap-2">
-          {filteredWines.length === 0 ? (
+          {isGuest ? (
+            <div className="col-span-3 py-4">
+              <GuestBlocker lines={6} message={language === 'EN' ? 'Wine catalog is available after login' : 'Каталог вин доступен после авторизации'} />
+            </div>
+          ) : filteredWines.length === 0 ? (
             <div className="col-span-3 text-center py-8 text-[#896f61] dark:text-gray-400">
               {language === 'EN' ? 'No wines found' : 'Вина не найдены'}
             </div>

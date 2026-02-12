@@ -50,9 +50,9 @@ export function ToastProvider({ children }) {
   }, []);
 
   const push = useCallback(
-    ({ type = 'info', title, message, durationMs = DEFAULT_DURATION_MS } = {}) => {
+    ({ type = 'info', title, message, durationMs = DEFAULT_DURATION_MS, ...rest } = {}) => {
       const id = `toast-${Date.now()}-${Math.random().toString(16).slice(2)}`;
-      const toast = { id, type, title, message };
+      const toast = { id, type, title, message, ...rest };
 
       setToasts((prev) => [toast, ...prev].slice(0, 3)); // KISS: максимум 3 уведомления
 
@@ -111,6 +111,18 @@ export function ToastProvider({ children }) {
                 </div>
                 {t.message && (
                   <p className="mt-1 text-sm text-gray-700 dark:text-gray-300">{t.message}</p>
+                )}
+                {t.action && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      t.action.onClick?.();
+                      remove(t.id);
+                    }}
+                    className="mt-3 px-3 py-1.5 bg-primary text-white text-xs font-bold rounded-lg hover:bg-primary/90 transition-colors"
+                  >
+                    {t.action.label}
+                  </button>
                 )}
               </div>
             </div>

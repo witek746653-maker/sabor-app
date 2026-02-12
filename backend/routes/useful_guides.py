@@ -1,6 +1,7 @@
 
 from flask import Blueprint, send_from_directory, abort, jsonify
 from flask_login import login_required
+from backend.routes.auth import check_not_guest
 import os
 
 bp = Blueprint('useful_guides', __name__)
@@ -11,9 +12,9 @@ GUIDES_DIR = os.path.join(os.getcwd(), 'backend', 'private', 'useful_guides')
 @bp.route('/api/useful/article/<key>', methods=['GET'])
 @login_required
 def get_article(key):
-    """
-    Отдает содержимое markdown-файла только авторизованным пользователям.
-    """
+    """Отдает содержимое markdown-файла только авторизованным (не гостям)."""
+    guest_check = check_not_guest()
+    if guest_check: return guest_check
     # Защита от Path Traversal
     safe_key = os.path.basename(key)
     filename = f"{safe_key}.md"
@@ -31,9 +32,9 @@ def get_article(key):
 @bp.route('/api/useful/manifest', methods=['GET'])
 @login_required
 def get_manifest():
-    """
-    Отдает манифест статей только авторизованным пользователям.
-    """
+    """Отдает манифест статей только авторизованным (не гостям)."""
+    guest_check = check_not_guest()
+    if guest_check: return guest_check
     filename = "manifest.json"
     file_path = os.path.join(GUIDES_DIR, filename)
     

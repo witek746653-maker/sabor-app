@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { formatMessageWithLinks } from '../utils/textFormatter';
 import { getMenus, getSections, login as apiLogin, loginAsGuest, getPublicNotifications } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
@@ -13,6 +13,7 @@ import { isComingSoon } from '../utils/featureStatus';
 
 function HomePage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { isAuthenticated, currentUser, checking, logout: authLogout, setAuth, enableOfflineGuest, isGuest, canWrite } = useAuth();
   const toast = useToast();
   // Текущая тема и переключатель.
@@ -103,24 +104,35 @@ function HomePage() {
     loadNotifications();
 
     // Показываем модальное окно входа, если не авторизован (только после завершения проверки)
-    // Скрываем, если пользователь авторизован
+    // Скрываем, если пользователь авторизован (и это не гость, который хочет войти)
     if (!checking) {
       if (isAuthenticated) {
-        setShowLoginModal(false); // Если авторизован, скрываем модальное окно
+        // Если это гость и в состоянии роутера есть просьба показать вход — не закрываем
+        if (!(isGuest && location.state?.showLogin)) {
+          setShowLoginModal(false);
+        }
 
         // Проверяем, проходил ли пользователь тур раньше
         const tourCompleted = localStorage.getItem('sabor.tourCompleted');
-        if (!tourCompleted) {
-          // Показываем тур с небольшой задержкой, чтобы пользователь успел увидеть интерфейс
+        if (!tourCompleted && !isGuest) {
           setTimeout(() => {
             setShowTour(true);
-          }, 1000); // 1 секунда задержки
+          }, 1000);
         }
       } else {
-        setShowLoginModal(true); // Если не авторизован, показываем модальное окно входа
+        setShowLoginModal(true);
       }
     }
-  }, [checking, isAuthenticated]);
+  }, [checking, isAuthenticated, isGuest, location.state]);
+
+  // Обработка принудительного открытия модалки входа (например, из GuestBlocker)
+  useEffect(() => {
+    if (location.state?.showLogin && isGuest) {
+      setShowLoginModal(true);
+      // Очищаем state, чтобы при обновлении страницы или навигации назад модалка не открывалась снова
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location, isGuest, navigate]);
 
   // Обновляем уведомления, если в другой вкладке поменялись "прочитанные"
   useEffect(() => {
