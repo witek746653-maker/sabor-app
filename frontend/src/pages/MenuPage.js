@@ -205,6 +205,17 @@ function MenuPage({ mode }) {
     );
   };
 
+  const isBeer = (it) => {
+    const menu = String(it?.menu || '').toLowerCase();
+    const section = String(it?.section || '').toLowerCase();
+    return (
+      menu.includes('пиво') ||
+      menu.includes('beer') ||
+      section.includes('пиво') ||
+      section.includes('beer')
+    );
+  };
+
   const getContentTarget = (it) => {
     const id = String(it?.id ?? '').trim();
     if (!id) return null;
@@ -879,7 +890,7 @@ function MenuPage({ mode }) {
                     <div className="relative w-full aspect-square overflow-hidden bg-gray-100 dark:bg-gray-800">
                       {imageUrl ? (
                         <div
-                          className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
+                          className={`absolute inset-0 ${isBeer(dish) ? 'bg-contain bg-no-repeat' : 'bg-cover'} bg-center transition-transform duration-700 group-hover:scale-110`}
                           style={{ backgroundImage: `url('${imageUrl}')` }}
                         />
                       ) : (

@@ -44,6 +44,12 @@ function BarItemDetailPage() {
 
   const isFavorite = item && catalogIds.includes(item.id);
   const isArchived = item?.status === 'в архиве';
+  const isBeer = item && (
+    String(item.menu || '').toLowerCase().includes('пиво') ||
+    String(item.menu || '').toLowerCase().includes('beer') ||
+    String(item.section || '').toLowerCase().includes('пиво') ||
+    String(item.section || '').toLowerCase().includes('beer')
+  );
 
   const getFieldValue = (fieldName) => {
     if (!item) return '';
@@ -356,7 +362,7 @@ function BarItemDetailPage() {
       {/* Изображение */}
       <div className="w-full h-[280px] sm:h-[350px] overflow-hidden relative -mt-4 mb-4 cursor-pointer" onClick={() => setIsImageExpanded(true)}>
         {imageUrl ? (
-          <img alt={item.image?.alt || item.title} className="h-full w-full object-cover" src={imageUrl} />
+          <img alt={item.image?.alt || item.title} className={`h-full w-full ${isBeer ? 'object-contain' : 'object-cover'}`} src={imageUrl} />
         ) : (
           <div className="h-full w-full bg-gray-200 dark:bg-gray-800 flex items-center justify-center">
             <span className="material-symbols-outlined text-gray-400 text-6xl">local_bar</span>
