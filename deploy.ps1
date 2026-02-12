@@ -79,36 +79,39 @@ if (!(Test-Path $publicDataDir)) {
 }
 
 foreach ($f in $menuFiles) {
-    $path = Join-Path $PSScriptRoot "data\$f"
-    if (Test-Path $path) {
-        # Validate JSON
-        Run "node" @("-e", "const fs=require('fs'); JSON.parse(fs.readFileSync('$($path.Replace('\','/'))','utf8')); console.log('OK: $f');")
-        # Sync to frontend/public for fallback
-        Copy-Item -Force $path (Join-Path $publicDataDir $f)
-    } else {
-        Write-Host "Warning: $f not found" -ForegroundColor Yellow
+  $path = Join-Path $PSScriptRoot "data\$f"
+  if (Test-Path $path) {
+    # Validate JSON
+    Run "node" @("-e", "const fs=require('fs'); JSON.parse(fs.readFileSync('$($path.Replace('\','/'))','utf8')); console.log('OK: $f');")
+    # Sync to frontend/public for fallback
+    Copy-Item -Force $path (Join-Path $publicDataDir $f)
+  }
+  else {
+    Write-Host "Warning: $f not found" -ForegroundColor Yellow
+  }
 }
 
 Info "Sync images into frontend/public"
 $sourceImages = Join-Path $PSScriptRoot "images"
 $publicImagesDir = Join-Path $PSScriptRoot "frontend\public\images"
 if (Test-Path $sourceImages) {
-    if (!(Test-Path $publicImagesDir)) {
-      New-Item -ItemType Directory -Path $publicImagesDir | Out-Null
-    }
-    Copy-Item -Force -Recurse (Join-Path $sourceImages "*") $publicImagesDir
+  if (!(Test-Path $publicImagesDir)) {
+    New-Item -ItemType Directory -Path $publicImagesDir | Out-Null
+  }
+  Copy-Item -Force -Recurse (Join-Path $sourceImages "*") $publicImagesDir
 }
 
 Info "Sync content into frontend/public (legacy check)"
 $sourceContent = Join-Path $PSScriptRoot "content"
 if (Test-Path $sourceContent) {
-    $publicContentDir = Join-Path $PSScriptRoot "frontend\public\content"
-    if (!(Test-Path $publicContentDir)) {
-      New-Item -ItemType Directory -Path $publicContentDir | Out-Null
-    }
-    Copy-Item -Force -Recurse (Join-Path $sourceContent "*") $publicContentDir
-} else {
-    Write-Host "Skipping content sync: 'content' folder no longer exists." -ForegroundColor Gray
+  $publicContentDir = Join-Path $PSScriptRoot "frontend\public\content"
+  if (!(Test-Path $publicContentDir)) {
+    New-Item -ItemType Directory -Path $publicContentDir | Out-Null
+  }
+  Copy-Item -Force -Recurse (Join-Path $sourceContent "*") $publicContentDir
+}
+else {
+  Write-Host "Skipping content sync: 'content' folder no longer exists." -ForegroundColor Gray
 }
 
 if (-not $SkipBuild) {
@@ -126,24 +129,29 @@ if (-not $SkipBuild) {
         $env:REACT_APP_SENTRY_DSN = $FrontendSentryDsn
         if ([string]::IsNullOrWhiteSpace($FrontendSentryEnabled)) {
           $env:REACT_APP_SENTRY_ENABLED = "true"
-        } else {
+        }
+        else {
           $env:REACT_APP_SENTRY_ENABLED = $FrontendSentryEnabled
         }
         Write-Host "Sentry (frontend): enabled for build" -ForegroundColor DarkGray
-      } else {
+      }
+      else {
         Write-Host "Sentry (frontend): DSN not set, skipping" -ForegroundColor DarkGray
       }
 
       Run "npm" @("run", "build")
-    } finally {
+    }
+    finally {
       # Восстанавливаем окружение (чтобы не “залипало” в текущем PowerShell)
       $env:REACT_APP_SENTRY_ENABLED = $prevSentryEnabled
       $env:REACT_APP_SENTRY_DSN = $prevSentryDsn
     }
-  } finally {
+  }
+  finally {
     Pop-Location
   }
-} else {
+}
+else {
   Info "Frontend build skipped (-SkipBuild)"
 }
 
@@ -151,7 +159,8 @@ Info "Upload files to server (scp)"
 
 if ($SkipUpload) {
   Info "Upload skipped (-SkipUpload)"
-} else {
+}
+else {
   # 1) Данные меню (все JSON файлы)
   $jsonItems = Get-ChildItem (Join-Path $PSScriptRoot "data") -Filter "*.json" | ForEach-Object { $_.FullName }
   Run "ssh" ($CommonSshArgs + @($Remote, "sudo mkdir -p $RemoteRoot/data"))
@@ -189,18 +198,21 @@ if (-not $SkipMigrate) {
   Info "Migrate DB on server (JSON -> SQLite)"
   if ($SkipUpload) {
     Write-Host "Skipping migrate because -SkipUpload is set (no guarantee server has updated JSON/scripts)." -ForegroundColor Yellow
-  } else {
+  }
+  else {
     Start-Sleep -Seconds 3
     Run "ssh" ($CommonSshArgs + @($Remote, "cd $RemoteRoot && PYTHONPATH=. ./venv/bin/python3 backend/migrate_to_db.py --yes"))
   }
-} else {
+}
+else {
   Info "DB migration skipped (-SkipMigrate)"
 }
 
 Info "Restart service ($ServiceName)"
 if ($SkipUpload) {
   Write-Host "Skipping restart because -SkipUpload is set." -ForegroundColor Yellow
-} else {
+}
+else {
   Start-Sleep -Seconds 3
   Run "ssh" ($CommonSshArgs + @($Remote, "sudo systemctl restart $ServiceName"))
 }
