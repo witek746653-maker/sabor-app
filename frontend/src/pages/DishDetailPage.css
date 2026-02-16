@@ -120,8 +120,9 @@
 .contains-list ol[type="1"],
 .contains-list ol {
   list-style-type: decimal !important;
-  padding-left: 1rem !important;
-  margin: 0 !important; /* максимально компактно */
+  padding-left: 1.5rem !important;
+  margin: 0 !important;
+  /* максимально компактно */
   counter-reset: list-counter;
 }
 
@@ -131,14 +132,16 @@
   list-style-type: decimal !important;
   list-style-position: outside !important;
   padding-left: 0.5rem !important;
-  margin: 0 !important; /* максимально компактно */
-  margin-left: 0.25rem !important;
+  margin: 0 !important;
+  /* максимально компактно */
+  margin-left: 0 !important;
   line-height: 1.5 !important;
 }
 
 /* Минимальные “абзацные” отступы в HTML-тексте (reference_info/contains и т.п.) */
 .contains-list p {
-  margin: 0 !important; /* без пустоты между абзацами */
+  margin: 0 !important;
+  /* без пустоты между абзацами */
 }
 
 .contains-list ul {
@@ -213,10 +216,12 @@ ol:not([type]) li {
 .features-text-collapsed {
   display: -webkit-box;
   -webkit-line-clamp: 4;
+  line-clamp: 4;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-height: 6rem; /* Примерно 4 строки */
+  max-height: 6rem;
+  /* Примерно 4 строки */
 }
 
 .allergens-features-card::before {
@@ -248,6 +253,7 @@ ol:not([type]) li {
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -256,10 +262,13 @@ ol:not([type]) li {
 
 /* Медленная пульсация для иконок */
 @keyframes pulse-slow {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 1;
     transform: scale(1);
   }
+
   50% {
     opacity: 0.8;
     transform: scale(1.05);
@@ -297,14 +306,14 @@ ol:not([type]) li {
     background-color: rgba(255, 235, 59, 0.4);
     box-shadow: 0 0 0 0 rgba(255, 235, 59, 0.7);
   }
+
   50% {
     background-color: rgba(255, 235, 59, 0.3);
     box-shadow: 0 0 0 8px rgba(255, 235, 59, 0);
   }
+
   100% {
     background-color: rgba(255, 235, 59, 0.1);
     box-shadow: 0 0 0 0 rgba(255, 235, 59, 0);
   }
 }
-
-

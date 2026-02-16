@@ -148,6 +148,7 @@ function HomePage() {
   }, [location, isGuest, navigate]);
 
   // Обновляем уведомления, если в другой вкладке поменялись "прочитанные"
+  // А также при фокусе окна и периодически (раз в 60 сек)
   useEffect(() => {
     const handleStorageChange = (e) => {
       if (e.key === NOTIFICATIONS_READ_KEY || e.key === null) {
@@ -155,10 +156,20 @@ function HomePage() {
       }
     };
 
+    const handleFocus = () => {
+      loadNotifications();
+    };
+
     window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('focus', handleFocus);
+
+    // Периодическое обновление, чтобы ловить новые уведомления от админа
+    const intervalId = setInterval(loadNotifications, 60000);
 
     return () => {
       window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('focus', handleFocus);
+      clearInterval(intervalId);
     };
   }, []);
 
