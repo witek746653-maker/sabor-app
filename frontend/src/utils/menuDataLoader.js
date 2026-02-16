@@ -20,18 +20,6 @@ const MENU_PATHS = {
   ]
 };
 
-const MENU_FILTERS = {
-  'kitchen': ['Основное меню'],
-  'breakfast': ['Авторские завтраки'],
-  'kids': ['Детское меню', 'Летние каникулы'],
-  'fest': ['Специальное меню'],
-  'season': ['Зимнее меню', 'Постное меню'],
-  'bar': ['Барное меню'],
-  'wine': ['Вино'],
-  'tea': ['Чай'],
-  'general': ['Сервис и знания']
-};
-
 const MENU_NAMES = {
   'all': 'Все меню',
   'kitchen': 'Основное',
@@ -46,12 +34,33 @@ const MENU_NAMES = {
   'english': 'English'
 };
 
+let cachedConfig = null;
+
+/**
+ * Загружает конфигурацию меню
+ */
+const loadMenuConfig = async () => {
+  if (cachedConfig) return cachedConfig;
+  try {
+    const res = await fetch('/data/menu-config.json');
+    if (res.ok) {
+      cachedConfig = await res.json();
+      return cachedConfig;
+    }
+  } catch (e) {
+    console.warn('Failed to load menu-config.json', e);
+  }
+  return {}; // Возвращаем пустой объект, если не загрузилось
+};
+
 /**
  * Загружает данные меню из JSON
  */
 export const loadMenuData = async (menuType) => {
   try {
+    const config = await loadMenuConfig();
     const path = MENU_PATHS[menuType];
+
     if (!path) {
       throw new Error(`Unknown menu type: ${menuType}`);
     }
@@ -71,13 +80,13 @@ export const loadMenuData = async (menuType) => {
     // Фильтрация неактивных и архивных позиций
     data = data.filter(item => item && item.status !== 'в архиве' && item.status !== 'неактивно');
 
-    // Фильтрация по конкретному меню, если нужно
-    if (MENU_FILTERS[menuType]) {
-      const allowedLabels = MENU_FILTERS[menuType];
+    // Динамическая фильтрация по конфигу
+    if (config?.[menuType]) {
+      const allowedLabels = config[menuType].items || [];
       data = data.filter(item => allowedLabels.includes(item.menu));
     }
 
-    // Специальная обработка для English: оставляем только те, где есть перевод
+    // Специальная обработка для English
     if (menuType === 'english') {
       const excludedMenus = ['Вино', 'Чай', 'Барное меню'];
       data = data.filter(item =>
@@ -142,7 +151,7 @@ export const mapToTrainingFormat = (dish) => {
     id: dish.id,
     title: dish.title,
     description: dish.description,
-    image: dish.image?.src || '/images/zaglushka.webp',
+    image: dish.image?.src || null,
     ingredients: toArray(dish.ingredients),
     allergens: toArray(dish.allergens),
     tags: toArray(dish.tags),

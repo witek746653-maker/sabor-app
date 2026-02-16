@@ -515,7 +515,7 @@
       "фреш лимона"
     ],
     "image": {
-      "src": "../images/zaglushka.webp",
+      "src": "null",
       "alt": ""
     },
     "comments": [],
@@ -555,7 +555,7 @@
       "ром"
     ],
     "image": {
-      "src": "../images/zaglushka.webp",
+      "src": "null",
       "alt": ""
     },
     "comments": [
@@ -597,7 +597,7 @@
       "коньяк"
     ],
     "image": {
-      "src": "../images/zaglushka.webp",
+      "src": "null",
       "alt": ""
     },
     "comments": [
@@ -640,7 +640,7 @@
       "мёд"
     ],
     "image": {
-      "src": "../images/zaglushka.webp",
+      "src": "null",
       "alt": ""
     },
     "comments": [
@@ -683,7 +683,7 @@
       "мёд"
     ],
     "image": {
-      "src": "../images/zaglushka.webp",
+      "src": "null",
       "alt": ""
     },
     "comments": [],

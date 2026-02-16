@@ -4,6 +4,7 @@ import { getDishes, getMenus } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import { useVisibility } from '../contexts/VisibilityContext';
 import mediaItems from '../data/mediaItems';
+import MenuImagePlaceholder from './MenuImagePlaceholder';
 
 
 /**
@@ -540,18 +541,14 @@ function GlobalSearch({ isOpen, onClose, searchQuery: externalQuery = null }) {
                           alt=""
                           className="w-full h-full object-cover"
                           onError={(e) => {
-                            // Если картинка не загрузилась (битая ссылка), прячем её и показываем иконку
-                            if (e.target.parentElement) {
-                              e.target.parentElement.innerHTML = `<div class="flex size-full items-center justify-center text-primary"><span class="material-symbols-outlined">search</span></div>`;
-                            }
+                            e.target.style.display = 'none';
                           }}
                         />
+                        <MenuImagePlaceholder menuName={result.dish?.menu || result.menu || result.category} />
                       </div>
                     ) : (
-                      <div className="size-12 rounded-lg flex items-center justify-center flex-shrink-0 bg-gray-50 dark:bg-gray-900 border border-transparent">
-                        <span className="material-symbols-outlined text-primary text-2xl">
-                          {getResultIcon(result.type, result.field, result.itemKind)}
-                        </span>
+                      <div className="size-12 rounded-lg flex items-center justify-center flex-shrink-0 bg-gray-50 dark:bg-gray-900 border border-transparent overflow-hidden relative">
+                        <MenuImagePlaceholder menuName={result.dish?.menu || result.menu || result.category} />
                       </div>
                     )}
                     <div className="flex-1 min-w-0">

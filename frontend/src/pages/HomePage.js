@@ -9,6 +9,7 @@ import { useVisibility } from '../contexts/VisibilityContext';
 import ComingSoonWrapper from '../components/ComingSoonWrapper';
 import HelpPopover from '../components/HelpPopover';
 import AppTour from '../components/AppTour';
+import MenuImagePlaceholder from '../components/MenuImagePlaceholder';
 import { isComingSoon } from '../utils/featureStatus';
 
 function HomePage() {
@@ -85,11 +86,18 @@ function HomePage() {
     }
   };
 
+  // Состояние для конфига меню
+  const [menuConfig, setMenuConfig] = useState(null);
+
   useEffect(() => {
     const loadMenus = async () => {
       try {
-        const data = await getMenus();
+        const [data, configRes] = await Promise.all([
+          getMenus(),
+          fetch('/data/menu-config.json').then(r => r.ok ? r.json() : null)
+        ]);
         setMenus(data);
+        setMenuConfig(configRes);
       } catch (err) {
         setError('Ошибка загрузки меню. Убедитесь, что сервер запущен.');
         console.error('Ошибка загрузки меню:', err);
@@ -125,6 +133,11 @@ function HomePage() {
     }
   }, [checking, isAuthenticated, isGuest, location.state]);
 
+  const [imageErrors, setImageErrors] = useState({});
+
+  const handleImageError = (menuName) => {
+    setImageErrors(prev => ({ ...prev, [menuName]: true }));
+  };
   // Обработка принудительного открытия модалки входа (например, из GuestBlocker)
   useEffect(() => {
     if (location.state?.showLogin && isGuest) {
@@ -224,77 +237,53 @@ function HomePage() {
     return matchedIndex === -1 ? Number.POSITIVE_INFINITY : matchedIndex;
   };
 
+  // Функция для получения описания меню
+  const getMenuDescription = (menuName) => {
+    if (!menuConfig) {
+      // Фолбэк на старую логику, если конфиг не загружен
+      const menuLower = menuName.toLowerCase();
+      if (menuLower.includes('основн')) return 'Главные позиции ресторана';
+      if (menuLower.includes('завтрак')) return 'Утреннее меню от Шефа';
+      if (menuLower.includes('детск')) return 'Любимые блюда для детей';
+      if (menuLower.includes('чай')) return 'Полезные напитки';
+      return '';
+    }
+
+    const groups = Object.values(menuConfig);
+    const group = groups.find(g => g.items?.includes(menuName));
+    return group?.description || '';
+  };
+
   // Функция для получения иконки по названию меню
   const getMenuIcon = (menuName) => {
+    if (menuConfig) {
+      const groups = Object.values(menuConfig);
+      const group = groups.find(g => g.items?.includes(menuName));
+      if (group?.icon) return group.icon;
+    }
+
     const menuLower = menuName.toLowerCase();
     if (menuLower.includes('основн')) return 'restaurant';
     if (menuLower.includes('завтрак')) return 'bakery_dining';
-    if (menuLower.includes('сезон')) return 'eco';
-    if (menuLower.includes('напит') || menuLower.includes('бар')) return 'local_bar';
-    if (menuLower.includes('десерт')) return 'icecream';
-    if (menuLower.includes('детск')) return 'child_care';
-    if (menuLower.includes('веган')) return 'spa';
     if (menuLower.includes('чай')) return 'emoji_food_beverage';
     return 'restaurant_menu';
   };
 
-  // Функция для получения описания меню
-  const getMenuDescription = (menuName) => {
-    const menuLower = menuName.toLowerCase();
-    if (menuLower.includes('основн')) return 'Главные позиции ресторана';
-    if (menuLower.includes('завтрак')) return 'Утреннее меню от Шефа';
-    if (menuLower.includes('ланч')) return 'Пн-Пт 12-16';
-    if (menuLower.includes('сезон')) return 'Сезонное меню';
-    if (menuLower.includes('детск')) return 'Любимые блюда для детей';
-    if (menuLower.includes('чай')) return 'Полезные напитки';
-    if (menuLower.includes('спец')) return 'Блюда для постоянных гостей';
-    if (menuLower.includes('вино')) return 'Подборка вин от сомелье';
-    if (menuLower.includes('бар')) return 'Коктейли, глинтвейн, горячие напитки';
-    if (menuLower.includes('каникул')) return 'Фестивали';
-    if (menuLower.includes('фест')) return 'Фестивали';
-    if (menuLower.includes('пост')) return 'Блюда с ограничениями';
-    if (menuLower.includes('зимн')) return 'Сезонное меню';
-    if (menuLower.includes('летн')) return 'Сезонное меню';
-    if (menuLower.includes('осен')) return 'Сезонное меню';
-    if (menuLower.includes('весен')) return 'Сезонное меню';
-
-
-    return '';
-  };
-
   // Функция для получения изображения меню
   const getMenuImage = (menuName) => {
+    if (menuConfig) {
+      const groups = Object.values(menuConfig);
+      const group = groups.find(g => g.items?.includes(menuName));
+      if (group) {
+        if (group.images && group.images[menuName]) return group.images[menuName];
+        if (group.image) return group.image;
+      }
+    }
+
     const menuLower = menuName.toLowerCase();
-    if (menuLower.includes('основн')) {
-      return '/images/main-menu-head.webp';
-    }
-    if (menuLower.includes('завтрак')) {
-      return '/images/breakfast-head.webp';
-    }
-    if (menuLower.includes('детск')) {
-      return '/images/kids-menu-head.webp';
-    }
-    if (menuLower.includes('зимн')) {
-      return '/images/winter-menu-head.webp';
-    }
-    if (menuLower.includes('постн')) {
-      return '/images/plant-based-menu-head.webp';
-    }
-    if (menuLower.includes('вино')) {
-      return '/images/wine-menu-head.webp';
-    }
-    if (menuLower.includes('бар')) {
-      return '/images/bar-menu-head.webp';
-    }
-    if (menuLower.includes('каникул')) {
-      return '/images/italian-holydais-head.webp';
-    }
-    if (menuLower.includes('чай')) {
-      return '/images/tea-head.webp';
-    }
-    if (menuLower.includes('спец')) {
-      return '/images/special-menu-head.webp';
-    }
+    if (menuLower.includes('основн')) return '/images/main-menu-head.webp';
+    if (menuLower.includes('завтрак')) return '/images/breakfast-head.webp';
+    if (menuLower.includes('чай')) return '/images/tea-head.webp';
     return null;
   };
 
@@ -780,20 +769,23 @@ function HomePage() {
                   to={linkTo}
                   className="group relative overflow-hidden rounded-xl aspect-[4/3] shadow-md shadow-orange-900/5 active:scale-[0.98] transition-all duration-300"
                 >
-                  {imageUrl ? (
+                  {imageUrl && !imageErrors[card.name] ? (
                     <>
                       <div
                         className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
                         style={{ backgroundImage: `url("${imageUrl}")` }}
                       />
+                      {/* Скрытый img для отлова ошибки загрузки */}
+                      <img
+                        src={imageUrl}
+                        className="hidden"
+                        alt=""
+                        onError={() => handleImageError(card.name)}
+                      />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
                     </>
                   ) : (
-                    <div className="absolute inset-0 bg-orange-100 dark:bg-gray-800 flex items-center justify-center">
-                      <span className="material-symbols-outlined text-primary/40 dark:text-white/10 text-6xl">
-                        {icon}
-                      </span>
-                    </div>
+                    <MenuImagePlaceholder menuName={card.name} className="p-0" />
                   )}
                   {!imageUrl && (
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />

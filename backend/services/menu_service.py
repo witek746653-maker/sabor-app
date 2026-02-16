@@ -14,10 +14,15 @@ class MenuService:
     BAR_MENU_KEYWORDS = ["бар", "bar", "напит", "drink"]
     BAR_SECTION_KEYWORDS = ["коктейл", "cocktail", "пиво", "beer", "кофе", "coffee", "напит", "drink"]
     TEA_KEYWORDS = ["чай", "tea"]
-    ALLOWED_MENUS_ORDER = [
-        "Авторские завтраки", "Барное меню", "Вино", "Детское меню", "Зимнее меню", 
-        "Летние каникулы", "Основное меню", "Постное меню", "Специальное меню"
-    ]
+    @classmethod
+    def get_allowed_menus_order(cls) -> list[str]:
+        items = cls.load_menu_db_items()
+        menus = set()
+        for item in items:
+            m = cls.normalize_menu_value(item.get("menu"))
+            if m: menus.add(m)
+        sorted_others = sorted([m for m in menus if m != "Основное меню"])
+        return (["Основное меню"] + sorted_others) if "Основное меню" in menus else sorted_others
 
     _MENU_DB_BY_ID_CACHE = None
 

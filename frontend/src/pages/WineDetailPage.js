@@ -7,6 +7,7 @@ import { useVisibility } from '../contexts/VisibilityContext';
 import { getDishImageUrl } from '../utils/imageUtils';
 import { useFavorites } from '../contexts/FavoritesContext';
 import GuestBlocker from '../components/GuestBlocker';
+import MenuImagePlaceholder from '../components/MenuImagePlaceholder';
 import './DishDetailPage.css';
 
 // Термин **парсинг**: простыми словами “разобрать строку на кусочки”.
@@ -434,9 +435,7 @@ function WineDetailPage() {
             src={imageUrl}
           />
         ) : (
-          <div className="h-full w-full bg-gray-200 dark:bg-gray-800 flex items-center justify-center">
-            <span className="material-symbols-outlined text-gray-400 text-6xl">wine_bar</span>
-          </div>
+          <MenuImagePlaceholder menuName="Вино" />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
         <div className="absolute top-2 right-2 bg-black/50 backdrop-blur-sm rounded-full p-2">

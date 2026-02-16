@@ -468,9 +468,7 @@ function DishDetailPage({ mode }) {
             src={imageUrl}
           />
         ) : (
-          <div className="h-full w-full bg-gray-200 dark:bg-gray-800 flex items-center justify-center">
-            <span className="material-symbols-outlined text-gray-400 text-6xl">restaurant</span>
-          </div>
+          <MenuImagePlaceholder menuName={dish.menu} />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
         <div className="absolute top-2 right-2 bg-black/50 backdrop-blur-sm rounded-full p-2">

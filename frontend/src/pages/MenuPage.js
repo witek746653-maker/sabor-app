@@ -7,6 +7,7 @@ import { useVisibility } from '../contexts/VisibilityContext';
 import { getDishImageUrl } from '../utils/imageUtils';
 import { useFavorites } from '../contexts/FavoritesContext';
 import GuestBlocker from '../components/GuestBlocker';
+import MenuImagePlaceholder from '../components/MenuImagePlaceholder';
 
 function MenuPage({ mode }) {
   const { menuName } = useParams();
@@ -33,6 +34,11 @@ function MenuPage({ mode }) {
     return localStorage.getItem('menuLanguage') || 'RU';
   });
   const [showFavorites, setShowFavorites] = useState(false);
+  const [imageErrors, setImageErrors] = useState({});
+
+  const handleImageError = (dishId) => {
+    setImageErrors(prev => ({ ...prev, [dishId]: true }));
+  };
   const favorites = catalogIds;
   const menuFiltersStorageKey = `menuFilters:${mode === 'tea' ? 'tea' : (menuName || 'all')}`;
   const [filtersLoaded, setFiltersLoaded] = useState(false);
@@ -911,9 +917,7 @@ function MenuPage({ mode }) {
                             style={{ backgroundImage: `url('${imageUrl}')` }}
                           />
                         ) : (
-                          <div className="absolute inset-0 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-                            <span className="material-symbols-outlined text-gray-400 text-4xl">emoji_food_beverage</span>
-                          </div>
+                          <MenuImagePlaceholder menuName="Чай" className="p-0" />
                         )}
                         {dish.i18n?.en?.['audio-en'] && language === 'EN' && (
                           <button
@@ -984,16 +988,25 @@ function MenuPage({ mode }) {
                   {/* Затемняем ТОЛЬКО контент карточки, чтобы бейдж "В АРХИВЕ" был читабельным */}
                   <div className={`flex flex-col h-full ${isArchived ? 'opacity-50 grayscale' : ''}`}>
                     <div className="relative w-full aspect-square overflow-hidden bg-gray-100 dark:bg-gray-800">
-                      {imageUrl ? (
+                      {imageUrl && !imageErrors[dish.id] ? (
                         <div
                           className={`absolute inset-0 ${isBeer(dish) ? 'bg-contain bg-no-repeat' : 'bg-cover'} bg-center transition-transform duration-700 group-hover:scale-110`}
                           style={{ backgroundImage: `url('${imageUrl}')` }}
                         />
                       ) : (
-                        <div className="absolute inset-0 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-                          <span className="material-symbols-outlined text-gray-400 text-4xl">restaurant</span>
-                        </div>
+                        <MenuImagePlaceholder menuName={dish.menu} className="p-0" />
                       )}
+
+                      {/* Скрытый img для отлова ошибки загрузки фона */}
+                      {imageUrl && (
+                        <img
+                          src={imageUrl}
+                          alt=""
+                          className="hidden"
+                          onError={() => handleImageError(dish.id)}
+                        />
+                      )}
+
 
                       {dish.i18n?.en?.['audio-en'] && language === 'EN' && (
                         <button

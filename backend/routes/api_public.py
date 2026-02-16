@@ -148,7 +148,7 @@ def get_menus():
             if norm:
                 menu_set.add(norm)
         
-        filtered_ordered = [m for m in MenuService.ALLOWED_MENUS_ORDER if m in menu_set]
+        filtered_ordered = [m for m in MenuService.get_allowed_menus_order() if m in menu_set]
         return jsonify(filtered_ordered)
     except Exception as e:
         return jsonify({'error': str(e)}), 500

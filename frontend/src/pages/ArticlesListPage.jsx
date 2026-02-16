@@ -4,6 +4,7 @@ import { ChevronLeft, BookOpen, Clock, ArrowRight, Search, X } from 'lucide-reac
 import { cn } from '../utils/readerUtils';
 import { useAuth } from '../contexts/AuthContext';
 import GuestBlocker from '../components/GuestBlocker';
+import MenuImagePlaceholder from '../components/MenuImagePlaceholder';
 
 // Вспомогательный компонент карточки статьи
 const ArticleCard = ({ article, onClick }) => {
@@ -19,16 +20,11 @@ const ArticleCard = ({ article, onClick }) => {
                         alt={article.title}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                         onError={(e) => {
-                            e.target.onerror = null;
-                            e.target.src = '/images/zaglushka.webp';
-                            e.target.classList.add('opacity-40', 'grayscale');
+                            e.target.style.display = 'none';
                         }}
                     />
-                ) : (
-                    <div className="w-full h-full flex items-center justify-center opacity-20">
-                        <BookOpen size={48} />
-                    </div>
-                )}
+                ) : null}
+                {!article.image && <MenuImagePlaceholder menuName="Статьи" />}
                 <div className="absolute top-3 left-3 px-2 py-1 bg-black/40 backdrop-blur-md rounded-lg text-[10px] font-bold text-white uppercase tracking-wider">
                     {article.category || 'Статья'}
                 </div>

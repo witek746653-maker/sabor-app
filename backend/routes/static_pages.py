@@ -65,6 +65,13 @@ def serve_image(filename):
         build_images_dir = Config.FRONTEND_BUILD_DIR / "images"
         if build_images_dir.exists() and (build_images_dir / filename).exists():
             return send_from_directory(str(build_images_dir), filename, mimetype=guessed_mime)
+        
+        # 2. Затем в публичной папке фронтенда (для разработки)
+        public_images_dir = Config.FRONTEND_PUBLIC_DIR / "images"
+        if public_images_dir.exists() and (public_images_dir / filename).exists():
+            return send_from_directory(str(public_images_dir), filename, mimetype=guessed_mime)
+
+        # 3. Затем в папке images в корне
         if Config.IMAGES_DIR.exists() and (Config.IMAGES_DIR / filename).exists():
             return send_from_directory(str(Config.IMAGES_DIR), filename, mimetype=guessed_mime)
         return jsonify({'error': 'Image not found'}), 404

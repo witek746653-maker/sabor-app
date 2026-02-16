@@ -6,6 +6,7 @@ import { getDishImageUrl } from '../utils/imageUtils';
 import { useVisibility } from '../contexts/VisibilityContext';
 import mediaItems from '../data/mediaItems';
 import { useFavorites } from '../contexts/FavoritesContext';
+import MenuImagePlaceholder from '../components/MenuImagePlaceholder';
 
 function FavoritesPage() {
   const navigate = useNavigate();
@@ -347,12 +348,16 @@ function FavoritesPage() {
                   to={`/article/${item.key}`}
                   className="block rounded-lg overflow-hidden bg-white dark:bg-surface-dark shadow-sm border border-gray-100 dark:border-gray-800 hover:border-primary/50 transition-all"
                 >
-                  <div className="relative w-full aspect-square bg-gray-100 dark:bg-gray-800">
+                  <div className="relative w-full aspect-square overflow-hidden bg-gray-100 dark:bg-gray-800">
                     <RemoveFavoriteButton onClick={() => toggleArticleFavorite(item.key)} />
-                    <div
-                      className="absolute inset-0 bg-cover bg-center"
-                      style={{ backgroundImage: `url('${item.image || '/images/zaglushka.webp'}')` }}
-                    />
+                    {item.image ? (
+                      <div
+                        className="absolute inset-0 bg-cover bg-center"
+                        style={{ backgroundImage: `url('${item.image}')` }}
+                      />
+                    ) : (
+                      <MenuImagePlaceholder menuName="Статьи" />
+                    )}
                   </div>
                   <div className="p-2">
                     <p className="font-bold text-[10px] dark:text-white line-clamp-2 mb-0.5 leading-tight">{item.title}</p>
@@ -382,9 +387,7 @@ function FavoritesPage() {
                       style={{ backgroundImage: `url('${imgUrl}')` }}
                     />
                   ) : (
-                    <div className="absolute inset-0 flex items-center justify-center text-gray-300">
-                      <span className="material-symbols-outlined text-3xl">image_not_supported</span>
-                    </div>
+                    <MenuImagePlaceholder menuName={item.menu} />
                   )}
                   {isArchived && (
                     <div className="absolute top-1 right-1 bg-black/70 text-white text-[8px] px-1.5 py-0.5 rounded backdrop-blur">АРХИВ</div>
