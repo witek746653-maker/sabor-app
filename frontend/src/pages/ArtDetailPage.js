@@ -265,7 +265,7 @@ function ArtDetailPage() {
           )}
 
           {/* Комментарии */}
-          {artwork.comments && (
+          {artwork.comments && String(artwork.comments).trim() && (
             <p className="text-[#5D4037] dark:text-gray-300 leading-relaxed text-[15px] mb-6 italic">
               {artwork.comments}
             </p>

@@ -293,7 +293,7 @@ function BarItemDetailPage() {
   const tags = getTagsForLanguage();
   const cardIngredients = parseCardIngredients(item.cardIngredients, item.ingredients);
   const ingredients = Array.isArray(item.ingredients) ? item.ingredients.filter(Boolean) : [];
-  const comments = Array.isArray(item.comments) ? item.comments.filter(Boolean) : (item.comments ? [item.comments] : []);
+  const comments = (Array.isArray(item.comments) ? item.comments : [item.comments]).filter(c => String(c || '').trim());
 
   return (
     <div className="relative z-20 min-h-[100dvh] overflow-hidden bg-background-light dark:bg-background-dark">

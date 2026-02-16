@@ -343,7 +343,7 @@ function WineDetailPage() {
 
   const pairingsDishes = Array.isArray(wine.pairings?.dishes) ? wine.pairings.dishes.filter(Boolean) : [];
   const pairingsNotes = Array.isArray(wine.pairings?.notes) ? wine.pairings.notes.filter(Boolean) : [];
-  const comments = Array.isArray(wine.comments) ? wine.comments.filter(Boolean) : (wine.comments ? [wine.comments] : []);
+  const comments = (Array.isArray(wine.comments) ? wine.comments : [wine.comments]).filter(c => String(c || '').trim());
 
   return (
     <div className="relative z-20 min-h-[100dvh] overflow-hidden bg-background-light dark:bg-background-dark">

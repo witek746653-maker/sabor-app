@@ -18,6 +18,8 @@ function DishDetailPage({ mode }) {
   const { isVisible } = useVisibility();
   const { catalogIds, toggleCatalogFavorite } = useFavorites();
   const [dish, setDish] = useState(null);
+  const [extras, setExtras] = useState(null);
+  const [isExtrasOpen, setIsExtrasOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isFeaturesExpanded, setIsFeaturesExpanded] = useState(false);
   const [isReferenceExpanded, setIsReferenceExpanded] = useState(false);
@@ -45,7 +47,7 @@ function DishDetailPage({ mode }) {
 
   const isFilled = (value) => {
     if (value === null || value === undefined) return false;
-    if (Array.isArray(value)) return value.length > 0;
+    if (Array.isArray(value)) return value.filter(v => String(v || '').trim().length > 0).length > 0;
     if (typeof value === 'number') return Number.isFinite(value);
     if (typeof value === 'string') return value.trim().length > 0;
     if (typeof value === 'object') return Object.keys(value).length > 0;
@@ -146,9 +148,9 @@ function DishDetailPage({ mode }) {
       if (typeof tagsEn === 'string') {
         return tagsEn.split(',').map(t => t.trim()).filter(Boolean);
       }
-      return Array.isArray(tagsEn) ? tagsEn : [];
+      return Array.isArray(tagsEn) ? tagsEn.filter(t => String(t || '').trim()) : [];
     }
-    return dish.tags || [];
+    return (dish.tags || []).filter(t => String(t || '').trim());
   };
 
   // Функция для получения аллергенов в зависимости от языка
@@ -159,14 +161,14 @@ function DishDetailPage({ mode }) {
       if (typeof allergensEn === 'string') {
         return allergensEn.split(',').map(a => a.trim()).filter(Boolean);
       }
-      return Array.isArray(allergensEn) ? allergensEn : [];
+      return Array.isArray(allergensEn) ? allergensEn.filter(a => String(a || '').trim()) : [];
     }
 
     const raw = dish.allergens;
     if (typeof raw === 'string') {
       return raw.split(',').map(a => a.trim()).filter(Boolean);
     }
-    return Array.isArray(raw) ? raw : [];
+    return (Array.isArray(raw) ? raw : []).filter(a => String(a || '').trim());
   };
 
   // Функция для подсветки текста при поиске
@@ -186,7 +188,21 @@ function DishDetailPage({ mode }) {
       try {
         const data = await getDish(id);
         setDish(data);
-        setIsFeaturesExpanded(false); // Сбрасываем состояние развернутости при загрузке нового блюда
+
+        // Загружаем допы только если это завтрак
+        if (data.menu === 'Авторские завтраки') {
+          try {
+            const response = await fetch('/data/extras-breakfast.json');
+            if (response.ok) {
+              const extrasData = await response.json();
+              setExtras(extrasData);
+            }
+          } catch (err) {
+            console.error('Ошибка загрузки допов:', err);
+          }
+        }
+
+        setIsFeaturesExpanded(false);
 
         // Проверяем, есть ли запрос из глобального поиска
         const globalSearchQuery = sessionStorage.getItem('globalSearchQuery');
@@ -471,6 +487,21 @@ function DishDetailPage({ mode }) {
           <MenuImagePlaceholder menuName={dish.menu} />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+
+        {/* Кнопка Топпинги поверх фото */}
+        {extras && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsExtrasOpen(true);
+            }}
+            className="absolute bottom-4 left-4 flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white text-[12px] font-bold shadow-lg active:scale-95 transition-all"
+          >
+            <span className="material-symbols-outlined text-[18px]">add_circle</span>
+            {language === 'EN' ? 'Toppings' : 'Топпинги'}
+          </button>
+        )}
+
         <div className="absolute top-2 right-2 bg-black/50 backdrop-blur-sm rounded-full p-2">
           <span className="material-symbols-outlined text-white text-[20px]">zoom_in</span>
         </div>
@@ -663,7 +694,46 @@ function DishDetailPage({ mode }) {
                   </div>
                 )}
 
+                {/* Блок допов (топпингов) для завтраков */}
+                {extras && isVisible({ scope: 'pageBlock', target: 'dishDetail.extras' }) && (
+                  <div className="mb-8 overflow-hidden rounded-2xl border border-gray-100 dark:border-white/10 bg-white/50 dark:bg-white/5 backdrop-blur-md shadow-xl">
+                    <div className="bg-gray-50/80 dark:bg-black/20 px-5 py-4 flex items-center gap-3 border-b border-gray-100 dark:border-white/5">
+                      <div className="p-2 rounded-xl bg-primary/10 text-primary">
+                        <span className="material-symbols-outlined text-xl block">add_circle</span>
+                      </div>
+                      <h3 className="font-bold text-lg text-gray-900 dark:text-white">Рекомендуемые топпинги</h3>
+                    </div>
+
+                    <div className="p-4 overflow-x-auto no-scrollbar">
+                      <div className="flex flex-nowrap md:grid md:grid-cols-4 lg:grid-cols-7 gap-3 min-w-max md:min-w-0">
+                        {extras?.categories?.map((cat, i) => (
+                          <div key={i} className="w-40 md:w-auto flex flex-col gap-2 p-3 rounded-xl bg-white dark:bg-white/5 border border-gray-50 dark:border-white/5 shadow-sm">
+                            <div className="flex items-center gap-2 mb-1 border-b border-gray-50 dark:border-white/5 pb-2">
+                              <span className="text-base">{cat.icon}</span>
+                              <span className="text-[11px] font-bold uppercase tracking-wider text-primary truncate">{cat.name}</span>
+                            </div>
+                            <div className="space-y-1.5">
+                              {cat.items?.map((item, j) => (
+                                <div key={j} className="flex flex-col">
+                                  <span className="text-[12px] font-medium text-gray-800 dark:text-gray-200 leading-tight">{item.name}</span>
+                                  {item.weight && (
+                                    <span className="text-[10px] text-gray-400 dark:text-gray-500">({item.weight})</span>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    <p className="px-5 py-3 text-[10px] text-gray-400 italic bg-gray-50/30 dark:bg-transparent">
+                      * Доступно к заказу вместе с основным блюдом.
+                    </p>
+                  </div>
+                )}
+
                 {/* Блок особенностей */}
+
                 {hasFeatures && showFeatures && (() => {
                   // Убираем HTML теги для подсчета длины текста
                   const textContent = dish.features.replace(/<[^>]*>/g, '').trim();
@@ -766,7 +836,7 @@ function DishDetailPage({ mode }) {
           ) : null}
 
           {/* Комментарии */}
-          {!guestBlocked && dish.comments && dish.comments.length > 0 && (
+          {!guestBlocked && isFilled(dish.comments) && (
             <div
               ref={(el) => { if (el) searchRefs.current['comments'] = el; }}
               className="mb-8"
@@ -780,9 +850,9 @@ function DishDetailPage({ mode }) {
                 </h3>
                 <ul className="space-y-3">
                   {(language === 'EN' && dish.i18n?.en?.['comments-en']
-                    ? (Array.isArray(dish.i18n.en['comments-en']) ? dish.i18n.en['comments-en'] : [dish.i18n.en['comments-en']].filter(Boolean))
+                    ? (Array.isArray(dish.i18n.en['comments-en']) ? dish.i18n.en['comments-en'] : [dish.i18n.en['comments-en']])
                     : (dish.comments || [])
-                  ).map((comment, idx) => (
+                  ).filter(c => String(c || '').trim()).map((comment, idx) => (
                     <li key={idx} className="flex items-start gap-3">
                       <span className="text-blue-500 dark:text-blue-400 mt-1 flex-shrink-0">
                         <span className="material-symbols-outlined text-[16px] fill-1">fiber_manual_record</span>
@@ -916,16 +986,18 @@ function DishDetailPage({ mode }) {
                   );
                 }
 
-                // Зеленые теги: веганское, вегетарианское, легкое блюдо, низкоуглеводное
+                // Зеленые теги: веганское, вегетарианское, легкое блюдо, низкоуглеводное, постное
                 if (tagLower.includes('веган') || tagLower.includes('vegan') ||
                   tagLower.includes('вегетариан') || tagLower.includes('vegetarian') ||
                   tagLower.includes('легк') || tagLower.includes('light dish') ||
-                  tagLower.includes('низкоуглевод') || tagLower.includes('low carb')) {
+                  tagLower.includes('низкоуглевод') || tagLower.includes('low carb') ||
+                  tagLower.includes('постн') || tagLower.includes('lenten')) {
                   return (
                     <div key={idx} className="flex items-center justify-center gap-1 rounded-full bg-green-100 dark:bg-green-900/30 border border-green-200 dark:border-green-800/30 px-3 py-1">
                       <span className="material-symbols-outlined text-[14px] text-green-700 dark:text-green-400">
                         {tagLower.includes('веган') || tagLower.includes('vegan') ||
-                          tagLower.includes('вегетариан') || tagLower.includes('vegetarian') ? 'eco' :
+                          tagLower.includes('вегетариан') || tagLower.includes('vegetarian') ||
+                          tagLower.includes('постн') || tagLower.includes('lenten') ? 'eco' :
                           tagLower.includes('легк') || tagLower.includes('light') ? 'spa' : 'fitness_center'}
                       </span>
                       <span className="text-green-700 dark:text-green-400 text-xs font-medium">{tag}</span>
@@ -1032,8 +1104,67 @@ function DishDetailPage({ mode }) {
             )}
         </div>
       </nav>
+
+      {/* Модальное окно с таблицей допов */}
+      {isExtrasOpen && extras && (
+        <div
+          className="fixed inset-0 z-[110] flex items-end justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-300"
+          onClick={() => setIsExtrasOpen(false)}
+        >
+          <div
+            className="w-full max-w-lg bg-white dark:bg-surface-dark rounded-t-3xl shadow-2xl p-6 relative animate-in slide-in-from-bottom duration-500 overflow-hidden flex flex-col max-h-[90vh]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Handle bar */}
+            <div className="w-12 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full mx-auto mb-6 shrink-0" />
+
+            <div className="flex justify-between items-center mb-6 shrink-0">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-xl bg-primary/10 text-primary">
+                  <span className="material-symbols-outlined text-xl block">add_circle</span>
+                </div>
+                <h3 className="font-bold text-xl text-gray-900 dark:text-white">Рекомендуемые топпинги</h3>
+              </div>
+              <button
+                onClick={() => setIsExtrasOpen(false)}
+                className="size-10 flex items-center justify-center rounded-full bg-gray-100 dark:bg-white/10 text-gray-500 hover:bg-gray-200"
+              >
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto no-scrollbar pb-6">
+              <div className="grid grid-cols-2 gap-4">
+                {extras?.categories?.map((cat, i) => (
+                  <div key={i} className="flex flex-col gap-3 p-4 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5">
+                    <div className="flex items-center gap-2 border-b border-gray-100 dark:border-white/5 pb-2">
+                      <span className="text-lg">{cat.icon}</span>
+                      <span className="text-[12px] font-bold uppercase tracking-wider text-primary">{cat.name}</span>
+                    </div>
+                    <div className="space-y-2">
+                      {cat.items?.map((item, j) => (
+                        <div key={j} className="flex flex-col">
+                          <span className="text-[13px] font-medium text-gray-800 dark:text-gray-200 leading-tight">{item.name}</span>
+                          {item.weight && (
+                            <span className="text-[11px] text-gray-400 dark:text-gray-500">({item.weight})</span>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <p className="mt-6 text-[11px] text-gray-400 italic text-center leading-relaxed">
+                * Доступно к заказу вместе с основным блюдом.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
+
   );
 }
 
 export default DishDetailPage;
+
