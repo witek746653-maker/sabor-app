@@ -1757,70 +1757,6 @@
     "features": "Украшается<strong> </strong>листьями<strong> кинзы, </strong>семенами<strong> кунжута юдзу.</strong>\n\nСоус унаги:<strong> фреш лайм, лимон.</strong>"
   },
   {
-    "id": "0026",
-    "status": "актуально",
-    "menu": "Основное меню",
-    "section": "Блюда для веганов",
-    "title": "Тартар из баклажанов с томатами, зеленью и постным песто",
-    "description": "Карамелизованные баклажаны, со спелыми томатами, ароматной зеленью и постным песто.",
-    "contains": "<ol type=\"1\">\n  <li>Помидоры режем кубиком и соединяем с зеленью (<strong>кинза, лук шалот, </strong>лук зеленый).</li>\n  <li>Добавляем постный песто (без грана падано).</li>\n  <li>Баклажаны очищаем, обваливаем в кукурузном крахмале и обжариваем во фритюре.</li>\n</ol>",
-    "tags": [
-      "без глютена",
-      "без цитрусов",
-      "веганское",
-      "легкое блюдо",
-      "постное меню",
-      "без лактозы",
-      "без грибов"
-    ],
-    "allergens": [
-      "кинза",
-      "орехи",
-      "лук",
-      "зелень",
-      "чеснок"
-    ],
-    "ingredients": [
-      "томаты",
-      "кинза",
-      "лук шалот",
-      "лук зеленый",
-      "баклажаны",
-      "крахмал кукурузный",
-      "орехи кедровые",
-      "масло оливковое",
-      "чеснок"
-    ],
-    "image": {
-      "src": "../images/goryachie-zakuski-baklazhany-s-tartarom.webp",
-      "alt": "Тартар из баклажанов с томатами, зеленью и постным песто"
-    },
-    "comments": [
-      "В меню не представлено, предлагаем вегетарианцам."
-    ],
-    "reference_info": "",
-    "pairings": {
-      "wines": [],
-      "drinks": [],
-      "dishes": []
-    },
-    "i18n": {
-      "en": {
-        "menu-en": "Vegan/Lenten Menu",
-        "section-en": "🔥 Hot Appetizers",
-        "title-en": "Eggplant tartare with tomatoes, herbs, and vegan pesto",
-        "description-en": "Eggplant Tartare with Tomatoes, Herbs & Vegan Pesto\n\n\n\"This is a tartare of caramelized eggplants with ripe tomatoes, fresh herbs, and vegan pesto with pine nuts.\"",
-        "contains-en": "",
-        "allergens-en": "cilantro, nuts, onion, herbs, garlic",
-        "tags-en": "gluten-free, citrus-free, vegan, light dish, lenten-friendly, lactose-free, mushroom-free",
-        "audio-en": "../audio/en/tartar-iz-baklazhan-s-tomatami-zelenyu-i-postnym-pesto.mp3",
-        "comments-en": "",
-        "useful phrases & words": []
-      }
-    },
-    "features": "В составе <strong>кинза </strong>и <strong>лук шалот.</strong>\n\nПостный песто без сыра, но с<strong> кедровыми орехами.</strong>"
-  },
-  {
     "id": "0027",
     "status": "актуально",
     "menu": "Основное меню",
@@ -2684,7 +2620,7 @@
     "section": "🍲 Супы",
     "title": "Овощной суп Минестроне на курином бульоне с кедровыми орехами и соусом песто",
     "description": "Авторская интерпретация традиционного итальянского овощного супа Минестроне на курином бульоне с добавлением соуса песто, кедровых орехов и свежих овощей.",
-    "contains": "<ol type=&quot;1&quot;>\n <li><strong>Куриный бульон.</strong></li>\n <li>Картофель, морковь.</li>\n <li>Цукини, сельдерей.</li>\n <li>Брокколи, горошек зеленый.</li>\n <li>Фенхель, <strong>красный лук.</strong></li>\n <li><strong>Соус песто,</strong> масло оливковое.</li>\n</ol>\n\nК супу подаются гренки Пети Пан, их смазывают пастой из маслин (маслины, <strong>чеснок,</strong> оливковое масло).\n\nУкрашается томатами черри.\n\nСуп и гренки украшаются <strong>кедровыми орехами.</strong>",
+    "contains": "<ol>\n <li><strong>Куриный бульон.</strong></li>\n <li>Картофель, морковь.</li>\n <li>Цукини, сельдерей.</li>\n <li>Брокколи, горошек зеленый.</li>\n <li>Фенхель, <strong>красный лук.</strong></li>\n <li><strong>Соус песто,</strong> масло оливковое.</li>\n</ol>\n\nК супу подаются гренки Пети Пан, их смазывают пастой из маслин (маслины, <strong>чеснок,</strong> оливковое масло).\n\nУкрашается томатами черри.\n\nСуп и гренки украшаются <strong>кедровыми орехами.</strong>",
     "tags": [
       "легкое блюдо",
       "без цитрусов",
@@ -2747,77 +2683,6 @@
       }
     },
     "features": "В суп добавляют <strong>красный лук </strong>и <strong>соус песто </strong>(базилик, <strong>кедровые орехи, чеснок, </strong>пармезан, оливковое масло).\n\nПаста из маслин содержит<strong> чеснок.</strong>\n\n<strong>Кедровые орехи </strong>- украшение для супа и гренок."
-  },
-  {
-    "id": "0040",
-    "status": "актуально",
-    "menu": "Основное меню",
-    "section": "Блюда для веганов",
-    "title": "Постный минестроне на овощном бульоне с кедровыми орехами, чесночной чиабаттой и (постным) песто",
-    "description": "Постный минестроне на овощном бульоне с кедровыми орехами в сопровождении хрустящей чиабатты и чесночного масла.",
-    "contains": "<ol type=\"1\">\n  <li>Овощной бульон.</li>\n  <li>Картофель, морковь.</li>\n  <li>Цукини, стебель сельдерея.</li>\n  <li>Зеленый горошек, горох стручковый.</li>\n  <li>Соцветия брокколи и цветной капусты.</li>\n  <li>Спаржа.</li>\n  <li><strong>Лук репчатый,</strong> фенхель.</li>\n  <li><strong>Постный песто</strong> (без сыра).</li>\n  <li><strong>Кедровые орехи.</strong></li>\n</ol>",
-    "tags": [
-      "постное меню",
-      "веганское",
-      "без цитрусов",
-      "без лактозы",
-      "легкое блюдо",
-      "без грибов",
-      "вегетарианское"
-    ],
-    "allergens": [
-      "орехи",
-      "чеснок",
-      "лук",
-      "зелень",
-      "глютен"
-    ],
-    "ingredients": [
-      "бульон овощной",
-      "картофель",
-      "морковь",
-      "цукини",
-      "стебель сельдерея",
-      "горошек зелёный",
-      "горох стручковый",
-      "брокколи",
-      "капуста цветная",
-      "спаржа",
-      "лук репчатый",
-      "фенхель",
-      "соус постный песто",
-      "орехи кедровые",
-      "масло чесночное",
-      "чиабатта"
-    ],
-    "image": {
-      "src": "null",
-      "alt": ""
-    },
-    "comments": [
-      "В меню не представлено, предлагаем вегетарианцам."
-    ],
-    "reference_info": "",
-    "pairings": {
-      "wines": [],
-      "drinks": [],
-      "dishes": []
-    },
-    "i18n": {
-      "en": {
-        "menu-en": "Vegan/Lenten Menu",
-        "section-en": "🍲 Soups",
-        "title-en": "Vegan minestrone with pine nuts, garlic ciabatta, and vegan pesto",
-        "description-en": "\n\"This is a vegetarian minestrone with pine nuts, garlic ciabatta, and vegan pesto.\"",
-        "contains-en": "",
-        "allergens-en": "nuts, garlic, onion, herbs, gluten",
-        "tags-en": "lenten-friendly, vegan, citrus-free, lactose-free, light dish, mushroom-free, vegetarian",
-        "audio-en": "../audio/en/postnyy-minestrone-na-ovoschnom-bulone-s-kedrovymi-orehami-chesnochnoy-chiabattoy-i-postnym-pesto.mp3",
-        "comments-en": "",
-        "useful phrases & words": []
-      }
-    },
-    "features": "Подается с чиабаттой с <strong>чесночным маслом.</strong>\n\nПостный песто: базилик, <strong>кедровые орехи, чеснок, </strong>оливковое масло.<br/>"
   },
   {
     "id": "0041",
@@ -3191,78 +3056,6 @@
       }
     },
     "features": "В блюде присутствует <strong>лук шалот, белое вино, чеснок.</strong>\n\nУкрашают <strong>лаймом </strong>и<strong> перцем чили.</strong>"
-  },
-  {
-    "id": "0046",
-    "status": "актуально",
-    "menu": "Основное меню",
-    "section": "Блюда для веганов",
-    "title": "Зеленое ризотто",
-    "description": "Зеленое ризотто с нежным пюре из цукини, молодым горошком и соусом из сладкого перца.",
-    "contains": "<ol type=\"1\">\n <li>В обжаренные рис с <strong>луком шалот</strong> добавляем овощной бульон, тушим до полуготовности.</li>\n <li>Обжариваем горох стручковый, затем добавляем пюре цукини (цукини, <strong>чеснок</strong>, базилик, петрушка, соль, перец), спаржу и шпинат.</li>\n <li>Смешиваем с ризотто, добавляем зелёный горох, специи и тушим до готовности.</li>\n</ol>\n\n<strong>Подача:</strong>\n\n<ol type=\"1\">\n <li>Выкладываем пюре из цукини, соус красный (перец красный сладкий, овощной бульон, соль, перец).</li>\n <li>Цукини нарезаем на слайсере, ошпариваем и обволакиваем ризотто слайсами цукини.</li>\n <li>Украшаем микрозеленью.</li>\n</ol>",
-    "tags": [
-      "без глютена",
-      "без цитрусов",
-      "постное меню",
-      "веганское",
-      "без лактозы",
-      "вегетарианское",
-      "без грибов",
-      "без орехов",
-      "долгое ожидание"
-    ],
-    "allergens": [
-      "чеснок",
-      "лук",
-      "зелень"
-    ],
-    "ingredients": [
-      "рис",
-      "лук шалот",
-      "масло оливковое",
-      "горох стручковый",
-      "цукини",
-      "чеснок",
-      "базилик",
-      "петрушка",
-      "перец черный",
-      "спаржа",
-      "шпинат",
-      "горох зеленый",
-      "перец болгарский",
-      "бульон овощной",
-      "микрозелень"
-    ],
-    "image": {
-      "src": "../images/pasta-zelenoe-rizotto.webp",
-      "alt": "Зеленое ризотто"
-    },
-    "comments": [
-      "В меню не представлено, предлагаем вегетарианцам.",
-      "Время приготовления 25 минут (1 курс), 15 минут (2 курс)."
-    ],
-    "reference_info": "",
-    "pairings": {
-      "wines": [],
-      "drinks": [],
-      "dishes": [],
-      "notes": []
-    },
-    "i18n": {
-      "en": {
-        "menu-en": "Vegan/Lenten Menu",
-        "section-en": "🍝 Pasta",
-        "title-en": "Green Risotto with Tender Zucchini Purée, Young Green Peas, and Sweet Pepper Sauce",
-        "description-en": "\n\"Green risotto with zucchini purée, young green peas, and sweet pepper sauce.\"",
-        "contains-en": "",
-        "allergens-en": "garlic, onion, herbs",
-        "tags-en": "gluten-free, citrus-free, lenten-friendly, vegan, lactose-free, vegetarian, mushroom-free, nut-free",
-        "audio-en": "../audio/en/zelenoe-rizotto.mp3",
-        "comments-en": "",
-        "useful phrases & words": []
-      }
-    },
-    "features": "В составе <strong>лук шалот</strong> и <strong>чеснок.</strong>"
   },
   {
     "id": "0047",
@@ -10840,17 +10633,564 @@
     },
     "i18n": {
       "en": {
-        "menu-en": "Special Menu",
-        "section-en": "🥗 Salads",
-        "title-en": "Vegetable Salad",
+        "menu-en": "Lenten menu",
+        "section-en": "🧊 Cold Appetizers",
+        "title-en": "Cabbage with Chimichurri Sauce",
         "description-en": "",
         "contains-en": "",
-        "allergens-en": "onion, herbs, lactose",
-        "tags-en": "garlic-free, light dish, nut-free, mushroom-free, to share, citrus-free, gluten-free, vegetarian",
+        "allergens-en": "onion, herbs, cilantro, jalapeno, garlic, citrus",
+        "tags-en": "light dish, no nuts, no mushrooms, no gluten, vegan, no alcohol, no lactose, no eggs, lenten menu, no garlic, no onion",
         "audio-en": "",
         "comments-en": "",
         "useful phrases & words": []
       }
     }
+  },
+  {
+    "id": "0419",
+    "status": "актуально",
+    "menu": "Постное меню",
+    "section": "🔥 Горячие закуски",
+    "title": "Запеченый баклажан в азиатском соусе с кремом из кешью",
+    "description": "Запечённые баклажаны в соусе свит-чили на нежном креме из кешью с бланшированными томатами, хрустящими тыквенными семечками в соево-медовой глазури, листьями кинзы и базиликовым маслом.",
+    "contains": "<ol><li>На блюдо выкладывается крем из <strong>ореха кешью</strong>, сверху запечённые баклажаны в глазури свит-чили, вокруг бланшированные помидоры.</li><li>Посыпается <strong>кунжутом юдзу</strong>, семенами тыквы (запеченые с соевым соусом и мёдом), сухой приправой <strong>шизо</strong> и <strong>листьями кинзы. Поливается зеленым (базиликовым) маслом</strong></li></ol>",
+    "tags": [
+      "легкое блюдо",
+      "без глютена",
+      "веганское",
+      "без алкоголя",
+      "без лактозы",
+      "без яиц",
+      "постное меню",
+      "без грибов",
+      "без лука",
+      "без чеснока"
+    ],
+    "allergens": [
+      "зелень",
+      "кинза",
+      "цитрусы",
+      "орехи",
+      "кунжут",
+      "мёд"
+    ],
+    "ingredients": [
+      "баклажаны",
+      "томаты узбекские",
+      "орехи кешью",
+      "соус сладкий чили",
+      "соус соевый",
+      "мёд",
+      "базилик",
+      "масло оливковое",
+      "кинза",
+      "семена тыквы",
+      "кунжут юдзу",
+      "шизо"
+    ],
+    "image": {
+      "src": "null",
+      "alt": "Запеченый баклажан в азиатском соусе с кремом из кешью"
+    },
+    "comments": [
+      ""
+    ],
+    "reference_info": "",
+    "pairings": {
+      "wines": [],
+      "drinks": [],
+      "dishes": []
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Lenten menu",
+        "section-en": "🧊 Hot Appetizers",
+        "title-en": "Baked eggplant with sweet chili sauce",
+        "description-en": "Baked eggplant in sweet chili sauce on a delicate cashew cream with blanched tomatoes, crispy pumpkin seeds in soy-honey glaze, shiso, cilantro and basil oil.",
+        "contains-en": "",
+        "allergens-en": "herbs, cilantro, citrus, nuts, sesame, honey",
+        "tags-en": "gluten-free, vegan, no alcohol, no lactose, no eggs, lenten menu, no mushrooms, no onions, no garlic",
+        "audio-en": "",
+        "comments-en": "",
+        "useful phrases & words": []
+      }
+    }
+  },
+  {
+    "id": "0420",
+    "status": "актуально",
+    "menu": "Постное меню",
+    "section": "🥣 Супы",
+    "title": "Бархатный суп из сельдерея с грибами",
+    "description": "Крем-суп из сельдерея на овощном бульоне с лесными грибами, дополненный мини-кукурузой и стручковым горохом, с россыпью тыквенных семечек в соево-медовой глазури под ароматным трюфельным маслом.",
+    "contains": "<ol><li>Обжарить на оливковом масле <strong>лук порей</strong>, <strong>чеснок</strong>, <strong>лук репчатый</strong>.</li><li>Затем добавить <strong>шампиньоны</strong>, <strong>белые грибы</strong>, смешать, пассеровать.</li><li>Далее добавляем картофель, сельдерей (запеченый).</li><li>Обжарить всю эту овощную смесь. Добавить <strong>овощной бульон</strong>. Томить 20 минут на медленном огне.</li><li>Пробить массу блендером. Процедить через сито.</li><li>Сверху супа: мини-кукуруза, стручковый горох, <strong>белые грибы (фритюр)</strong>, тыквенные семечки (запеченые с соевым соусом и <strong>мёдом</strong>), шпинат мини и виноградное масло с <strong>трюфелем</strong>.</li></ol>",
+    "tags": [
+      "легкое блюдо",
+      "веганское",
+      "без алкоголя",
+      "без лактозы",
+      "без яиц",
+      "постное меню",
+      "без орехов",
+      "без цитрусов"
+    ],
+    "allergens": [
+      "зелень",
+      "мёд",
+      "грибы",
+      "трюфель",
+      "лук",
+      "чеснок"
+    ],
+    "ingredients": [
+      "бульон овощной",
+      "сельдерей",
+      "лук порей",
+      "лук репчатый",
+      "чеснок",
+      "кукуруза мини",
+      "картофель",
+      "горох стручковый",
+      "грибы белые",
+      "шампиньоны",
+      "семена тыквы",
+      "соус соевый",
+      "мёд",
+      "шпинат мини",
+      "масло виноградное",
+      "масло оливковое",
+      "трюфель черный"
+    ],
+    "image": {
+      "src": "null",
+      "alt": "Бархатный суп из сельдерея с грибами"
+    },
+    "comments": [
+      ""
+    ],
+    "reference_info": "",
+    "pairings": {
+      "wines": [],
+      "drinks": [],
+      "dishes": []
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Lenten menu",
+        "section-en": "🥣 Soups",
+        "title-en": "Celery cream soup with mushrooms",
+        "description-en": "Cream soup of celery on vegetable broth with forest mushrooms, complemented by mini corn and snap peas, with a scattering of pumpkin seeds in soy-honey glaze under aromatic truffle oil.",
+        "contains-en": "",
+        "allergens-en": "herbs, honey, mushrooms, truffle, onion, garlic",
+        "tags-en": "light dish, vegan, no alcohol, no lactose, no eggs, lenten menu, no nuts, no citrus",
+        "audio-en": "",
+        "comments-en": "",
+        "useful phrases & words": []
+      }
+    }
+  },
+  {
+    "id": "0421",
+    "status": "актуально",
+    "menu": "Постное меню",
+    "section": "🍝 Паста",
+    "title": "Аррабьята",
+    "description": "Острая паста спагетти, приготовленная на овощном бульоне и заправленная насыщенным томатным соусом с чесноком и ароматным базиликом.",
+    "contains": "<ol><li>Пасту отвариваем в овощном бульоне (аль денте).</li><li>На оливковом масле обжариваем чеснок, бланшированные томаты, чили перец.</li><li>Добавляем в томатную базу, отварную пасту, соль, перец, листья базилика (нарванные).</li><li>Украшаем луком резанец и зеленым маслом (базилик).</li></ol>",
+    "tags": [
+      "легкое блюдо",
+      "веганское",
+      "без алкоголя",
+      "без лактозы",
+      "без яиц",
+      "постное меню",
+      "без орехов",
+      "без цитрусов",
+      "без грибов"
+    ],
+    "allergens": [
+      "зелень",
+      "лук",
+      "чеснок",
+      "перец чили",
+      "глютен"
+    ],
+    "ingredients": [
+      "бульон овощной",
+      "мука пшеничная",
+      "томаты узбекские",
+      "перец чили",
+      "чеснок",
+      "базилик",
+      "лук резанец",
+      "масло оливковое",
+      "перец черный",
+      "микрозелень"
+    ],
+    "image": {
+      "src": "null",
+      "alt": "Аррабьята"
+    },
+    "comments": [
+      ""
+    ],
+    "reference_info": "",
+    "pairings": {
+      "wines": [],
+      "drinks": [],
+      "dishes": []
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Lenten menu",
+        "section-en": "🍝 Pasta",
+        "title-en": "Arrabbiata",
+        "description-en": "Spaghetti pasta with spicy tomato sauce, garlic and basil.",
+        "contains-en": "",
+        "allergens-en": "",
+        "tags-en": "",
+        "audio-en": "",
+        "comments-en": "",
+        "useful phrases & words": []
+      }
+    }
+  },
+  {
+    "id": "0422",
+    "status": "актуально",
+    "menu": "Постное меню",
+    "section": "♨️ Горячие блюда",
+    "title": "Гречневая каша \"По рецепту Бабушки\"",
+    "description": "Гречневая каша, томленая с белыми грибами, сочными томатами и ароматной зеленью.",
+    "contains": "<ol><li><strong>Грибы</strong> обжариваем с <strong>луком шалот</strong>.</li><li>Отварную зеленуюгречку соединяем с <strong>грибами</strong>, <strong>кинзой</strong> и петрушкой, перемешиваем.</li><li>Помидоры слегка обжариваем.</li><li>Гречку выкладываем через кольцо, сверху выкладываем помидоры, украшаем цветами.</li></ol>",
+    "tags": [
+      "легкое блюдо",
+      "веганское",
+      "без алкоголя",
+      "без лактозы",
+      "без яиц",
+      "постное меню",
+      "без орехов",
+      "без цитрусов",
+      "без глютена",
+      "без чеснока"
+    ],
+    "allergens": [
+      "зелень",
+      "кинза",
+      "грибы",
+      "лук"
+    ],
+    "ingredients": [
+      "бульон овощной",
+      "гречка зеленая",
+      "грибы белые",
+      "томаты узбекские",
+      "лук шалот",
+      "масло оливковое",
+      "кинза",
+      "петрушка"
+    ],
+    "image": {
+      "src": "null",
+      "alt": "Гречневая каша \"По рецепту Бабушки\""
+    },
+    "comments": [
+      ""
+    ],
+    "reference_info": "",
+    "pairings": {
+      "wines": [],
+      "drinks": [],
+      "dishes": []
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Lenten menu",
+        "section-en": "",
+        "title-en": "",
+        "description-en": "",
+        "contains-en": "",
+        "allergens-en": "",
+        "tags-en": "",
+        "audio-en": "",
+        "comments-en": "",
+        "useful phrases & words": []
+      }
+    }
+  },
+  {
+    "id": "0423",
+    "status": "актуально",
+    "menu": "Постное меню",
+    "section": "🍰 Десерты",
+    "title": "Морковный пирог с вишневым соусом",
+    "description": "Нежный постный морковный пирог с тёплой пряной ноткой корицы и кусочками грецкого ореха, дополненный ярким кисло-сладким вишнёвым соусом — лёгкий, ароматный и по-домашнему уютный десерт.",
+    "contains": "<p><strong>Корж:</strong></p><ol><li>Морковь.</li><li><strong>Орех грецкий.</strong></li><li>Мука пшеничная, сода, разрыхлитель.</li><li>Корица молотая.</li><li>Сахар.</li><li>Масло оливковое.</li></ol><p><strong>Соус:</strong></p><ol><li>Вишня с/м.</li><li>Крахмал кукурузный.</li><li>Сахар.</li></ol><p><strong>Украшение:</strong></p><ol><li>Шантинак(сливки растительные).</li><li>Розмарин.</li></ol>",
+    "tags": [
+      "легкое блюдо",
+      "веганское",
+      "без алкоголя",
+      "без лактозы",
+      "без яиц",
+      "постное меню",
+      "без цитрусов",
+      "без чеснока",
+      "без грибов",
+      "без лука"
+    ],
+    "allergens": [
+      "орехи"
+    ],
+    "ingredients": [
+      "морковь",
+      "вишня",
+      "крахмал кукурузный",
+      "мука пшеничная",
+      "сода",
+      "корица",
+      "орехи грецкие",
+      "масло оливковое",
+      "сахар",
+      "разрыхлитель",
+      "розмарин",
+      "сливки растительные"
+    ],
+    "image": {
+      "src": "null",
+      "alt": "Морковный пирог с вишневым соусом"
+    },
+    "comments": [
+      ""
+    ],
+    "reference_info": "",
+    "pairings": {
+      "wines": [],
+      "drinks": [],
+      "dishes": []
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Lenten menu",
+        "section-en": "🍰 Desserts",
+        "title-en": "Carrot cake with cranberry sauce",
+        "description-en": "Soft Lenten carrot cake with a warm note of cinnamon and pieces of Greek nuts, topped with a bright sour-sweet cranberry sauce — a light, fragrant and home-style cozy dessert.",
+        "contains-en": "",
+        "allergens-en": "nuts",
+        "tags-en": " ",
+        "audio-en": "",
+        "comments-en": "",
+        "useful phrases & words": []
+      }
+    }
+  },
+  {
+    "id": "0026",
+    "status": "актуально",
+    "menu": "Основное меню",
+    "section": "🍃 Блюда для веганов",
+    "title": "Тартар из баклажанов с томатами, зеленью и постным песто",
+    "description": "Карамелизованные баклажаны, со спелыми томатами, ароматной зеленью и постным песто.",
+    "contains": "<ol type=\"1\">\n  <li>Помидоры режем кубиком и соединяем с зеленью (<strong>кинза, лук шалот, </strong>лук зеленый).</li>\n  <li>Добавляем постный песто (без грана падано).</li>\n  <li>Баклажаны очищаем, обваливаем в кукурузном крахмале и обжариваем во фритюре.</li>\n</ol>",
+    "tags": [
+      "без глютена",
+      "без цитрусов",
+      "веганское",
+      "легкое блюдо",
+      "постное меню",
+      "без лактозы",
+      "без грибов"
+    ],
+    "allergens": [
+      "кинза",
+      "орехи",
+      "лук",
+      "зелень",
+      "чеснок"
+    ],
+    "ingredients": [
+      "томаты",
+      "кинза",
+      "лук шалот",
+      "лук зеленый",
+      "баклажаны",
+      "крахмал кукурузный",
+      "орехи кедровые",
+      "масло оливковое",
+      "чеснок"
+    ],
+    "image": {
+      "src": "../images/goryachie-zakuski-baklazhany-s-tartarom.webp",
+      "alt": "Тартар из баклажанов с томатами, зеленью и постным песто"
+    },
+    "comments": [
+      "В меню не представлено, предлагаем вегетарианцам."
+    ],
+    "reference_info": "",
+    "pairings": {
+      "wines": [],
+      "drinks": [],
+      "dishes": []
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Vegan/Lenten Menu",
+        "section-en": "🔥 Hot Appetizers",
+        "title-en": "Eggplant tartare with tomatoes, herbs, and vegan pesto",
+        "description-en": "Eggplant Tartare with Tomatoes, Herbs & Vegan Pesto\n\n\n\"This is a tartare of caramelized eggplants with ripe tomatoes, fresh herbs, and vegan pesto with pine nuts.\"",
+        "contains-en": "",
+        "allergens-en": "cilantro, nuts, onion, herbs, garlic",
+        "tags-en": "gluten-free, citrus-free, vegan, light dish, lenten-friendly, lactose-free, mushroom-free",
+        "audio-en": "../audio/en/tartar-iz-baklazhan-s-tomatami-zelenyu-i-postnym-pesto.mp3",
+        "comments-en": "",
+        "useful phrases & words": []
+      }
+    },
+    "features": "В составе <strong>кинза </strong>и <strong>лук шалот.</strong>\n\nПостный песто без сыра, но с<strong> кедровыми орехами.</strong>"
+  },
+  {
+    "id": "0040",
+    "status": "актуально",
+    "menu": "Основное меню",
+    "section": "🍃 Блюда для веганов",
+    "title": "Постный минестроне на овощном бульоне с кедровыми орехами, чесночной чиабаттой и (постным) песто",
+    "description": "Постный минестроне на овощном бульоне с кедровыми орехами в сопровождении хрустящей чиабатты и чесночного масла.",
+    "contains": "<ol type=\"1\">\n  <li>Овощной бульон.</li>\n  <li>Картофель, морковь.</li>\n  <li>Цукини, стебель сельдерея.</li>\n  <li>Зеленый горошек, горох стручковый.</li>\n  <li>Соцветия брокколи и цветной капусты.</li>\n  <li>Спаржа.</li>\n  <li><strong>Лук репчатый,</strong> фенхель.</li>\n  <li><strong>Постный песто</strong> (без сыра).</li>\n  <li><strong>Кедровые орехи.</strong></li>\n</ol><p>Подается с гренками Пети Пан с <strong>чесночным маслом.</strong></p>",
+    "tags": [
+      "постное меню",
+      "веганское",
+      "без цитрусов",
+      "без лактозы",
+      "легкое блюдо",
+      "без грибов",
+      "вегетарианское",
+      "без алкоголя",
+      "без яиц"
+    ],
+    "allergens": [
+      "орехи",
+      "чеснок",
+      "лук",
+      "зелень",
+      "глютен"
+    ],
+    "ingredients": [
+      "бульон овощной",
+      "картофель",
+      "морковь",
+      "цукини",
+      "стебель сельдерея",
+      "горошек зелёный",
+      "горох стручковый",
+      "брокколи",
+      "капуста цветная",
+      "спаржа",
+      "лук репчатый",
+      "фенхель",
+      "соус постный песто",
+      "орехи кедровые",
+      "масло чесночное",
+      "чиабатта"
+    ],
+    "image": {
+      "src": "null",
+      "alt": ""
+    },
+    "comments": [
+      "В меню не представлено, предлагаем вегетарианцам."
+    ],
+    "reference_info": "",
+    "pairings": {
+      "wines": [],
+      "drinks": [],
+      "dishes": []
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Vegan/Lenten Menu",
+        "section-en": "🍲 Soups",
+        "title-en": "Vegan minestrone with pine nuts, garlic ciabatta, and vegan pesto",
+        "description-en": "\n\"This is a vegetarian minestrone with pine nuts, garlic ciabatta, and vegan pesto.\"",
+        "contains-en": "",
+        "allergens-en": "nuts, garlic, onion, herbs, gluten",
+        "tags-en": "lenten-friendly, vegan, citrus-free, lactose-free, light dish, mushroom-free, vegetarian",
+        "audio-en": "../audio/en/postnyy-minestrone-na-ovoschnom-bulone-s-kedrovymi-orehami-chesnochnoy-chiabattoy-i-postnym-pesto.mp3",
+        "comments-en": "",
+        "useful phrases & words": []
+      }
+    },
+    "features": "Подается с чиабаттой с <strong>чесночным маслом.</strong>\n\nПостный песто: базилик, <strong>кедровые орехи, чеснок, </strong>оливковое масло.<br/>"
+  },
+  {
+    "id": "0046",
+    "status": "актуально",
+    "menu": "Основное меню",
+    "section": "🍃 Блюда для веганов",
+    "title": "Зеленое ризотто",
+    "description": "Зеленое ризотто с нежным пюре из цукини, молодым горошком и соусом из сладкого перца.",
+    "contains": "<ol type=\"1\">\n <li>В обжаренные рис с <strong>луком шалот</strong> добавляем овощной бульон, тушим до полуготовности.</li>\n <li>Обжариваем горох стручковый, затем добавляем пюре цукини (цукини, <strong>чеснок</strong>, базилик, петрушка, соль, перец), спаржу и шпинат.</li>\n <li>Смешиваем с ризотто, добавляем зелёный горох, специи и тушим до готовности.</li>\n</ol>\n\n<strong>Подача:</strong>\n\n<ol type=\"1\">\n <li>Выкладываем пюре из цукини, соус красный (перец красный сладкий, овощной бульон, соль, перец).</li>\n <li>Цукини нарезаем на слайсере, ошпариваем и обволакиваем ризотто слайсами цукини.</li>\n <li>Украшаем микрозеленью.</li>\n</ol>",
+    "tags": [
+      "без глютена",
+      "без цитрусов",
+      "постное меню",
+      "веганское",
+      "без лактозы",
+      "вегетарианское",
+      "без грибов",
+      "без орехов",
+      "долгое ожидание"
+    ],
+    "allergens": [
+      "чеснок",
+      "лук",
+      "зелень"
+    ],
+    "ingredients": [
+      "рис",
+      "лук шалот",
+      "масло оливковое",
+      "горох стручковый",
+      "цукини",
+      "чеснок",
+      "базилик",
+      "петрушка",
+      "перец черный",
+      "спаржа",
+      "шпинат",
+      "горох зеленый",
+      "перец болгарский",
+      "бульон овощной",
+      "микрозелень"
+    ],
+    "image": {
+      "src": "../images/pasta-zelenoe-rizotto.webp",
+      "alt": "Зеленое ризотто"
+    },
+    "comments": [
+      "В меню не представлено, предлагаем вегетарианцам.",
+      "Время приготовления 25 минут (1 курс), 15 минут (2 курс)."
+    ],
+    "reference_info": "",
+    "pairings": {
+      "wines": [],
+      "drinks": [],
+      "dishes": [],
+      "notes": []
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Vegan/Lenten Menu",
+        "section-en": "🍝 Pasta",
+        "title-en": "Green Risotto with Tender Zucchini Purée, Young Green Peas, and Sweet Pepper Sauce",
+        "description-en": "\n\"Green risotto with zucchini purée, young green peas, and sweet pepper sauce.\"",
+        "contains-en": "",
+        "allergens-en": "garlic, onion, herbs",
+        "tags-en": "gluten-free, citrus-free, lenten-friendly, vegan, lactose-free, vegetarian, mushroom-free, nut-free",
+        "audio-en": "../audio/en/zelenoe-rizotto.mp3",
+        "comments-en": "",
+        "useful phrases & words": []
+      }
+    },
+    "features": "В составе <strong>лук шалот</strong> и <strong>чеснок.</strong>"
   }
 ]
