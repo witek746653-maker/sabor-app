@@ -92,8 +92,24 @@ Sync-Folder (Join-Path $PSScriptRoot "audio") (Join-Path $PSScriptRoot "frontend
 # 4. Иконки (из корня /icons)
 Sync-Folder (Join-Path $PSScriptRoot "icons") (Join-Path $PSScriptRoot "frontend\public\icons")
 
-# 5. Контент (из корня /content)
-Sync-Folder (Join-Path $PSScriptRoot "content") (Join-Path $PSScriptRoot "frontend\public\content")
+# 5. Контент (ТОЛЬКО в защищённый Backend Private)
+# Мы НЕ копируем это в frontend/public, чтобы статьи не были доступны по прямой ссылке.
+
+# 6. Синхронизация защищенных статей (Content -> Backend Private)
+# Чтобы backend всегда имел свежие версии статей для API
+Info "Syncing Private Guides (Content -> Backend Private)"
+$PrivateGuidesDest = Join-Path $PSScriptRoot "backend\private\useful_guides"
+if (-not (Test-Path $PrivateGuidesDest)) { New-Item -ItemType Directory -Path $PrivateGuidesDest | Out-Null }
+
+# Копируем manifest.json
+Copy-Item -Force (Join-Path $PSScriptRoot "content\manifest.json") (Join-Path $PrivateGuidesDest "manifest.json")
+Write-Host "  [Sync] content\manifest.json -> backend\private\useful_guides\manifest.json" -ForegroundColor Gray
+
+# Копируем .md файлы из ресурсов
+Get-ChildItem (Join-Path $PSScriptRoot "content\resources") -Filter "*.md" | ForEach-Object {
+  Copy-Item -Force $_.FullName $PrivateGuidesDest
+  Write-Host "  [Sync] $($_.Name) -> backend\private\useful_guides" -ForegroundColor Gray
+}
 
 if (-not $SkipBuild) {
   Info "Build frontend (npm run build)"
@@ -147,6 +163,9 @@ else {
   Run "ssh" ($CommonSshArgs + @($Remote, "sudo mkdir -p $RemoteRoot/data"))
   Run "scp" ($CommonSshArgs + $jsonItems + @("${RemoteScpPrefix}/data/"))
   Start-Sleep -Seconds 2
+
+  # Удаляем публичный контент на сервере (security fix)
+  Run "ssh" ($CommonSshArgs + @($Remote, "sudo rm -rf $RemoteRoot/frontend/content"))
 
 
   # 2) Бэкенд (весь необходимый код)

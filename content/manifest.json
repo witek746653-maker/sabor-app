@@ -36,6 +36,33 @@
       "image": "/images/corkage-fee.webp",
       "url": "/content/resources/cork-fee.md",
       "version": 1
+    },
+    {
+      "key": "cigar-tasting-set",
+      "title": "Сигарная дегустация",
+      "description": "Сет-меню для сигарных дегустаций",
+      "category": "Сет-меню",
+      "image": "/images/cigar-tasting-set.webp",
+      "url": "/content/resources/cigar-tasting-set.md",
+      "version": 1
+    },
+    {
+      "key": "hotel-breakfast-set",
+      "title": "Завтраки для отеля",
+      "description": "Сет-меню завтраков для отеля",
+      "category": "Сет-меню",
+      "image": "/images/hotel-breakfast-set.webp",
+      "url": "/content/resources/hotel-breakfast-set.md",
+      "version": 1
+    },
+    {
+      "key": "non-alcoholic-drinks",
+      "title": "Безалкогольные напитки",
+      "description": "Смузи, лимонады, кофе и др.",
+      "category": "Бар",
+      "image": "/images/non-alcoholic-head.jpg",
+      "url": "/content/resources/non-alcoholic-drinks.md",
+      "version": 1
     }
   ]
 }
