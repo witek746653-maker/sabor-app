@@ -11136,7 +11136,7 @@
     "menu": "Постное меню",
     "section": "♨️ Горячие блюда",
     "title": "Драники из киноа с муссом тофу",
-    "description": "",
+    "description": "Румяные драники из киноа в сочетании с нежным муссом тофу с артишоками, свежей рукколой, ароматным маслом и кунжутом.",
     "contains": "Драники подогревают с добавлением масла оливкового, выкладывают мусс из тофу и артишоков, сверху листья рукколы. Поливают зеленым (базиликовым) маслои и украшают кунжутом.<p><strong>Тесто на драники:</strong></p><ol><li>Киноа (отварное).</li><li>Цукини.</li><li>Крахмал кукурузный.</li><li><strong>Масло чесночное.</strong></li><li>Перец черный.</li></ol><p><strong>Мусс из тофу:</strong></p><ol><li>Сыр тофу.</li><li>Артишоки в масле.</li><li>Ингридиенты смешиваем и пробиваем в блендере</li></ol>",
     "tags": [
       "легкое блюдо",
@@ -11173,9 +11173,9 @@
       "alt": "Драники из киноа с муссом тофу"
     },
     "comments": [
-      ""
+      "В порции 4 драника."
     ],
-    "reference_info": "",
+    "reference_info": "<strong>Тофу</strong> или \"соевый творог\" - это продукт, получаемый из соевых бобов. Его часто называют сыром, однако это не совсем корректно, так как процесс его приготовления больше напоминает процесс получения творога. Игнорируя традиционные молочные продукты, тофу является отличным источником белка, который подходит как вегетарианцам, так и тем, кто просто хочет разбавить свой рацион.",
     "pairings": {
       "wines": [],
       "drinks": [],
@@ -11184,11 +11184,11 @@
     "i18n": {
       "en": {
         "menu-en": "Lenten menu",
-        "section-en": "🍰 Desserts",
-        "title-en": "Carrot cake with cranberry sauce",
-        "description-en": "Soft Lenten carrot cake with a warm note of cinnamon and pieces of Greek nuts, topped with a bright sour-sweet cranberry sauce — a light, fragrant and home-style cozy dessert.",
+        "section-en": "",
+        "title-en": "",
+        "description-en": "",
         "contains-en": "",
-        "allergens-en": "nuts",
+        "allergens-en": "",
         "tags-en": " ",
         "audio-en": "",
         "comments-en": "",
