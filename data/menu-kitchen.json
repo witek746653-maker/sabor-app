@@ -2655,7 +2655,7 @@
       "орехи кедровые"
     ],
     "image": {
-      "src": "../images/supy-ovoshchnoy-sup-minestrone-na.webp",
+      "src": "../images/supy-ovoshchnoy-sup-minestrone.webp",
       "alt": "Овощной суп Минестроне на курином бульоне с кедровыми орехами и соусом песто"
     },
     "comments": [
@@ -6936,8 +6936,8 @@
       "чиабатта"
     ],
     "image": {
-      "src": "null",
-      "alt": ""
+      "src": "../images/postnoe-menyu-minestrone.jpg",
+      "alt": "Постный минестроне на овощном бульоне"
     },
     "comments": [
       "В меню не представлено, предлагаем вегетарианцам."

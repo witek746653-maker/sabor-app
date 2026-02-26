@@ -69,14 +69,6 @@
         "icon": "emoji_food_beverage",
         "image": "/images/covers/tea-head.webp"
     },
-    "specials": {
-        "items": [
-            "Специальное меню"
-        ],
-        "description": "Блюда для постоянных гостей",
-        "icon": "restaurant_menu",
-        "image": "/images/covers/special-menu-head.webp"
-    },
     "general": {
         "items": [
             "Сервис и знания"

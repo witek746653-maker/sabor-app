@@ -6785,7 +6785,7 @@
       "зелень",
       "трюфель",
       "лук",
-      "яйца"
+      "лактоза"
     ],
     "ingredients": [
       "томаты вяленые",
@@ -6796,12 +6796,15 @@
       "базилик",
       "шампиньоны",
       "мука пшеничная",
-      "яйцо куриное"
+      "гауда"
     ],
     "image": {
       "src": "null",
       "alt": "Авторский домашний хлеб"
     },
+    "comments": [
+      "Весь хлеб постный кроме чиабатты с вялеными томатами (добавляют сыр)."
+    ],
     "reference_info": "",
     "pairings": {
       "wines": [],
@@ -7032,6 +7035,68 @@
       }
     },
     "features": "В составе <strong>лук шалот</strong> и <strong>чеснок.</strong>"
+  },
+  {
+    "id": "0501",
+    "status": "актуально",
+    "menu": "Основное меню",
+    "section": "📖 Специальное меню",
+    "title": "Салат овощной",
+    "description": "",
+    "contains": "<ol type=\"1\">\n  <li>Томат.</li>\n  <li><strong>Огурец.</strong></li>\n  <li><strong>Редис.</strong></li>\n  <li><strong>Лук красный.</strong></li>\n  <li>Укроп, кинза.</li>\n  <li>Масло оливковое или сметана.</li>\n</ol>",
+    "tags": [
+      "без чеснока",
+      "легкое блюдо",
+      "без орехов",
+      "без грибов",
+      "на компанию",
+      "без цитрусов",
+      "без глютена",
+      "вегетарианское"
+    ],
+    "allergens": [
+      "лук",
+      "зелень",
+      "лактоза",
+      "кинза"
+    ],
+    "ingredients": [
+      "огурцы",
+      "томаты",
+      "редис",
+      "лук красный",
+      "масло оливковое",
+      "сметана",
+      "кинза",
+      "укроп"
+    ],
+    "image": {
+      "src": "null",
+      "alt": "Салат овощной"
+    },
+    "comments": [
+      "Салат для постоянных гостей. В меню нет, не предлагаем."
+    ],
+    "reference_info": "",
+    "pairings": {
+      "wines": [],
+      "drinks": [],
+      "dishes": []
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Main Menu",
+        "section-en": "📖 Special Menu",
+        "title-en": "Vegetable Salad",
+        "description-en": "",
+        "contains-en": "",
+        "allergens-en": "onion, herbs, lactose",
+        "tags-en": "garlic-free, light dish, nut-free, mushroom-free, to share, citrus-free, gluten-free, vegetarian",
+        "audio-en": "",
+        "comments-en": "",
+        "useful phrases & words": []
+      }
+    }
   },
   {
     "id": "0201",
@@ -11255,68 +11320,6 @@
         "contains-en": "",
         "allergens-en": "nuts",
         "tags-en": " ",
-        "audio-en": "",
-        "comments-en": "",
-        "useful phrases & words": []
-      }
-    }
-  },
-  {
-    "id": "0501",
-    "status": "актуально",
-    "menu": "Специальное меню",
-    "section": "🥗 Салаты",
-    "title": "Салат овощной",
-    "description": "",
-    "contains": "<ol type=\"1\">\n  <li>Томат.</li>\n  <li><strong>Огурец.</strong></li>\n  <li><strong>Редис.</strong></li>\n  <li><strong>Лук красный.</strong></li>\n  <li>Укроп, петрушка.</li>\n  <li>Масло оливковое или сметана.</li>\n</ol>",
-    "tags": [
-      "без чеснока",
-      "легкое блюдо",
-      "без орехов",
-      "без грибов",
-      "на компанию",
-      "без цитрусов",
-      "без глютена",
-      "вегетарианское"
-    ],
-    "allergens": [
-      "лук",
-      "зелень",
-      "лактоза"
-    ],
-    "ingredients": [
-      "огурцы",
-      "томаты",
-      "редис",
-      "лук красный",
-      "масло оливковое",
-      "сметана",
-      "петрушка",
-      "укроп"
-    ],
-    "image": {
-      "src": "null",
-      "alt": "Салат овощной"
-    },
-    "comments": [
-      "Салат для постоянных гостей. В меню нет, не предлагаем.",
-      "Красный лук добавляют при заправке салата сметаной."
-    ],
-    "reference_info": "",
-    "pairings": {
-      "wines": [],
-      "drinks": [],
-      "dishes": []
-    },
-    "i18n": {
-      "en": {
-        "menu-en": "Special Menu",
-        "section-en": "🥗 Salads",
-        "title-en": "Vegetable Salad",
-        "description-en": "",
-        "contains-en": "",
-        "allergens-en": "onion, herbs, lactose",
-        "tags-en": "garlic-free, light dish, nut-free, mushroom-free, to share, citrus-free, gluten-free, vegetarian",
         "audio-en": "",
         "comments-en": "",
         "useful phrases & words": []
