@@ -73,6 +73,7 @@ def migrate():
                 BarItem.query.delete()
                 TeaItem.query.delete()
                 Artwork.query.delete()
+                db.session.expunge_all()
                 db.session.commit()
                 print("✅ Старые данные удалены")
             else:

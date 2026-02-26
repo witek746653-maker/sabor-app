@@ -359,8 +359,8 @@ class MenuService:
                 out = []
                 for w in wines:
                     base = w.to_dict()
-                    full = json_by_id.get(base.get("id")) if isinstance(json_by_id, dict) else None
-                    merged = deep_merge_dicts(full or {}, base)
+                    full = json_by_id.get(base.get("id")) or {}
+                    merged = deep_merge_dicts(base, full)
                     out.append(MenuService.enrich_wine_dict(merged))
                 return out
             items = MenuService.load_wine_db_items()
@@ -378,8 +378,8 @@ class MenuService:
                 out = []
                 for b in bar_items:
                     base = b.to_dict()
-                    full = json_by_id.get(base.get("id")) if isinstance(json_by_id, dict) else None
-                    out.append(deep_merge_dicts(full or {}, base))
+                    full = json_by_id.get(base.get("id")) or {}
+                    out.append(deep_merge_dicts(base, full))
                 return out
             items = MenuService.load_bar_db_items()
             return [item for item in items]
@@ -427,14 +427,14 @@ class MenuService:
             if item_id in seen: continue
             seen.add(item_id)
             if item_id in db_by_id:
-                full = json_by_id.get(item_id) if isinstance(json_by_id, dict) else None
-                result.append(deep_merge_dicts(full or {}, db_by_id[item_id]))
+                full = json_by_id.get(item_id) or {}
+                result.append(deep_merge_dicts(db_by_id[item_id], full))
             else:
                 result.append(it)
 
         for item_id, db_item in db_by_id.items():
             if item_id in seen: continue
-            full = json_by_id.get(item_id) if isinstance(json_by_id, dict) else None
-            result.append(deep_merge_dicts(full or {}, db_item))
+            full = json_by_id.get(item_id) or {}
+            result.append(deep_merge_dicts(db_item, full))
         
         return result
