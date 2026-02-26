@@ -24,7 +24,7 @@ ROOT_DIR = Path(__file__).resolve().parent.parent
 def migrate():
     """Основная функция миграции"""
     
-    print("🚀 Начинаем миграцию данных из JSON в SQLite...")
+    print("Starting migration JSON -> SQLite...")
     
     parser = argparse.ArgumentParser(description="Миграция JSON -> SQLite (kitchen/wine/bar/artworks)")
     parser.add_argument(
@@ -37,12 +37,12 @@ def migrate():
     # Создаём контекст приложения Flask (нужен для работы с базой данных)
     with app.app_context():
         # Создаём все таблицы в базе данных
-        print("\n📦 Создаём структуру базы данных...")
+        print("\nCreating database structure...")
         db.create_all()
         print("✅ Таблицы созданы!")
         
         # Читаем данные из JSON (split/legacy)
-        print(f"\n📖 Читаем данные из JSON...")
+        print(f"\nReading data from JSON...")
         dishes_data = MenuService.load_menu_db_items()
         art_data = MenuService.load_art_db_items()
         if not isinstance(dishes_data, list):
@@ -59,15 +59,15 @@ def migrate():
         # Решение KISS: нормализуем id (str + trim) и оставляем ПОСЛЕДНЮЮ запись для каждого id.
         dishes_data, duplicates, skipped_no_id = MenuService.dedupe_menu_items(dishes_data)
         if duplicates or skipped_no_id:
-            print(f"ℹ️  Дедупликация меню: убрано дублей id = {duplicates}, пропущено без id = {skipped_no_id}")
+            print(f"Info: Deduplication: removed {duplicates} duplicates, skipped {skipped_no_id} without id")
         print(f"✅ К загрузке в БД меню: {len(dishes_data)} уникальных позиций")
         
         # Проверяем, есть ли уже данные в базе
         existing_count = KitchenItem.query.count() + WineItem.query.count() + BarItem.query.count() + TeaItem.query.count() + Artwork.query.count()
         if existing_count > 0:
-            print(f"\n⚠️  В базе уже есть {existing_count} записей")
+            print(f"\nWarning: DB already contains {existing_count} records")
             if args.yes:
-                print("🗑️  Удаляем старые данные...")
+                print("Cleaning old data...")
                 KitchenItem.query.delete()
                 WineItem.query.delete()
                 BarItem.query.delete()
@@ -82,7 +82,7 @@ def migrate():
                     return
         
         # Добавляем данные в базу
-        print(f"\n💾 Загружаем данные в базу данных...")
+        print(f"\nSaving data to DB...")
         success_count = 0
         error_count = 0
         
@@ -112,7 +112,7 @@ def migrate():
                     db.session.rollback()
         
         # Сохраняем оставшиеся записи
-        print("💾 Сохраняем остальные данные...")
+        print("Finalizing save...")
         db.session.commit()
         
         # Картины

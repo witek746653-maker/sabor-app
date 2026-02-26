@@ -758,9 +758,10 @@ function HomePage() {
               // Если это меню "Вино", переходим на каталог вин, иначе на обычную страницу меню
               const isWineMenu = card.name.toLowerCase().includes('вино');
               const linkTo = isWineMenu ? '/wine-catalog' : `/menu/${encodeURIComponent(card.name)}`;
-              const menuLower = String(card.name || '').toLowerCase();
+              const menuLower = String(card.name || '').toLowerCase().trim();
               let tileTarget = null;
-              if (isWineMenu) tileTarget = 'home.tile.wine';
+              if (menuLower.includes('маслениц')) tileTarget = 'home.tile.maslenitsa';
+              else if (isWineMenu) tileTarget = 'home.tile.wine';
               else if (menuLower.includes('основ')) tileTarget = 'home.tile.main';
               else if (menuLower.includes('авторск') && menuLower.includes('завтра')) tileTarget = 'home.tile.breakfast';
               else if (menuLower.includes('зимн')) tileTarget = 'home.tile.winter';

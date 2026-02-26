@@ -92,6 +92,7 @@ const TARGET_GROUPS = [
       { scope: 'pageBlock', target: 'home.tile.bar', label: 'Главная: Барное меню' },
       { scope: 'pageBlock', target: 'home.tile.tea', label: 'Главная: Чайное меню' },
       { scope: 'pageBlock', target: 'home.tile.special', label: 'Главная: Специальное меню' },
+      { scope: 'pageBlock', target: 'home.tile.maslenitsa', label: 'Главная: Масленица' },
       { scope: 'pageBlock', target: 'home.tile.wine', label: 'Главная: Вино' },
     ],
   },

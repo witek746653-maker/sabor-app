@@ -1,0 +1,85 @@
+{
+    "kitchen": {
+        "items": [
+            "Основное меню"
+        ],
+        "description": "Главные позиции ресторана",
+        "icon": "restaurant",
+        "image": "/images/main-menu-head.webp"
+    },
+    "breakfast": {
+        "items": [
+            "Авторские завтраки"
+        ],
+        "description": "Утреннее меню от Шефа",
+        "icon": "bakery_dining",
+        "image": "/images/breakfast-head.webp"
+    },
+    "kids": {
+        "items": [
+            "Детское меню"
+        ],
+        "description": "Любимые блюда для детей",
+        "icon": "child_care",
+        "image": "/images/kids-menu-head.webp"
+    },
+    "fest": {
+        "items": [
+            "Итальянские каникулы"
+        ],
+        "description": "Фестивали",
+        "icon": "eco",
+        "image": "/images/italian-holydais-head.webp"
+    },
+    "season": {
+        "items": [
+            "Зимнее меню",
+            "Постное меню",
+            "Масленица"
+        ],
+        "description": "Сезонное меню",
+        "icon": "eco",
+        "images": {
+            "Зимнее меню": "/images/winter-menu-head.webp",
+            "Постное меню": "/images/plant-based-menu-head.webp",
+            "Масленица": "/images/maslenitsa-head.webp"
+        }
+    },
+    "bar": {
+        "items": [
+            "Барное меню"
+        ],
+        "description": "Коктейли, глинтвейн, горячие напитки",
+        "icon": "local_bar",
+        "image": "/images/bar-menu-head.webp"
+    },
+    "wine": {
+        "items": [
+            "Вино"
+        ],
+        "description": "Подборка вин от сомелье",
+        "icon": "local_bar",
+        "image": "/images/wine-menu-head.webp"
+    },
+    "tea": {
+        "items": [
+            "Чай"
+        ],
+        "description": "Полезные напитки",
+        "icon": "emoji_food_beverage",
+        "image": "/images/tea-head.webp"
+    },
+    "specials": {
+        "items": [
+            "Специальное меню"
+        ],
+        "description": "Блюда для постоянных гостей",
+        "icon": "restaurant_menu",
+        "image": "/images/special-menu-head.webp"
+    },
+    "general": {
+        "items": [
+            "Сервис и знания"
+        ]
+    }
+}
