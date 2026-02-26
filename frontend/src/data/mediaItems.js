@@ -8,7 +8,7 @@ const mediaItems = [
     level: 'Базовый',
     category: 'Бар',
     audioUrl: '/media/podcast-cocktail-menu-concept-and-philosophy.mp3',
-    coverUrl: '/images/podcast-bar-cocktails.webp'
+    coverUrl: '/images/covers/podcast-bar-cocktails-head.webp'
   },
   {
     id: 'media-002',
@@ -19,7 +19,7 @@ const mediaItems = [
     level: 'Базовый',
     category: 'Бар',
     audioUrl: '/media/podcast-kak-pit-duhi-i-tryufelnoe-maslo.mp3',
-    coverUrl: '/images/podcast-bar-cocktails.webp'
+    coverUrl: '/images/covers/podcast-bar-cocktails-head.webp'
   },
   {
     id: 'media-003',
@@ -30,7 +30,7 @@ const mediaItems = [
     level: 'Базовый',
     category: 'Вино',
     audioUrl: '/media/podcast-reasons-to-drink-by-the-glass-guide.mp3',
-    coverUrl: '/images/podcast-reasons-to-drink-by-the-glass-guide.webp'
+    coverUrl: '/images/covers/podcast-reasons-to-drink-by-the-glass-guide-head.webp'
   },
   {
     id: 'media-004',
@@ -41,7 +41,7 @@ const mediaItems = [
     level: 'Базовый',
     category: 'Вино',
     audioUrl: '/media/podcast-reasons-to-try-coravin-wine.mp3',
-    coverUrl: '/images/podcast-reasons-to-drink-coravin-wine.webp'
+    coverUrl: '/images/covers/podcast-reasons-to-drink-coravin-wine-head.webp'
   }
 ];
 

@@ -81,25 +81,25 @@ function InfoPage() {
   const getToolImage = (toolName) => {
     const toolLower = toolName.toLowerCase();
     if (toolLower.includes('справочник')) {
-      return '/images/waiter-guide-head.webp';
+      return '/images/covers/waiter-guide-head.webp';
     }
     if (toolLower.includes('искусство')) {
-      return '/images/art-head.webp';
+      return '/images/covers/art-head.webp';
     }
     if (toolLower.includes('медиа') || toolLower.includes('обучение')) {
-      return '/images/media-head.jpg';
+      return '/images/covers/media-head.jpg';
     }
     if (toolLower.includes('сигар')) {
-      return '/images/cigars-head.webp';
+      return '/images/covers/cigars-head.webp';
     }
     if (toolLower.includes('база')) {
-      return '/images/data-base-head.webp';
+      return '/images/covers/data-base-head.webp';
     }
     if (toolLower.includes('гайды') || toolLower.includes('памятки')) {
-      return '/images/cheat-sheet.webp';
+      return '/images/covers/cheat-sheet-head.webp';
     }
     if (toolLower.includes('инструмент')) {
-      return '/images/tools-head.webp';
+      return '/images/covers/tools-head.webp';
     }
     return null;
   };

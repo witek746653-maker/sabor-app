@@ -439,6 +439,16 @@ function GlobalSearch({ isOpen, onClose, searchQuery: externalQuery = null }) {
     return fieldNames[field] || field;
   };
 
+  // Получаем метку типа контента
+  const getContentType = (type, category) => {
+    if (type === 'menu') return 'Меню';
+    if (type === 'article') return 'Статья';
+    if (type === 'media') return 'Медиа';
+    if (category === 'drink') return 'Напиток';
+    if (category === 'art') return 'Картина';
+    return 'Блюдо';
+  };
+
   if (!isOpen) return null;
   if (!isVisible({ scope: 'pageBlock', target: 'search.input' })) return null;
 
@@ -535,7 +545,7 @@ function GlobalSearch({ isOpen, onClose, searchQuery: externalQuery = null }) {
                       Правило: есть изображение И совпадение именно в названии.
                     */}
                     {(result.field === 'title' || result.field === 'title-en') && (result.image || result.dish?.image?.src) ? (
-                      <div className="size-12 rounded-lg overflow-hidden flex-shrink-0 border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900">
+                      <div className="size-12 rounded-lg overflow-hidden flex-shrink-0 border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 relative">
                         <img
                           src={result.image || (result.dish?.image?.src ? result.dish.image.src.replace(/^\.\//, '/') : '')}
                           alt=""
@@ -553,8 +563,11 @@ function GlobalSearch({ isOpen, onClose, searchQuery: externalQuery = null }) {
                     )}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2 mb-1">
-                        <h3 className="font-bold text-base text-[#181311] dark:text-white">
+                        <h3 className="font-bold text-base text-[#181311] dark:text-white flex items-center gap-2">
                           {result.title}
+                          <span className="text-[10px] uppercase tracking-wider bg-gray-100 dark:bg-white/10 text-gray-500 dark:text-gray-400 px-1.5 py-0.5 rounded font-bold">
+                            {getContentType(result.type, result.category)}
+                          </span>
                         </h3>
                         {result.isEnglish && (
                           <span className="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-2 py-0.5 rounded">

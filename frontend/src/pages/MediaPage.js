@@ -516,7 +516,7 @@ const MediaPage = () => {
           <div className="flex flex-col gap-4">
             <div className="w-full overflow-hidden rounded-2xl border border-orange-100/60">
               <img
-                src="/images/media-head.jpg"
+                src="/images/covers/media-head.jpg"
                 alt="Медиа-обучение"
                 className="h-40 w-full object-cover"
                 loading="lazy"

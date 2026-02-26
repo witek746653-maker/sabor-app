@@ -27,7 +27,7 @@
       "молочная кислота (без лактозы)"
     ],
     "image": {
-      "src": "../images/cocktail-poludenny-lissabon.webp",
+      "src": "../images/cocktails/cocktail-poludenny-lissabon.webp",
       "alt": ""
     },
     "comments": [
@@ -67,7 +67,7 @@
       "Бабл Дроп"
     ],
     "image": {
-      "src": "../images/cocktail-brazilskiy-briz.webp",
+      "src": "../images/cocktails/cocktail-brazilskiy-briz.webp",
       "alt": ""
     },
     "comments": [],
@@ -104,7 +104,7 @@
       "содовая"
     ],
     "image": {
-      "src": "../images/cocktail-sady-andalusii.webp",
+      "src": "../images/cocktails/cocktail-sady-andalusii.webp",
       "alt": ""
     },
     "comments": [],
@@ -142,7 +142,7 @@
       "фреш лимона"
     ],
     "image": {
-      "src": "../images/cocktail-gory-shotlandii.webp",
+      "src": "../images/cocktails/cocktail-gory-shotlandii.webp",
       "alt": ""
     },
     "comments": [],
@@ -177,7 +177,7 @@
       "фреш лайма"
     ],
     "image": {
-      "src": "../images/cocktail-skazki-venskogo-lesa.webp",
+      "src": "../images/cocktails/cocktail-skazki-venskogo-lesa.webp",
       "alt": ""
     },
     "comments": [],
@@ -210,7 +210,7 @@
       "молочная кислота (без лактозы)"
     ],
     "image": {
-      "src": "../images/cocktail-tuluzskiy-sharm.webp",
+      "src": "../images/cocktails/cocktail-tuluzskiy-sharm.webp",
       "alt": ""
     },
     "comments": [],
@@ -249,7 +249,7 @@
       "Соль"
     ],
     "image": {
-      "src": "../images/cocktail-zoloto-pemonta.webp",
+      "src": "../images/cocktails/cocktail-zoloto-pemonta.webp",
       "alt": ""
     },
     "comments": [
@@ -290,7 +290,7 @@
       "фреш лайма"
     ],
     "image": {
-      "src": "../images/cocktail-meksikanskiy-znoy.webp",
+      "src": "../images/cocktails/cocktail-meksikanskiy-znoy.webp",
       "alt": ""
     },
     "comments": [],
@@ -325,7 +325,7 @@
       "содовая"
     ],
     "image": {
-      "src": "../images/cocktail-avgust-v-bolone.webp",
+      "src": "../images/cocktails/cocktail-avgust-v-bolone.webp",
       "alt": ""
     },
     "comments": [],
@@ -368,7 +368,7 @@
       "соль"
     ],
     "image": {
-      "src": "../images/cocktail-reys-moskva-milan.webp",
+      "src": "../images/cocktails/cocktail-reys-moskva-milan.webp",
       "alt": ""
     },
     "comments": [
@@ -406,7 +406,7 @@
       "Кокки Американо Роса"
     ],
     "image": {
-      "src": "../images/cocktail-parizhskiy-parfyum.webp",
+      "src": "../images/cocktails/cocktail-parizhskiy-parfyum.webp",
       "alt": ""
     },
     "comments": [],
@@ -442,7 +442,7 @@
       "Милкис Содовая"
     ],
     "image": {
-      "src": "../images/cocktail-nochi-keyptauna.webp",
+      "src": "../images/cocktails/cocktail-nochi-keyptauna.webp",
       "alt": ""
     },
     "comments": [],
@@ -481,7 +481,7 @@
       "содовая"
     ],
     "image": {
-      "src": "../images/cocktail-rassvet-v-provanse.webp",
+      "src": "../images/cocktails/cocktail-rassvet-v-provanse.webp",
       "alt": ""
     },
     "comments": [],

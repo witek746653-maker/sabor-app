@@ -227,7 +227,7 @@ function HomePage() {
   const TEA_MENU_NAME = 'Чай';
   const TEA_MENU_DESCRIPTION = 'Полезные напитки';
   const TEA_MENU_ICON = 'emoji_food_beverage';
-  const TEA_MENU_IMAGE = '/images/tea-head.webp';
+  const TEA_MENU_IMAGE = '/images/covers/tea-head.webp';
   const MENU_ORDER_MATCHERS = [
     { key: 'основн', match: (name) => name.includes('основн') },
     { key: 'завтрак', match: (name) => name.includes('завтрак') },
@@ -292,9 +292,9 @@ function HomePage() {
     }
 
     const menuLower = menuName.toLowerCase();
-    if (menuLower.includes('основн')) return '/images/main-menu-head.webp';
-    if (menuLower.includes('завтрак')) return '/images/breakfast-head.webp';
-    if (menuLower.includes('чай')) return '/images/tea-head.webp';
+    if (menuLower.includes('основн')) return '/images/covers/main-menu-head.webp';
+    if (menuLower.includes('завтрак')) return '/images/covers/breakfast-head.webp';
+    if (menuLower.includes('чай')) return '/images/covers/tea-head.webp';
     return null;
   };
 

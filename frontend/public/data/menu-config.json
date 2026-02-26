@@ -5,7 +5,7 @@
         ],
         "description": "Главные позиции ресторана",
         "icon": "restaurant",
-        "image": "/images/main-menu-head.webp"
+        "image": "/images/covers/main-menu-head.webp"
     },
     "breakfast": {
         "items": [
@@ -13,7 +13,7 @@
         ],
         "description": "Утреннее меню от Шефа",
         "icon": "bakery_dining",
-        "image": "/images/breakfast-head.webp"
+        "image": "/images/covers/breakfast-head.webp"
     },
     "kids": {
         "items": [
@@ -21,7 +21,7 @@
         ],
         "description": "Любимые блюда для детей",
         "icon": "child_care",
-        "image": "/images/kids-menu-head.webp"
+        "image": "/images/covers/kids-menu-head.webp"
     },
     "fest": {
         "items": [
@@ -29,7 +29,7 @@
         ],
         "description": "Фестивали",
         "icon": "eco",
-        "image": "/images/italian-holydais-head.webp"
+        "image": "/images/covers/italian-holydais-head.webp"
     },
     "season": {
         "items": [
@@ -40,9 +40,9 @@
         "description": "Сезонное меню",
         "icon": "eco",
         "images": {
-            "Зимнее меню": "/images/winter-menu-head.webp",
-            "Постное меню": "/images/plant-based-menu-head.webp",
-            "Масленица": "/images/maslenitsa-head.webp"
+            "Зимнее меню": "/images/covers/winter-menu-head.webp",
+            "Постное меню": "/images/covers/plant-based-menu-head.jpg",
+            "Масленица": "/images/covers/maslenitsa-head.webp"
         }
     },
     "bar": {
@@ -51,7 +51,7 @@
         ],
         "description": "Коктейли, глинтвейн, горячие напитки",
         "icon": "local_bar",
-        "image": "/images/bar-menu-head.webp"
+        "image": "/images/covers/bar-menu-head.webp"
     },
     "wine": {
         "items": [
@@ -59,7 +59,7 @@
         ],
         "description": "Подборка вин от сомелье",
         "icon": "local_bar",
-        "image": "/images/wine-menu-head.webp"
+        "image": "/images/covers/wine-menu-head.webp"
     },
     "tea": {
         "items": [
@@ -67,7 +67,7 @@
         ],
         "description": "Полезные напитки",
         "icon": "emoji_food_beverage",
-        "image": "/images/tea-head.webp"
+        "image": "/images/covers/tea-head.webp"
     },
     "specials": {
         "items": [
@@ -75,7 +75,7 @@
         ],
         "description": "Блюда для постоянных гостей",
         "icon": "restaurant_menu",
-        "image": "/images/special-menu-head.webp"
+        "image": "/images/covers/special-menu-head.webp"
     },
     "general": {
         "items": [

@@ -7,6 +7,7 @@ import { useVisibility } from '../contexts/VisibilityContext';
 import { getDishImageUrl } from '../utils/imageUtils';
 import { useFavorites } from '../contexts/FavoritesContext';
 import GuestBlocker from '../components/GuestBlocker';
+import MenuImagePlaceholder from '../components/MenuImagePlaceholder';
 import './DishDetailPage.css';
 
 function DishDetailPage({ mode }) {

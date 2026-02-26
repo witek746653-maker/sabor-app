@@ -6,7 +6,7 @@
       "title": "Москва со вкусом",
       "description": "Гид по лучшим вкусам столицы и нашего ресторана",
       "category": "Гайд",
-      "image": "/images/taste-of-moscow.webp",
+      "image": "/images/covers/taste-of-moscow-head.webp",
       "url": "/content/resources/taste-of-moscow.md",
       "version": 1
     },
@@ -15,7 +15,7 @@
       "title": "Энциклопедия сигар",
       "description": "Все, что нужно знать о сигарах и культуре курения",
       "category": "Справочник",
-      "image": "/images/cigars-head.webp",
+      "image": "/images/covers/cigars-head.webp",
       "url": "/content/resources/cigar-encyclopedia.md",
       "version": 1
     },
@@ -24,7 +24,7 @@
       "title": "Депозиты VIP-комнат",
       "description": "Условия бронирования и депозиты для наших гостей",
       "category": "Инструкция",
-      "image": "/images/vip-deposits.webp",
+      "image": "/images/covers/vip-deposits-head.webp",
       "url": "/content/resources/vip-deposits.md",
       "version": 1
     },
@@ -33,7 +33,7 @@
       "title": "Пробковый сбор",
       "description": "Правила и условия предоставления услуги",
       "category": "Инструкция",
-      "image": "/images/corkage-fee.webp",
+      "image": "/images/covers/corkage-fee-head.webp",
       "url": "/content/resources/cork-fee.md",
       "version": 1
     },
@@ -42,7 +42,7 @@
       "title": "Сигарная дегустация",
       "description": "Сет-меню для сигарных дегустаций",
       "category": "Сет-меню",
-      "image": "/images/cigar-tasting-set.webp",
+      "image": "/images/covers/cigar-tasting-set-head.webp",
       "url": "/content/resources/cigar-tasting-set.md",
       "version": 1
     },
@@ -51,7 +51,7 @@
       "title": "Завтраки для отеля",
       "description": "Сет-меню завтраков для отеля",
       "category": "Сет-меню",
-      "image": "/images/hotel-breakfast-set.webp",
+      "image": "/images/covers/hotel-breakfast-set-head.webp",
       "url": "/content/resources/hotel-breakfast-set.md",
       "version": 1
     },
@@ -60,7 +60,7 @@
       "title": "Безалкогольные напитки",
       "description": "Смузи, лимонады, кофе и др.",
       "category": "Бар",
-      "image": "/images/non-alcoholic-head.jpg",
+      "image": "/images/covers/non-alcoholic-head.jpg",
       "url": "/content/resources/non-alcoholic-drinks.md",
       "version": 1
     }

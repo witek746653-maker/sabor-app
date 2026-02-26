@@ -26,7 +26,7 @@ const MenuImagePlaceholder = ({ menuName, className = '' }) => {
 
     return (
         <div className={`absolute inset-0 bg-gradient-to-br ${getGradient()} flex items-center justify-center ${className}`}>
-            <span className="material-symbols-outlined text-primary/30 dark:text-white/10 text-6xl">
+            <span className="material-symbols-outlined text-primary/30 dark:text-white/10 text-2xl">
                 {getIcon()}
             </span>
             <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
