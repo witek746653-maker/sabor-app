@@ -101,6 +101,9 @@ function InfoPage() {
     if (toolLower.includes('инструмент')) {
       return '/images/covers/tools-head.webp';
     }
+    if (toolLower.includes('внутренние')) {
+      return '/images/covers/internal-resources-head.webp';
+    }
     return null;
   };
 
@@ -240,19 +243,10 @@ function InfoPage() {
     },
 
     {
-      name: 'Инструкция для хостес',
-      path: '/api/private/menus/hostess_instruction.pdf',
-      type: 'pdf',
-      description: 'Инструкция для хостес',
-      comingSoon: false,
-      visibilityScope: 'pageBlock',
-      visibilityTarget: 'info.tile.hostessInstruction'
-    },
-    {
-      name: 'Комплекс для сотрудников',
-      path: '/api/private/menus/latest.pdf',
-      type: 'pdf',
-      description: 'Внутренние ресурсы',
+      name: 'Внутренние ресурсы',
+      path: '/internal-resources',
+      type: 'react',
+      description: 'Файлы для скачивания',
       comingSoon: false
     },
     {

@@ -119,6 +119,8 @@ def serve_private_menu_pdf(filename):
         final_name = "Комплекс для новых сотрудников (актуальный).pdf"
     elif filename == "hostess_instruction.pdf":
         final_name = "Инструкция для хостес.pdf"
+    elif filename == "kbju_breakfast.pdf":
+        final_name = "КБЖУ Блюд завтраков.pdf"
     else:
         final_name = filename
         

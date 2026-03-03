@@ -14,6 +14,7 @@ import { ArrowUp, Clock } from 'lucide-react';
 import { TableOfContents } from '../components/reader/TableOfContents';
 import '../reader.css';
 import { useFavorites } from '../contexts/FavoritesContext';
+import { useTheme } from '../contexts/ThemeContext';
 
 export default function ArticleReaderPage() {
     const { articleKey } = useParams();
@@ -29,11 +30,16 @@ export default function ArticleReaderPage() {
     const [manifestUpdate, setManifestUpdate] = useState(null);
     const [fileDate, setFileDate] = useState(null);
 
+    const { theme: globalTheme } = useTheme();
     // Settings
     const [fontSize, setFontSize] = useState(() => localStorage.getItem('reader-font-size') || 'base');
     const [theme, setTheme] = useState(() => {
         const saved = localStorage.getItem('reader-theme');
-        return (saved && saved !== 'sepia') ? saved : 'light';
+        // Если в ридере тема не выбрана, используем глобальную тему приложения
+        if (!saved || saved === 'sepia') {
+            return globalTheme;
+        }
+        return saved;
     });
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const [isTOCOpen, setIsTOCOpen] = useState(false);
@@ -153,8 +159,10 @@ export default function ArticleReaderPage() {
 
         return () => {
             document.body.classList.remove('light', 'dark', 'sepia');
-            document.documentElement.classList.remove('dark');
-            document.documentElement.classList.add('light');
+            // При выходе восстанавливаем тему приложения из localStorage или системную
+            const savedGlobalTheme = localStorage.getItem('appTheme') || 'light';
+            document.documentElement.classList.toggle('dark', savedGlobalTheme === 'dark');
+            document.documentElement.classList.toggle('light', savedGlobalTheme === 'light');
         };
     }, [fontSize, theme]);
 

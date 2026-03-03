@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { getDishes, getMenus } from '../services/api';
+import { getDishes, getMenus, getToolsRegistry } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import { useVisibility } from '../contexts/VisibilityContext';
 import mediaItems from '../data/mediaItems';
@@ -19,7 +19,7 @@ function GlobalSearch({ isOpen, onClose, searchQuery: externalQuery = null }) {
   const [searchQuery, setSearchQuery] = useState(() => {
     // KISS + Термин **sessionStorage**: "временная память" вкладки. 
     // Если пользователь уже что-то искал, мы это вспомним.
-    return externalQuery || sessionStorage.getItem('globalSearchQuery') || '';
+    return externalQuery || sessionStorage.getItem('globalSearch_persistentInput') || '';
   });
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -40,7 +40,7 @@ function GlobalSearch({ isOpen, onClose, searchQuery: externalQuery = null }) {
     setSearchQuery('');
     setResults([]);
     // Удаляем из памяти при полной очистке
-    sessionStorage.removeItem('globalSearchQuery');
+    sessionStorage.removeItem('globalSearch_persistentInput');
     // После очистки удобно сразу вернуть фокус на поле ввода.
     setTimeout(() => inputRef.current?.focus(), 0);
   };
@@ -69,7 +69,7 @@ function GlobalSearch({ isOpen, onClose, searchQuery: externalQuery = null }) {
 
     // Сохраняем значения в память при каждом изменении
     if (isOpen) {
-      sessionStorage.setItem('globalSearchQuery', searchQuery);
+      sessionStorage.setItem('globalSearch_persistentInput', searchQuery);
       sessionStorage.setItem('globalSearchFilter', activeFilter);
     }
   }, [searchQuery, isOpen, searchIndex, activeFilter]);
@@ -80,28 +80,29 @@ function GlobalSearch({ isOpen, onClose, searchQuery: externalQuery = null }) {
   const loadData = async () => {
     setLoading(true);
     try {
-      const [dishes, menus, manifestResponse] = await Promise.all([
+      const [dishes, menus, manifestResponse, toolsRegistry, menuConfig] = await Promise.all([
         getDishes(),
         getMenus(),
-        fetch('/content/manifest.json').then(r => r.json()).catch(() => ({ articles: [] }))
+        fetch('/api/useful/manifest').then(r => r.json()).catch(() => ({ articles: [] })),
+        getToolsRegistry().catch(() => []),
+        fetch('/data/menu-config.json').then(r => r.json()).catch(() => ({}))
       ]);
 
       setAllDishes(dishes);
       setAllMenus(menus);
 
       // Создаем поисковый индекс
-      const index = buildSearchIndex(dishes, menus, manifestResponse.articles || []);
+      const index = buildSearchIndex(dishes, menus, manifestResponse.articles || [], toolsRegistry, menuConfig);
       setSearchIndex(index);
     } catch (error) {
       console.error('Ошибка загрузки данных для поиска:', error);
     } finally {
       setLoading(false);
     }
-
   };
 
   // Строим поисковый индекс из всех данных
-  const buildSearchIndex = (dishes, menus, articles) => {
+  const buildSearchIndex = (dishes, menus, articles, tools, menuConfig) => {
     const index = [];
     const allowArchived = isVisible({ scope: 'contentItem', target: 'status.archived' });
 
@@ -112,6 +113,7 @@ function GlobalSearch({ isOpen, onClose, searchQuery: externalQuery = null }) {
       const menu = String(it?.menu || '').toLowerCase();
       const section = String(it?.section || '').toLowerCase();
 
+      // Уточненная логика: безалкогольные напитки тоже помечаем как бар
       const isWine =
         menu.includes('вино') ||
         menu.includes('wine') ||
@@ -132,7 +134,10 @@ function GlobalSearch({ isOpen, onClose, searchQuery: externalQuery = null }) {
         section.includes('кофе') ||
         section.includes('coffee') ||
         section.includes('напит') ||
-        section.includes('drink');
+        section.includes('drink') ||
+        section.includes('сок') ||
+        section.includes('juice') ||
+        section.includes('лимонад');
 
       if (isWine) return 'wine';
       if (isBar) return 'bar';
@@ -147,21 +152,107 @@ function GlobalSearch({ isOpen, onClose, searchQuery: externalQuery = null }) {
       return `/dish/${it.id}`;
     };
 
-    // Индексируем меню
+    // 1. Индексируем разделы меню (плитки с главной)
     menus.forEach(menuName => {
+      // Ищем описание в конфиге
+      const groups = Object.values(menuConfig || {});
+      const group = groups.find(g => g.items?.includes(menuName));
+      const description = group?.description || '';
+
       index.push({
-        type: 'menu',
+        type: 'section',
+        category: 'section',
         id: `menu-${menuName}`,
         title: menuName,
-        text: menuName,
-        location: 'Главная страница',
-        path: `/menu/${encodeURIComponent(menuName)}`,
+        text: `${menuName} ${description}`,
+        location: 'Главная страница / Меню',
+        path: menuName.toLowerCase().includes('вино') ? '/wine-catalog' : `/menu/${encodeURIComponent(menuName)}`,
         menu: menuName,
-        category: 'dish'
+        image: group?.image || group?.images?.[menuName]
       });
     });
 
-    // Индексируем блюда, напитки и картины
+    // Добавляем плитку "Чай" вручную, так как она часто отдельно в коде HomePage
+    index.push({
+      type: 'section',
+      category: 'section',
+      id: 'menu-tea',
+      title: 'Чай',
+      text: 'Чай Полезные напитки',
+      location: 'Главная страница / Меню',
+      path: '/tea',
+      menu: 'Чай',
+      image: '/images/covers/tea-head.webp'
+    });
+
+    // 2. Индексируем плитки страницы Информации
+    const infoTiles = [
+      { name: 'Медиа-обучение', path: '/media', desc: 'Видео и подкасты', icon: 'smart_display' },
+      { name: 'Справочник официанта', path: '/menus/waiter-guide.html', desc: 'Справочные материалы', icon: 'menu_book', isHtml: true },
+      { name: 'Искусство в Sabor de la Vida', path: '/art-gallery', desc: 'Художественные работы', icon: 'palette' },
+      { name: 'Внутренние ресурсы', path: '/internal-resources', desc: 'Файлы для скачивания', icon: 'business_center' },
+      { name: 'Гайды/Инструкции/Памятки', path: '/useful', desc: 'Самое важное, что нужно помнить', icon: 'auto_stories' },
+      { name: 'Инструменты', path: '/tools', desc: 'Полезные сервисы', icon: 'construction' }
+    ];
+
+    infoTiles.forEach(tile => {
+      index.push({
+        type: 'section',
+        category: 'section',
+        id: `info-${tile.name}`,
+        title: tile.name,
+        text: `${tile.name} ${tile.desc}`,
+        location: 'Информация',
+        path: tile.path,
+        isHtml: tile.isHtml,
+        icon: tile.icon
+      });
+    });
+
+    // 3. Индексируем инструменты (Tools)
+    // Добавляем базовые инструменты (которые в коде ToolsPage)
+    const baseTools = [
+      { id: 'wine-list-builder', title: 'Генератор списка вин', desc: 'Создай свой список вин', url: '/wine-list-builder' },
+      { id: 'waiter-database', title: 'База данных официанта', desc: 'Полная информация о блюдах в одном месте', url: '/menus/waiter-database.html', isHtml: true },
+      { id: 'interval-trainer', title: 'Интервальный тренинг', desc: 'Изучение меню с интервальным повторением', url: '/interval-trainer' }
+    ];
+
+    const allTools = [...baseTools, ...(tools || []).filter(t => t.enabled && !baseTools.find(bt => bt.id === t.id))];
+
+    allTools.forEach(tool => {
+      index.push({
+        type: 'tool',
+        category: 'section',
+        id: `tool-${tool.id}`,
+        title: tool.title || tool.name,
+        text: `${tool.title || tool.name} ${tool.description || tool.desc || ''}`,
+        location: 'Информация / Инструменты',
+        path: tool.url || tool.path,
+        isHtml: tool.openMode === 'new_tab' || tool.isHtml
+      });
+    });
+
+    // 4. Индексируем внутренние ресурсы (PDF файлы)
+    const internalResources = [
+      { id: 'hostess', name: 'Инструкция для хостес', desc: 'Основные правила и регламенты работы', path: '/api/private/menus/hostess_instruction.pdf' },
+      { id: 'employees', name: 'Комплекс для сотрудников', desc: 'Внутренние ресурсы и обучение', path: '/api/private/menus/latest.pdf' },
+      { id: 'kbju', name: 'КБЖУ Блюд завтраков', desc: 'Пищевая ценность блюд (загружено)', path: '/api/private/menus/kbju_breakfast.pdf' }
+    ];
+
+    internalResources.forEach(res => {
+      index.push({
+        type: 'file',
+        category: 'section', // Тоже в разделы для простоты фильтрации
+        id: `file-${res.id}`,
+        title: res.name,
+        text: `${res.name} ${res.desc} pdf файл скачать открыть`,
+        location: 'Информация / Внутренние ресурсы',
+        path: res.path,
+        isFile: true
+      });
+    });
+
+    // 5. Индексируем блюда, напитки и картины
     dishes.forEach(dish => {
       const isArchived = dish.status === 'в архиве';
       if (isArchived && !allowArchived) return;
@@ -174,6 +265,15 @@ function GlobalSearch({ isOpen, onClose, searchQuery: externalQuery = null }) {
       if (itemKind === 'wine' || itemKind === 'bar') searchCategory = 'drink';
       if (itemKind === 'art') searchCategory = 'art';
 
+      // Добавляем теги для безалкогольных напитков, чтобы они искались по слову "безалкогольный"
+      const isNonAlcoholic =
+        itemKind === 'bar' &&
+        (String(dish.title).toLowerCase().includes('сок') ||
+          String(dish.title).toLowerCase().includes('кофе') ||
+          String(dish.title).toLowerCase().includes('чай') ||
+          String(dish.title).toLowerCase().includes('лимонад') ||
+          String(dish.description).toLowerCase().includes('безалкоголь'));
+
       const searchableFields = {
         title: dish.title || '',
         description: dish.description || '',
@@ -184,7 +284,7 @@ function GlobalSearch({ isOpen, onClose, searchQuery: externalQuery = null }) {
         features: dish.features || '',
         reference_info: dish.reference_info ? stripHtml(dish.reference_info) : '',
         ingredients: Array.isArray(dish.ingredients) ? dish.ingredients.join(' ') : '',
-        tags: Array.isArray(dish.tags) ? dish.tags.join(' ') : '',
+        tags: Array.isArray(dish.tags) ? dish.tags.join(' ') : (isNonAlcoholic ? 'безалкогольный' : ''),
       };
 
       Object.entries(searchableFields).forEach(([field, value]) => {
@@ -209,7 +309,7 @@ function GlobalSearch({ isOpen, onClose, searchQuery: externalQuery = null }) {
       });
     });
 
-    // Индексируем статьи
+    // 6. Индексируем статьи (динамически из манифеста)
     articles.forEach(article => {
       const searchableFields = {
         title: article.title || '',
@@ -234,7 +334,7 @@ function GlobalSearch({ isOpen, onClose, searchQuery: externalQuery = null }) {
       });
     });
 
-    // Индексируем медиа
+    // 7. Индексируем медиа
     mediaItems.forEach(media => {
       const searchableFields = {
         title: media.title || '',
@@ -355,10 +455,31 @@ function GlobalSearch({ isOpen, onClose, searchQuery: externalQuery = null }) {
     sessionStorage.setItem('fromSearch', 'true');
 
     // Закрываем поиск
-
     onClose();
 
-    // Небольшая задержка для плавного перехода
+    // Обработка разных типов переходов
+    if (result.isHtml) {
+      // Прямой переход для HTML файлов
+      const baseUrl = process.env.NODE_ENV === 'development' && window.location.port === '3000'
+        ? 'http://localhost:5000'
+        : window.location.origin;
+
+      window.open(baseUrl + result.path, '_blank', 'noopener,noreferrer');
+      return;
+    }
+
+    if (result.isFile) {
+      // Для файлов открываем модалку или скачиваем
+      // В данном контексте проще всего просто открыть в новой вкладке
+      const baseUrl = process.env.NODE_ENV === 'development' && window.location.port === '3000'
+        ? 'http://localhost:5000'
+        : window.location.origin;
+
+      window.open(`${baseUrl}${result.path}?disposition=inline&v=${Date.now()}`, '_blank', 'noopener,noreferrer');
+      return;
+    }
+
+    // Небольшая задержка для плавного перехода React Router
     setTimeout(() => {
       navigate(result.path);
     }, 100);
@@ -366,7 +487,9 @@ function GlobalSearch({ isOpen, onClose, searchQuery: externalQuery = null }) {
 
   // Получаем иконку для типа результата
   const getResultIcon = (type, field, itemKind) => {
-    if (type === 'menu') return 'restaurant_menu';
+    if (type === 'section' || type === 'menu') return 'dashboard_customize';
+    if (type === 'tool') return 'construction';
+    if (type === 'file') return 'picture_as_pdf';
     if (type === 'article') return 'article';
     if (type === 'media') return 'play_circle';
     if (type === 'art') return 'palette';
@@ -390,6 +513,7 @@ function GlobalSearch({ isOpen, onClose, searchQuery: externalQuery = null }) {
   const getFilterIcon = (filter) => {
     switch (filter) {
       case 'all': return 'all_inclusive';
+      case 'section': return 'dashboard_customize';
       case 'dish': return 'restaurant';
       case 'drink': return 'local_bar';
       case 'media': return 'play_circle';
@@ -402,6 +526,7 @@ function GlobalSearch({ isOpen, onClose, searchQuery: externalQuery = null }) {
   const getFilterLabel = (filter) => {
     switch (filter) {
       case 'all': return 'Всё';
+      case 'section': return 'Разделы';
       case 'dish': return 'Блюда';
       case 'drink': return 'Напитки';
       case 'media': return 'Медиа';
@@ -441,6 +566,9 @@ function GlobalSearch({ isOpen, onClose, searchQuery: externalQuery = null }) {
 
   // Получаем метку типа контента
   const getContentType = (type, category) => {
+    if (type === 'section') return 'Раздел';
+    if (type === 'tool') return 'Инструмент';
+    if (type === 'file') return 'PDF Файл';
     if (type === 'menu') return 'Меню';
     if (type === 'article') return 'Статья';
     if (type === 'media') return 'Медиа';
@@ -486,7 +614,7 @@ function GlobalSearch({ isOpen, onClose, searchQuery: externalQuery = null }) {
         {/* Фильтры */}
         <div className="sticky top-0 z-[206] bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md px-4 py-3 border-b border-gray-100 dark:border-gray-800/50">
           <div className="sabor-container flex gap-2 overflow-x-auto no-scrollbar">
-            {['all', 'dish', 'drink', 'media', 'article', 'art'].map(filter => (
+            {['all', 'section', 'dish', 'drink', 'media', 'article', 'art'].map(filter => (
               <button
                 key={filter}
                 onClick={() => setActiveFilter(filter)}
@@ -541,10 +669,10 @@ function GlobalSearch({ isOpen, onClose, searchQuery: externalQuery = null }) {
                   )}
                   <div className={`flex items-start gap-3 ${result.isArchived ? 'opacity-60 grayscale' : ''}`}>
                     {/* 
-                      KISS: Решаем, показывать ли картинку.
-                      Правило: есть изображение И совпадение именно в названии.
-                    */}
-                    {(result.field === 'title' || result.field === 'title-en') && (result.image || result.dish?.image?.src) ? (
+                          KISS: Решаем, показывать ли картинку.
+                          Правило: есть изображение ИЛИ совпадение именно в названии (для блюд).
+                        */}
+                    {result.image || result.dish?.image?.src ? (
                       <div className="size-12 rounded-lg overflow-hidden flex-shrink-0 border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 relative">
                         <img
                           src={result.image || (result.dish?.image?.src ? result.dish.image.src.replace(/^\.\//, '/') : '')}
@@ -555,10 +683,20 @@ function GlobalSearch({ isOpen, onClose, searchQuery: externalQuery = null }) {
                           }}
                         />
                         <MenuImagePlaceholder menuName={result.dish?.menu || result.menu || result.category} />
+                        {result.icon && !result.image && (
+                          <div className="absolute inset-0 flex items-center justify-center text-primary/40 bg-orange-50/50 dark:bg-gray-800/50">
+                            <span className="material-symbols-outlined text-2xl">{result.icon}</span>
+                          </div>
+                        )}
                       </div>
                     ) : (
                       <div className="size-12 rounded-lg flex items-center justify-center flex-shrink-0 bg-gray-50 dark:bg-gray-900 border border-transparent overflow-hidden relative">
                         <MenuImagePlaceholder menuName={result.dish?.menu || result.menu || result.category} />
+                        {result.icon && (
+                          <div className="absolute inset-0 flex items-center justify-center text-primary/40 bg-orange-50/50 dark:bg-gray-800/50">
+                            <span className="material-symbols-outlined text-2xl">{result.icon}</span>
+                          </div>
+                        )}
                       </div>
                     )}
                     <div className="flex-1 min-w-0">

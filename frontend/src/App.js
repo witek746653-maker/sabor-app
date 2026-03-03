@@ -40,6 +40,7 @@ import ArticleReaderPage from './pages/ArticleReaderPage';
 import ToolsPage from './pages/ToolsPage';
 import WineListBuilderPage from './pages/WineListBuilder/WineListBuilderPage';
 import IntervalTrainer from './pages/IntervalTrainer';
+import InternalResourcesPage from './pages/InternalResourcesPage';
 import './App.css';
 import { useFavorites } from './contexts/FavoritesContext';
 
@@ -230,7 +231,7 @@ function App() {
                         <Route path="/wine-list-builder" element={<WineListBuilderPage />} />
                         <Route path="/interval-trainer" element={<IntervalTrainer />} />
 
-                        {/* Страница входа в админ-панель */}
+                        <Route path="/internal-resources" element={<InternalResourcesPage />} />
                         <Route path="/admin/login" element={<AdminLoginPage />} />
 
                         {/* Админ-маршруты с защитой и layout */}
