@@ -21,6 +21,7 @@ function DishDetailPage({ mode }) {
   const [dish, setDish] = useState(null);
   const [extras, setExtras] = useState(null);
   const [teaComparison, setTeaComparison] = useState(null);
+  const [allTeas, setAllTeas] = useState([]);
   const [isExtrasOpen, setIsExtrasOpen] = useState(false);
   const [isTeaMapOpen, setIsTeaMapOpen] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -215,6 +216,17 @@ function DishDetailPage({ mode }) {
             }
           } catch (err) {
             console.error('Ошибка загрузки сравнения чаев:', err);
+          }
+
+          // Загружаем все чаи для карты
+          try {
+            const response = await fetch('/data/menu-tea.json');
+            if (response.ok) {
+              const allTeasData = await response.json();
+              setAllTeas(allTeasData);
+            }
+          } catch (err) {
+            console.error('Ошибка загрузки всех чаев:', err);
           }
         }
 
@@ -1153,81 +1165,96 @@ function DishDetailPage({ mode }) {
         </div>
       )}
 
-      {/* Модальное окно с таблицей чаев */}
+      {/* Модальное окно чая */}
       {isTeaMapOpen && teaComparison && (
         <div
           className="fixed inset-0 z-[110] flex items-end justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-300"
           onClick={() => setIsTeaMapOpen(false)}
         >
           <div
-            className="w-full max-w-2xl bg-white dark:bg-surface-dark rounded-t-3xl shadow-2xl p-6 relative animate-in slide-in-from-bottom duration-500 overflow-hidden flex flex-col max-h-[90vh]"
+            className="w-full max-w-lg bg-white dark:bg-surface-dark rounded-t-3xl shadow-2xl p-4 relative animate-in slide-in-from-bottom duration-500 overflow-hidden flex flex-col max-h-[95vh]"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="w-12 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full mx-auto mb-6 shrink-0" />
+            {/* Handle bar */}
+            <div className="w-10 h-1 bg-gray-200 dark:bg-gray-700 rounded-full mx-auto mb-4 shrink-0" />
 
-            <div className="flex justify-between items-center mb-6 shrink-0">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-600">
-                  <span className="material-symbols-outlined text-xl block">local_library</span>
+            <div className="flex justify-between items-center mb-4 shrink-0">
+              <div className="flex items-center gap-2">
+                <div className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-600">
+                  <span className="material-symbols-outlined text-lg block">map</span>
                 </div>
-                <h3 className="font-bold text-xl text-gray-900 dark:text-white">Сравнительная карта чая</h3>
+                <h3 className="font-bold text-lg text-gray-900 dark:text-white">Чайная карта</h3>
               </div>
               <button
                 onClick={() => setIsTeaMapOpen(false)}
-                className="size-10 flex items-center justify-center rounded-full bg-gray-100 dark:bg-white/10 text-gray-500 hover:bg-gray-200"
+                className="size-8 flex items-center justify-center rounded-full bg-gray-100 dark:bg-white/10 text-gray-400"
               >
-                <span className="material-symbols-outlined">close</span>
+                <span className="material-symbols-outlined text-lg">close</span>
               </button>
             </div>
 
             <div className="flex-1 overflow-y-auto no-scrollbar pb-6">
-              <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse min-w-[500px]">
-                  <thead>
-                    <tr className="border-b border-gray-100 dark:border-white/5">
-                      <th className="py-3 px-2 text-[11px] font-bold uppercase tracking-wider text-gray-400">Группа</th>
-                      <th className="py-3 px-2 text-[11px] font-bold uppercase tracking-wider text-gray-400 text-center">Кофеин</th>
-                      <th className="py-3 px-2 text-[11px] font-bold uppercase tracking-wider text-gray-400">Чем отличается / Рекомендация</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {teaComparison.map((item, i) => (
-                      <tr key={i} className="border-b border-gray-50 dark:border-white/5 hover:bg-gray-50/50 dark:hover:bg-white/5 transition-colors">
-                        <td className="py-4 px-2">
-                          <div className="flex items-center gap-3">
-                            <div className="w-12 h-12 rounded-xl overflow-hidden shrink-0 shadow-sm">
-                              <img src={item.image} alt={item.group} className="w-full h-full object-cover" />
+              <div className="space-y-6">
+                {teaComparison.map((cat) => {
+                  const categoryTeas = allTeas.filter(t =>
+                    cat.sections.some(s => (t.section || '').includes(s))
+                  );
+
+                  if (categoryTeas.length === 0) return null;
+
+                  return (
+                    <div key={cat.id} className="space-y-2">
+                      {/* Категория Header */}
+                      <div className="flex items-center justify-between border-b border-emerald-100 dark:border-emerald-500/20 pb-2 pt-2 px-3 sticky top-0 bg-emerald-50/90 dark:bg-emerald-950/40 backdrop-blur-md z-10 -mx-4 mb-2">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xl leading-none">{cat.icon}</span>
+                          <div>
+                            <span className="text-[11px] font-black uppercase tracking-widest text-emerald-700 dark:text-emerald-400 leading-none block">{cat.group}</span>
+                            <span className="text-[9px] text-emerald-800/60 dark:text-emerald-300/60 font-medium block mt-0.5">{cat.general_features}</span>
+                          </div>
+                        </div>
+                        <span className={`px-1.5 py-0.5 rounded text-[8px] font-bold uppercase tracking-tight ${cat.caffeine === 'Высокое' ? 'bg-red-100 text-red-600' :
+                          cat.caffeine === 'Без кофеина' ? 'bg-green-100 text-green-600' :
+                            'bg-amber-100 text-amber-600'
+                          }`}>
+                          {cat.caffeine}
+                        </span>
+                      </div>
+
+                      {/* Список чаев */}
+                      <div className="grid grid-cols-1 gap-1 px-1">
+                        {categoryTeas.map((tea) => (
+                          <div key={tea.id} className="flex items-start gap-2.5 p-2 rounded-xl hover:bg-gray-50 dark:hover:bg-white/5 transition-colors border border-transparent hover:border-gray-100 dark:hover:border-white/5">
+                            <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0 bg-gray-100 dark:bg-gray-800 shadow-sm border border-black/5 dark:border-white/5 mt-0.5">
+                              <img
+                                src={getDishImageUrl(tea)}
+                                alt={tea.title}
+                                className="w-full h-full object-cover"
+                                onError={(e) => { e.target.src = '/icons/tea-default.png'; }}
+                              />
                             </div>
-                            <div>
-                              <div className="text-lg mb-0.5">{item.icon}</div>
-                              <div className="text-[13px] font-bold text-gray-900 dark:text-white leading-none">{item.group}</div>
+                            <div className="flex-1 min-w-0">
+                              <h4 className="text-[11px] font-bold text-gray-900 dark:text-white leading-tight mb-1">{tea.title}</h4>
+                              {tea.features && (
+                                <div
+                                  className="text-[10px] text-gray-500 dark:text-gray-400 leading-snug italic contains-html"
+                                  dangerouslySetInnerHTML={{ __html: tea.features }}
+                                />
+                              )}
                             </div>
                           </div>
-                        </td>
-                        <td className="py-4 px-2 text-center">
-                          <span className={`inline-block px-2 py-1 rounded-md text-[10px] font-bold uppercase ${item.caffeine === 'Высокое' ? 'bg-red-100 text-red-600' :
-                              item.caffeine === 'Среднее' ? 'bg-orange-100 text-orange-600' :
-                                item.caffeine === 'Среднее/Высокое' ? 'bg-amber-100 text-amber-600' :
-                                  item.caffeine === 'Низкое' ? 'bg-blue-100 text-blue-600' :
-                                    'bg-green-100 text-green-600'
-                            }`}>
-                            {item.caffeine}
-                          </span>
-                        </td>
-                        <td className="py-4 px-2">
-                          <div className="space-y-1.5">
-                            <div className="text-[13px] text-gray-700 dark:text-gray-200 font-medium leading-snug">{item.features}</div>
-                            <div className="text-[11px] text-gray-400 dark:text-gray-500 italic leading-snug">💡 {item.recommendation}</div>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
-              <p className="mt-8 text-[11px] text-gray-400 italic text-center leading-relaxed">
-                * Данные для систематизации знаний чайной карты. Помогает при выборе напитка гостем.
-              </p>
+
+              <div className="mt-8 pt-4 border-t border-gray-100 dark:border-white/5">
+                <p className="text-[9px] text-gray-400 italic text-center leading-relaxed">
+                  * Нажмите на чай в основном меню для просмотра правил заваривания и подробных комментариев.
+                </p>
+              </div>
             </div>
           </div>
         </div>
