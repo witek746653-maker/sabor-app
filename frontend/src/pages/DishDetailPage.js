@@ -1197,7 +1197,7 @@ function DishDetailPage({ mode }) {
               <div className="space-y-6">
                 {teaComparison.map((cat) => {
                   const categoryTeas = allTeas.filter(t =>
-                    cat.sections.some(s => (t.section || '').includes(s))
+                    cat.sections && cat.sections.some(s => (t.section || '').includes(s))
                   );
 
                   if (categoryTeas.length === 0) return null;
