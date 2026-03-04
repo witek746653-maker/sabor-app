@@ -1,6 +1,7 @@
 [
   {
     "id": "0901",
+    "object_type": "art",
     "source": "Искусство в Sabor de la Vida",
     "title": "Бал в Мулен де ля Галет",
     "author": "Пьер Огюст Ренуар",
@@ -26,6 +27,7 @@
   },
   {
     "id": "0902",
+    "object_type": "art",
     "source": "Искусство в Sabor de la Vida",
     "title": "Обед в ресторане Fournaise / The Rowers' Lunch",
     "author": "Пьер Огюст Ренуар",
@@ -50,6 +52,7 @@
   },
   {
     "id": "0903",
+    "object_type": "art",
     "source": "Искусство в Sabor de la Vida",
     "title": "Маковое поле",
     "author": "Густав Климт",
@@ -73,6 +76,7 @@
   },
   {
     "id": "0904",
+    "object_type": "art",
     "source": "Искусство в Sabor de la Vida",
     "title": "Золотая Адель",
     "author": "Густав Климт",
@@ -96,6 +100,7 @@
   },
   {
     "id": "0905",
+    "object_type": "art",
     "source": "Искусство в Sabor de la Vida",
     "title": "Древо жизни",
     "author": "Густав Климт",
@@ -119,6 +124,7 @@
   },
   {
     "id": "0906",
+    "object_type": "art",
     "source": "Искусство в Sabor de la Vida",
     "title": "Мальчизене",
     "author": "Густав Климт",
@@ -142,6 +148,7 @@
   },
   {
     "id": "0907",
+    "object_type": "art",
     "source": "Искусство в Sabor de la Vida",
     "title": "Пейзажная тема №7",
     "author": "Жан-Марк Жаньячик",
@@ -163,6 +170,7 @@
   },
   {
     "id": "0908",
+    "object_type": "art",
     "source": "Искусство в Sabor de la Vida",
     "title": "Завтрак в мастерской",
     "author": "Эдуард Мане",

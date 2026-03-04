@@ -20,7 +20,9 @@ function DishDetailPage({ mode }) {
   const { catalogIds, toggleCatalogFavorite } = useFavorites();
   const [dish, setDish] = useState(null);
   const [extras, setExtras] = useState(null);
+  const [teaComparison, setTeaComparison] = useState(null);
   const [isExtrasOpen, setIsExtrasOpen] = useState(false);
+  const [isTeaMapOpen, setIsTeaMapOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isFeaturesExpanded, setIsFeaturesExpanded] = useState(false);
   const [isReferenceExpanded, setIsReferenceExpanded] = useState(false);
@@ -200,6 +202,19 @@ function DishDetailPage({ mode }) {
             }
           } catch (err) {
             console.error('Ошибка загрузки допов:', err);
+          }
+        }
+
+        // Загружаем сравнение чаев если это чай
+        if (isTeaItem(data)) {
+          try {
+            const response = await fetch('/data/tea-comparison.json');
+            if (response.ok) {
+              const teaData = await response.json();
+              setTeaComparison(teaData);
+            }
+          } catch (err) {
+            console.error('Ошибка загрузки сравнения чаев:', err);
           }
         }
 
@@ -503,6 +518,20 @@ function DishDetailPage({ mode }) {
           </button>
         )}
 
+        {/* Кнопка Чайная карта поверх фото */}
+        {isTea && teaComparison && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsTeaMapOpen(true);
+            }}
+            className="absolute bottom-4 left-4 flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-600/40 backdrop-blur-md border border-white/30 text-white text-[12px] font-bold shadow-lg active:scale-95 transition-all"
+          >
+            <span className="material-symbols-outlined text-[18px]">map</span>
+            {language === 'EN' ? 'Tea Map' : 'Чайная карта'}
+          </button>
+        )}
+
         <div className="absolute top-2 right-2 bg-black/50 backdrop-blur-sm rounded-full p-2">
           <span className="material-symbols-outlined text-white text-[20px]">zoom_in</span>
         </div>
@@ -694,45 +723,6 @@ function DishDetailPage({ mode }) {
                     </div>
                   </div>
                 )}
-
-                {/* Блок допов (топпингов) для завтраков */}
-                {extras && isVisible({ scope: 'pageBlock', target: 'dishDetail.extras' }) && (
-                  <div className="mb-8 overflow-hidden rounded-2xl border border-gray-100 dark:border-white/10 bg-white/50 dark:bg-white/5 backdrop-blur-md shadow-xl">
-                    <div className="bg-gray-50/80 dark:bg-black/20 px-5 py-4 flex items-center gap-3 border-b border-gray-100 dark:border-white/5">
-                      <div className="p-2 rounded-xl bg-primary/10 text-primary">
-                        <span className="material-symbols-outlined text-xl block">add_circle</span>
-                      </div>
-                      <h3 className="font-bold text-lg text-gray-900 dark:text-white">Рекомендуемые топпинги</h3>
-                    </div>
-
-                    <div className="p-4 overflow-x-auto no-scrollbar">
-                      <div className="flex flex-nowrap md:grid md:grid-cols-4 lg:grid-cols-7 gap-3 min-w-max md:min-w-0">
-                        {extras?.categories?.map((cat, i) => (
-                          <div key={i} className="w-40 md:w-auto flex flex-col gap-2 p-3 rounded-xl bg-white dark:bg-white/5 border border-gray-50 dark:border-white/5 shadow-sm">
-                            <div className="flex items-center gap-2 mb-1 border-b border-gray-50 dark:border-white/5 pb-2">
-                              <span className="text-base">{cat.icon}</span>
-                              <span className="text-[11px] font-bold uppercase tracking-wider text-primary truncate">{cat.name}</span>
-                            </div>
-                            <div className="space-y-1.5">
-                              {cat.items?.map((item, j) => (
-                                <div key={j} className="flex flex-col">
-                                  <span className="text-[12px] font-medium text-gray-800 dark:text-gray-200 leading-tight">{item.name}</span>
-                                  {item.weight && (
-                                    <span className="text-[10px] text-gray-400 dark:text-gray-500">({item.weight})</span>
-                                  )}
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                    <p className="px-5 py-3 text-[10px] text-gray-400 italic bg-gray-50/30 dark:bg-transparent">
-                      * Доступно к заказу вместе с основным блюдом.
-                    </p>
-                  </div>
-                )}
-
                 {/* Блок особенностей */}
 
                 {hasFeatures && showFeatures && (() => {
@@ -1157,6 +1147,86 @@ function DishDetailPage({ mode }) {
               </div>
               <p className="mt-6 text-[11px] text-gray-400 italic text-center leading-relaxed">
                 * Доступно к заказу вместе с основным блюдом.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Модальное окно с таблицей чаев */}
+      {isTeaMapOpen && teaComparison && (
+        <div
+          className="fixed inset-0 z-[110] flex items-end justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-300"
+          onClick={() => setIsTeaMapOpen(false)}
+        >
+          <div
+            className="w-full max-w-2xl bg-white dark:bg-surface-dark rounded-t-3xl shadow-2xl p-6 relative animate-in slide-in-from-bottom duration-500 overflow-hidden flex flex-col max-h-[90vh]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="w-12 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full mx-auto mb-6 shrink-0" />
+
+            <div className="flex justify-between items-center mb-6 shrink-0">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-600">
+                  <span className="material-symbols-outlined text-xl block">local_library</span>
+                </div>
+                <h3 className="font-bold text-xl text-gray-900 dark:text-white">Сравнительная карта чая</h3>
+              </div>
+              <button
+                onClick={() => setIsTeaMapOpen(false)}
+                className="size-10 flex items-center justify-center rounded-full bg-gray-100 dark:bg-white/10 text-gray-500 hover:bg-gray-200"
+              >
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto no-scrollbar pb-6">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse min-w-[500px]">
+                  <thead>
+                    <tr className="border-b border-gray-100 dark:border-white/5">
+                      <th className="py-3 px-2 text-[11px] font-bold uppercase tracking-wider text-gray-400">Группа</th>
+                      <th className="py-3 px-2 text-[11px] font-bold uppercase tracking-wider text-gray-400 text-center">Кофеин</th>
+                      <th className="py-3 px-2 text-[11px] font-bold uppercase tracking-wider text-gray-400">Чем отличается / Рекомендация</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {teaComparison.map((item, i) => (
+                      <tr key={i} className="border-b border-gray-50 dark:border-white/5 hover:bg-gray-50/50 dark:hover:bg-white/5 transition-colors">
+                        <td className="py-4 px-2">
+                          <div className="flex items-center gap-3">
+                            <div className="w-12 h-12 rounded-xl overflow-hidden shrink-0 shadow-sm">
+                              <img src={item.image} alt={item.group} className="w-full h-full object-cover" />
+                            </div>
+                            <div>
+                              <div className="text-lg mb-0.5">{item.icon}</div>
+                              <div className="text-[13px] font-bold text-gray-900 dark:text-white leading-none">{item.group}</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="py-4 px-2 text-center">
+                          <span className={`inline-block px-2 py-1 rounded-md text-[10px] font-bold uppercase ${item.caffeine === 'Высокое' ? 'bg-red-100 text-red-600' :
+                              item.caffeine === 'Среднее' ? 'bg-orange-100 text-orange-600' :
+                                item.caffeine === 'Среднее/Высокое' ? 'bg-amber-100 text-amber-600' :
+                                  item.caffeine === 'Низкое' ? 'bg-blue-100 text-blue-600' :
+                                    'bg-green-100 text-green-600'
+                            }`}>
+                            {item.caffeine}
+                          </span>
+                        </td>
+                        <td className="py-4 px-2">
+                          <div className="space-y-1.5">
+                            <div className="text-[13px] text-gray-700 dark:text-gray-200 font-medium leading-snug">{item.features}</div>
+                            <div className="text-[11px] text-gray-400 dark:text-gray-500 italic leading-snug">💡 {item.recommendation}</div>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <p className="mt-8 text-[11px] text-gray-400 italic text-center leading-relaxed">
+                * Данные для систематизации знаний чайной карты. Помогает при выборе напитка гостем.
               </p>
             </div>
           </div>
