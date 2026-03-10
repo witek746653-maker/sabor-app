@@ -63,6 +63,24 @@
       "image": "/images/covers/non-alcoholic-head.jpg",
       "url": "/content/resources/non-alcoholic-drinks.md",
       "version": 1
+    },
+    {
+      "key": "banquet-guide",
+      "title": "Памятка по проведению банкетов",
+      "description": "Подготовка, сервировка и обслуживание банкетных мероприятий",
+      "category": "Памятка",
+      "image": "/images/covers/banquet-guide-head.jpg",
+      "url": "/content/resources/banquet_guide.md",
+      "version": 1
+    },
+    {
+      "key": "banquet-staff-regulations",
+      "title": "Регламент распределения обязанностей на банкете",
+      "description": "Распределение ролей и обязанностей персонала на банкетных мероприятиях",
+      "category": "Инструкция",
+      "image": "/images/covers/banquet-regulations-head.jpg",
+      "url": "/content/resources/banquet-staff-regulations.md",
+      "version": 1
     }
   ]
 }
