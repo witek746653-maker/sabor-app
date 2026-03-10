@@ -36,6 +36,28 @@ const isNonEmpty = (v) => {
   return Boolean(String(v).trim());
 };
 
+const CharacteristicScale = ({ label, value }) => {
+  if (!value) return null;
+  return (
+    <div className="flex flex-col gap-1 w-full mt-1.5">
+      <div className="flex items-center justify-between w-full">
+        <span className="text-[10px] text-gray-500 dark:text-gray-400 font-medium tracking-wide uppercase">{label}</span>
+        <div className="flex gap-1">
+          {[1, 2, 3, 4, 5].map((step) => (
+            <div
+              key={step}
+              className={`w-1.5 h-1.5 rounded-full ${step <= value
+                  ? 'bg-purple-600 dark:bg-purple-400'
+                  : 'bg-gray-200 dark:bg-white/10'
+                }`}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 function WineDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -52,6 +74,10 @@ function WineDetailPage() {
   const [isImageExpanded, setIsImageExpanded] = useState(false);
   const [audioPlaying, setAudioPlaying] = useState(false);
   const [audio] = useState(() => new Audio());
+  const [wineComparison, setWineComparison] = useState(null);
+  const [isWineGuideOpen, setIsWineGuideOpen] = useState(false);
+  // id → объект вина (для показа фото в модалке)
+  const [wineImages, setWineImages] = useState({});
 
   const searchRefs = useRef({});
 
@@ -217,6 +243,21 @@ function WineDetailPage() {
         const data = await getWine(id);
         setWine(data);
 
+        // Загружаем сравнение вин
+        try {
+          const resp = await fetch('/data/wine-comparison.json');
+          if (resp.ok) {
+            const compData = await resp.json();
+            // Находим категорию по секции текущего вина
+            const cat = compData.find(c =>
+              c.sections && c.sections.some(s => (data.section || '').includes(s))
+            );
+            setWineComparison(cat || null);
+          }
+        } catch (e) {
+          console.error('Ошибка загрузки wine-comparison:', e);
+        }
+
         // Если пришли из глобального поиска — подсветим найденный текст.
         const globalSearchQuery = sessionStorage.getItem('globalSearchQuery');
         const globalSearchDishId = sessionStorage.getItem('globalSearchDishId');
@@ -277,6 +318,22 @@ function WineDetailPage() {
       }, 250);
     }
   }, [searchQuery, wine, language]);
+
+  // Загружаем объекты вин группы при открытии модалки (для фото)
+  useEffect(() => {
+    if (!isWineGuideOpen || !wineComparison) return;
+    const missing = wineComparison.wines
+      .map(w => String(w.id))
+      .filter(wid => wid !== String(wine?.id) && !wineImages[wid]);
+    if (missing.length === 0) return;
+
+    Promise.all(missing.map(wid => getWine(wid).catch(() => null)))
+      .then(results => {
+        const map = {};
+        results.forEach((data, i) => { if (data) map[missing[i]] = data; });
+        setWineImages(prev => ({ ...prev, ...map }));
+      });
+  }, [isWineGuideOpen, wineComparison]);
 
   if (loading) {
     return (
@@ -438,6 +495,21 @@ function WineDetailPage() {
           <MenuImagePlaceholder menuName="Вино" />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+
+        {/* Кнопка Путеводитель по вину поверх фото */}
+        {wineComparison && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsWineGuideOpen(true);
+            }}
+            className="absolute bottom-4 left-4 flex items-center gap-2 px-3 py-1.5 rounded-full bg-purple-600/40 backdrop-blur-md border border-white/30 text-white text-[12px] font-bold shadow-lg active:scale-95 transition-all"
+          >
+            <span className="material-symbols-outlined text-[18px]">wine_bar</span>
+            {language === 'EN' ? 'Wine Guide' : 'Путеводитель по вину'}
+          </button>
+        )}
+
         <div className="absolute top-2 right-2 bg-black/50 backdrop-blur-sm rounded-full p-2">
           <span className="material-symbols-outlined text-white text-[20px]">zoom_in</span>
         </div>
@@ -731,6 +803,284 @@ function WineDetailPage() {
           )}
         </div>
       </div>
+
+      {/* Модальное окно сравнения вин */}
+      {isWineGuideOpen && wineComparison && (
+        <div
+          className="fixed inset-0 z-[110] flex items-end justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-300"
+          onClick={() => setIsWineGuideOpen(false)}
+        >
+          <div
+            className="w-full max-w-md bg-white dark:bg-surface-dark rounded-t-3xl shadow-2xl p-4 relative animate-in slide-in-from-bottom duration-500 overflow-hidden flex flex-col max-h-[95vh]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Handle bar */}
+            <div className="w-10 h-1 bg-gray-200 dark:bg-gray-700 rounded-full mx-auto mb-4 shrink-0" />
+
+            <div className="flex justify-between items-center mb-4 shrink-0">
+              <div className="flex items-center gap-2">
+                <div className="p-1.5 rounded-lg bg-purple-500/10 text-purple-600">
+                  <span className="material-symbols-outlined text-lg block">wine_bar</span>
+                </div>
+                <div>
+                  <h3 className="font-bold text-lg text-gray-900 dark:text-white leading-tight">{wineComparison.group}</h3>
+                  <p className="text-[10px] text-gray-400 dark:text-gray-500">Сравнение вин в категории</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setIsWineGuideOpen(false)}
+                className="size-8 flex items-center justify-center rounded-full bg-gray-100 dark:bg-white/10 text-gray-400"
+              >
+                <span className="material-symbols-outlined text-lg">close</span>
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto no-scrollbar pb-6">
+              {/* Компактный гибридный список вин */}
+              <div className="divide-y divide-gray-100 dark:divide-white/5">
+                {wineComparison.wines.map((w) => {
+                  const isCurrent = String(w.id) === String(wine.id);
+                  const wObj = isCurrent ? wine : (wineImages[String(w.id)] || null);
+
+                  const isArchived = wObj?.status === 'в архиве';
+                  if (isArchived && !isVisible({ scope: 'contentItem', target: 'status.archived' })) {
+                    return null;
+                  }
+
+                  // Вычисляем теги из pairing_profile
+                  const pairingLabels = w.pairing_profile?.labels
+                    ? Object.values(w.pairing_profile.labels).filter(v => v !== null)
+                    : [];
+
+                  // Название: из локализации или JSON. Производитель из базы:
+                  const fullTitle = isCurrent
+                    ? (language === 'EN' ? wine.i18n?.en?.['title-en'] || wine.title : wine.title)
+                    : w.title;
+                  const commaIdx = fullTitle.indexOf(',');
+                  const parsedName = commaIdx > 0 ? fullTitle.slice(0, commaIdx).trim() : fullTitle;
+                  const parsedProducer = commaIdx > 0 ? fullTitle.slice(commaIdx + 1).trim() : '';
+
+                  const wineName = parsedName;
+                  const wineProducer = wObj?.producer || parsedProducer || '';
+
+                  // Разделяем описание: основное тело (Характеристики) и Подвал (Кому предложить)
+                  let mainContent = w.comment || '';
+                  let footerContent = '';
+                  // Захватываем всё до конца строки, так как это обычно последний абзац
+                  const footerRegex = /(<p>\s*)?<strong>Кому (предлагать|предложить):?<\/strong>[\s\S]*/i;
+                  const match = mainContent.match(footerRegex);
+                  if (match) {
+                    footerContent = match[0];
+                    mainContent = mainContent.replace(footerRegex, '');
+                  }
+
+                  return (
+                    <div
+                      key={w.id}
+                      className="relative flex flex-col gap-3 py-4 px-2 hover:bg-gray-50/50 dark:hover:bg-white/[0.02] transition-colors"
+                      style={isCurrent ? { background: 'rgba(147,112,219,0.06)' } : {}}
+                    >
+                      {/* Вертикальная линия — маркер текущего вина */}
+                      {isCurrent && (
+                        <div className="absolute left-0 top-4 bottom-4 w-[3px] rounded-full bg-purple-500 shadow-[0_0_8px_rgba(168,85,247,0.4)]" />
+                      )}
+
+                      {/* Шапка (Header): 3 колонки */}
+                      <div className="flex items-start gap-4">
+                        {/* Колонка 1: миниатюра (60px) */}
+                        <div className="shrink-0 w-[60px] h-[80px] flex items-center justify-center rounded-xl overflow-hidden bg-gray-50 dark:bg-black/20 border border-gray-100 dark:border-white/5 shadow-sm">
+                          {(() => {
+                            const imgUrl = getDishImageUrl(wObj);
+                            return imgUrl ? (
+                              <img
+                                src={imgUrl}
+                                alt={wineName}
+                                className="h-full w-full object-contain p-1 mix-blend-multiply dark:mix-blend-normal"
+                              />
+                            ) : (
+                              <span className="material-symbols-outlined text-purple-300 dark:text-purple-500/50 text-[32px]">wine_bar</span>
+                            );
+                          })()}
+                        </div>
+
+                        {/* Колонка 2: Название и производитель */}
+                        <div className="flex-1 min-w-0 pt-0.5">
+                          <div className={`text-[15px] font-black leading-tight tracking-tight mb-1 ${isCurrent ? 'text-purple-700 dark:text-purple-300' : 'text-gray-900 dark:text-white'}`}>
+                            {wineName}
+                            {isCurrent && <span className="ml-1.5 inline-block text-[10px] align-middle px-1.5 py-0.5 rounded-full bg-purple-100 dark:bg-purple-900/50 opacity-80">выбрано</span>}
+                          </div>
+                          {wineProducer && (
+                            <div className="text-[12px] font-medium text-gray-500 dark:text-gray-400 leading-tight block truncate pr-2">{wineProducer}</div>
+                          )}
+                          {/* Мобильная версия 3-й колонки: под названием, только на мобильных */}
+                          <div className="sm:hidden flex flex-col items-start gap-1 mt-2">
+                            <span className="px-2 py-0.5 rounded-md text-[10px] font-bold leading-tight bg-purple-100/80 dark:bg-purple-900/30 text-purple-800 dark:text-purple-200 border border-purple-200/50 dark:border-purple-800/50">
+                              {w.style}
+                            </span>
+                            <div className="flex flex-col items-start gap-1">
+                              {pairingLabels.map((lbl, idx) => {
+                                const text = String(lbl);
+                                const isPositive = text.includes('✅');
+                                const isNegative = text.includes('❌');
+                                const textClean = text.replace(/[\u2705\u274c\u26a0\ufe0f]/gu, '').trim();
+                                return (
+                                  <span key={idx} className="flex items-center gap-1 text-[10px] font-medium leading-tight">
+                                    {isPositive ? (
+                                      <>
+                                        <span className="material-symbols-outlined text-[12px] text-emerald-600 dark:text-emerald-500 fill-1">check_circle</span>
+                                        <span className="text-emerald-600 dark:text-emerald-500">{textClean}</span>
+                                      </>
+                                    ) : isNegative ? (
+                                      <>
+                                        <span className="material-symbols-outlined text-[12px] text-gray-400 dark:text-gray-500">cancel</span>
+                                        <span className="text-gray-400 dark:text-gray-500">{textClean}</span>
+                                      </>
+                                    ) : (
+                                      <>
+                                        <span className="material-symbols-outlined text-[12px] text-amber-500">help</span>
+                                        <span className="text-amber-600 dark:text-amber-500">{textClean}</span>
+                                      </>
+                                    )}
+                                  </span>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Колонка 3: Бейджи стиля и совместимости (скрыта на мобильных) */}
+                        <div className="hidden sm:flex shrink-0 flex-col items-end gap-2 pt-0.5" style={{ minWidth: 80 }}>
+                          <span className="px-2 py-0.5 rounded-md text-[10px] font-bold text-center leading-tight bg-purple-100/80 dark:bg-purple-900/30 text-purple-800 dark:text-purple-200 border border-purple-200/50 dark:border-purple-800/50">
+                            {w.style}
+                          </span>
+
+                          {/* Теги совместимости из pairing_profile */}
+                          <div className="flex flex-col items-end gap-1 mt-1">
+                            {pairingLabels.map((lbl, idx) => {
+                              const text = String(lbl);
+                              const isPositive = text.includes('✅');
+                              const isNegative = text.includes('❌');
+                              const textClean = text.replace(/[\u2705\u274c\u26a0\ufe0f]/gu, '').trim();
+
+                              return (
+                                <span key={idx} className="flex items-center gap-1 text-[10px] font-medium leading-tight text-right w-full justify-end">
+                                  {isPositive ? (
+                                    <>
+                                      <span className="text-emerald-600 dark:text-emerald-500">{textClean}</span>
+                                      <span className="material-symbols-outlined text-[12px] text-emerald-600 dark:text-emerald-500 fill-1">check_circle</span>
+                                    </>
+                                  ) : isNegative ? (
+                                    <>
+                                      <span className="text-gray-400 dark:text-gray-500">{textClean}</span>
+                                      <span className="material-symbols-outlined text-[12px] text-gray-400 dark:text-gray-500">cancel</span>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <span className="text-amber-600 dark:text-amber-500">{textClean}</span>
+                                      <span className="material-symbols-outlined text-[12px] text-amber-500">help</span>
+                                    </>
+                                  )}
+                                </span>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Блок характеристик + технология виноделия */}
+                      {(w.pairing_profile?.acidity_level > 0 || w.pairing_profile?.body_level > 0 || w.pairing_profile?.tannins_level > 0 || w.pairing_profile?.barrel || w.pairing_profile?.lees || w.pairing_profile?.biodynamic || w.pairing_profile?.organic) && (
+                        <div className="mt-1 mb-1 px-3 py-2 bg-gray-50/80 dark:bg-white/[0.03] rounded-lg border border-gray-100 dark:border-white/5 w-full flex items-center gap-3">
+                          {/* Шкалы */}
+                          {(w.pairing_profile?.acidity_level > 0 || w.pairing_profile?.body_level > 0 || w.pairing_profile?.tannins_level > 0) && (
+                            <div className="flex-1 flex flex-col gap-1">
+                              <CharacteristicScale label="Кислотность" value={w.pairing_profile?.acidity_level} />
+                              <CharacteristicScale label="Тело" value={w.pairing_profile?.body_level} />
+                              <CharacteristicScale label="Танины" value={w.pairing_profile?.tannins_level} />
+                            </div>
+                          )}
+                          {/* Правая колонка: технологические бейджи */}
+                          {(w.pairing_profile?.barrel || w.pairing_profile?.lees || w.pairing_profile?.biodynamic || w.pairing_profile?.organic) && (
+                            <div className={`shrink-0 flex flex-col items-center gap-1.5 ${(w.pairing_profile?.acidity_level > 0 || w.pairing_profile?.body_level > 0 || w.pairing_profile?.tannins_level > 0) ? 'border-l border-gray-200/80 dark:border-white/10 pl-3' : ''}`}>
+                              {/* Бочка */}
+                              {w.pairing_profile?.barrel && (
+                                <div className="flex flex-col items-center gap-0.5">
+                                  <span className="text-[17px] leading-none">🪵</span>
+                                  <span className="text-[9px] font-bold text-amber-700 dark:text-amber-400 text-center leading-tight uppercase tracking-wide max-w-[72px]">
+                                    {w.pairing_profile.barrel.type}
+                                  </span>
+                                  <span className="text-[10px] font-semibold text-amber-800 dark:text-amber-300 bg-amber-50 dark:bg-amber-900/25 px-1.5 py-0.5 rounded-full border border-amber-200/70 dark:border-amber-700/40 leading-tight whitespace-nowrap">
+                                    {w.pairing_profile.barrel.duration}
+                                  </span>
+                                </div>
+                              )}
+                              {/* Разделитель */}
+                              {w.pairing_profile?.barrel && w.pairing_profile?.lees && (
+                                <div className="w-full border-t border-gray-200/60 dark:border-white/5" />
+                              )}
+                              {/* Sur lie / Осадок */}
+                              {w.pairing_profile?.lees && (
+                                <div className="flex flex-col items-center gap-0.5">
+                                  <span className="text-[17px] leading-none">🫧</span>
+                                  <span className="text-[9px] font-bold text-sky-600 dark:text-sky-400 text-center leading-tight uppercase tracking-wide">
+                                    На осадке
+                                  </span>
+                                  <span className="text-[10px] font-semibold text-sky-700 dark:text-sky-300 bg-sky-50 dark:bg-sky-900/25 px-1.5 py-0.5 rounded-full border border-sky-200/70 dark:border-sky-700/40 leading-tight whitespace-nowrap">
+                                    {w.pairing_profile.lees.duration}
+                                  </span>
+                                </div>
+                              )}
+                              {/* Разделитель перед био/органика */}
+                              {(w.pairing_profile?.barrel || w.pairing_profile?.lees) && (w.pairing_profile?.biodynamic || w.pairing_profile?.organic) && (
+                                <div className="w-full border-t border-gray-200/60 dark:border-white/5" />
+                              )}
+                              {/* Биодинамика */}
+                              {w.pairing_profile?.biodynamic && (
+                                <div className="flex items-center gap-1">
+                                  <span className="text-[12px]">🌿</span>
+                                  <span className="text-[9px] font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wide leading-tight">Биодинамика</span>
+                                </div>
+                              )}
+                              {/* Органика */}
+                              {w.pairing_profile?.organic && (
+                                <div className="flex items-center gap-1">
+                                  <span className="text-[12px]">♻️</span>
+                                  <span className="text-[9px] font-bold text-green-700 dark:text-green-400 uppercase tracking-wide leading-tight">Органика</span>
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Body: Основные характеристики */}
+                      {mainContent && (
+                        <div
+                          className="text-[12px] text-gray-700 dark:text-gray-300 leading-snug contains-list w-full space-y-1 mt-1 [&>p>strong]:font-semibold [&>p>strong]:text-gray-900 [&>p>strong]:dark:text-white"
+                          dangerouslySetInnerHTML={{ __html: mainContent }}
+                        />
+                      )}
+
+                      {/* Footer: Кому предложить */}
+                      {footerContent && (
+                        <div
+                          className="mt-1 bg-purple-50/80 dark:bg-purple-900/20 rounded-lg p-3 text-[12px] leading-relaxed text-purple-900 dark:text-purple-100 contains-list border border-purple-100 dark:border-purple-800/30 w-full shadow-sm"
+                          dangerouslySetInnerHTML={{ __html: footerContent }}
+                        />
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="mt-5 pt-4 mb-2 border-t border-gray-100 dark:border-white/5">
+                <p className="text-[10px] text-gray-400 italic text-center leading-relaxed">
+                  * Нажмите на вино в основном меню для просмотра подробных характеристик и пэринга.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Нижняя навигация (та же логика, что и на DishDetailPage) */}
       <nav className="fixed bottom-0 z-50 w-full sabor-fixed bg-white/95 dark:bg-surface-dark/95 backdrop-blur-md border-t border-gray-100 dark:border-gray-800 pb-safe">

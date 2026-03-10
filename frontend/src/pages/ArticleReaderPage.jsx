@@ -13,6 +13,72 @@ import { useToast } from '../contexts/ToastContext'; // Используем с�
 import { ArrowUp, Clock } from 'lucide-react';
 import { TableOfContents } from '../components/reader/TableOfContents';
 import '../reader.css';
+
+// Автоматически оборачивает паттерны в соответствующие aside-блоки.
+// Пропускает уже существующие <aside> теги.
+const preprocessMarkdown = (md) => {
+    const lines = md.split('\n');
+    const result = [];
+    let i = 0;
+    let insideAside = false;
+
+    while (i < lines.length) {
+        const line = lines[i];
+
+        // Отслеживаем вручную написанные <aside> блоки — не трогаем их
+        if (line.trim().startsWith('<aside')) {
+            insideAside = true;
+            result.push(line);
+            i++;
+            continue;
+        }
+        if (line.trim() === '</aside>') {
+            insideAside = false;
+            result.push(line);
+            i++;
+            continue;
+        }
+        if (insideAside) {
+            result.push(line);
+            i++;
+            continue;
+        }
+
+        // Авто-обёртка зелёного callout: ⚠️ Почему это важно
+        if (/⚠️.*Почему это важно/.test(line)) {
+            const blockLines = [];
+            while (i < lines.length) {
+                const l = lines[i];
+                if (/^#{1,6}\s/.test(l) || l.trim() === '---') break;
+                blockLines.push(l);
+                i++;
+            }
+            while (blockLines.length && !blockLines[blockLines.length - 1].trim()) {
+                blockLines.pop();
+            }
+            result.push('<aside class="green">', '', ...blockLines, '', '</aside>', '');
+            continue;
+        }
+
+        // Авто-обёртка синего callout: 💬 «...»
+        if (/💬\s*«/.test(line)) {
+            const blockLines = [];
+            while (i < lines.length) {
+                const l = lines[i];
+                blockLines.push(l);
+                if (l.includes('»')) { i++; break; }
+                i++;
+            }
+            result.push('<aside class="blue">', '', ...blockLines, '', '</aside>', '');
+            continue;
+        }
+
+        result.push(line);
+        i++;
+    }
+
+    return result.join('\n');
+};
 import { useFavorites } from '../contexts/FavoritesContext';
 import { useTheme } from '../contexts/ThemeContext';
 
@@ -29,6 +95,7 @@ export default function ArticleReaderPage() {
     const [errorHeader, setErrorHeader] = useState('');
     const [manifestUpdate, setManifestUpdate] = useState(null);
     const [fileDate, setFileDate] = useState(null);
+    const [syncDate, setSyncDate] = useState(null);
 
     const { theme: globalTheme } = useTheme();
     // Settings
@@ -103,12 +170,17 @@ export default function ArticleReaderPage() {
                     throw new Error('Не удалось загрузить текст статьи');
                 }
 
+                // Дата изменения файла на сервере
+                const lastModified = mdResponse.headers.get('Last-Modified');
+                setFileDate(lastModified ? new Date(lastModified) : (article.updated_at ? new Date(article.updated_at) : null));
+                setSyncDate(new Date());
+
                 const mdText = await mdResponse.text();
 
                 setRawMarkdown(mdText);
 
-                // 3. Parse markdown to HTML
-                const html = marked.parse(mdText);
+                // 3. Parse markdown to HTML (с авто-обёрткой callout-паттернов)
+                const html = marked.parse(preprocessMarkdown(mdText));
 
                 // 4. Extract headers and ensure they have IDs
                 const parser = new DOMParser();
@@ -244,9 +316,9 @@ export default function ArticleReaderPage() {
                                 <span className="px-2 py-0.5 bg-primary/10 text-primary rounded-md">
                                     {articleData?.category || 'Статья'}
                                 </span>
-                                {(fileDate || manifestUpdate) && (
+                                {fileDate && (
                                     <span className="px-2 py-0.5 border border-gray-100 dark:border-gray-800 text-gray-400 dark:text-gray-500 rounded-md bg-white/50 dark:bg-black/50">
-                                        Обновлено: {new Date(fileDate || manifestUpdate).toLocaleDateString('ru-RU')}
+                                        Обновлено: {new Date(fileDate).toLocaleDateString('ru-RU')}
                                     </span>
                                 )}
                                 <span className="flex items-center gap-1 opacity-50">
@@ -274,10 +346,10 @@ export default function ArticleReaderPage() {
                         <div className="max-w-reader mx-auto w-full px-6 mt-16 pb-12">
                             <div className="pt-8 border-t border-dashed border-gray-200 dark:border-gray-800 flex flex-col items-end gap-2 text-[10px] font-mono uppercase tracking-widest">
                                 <div className="opacity-50 text-right">
-                                    <span className="text-primary font-bold">Синхронизировано:</span> {new Date().toLocaleDateString('ru-RU')} {new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}
+                                    <span className="text-primary font-bold">Синхронизировано:</span> {syncDate ? `${syncDate.toLocaleDateString('ru-RU')} ${syncDate.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}` : '—'}
                                 </div>
                                 <div className="opacity-50 text-right">
-                                    <span className="text-primary font-bold">Обновлено:</span> {new Date(fileDate || manifestUpdate || Date.now()).toLocaleDateString('ru-RU', { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone })}
+                                    <span className="text-primary font-bold">Обновлено:</span> {fileDate ? new Date(fileDate).toLocaleDateString('ru-RU') : '—'}
                                 </div>
                             </div>
                         </div>
