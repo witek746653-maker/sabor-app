@@ -120,7 +120,7 @@
 .contains-list ol[type="1"],
 .contains-list ol {
   list-style-type: decimal !important;
-  padding-left: 1.5rem !important;
+  padding-left: 2rem !important;
   margin: 0 !important;
   /* максимально компактно */
   counter-reset: list-counter;
@@ -146,7 +146,7 @@
 
 .contains-list ul {
   margin: 0 !important;
-  padding-left: 1rem !important;
+  padding-left: 2rem !important;
 }
 
 .contains-list ul li {
@@ -158,7 +158,7 @@
 .prose ol[type="1"],
 ol[type="1"] {
   list-style-type: decimal !important;
-  padding-left: 1rem !important;
+  padding-left: 2rem !important;
   margin: 0 !important;
 }
 
@@ -177,7 +177,7 @@ ol[type="1"] li {
 .prose ol:not([type]),
 ol:not([type]) {
   list-style-type: decimal !important;
-  padding-left: 1rem !important;
+  padding-left: 2rem !important;
   margin: 0 !important;
 }
 
