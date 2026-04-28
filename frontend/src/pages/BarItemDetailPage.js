@@ -16,6 +16,24 @@ const isNonEmpty = (v) => {
   return Boolean(String(v).trim());
 };
 
+const RU_TO_EN = {
+  'цитрусы': 'citrus', 'специи': 'spices', 'орехи': 'nuts', 'лактоза': 'lactose',
+  'глютен': 'gluten', 'яйца': 'eggs', 'рыба': 'fish', 'морепродукты': 'seafood',
+  'алкоголь': 'alcohol', 'грибы': 'mushrooms', 'мёд': 'honey', 'чеснок': 'garlic',
+  'лук': 'onion', 'кинза': 'cilantro', 'зелень': 'herbs', 'острый': 'spicy',
+  'веган': 'vegan', 'вегетарианский': 'vegetarian',
+  'аперитив': 'aperitif', 'дижестив': 'digestif', 'авторский': 'signature',
+  'классический': 'classic', 'лёгкий': 'light', 'легкий': 'light', 'крепкий': 'bold',
+  'сладкий': 'sweet', 'кислый': 'tart', 'горький': 'bitter', 'пряный': 'spiced',
+  'со льдом': 'on the rocks', 'без льда': 'neat', 'твист': 'twist'
+};
+
+const translateTerm = (term, language) => {
+  if (!term || language !== 'EN') return term;
+  const key = String(term).toLowerCase().trim();
+  return RU_TO_EN[key] || term;
+};
+
 // Термин **fallback**: “запасной вариант”, если основное поле пустое.
 const parseCardIngredients = (cardIngredients, fallbackIngredients) => {
   if (typeof cardIngredients === 'string' && cardIngredients.trim()) {
@@ -42,6 +60,8 @@ function BarItemDetailPage() {
   const [language, setLanguage] = useState(() => localStorage.getItem('menuLanguage') || 'RU');
   const [searchQuery, setSearchQuery] = useState('');
   const [isImageExpanded, setIsImageExpanded] = useState(false);
+  const [audioPlaying, setAudioPlaying] = useState(false);
+  const [audio] = useState(() => new Audio());
 
   const searchRefs = useRef({});
 
@@ -81,27 +101,40 @@ function BarItemDetailPage() {
     if (!item) return [];
     if (language === 'EN' && item.i18n?.en?.['tags-en']) {
       const tagsEn = item.i18n.en['tags-en'];
+      let list = [];
       if (typeof tagsEn === 'string') {
-        return tagsEn.split(',').map((t) => t.trim()).filter(Boolean);
+        list = tagsEn.split(',').map((t) => t.trim()).filter(Boolean);
+      } else {
+        list = Array.isArray(tagsEn) ? tagsEn : [];
       }
-      return Array.isArray(tagsEn) ? tagsEn : [];
+      return list.map(t => translateTerm(t, language));
     }
-    return Array.isArray(item.tags) ? item.tags : [];
+    const tagsRu = Array.isArray(item.tags) ? item.tags : [];
+    return tagsRu.map(t => translateTerm(t, language));
   };
 
   const getAllergensForLanguage = () => {
     if (!item) return [];
-    if (language === 'EN' && item.i18n?.en?.['allergens-en']) {
-      const allergensEn = item.i18n.en['allergens-en'];
-      if (typeof allergensEn === 'string') {
-        return allergensEn.split(',').map((a) => a.trim()).filter(Boolean);
+    if (language === 'EN') {
+      const allergensEn = item.i18n?.en?.['allergens-en'];
+      if (allergensEn) {
+        let list = [];
+        if (typeof allergensEn === 'string') {
+          list = allergensEn.split(',').map((a) => a.trim()).filter(Boolean);
+        } else {
+          list = Array.isArray(allergensEn) ? allergensEn : [];
+        }
+        return list.map(a => translateTerm(a, language));
       }
-      return Array.isArray(allergensEn) ? allergensEn : [];
     }
-    if (typeof item.allergens === 'string' && item.allergens.trim()) {
-      return item.allergens.split(',').map((a) => a.trim()).filter(Boolean);
+    const raw = item.allergens;
+    let listRu = [];
+    if (typeof raw === 'string' && raw.trim()) {
+      listRu = raw.split(',').map((a) => a.trim()).filter(Boolean);
+    } else {
+      listRu = Array.isArray(raw) ? raw : [];
     }
-    return Array.isArray(item.allergens) ? item.allergens : [];
+    return listRu.map(a => translateTerm(a, language));
   };
 
   const highlightText = (text, query) => {
@@ -166,6 +199,58 @@ function BarItemDetailPage() {
       toast.success(language === 'EN' ? 'Link copied to clipboard!' : 'Ссылка скопирована в буфер обмена!');
     }
   };
+
+  const handleAudioPlay = () => {
+    if (guestBlocked) {
+      toast.info(language === 'EN' ? 'Audio is available after login.' : 'Аудио доступно после авторизации');
+      return;
+    }
+    const audioPath = item?.i18n?.en?.['audio-en'];
+    if (!audioPath) return;
+
+    if (audioPlaying) {
+      audio.pause();
+      audio.currentTime = 0;
+      setAudioPlaying(false);
+      return;
+    }
+
+    const API_URL = process.env.REACT_APP_API_URL || '';
+    const normalizedAudioPath = String(audioPath)
+      .trim()
+      .replace(/%20/g, '-')
+      .replace(/\s+/g, '-');
+    let audioUrl;
+
+    if (normalizedAudioPath.startsWith('../audio/')) {
+      audioUrl = `${API_URL}/audio/${normalizedAudioPath.replace('../audio/', '')}`;
+    } else if (normalizedAudioPath.startsWith('/audio/')) {
+      audioUrl = `${API_URL}/audio/${normalizedAudioPath.replace('/audio/', '')}`;
+    } else if (normalizedAudioPath.startsWith('audio/')) {
+      audioUrl = `${API_URL}/audio/${normalizedAudioPath.replace('audio/', '')}`;
+    } else {
+      audioUrl = normalizedAudioPath.startsWith('http') ? normalizedAudioPath : `/${normalizedAudioPath}`;
+    }
+
+    audio.src = audioUrl;
+    audio.load();
+    audio
+      .play()
+      .then(() => setAudioPlaying(true))
+      .catch((err) => {
+        console.error('Ошибка воспроизведения аудио:', err);
+        setAudioPlaying(false);
+      });
+  };
+
+  useEffect(() => {
+    const handleEnded = () => setAudioPlaying(false);
+    audio.addEventListener('ended', handleEnded);
+    return () => {
+      audio.pause();
+      audio.removeEventListener('ended', handleEnded);
+    };
+  }, [audio]);
 
   useEffect(() => {
     const loadItem = async () => {
@@ -291,14 +376,27 @@ function BarItemDetailPage() {
   const imageUrl = getDishImageUrl(item);
   const allergens = getAllergensForLanguage();
   const tags = getTagsForLanguage();
-  const cardIngredients = parseCardIngredients(item.cardIngredients, item.ingredients);
-  const ingredients = Array.isArray(item.ingredients) ? item.ingredients.filter(Boolean) : [];
-  const comments = (Array.isArray(item.comments) ? item.comments : [item.comments]).filter(c => String(c || '').trim());
+  
+  const rawCardIngredients = getFieldValue('cardIngredients');
+  const rawIngredients = getFieldValue('ingredients');
+  
+  const cardIngredients = parseCardIngredients(rawCardIngredients, rawIngredients);
+  const ingredients = Array.isArray(rawIngredients) ? rawIngredients.filter(Boolean) : [];
+  
+  const getComments = () => {
+    if (language === 'EN' && item.i18n?.en?.['comments-en']) {
+      const c = item.i18n.en['comments-en'];
+      return (Array.isArray(c) ? c : [c]).filter(v => String(v || '').trim());
+    }
+    const c = item.comments || [];
+    return (Array.isArray(c) ? c : [c]).filter(v => String(v || '').trim());
+  };
+  const comments = getComments();
 
   return (
     <div className="relative z-20 min-h-[100dvh] overflow-hidden bg-background-light dark:bg-background-dark">
       {/* Верхняя панель */}
-      <div className="fixed top-0 p-4 pt-12 flex justify-between items-center z-50 sabor-fixed">
+      <div className="fixed top-0 w-full p-4 pt-14 flex justify-between items-center z-50 sabor-fixed">
         <button
           onClick={handleBack}
           className="flex h-10 w-10 items-center justify-center rounded-full bg-black/35 dark:bg-white/15 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-lg shadow-black/20 hover:bg-black/45 dark:hover:bg-white/20 hover:shadow-black/30 transition-all active:scale-95 group"
@@ -328,12 +426,22 @@ function BarItemDetailPage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder={language === 'EN' ? 'Search...' : 'Поиск...'}
-                className="h-10 px-4 pr-10 rounded-full bg-black/35 dark:bg-white/15 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-lg shadow-black/20 text-white placeholder:text-white/70 focus:outline-none focus:ring-2 focus:ring-white/60 text-sm w-40"
+                className="h-10 px-4 pr-10 rounded-full bg-black/35 dark:bg-white/15 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-lg shadow-black/20 text-white placeholder:text-white/70 focus:outline-none focus:ring-2 focus:ring-white/60 text-sm w-28 sm:w-40 transition-all focus:w-40"
               />
               <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-white text-[18px] pointer-events-none">
                 search
               </span>
             </div>
+          )}
+
+          {item?.i18n?.en?.['audio-en'] && (
+            <button
+              onClick={handleAudioPlay}
+              title={language === 'EN' ? 'Pronunciation' : 'Произношение (EN)'}
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-black/35 dark:bg-white/15 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-lg shadow-black/20 hover:bg-black/45 dark:hover:bg-white/20 hover:shadow-black/30 transition-all active:scale-95"
+            >
+              <span className="material-symbols-outlined text-white">{audioPlaying ? 'stop_circle' : 'volume_up'}</span>
+            </button>
           )}
 
           <button
@@ -562,7 +670,7 @@ function BarItemDetailPage() {
           )}
 
           {/* Особенности */}
-          {!guestBlocked && isNonEmpty(item.features) && (
+          {!guestBlocked && isNonEmpty(getFieldValue('features')) && (
             <div
               ref={(el) => {
                 if (el) searchRefs.current['features'] = el;
@@ -576,11 +684,11 @@ function BarItemDetailPage() {
                 className="text-gray-700 dark:text-gray-200 text-sm leading-relaxed whitespace-pre-line"
                 dangerouslySetInnerHTML={{
                   __html: searchQuery
-                    ? normalizeNewlines(item.features).replace(
+                    ? normalizeNewlines(getFieldValue('features')).replace(
                       new RegExp(`(${searchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi'),
                       '<mark class="bg-yellow-300 dark:bg-yellow-600/50 px-0.5 rounded">$1</mark>'
                     )
-                    : normalizeNewlines(item.features),
+                    : normalizeNewlines(getFieldValue('features')),
                 }}
               />
             </div>

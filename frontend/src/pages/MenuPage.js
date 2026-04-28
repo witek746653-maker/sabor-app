@@ -51,7 +51,11 @@ function MenuPage({ mode }) {
     'лук': 'onion', 'кинза': 'cilantro', 'зелень': 'herbs', 'острый': 'spicy',
     'веган': 'vegan', 'вегетарианский': 'vegetarian', 'белый чай': 'white tea',
     'зелёный чай': 'green tea', 'чёрный чай': 'black tea', 'улун': 'oolong',
-    'пуэр': 'pu-erh', 'травяной чай': 'herbal tea', 'без кофеина': 'caffeine-free'
+    'пуэр': 'pu-erh', 'травяной чай': 'herbal tea', 'без кофеина': 'caffeine-free',
+    'аперитив': 'aperitif', 'дижестив': 'digestif', 'авторский': 'signature',
+    'классический': 'classic', 'лёгкий': 'light', 'легкий': 'light', 'крепкий': 'bold',
+    'сладкий': 'sweet', 'кислый': 'tart', 'горький': 'bitter', 'пряный': 'spiced',
+    'со льдом': 'on the rocks', 'без льда': 'neat', 'твист': 'twist'
   };
 
   const translateTerm = (term) => {
@@ -576,7 +580,7 @@ function MenuPage({ mode }) {
   if (loading) {
     return (
       <div className="bg-background-light dark:bg-background-dark font-display antialiased text-[#181311] dark:text-[#f4f2f0] min-h-screen flex items-center justify-center">
-        <div className="text-primary text-xl font-bold">Загрузка...</div>
+        <div className="text-primary text-xl font-bold">{language === 'EN' ? 'Loading...' : 'Загрузка...'}</div>
       </div>
     );
   }
@@ -977,7 +981,8 @@ function MenuPage({ mode }) {
 
               const isWine = isWineItem(dish);
               const isBar = isBarItem(dish);
-              const cardIngredients = parseCardIngredients(dish.cardIngredients);
+              const rawCardIngredients = getFieldValue(dish, 'cardIngredients');
+              const cardIngredients = parseCardIngredients(rawCardIngredients);
 
               return (
                 <Link

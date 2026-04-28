@@ -233,6 +233,7 @@ function HomePage() {
     { key: 'завтрак', match: (name) => name.includes('завтрак') },
     { key: 'зимн', match: (name) => name.includes('зимн') },
     { key: 'каникул', match: (name) => name.includes('каникул') },
+    { key: 'устриц', match: (name) => name.includes('устриц') },
     { key: 'детск', match: (name) => name.includes('детск') },
     { key: 'постн', match: (name) => name.includes('постн') },
     { key: 'специальн', match: (name) => name.includes('специальн') },

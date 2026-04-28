@@ -34,7 +34,29 @@
     "comments": [
       "Самый дорогой коктейль в меню."
     ],
-    "reference_info": ""
+    "reference_info": "",
+    "i18n": {
+      "en": {
+        "menu-en": "Bar Menu",
+        "section-en": "🍸 Signature Cocktails",
+        "title-en": "Midday Lisbon",
+        "description-en": "The aperitif spirit of an ocean-facing city — composed, luminous, and effortlessly warm.",
+        "contains-en": "Built on a rare and exceptional white port, with an Italian plum aperitif and Portuguese gin in support. Garnished with a single black viola.",
+        "cardIngredients-en": "white port / plum aperitif / gin",
+        "tags-en": "light, aperitif, port, gin, signature, on the rocks",
+        "ingredients-en": [
+          "Nonino Prunella",
+          "Graham's No. 5 White Port",
+          "Normindia Gin",
+          "Adamus Gin",
+          "Simple Syrup",
+          "Lactic acid (lactose-free)"
+        ],
+        "comments-en": [
+          "The most premium cocktail on the menu."
+        ]
+      }
+    }
   },
   {
     "id": "0702",
@@ -73,7 +95,30 @@
       "alt": ""
     },
     "comments": [],
-    "reference_info": ""
+    "reference_info": "",
+    "i18n": {
+      "en": {
+        "menu-en": "Bar Menu",
+        "section-en": "🍸 Signature Cocktails",
+        "title-en": "Brazilian Breeze",
+        "description-en": "A clean, ingredient-forward reimagining of the Piña Colada — no artificial flavourings, no shortcuts.",
+        "contains-en": "Takamaka rum with a house pineapple shrub (juice drawn from the fruit with sugar rather than heat), coconut water in place of cream. Foam is made from Bubble Drop — a hypoallergenic, vegan quillaja bark extract. Finished with threads of chilli.",
+        "cardIngredients-en": "rum / pineapple shrub / coconut water / Bubble Drop",
+        "tags-en": "light, sweet, rum, twist, on the rocks, signature",
+        "ingredients-en": [
+          "Fresh pineapple",
+          "Madagascar vanilla bean",
+          "Sugar",
+          "Malic acid",
+          "Coconut water",
+          "Takamaka Blanc Rum",
+          "Fresh lemon juice",
+          "Bubble Drop"
+        ],
+        "allergens-en": ["citrus"],
+        "comments-en": []
+      }
+    }
   },
   {
     "id": "0703",
@@ -111,7 +156,28 @@
       "alt": ""
     },
     "comments": [],
-    "reference_info": ""
+    "reference_info": "",
+    "i18n": {
+      "en": {
+        "menu-en": "Bar Menu",
+        "section-en": "🍸 Signature Cocktails",
+        "title-en": "Gardens of Andalusia",
+        "description-en": "Andalusia, the southernmost tip of Spain, is Europe's foremost strawberry region. This cocktail carries that pedigree — fresh, light, and fragrant, like a garden in full spring bloom.",
+        "contains-en": "Strawberry-infused white vermouth, fresh lime juice, and passion fruit liqueur, lifted with rosolio — a venerable category of Italian herbal infusion — and soda water. Garnished with a fresh strawberry dipped in white chocolate.",
+        "cardIngredients-en": "white vermouth / strawberry / rosolio / soda",
+        "tags-en": "light, sweet, tart, aperitif, on the rocks, signature",
+        "ingredients-en": [
+          "Passoa liqueur",
+          "Doragrossa Rosolio",
+          "Cocchi White Americano (strawberry-infused)",
+          "Fresh strawberries",
+          "Fresh lime juice",
+          "Soda water"
+        ],
+        "allergens-en": ["citrus", "lactose"],
+        "comments-en": []
+      }
+    }
   },
   {
     "id": "0704",
@@ -150,7 +216,27 @@
       "alt": ""
     },
     "comments": [],
-    "reference_info": ""
+    "reference_info": "",
+    "i18n": {
+      "en": {
+        "menu-en": "Bar Menu",
+        "section-en": "🍸 Signature Cocktails",
+        "title-en": "The Scottish Highlands",
+        "description-en": "An homage to the Penicillin. Deeply smoky in character — this cocktail is conceived as a northern landscape in a glass, its flavour shaped not by fruit, but by the elements: peat, resin, cold air, and raw honey. A brooding, meditative digestif built for slow evenings and the company of a fine cigar.",
+        "contains-en": "Hart Brothers single malt Islay whisky, raw honey, fresh ginger, and Smola — a Finnish bitter derived from pine resin, with evocative smoky, tar-like character. Served with a honeycomb tuile.",
+        "cardIngredients-en": "Smola bitter / peated whisky / fresh ginger / honey",
+        "tags-en": "bold, spiced, whisky, twist, digestif, on the rocks, cigar pairing, signature",
+        "ingredients-en": [
+          "Smola Bitter Scandinavia",
+          "Peated Single Malt Whisky",
+          "Fresh ginger juice",
+          "Raw honey",
+          "Fresh lemon juice"
+        ],
+        "allergens-en": ["citrus", "honey"],
+        "comments-en": []
+      }
+    }
   },
   {
     "id": "0705",
@@ -186,7 +272,27 @@
       "alt": ""
     },
     "comments": [],
-    "reference_info": ""
+    "reference_info": "",
+    "i18n": {
+      "en": {
+        "menu-en": "Bar Menu",
+        "section-en": "🍸 Signature Cocktails",
+        "title-en": "Tales of the Vienna Woods",
+        "description-en": "Named after one of Austria's most enduring cultural images — evoking both the forests of Viennese folklore and the classic Black Forest dessert: cherry, cacao, and a touch of tartness. A liquid fairy tale: warm, sweetly dark, and quietly inviting. A drink made for unhurried evenings and private reflection.",
+        "contains-en": "Cherry-macerated brandy, Pedro Ximénez sherry — contributing rich notes of dried fruit and dark raisin — and white cacao liqueur.",
+        "cardIngredients-en": "brandy / cherry / sherry / cacao liqueur",
+        "tags-en": "bold, sweet, tart, digestif, neat, signature",
+        "ingredients-en": [
+          "Barbadillo Brandy",
+          "Frozen cherry berries",
+          "Bols White Cacao",
+          "Pedro Ximénez El Candado",
+          "Fresh lime juice"
+        ],
+        "allergens-en": ["citrus"],
+        "comments-en": []
+      }
+    }
   },
   {
     "id": "0706",
@@ -220,7 +326,26 @@
       "alt": ""
     },
     "comments": [],
-    "reference_info": ""
+    "reference_info": "",
+    "i18n": {
+      "en": {
+        "menu-en": "Bar Menu",
+        "section-en": "🍸 Signature Cocktails",
+        "title-en": "The Charm of Toulouse",
+        "description-en": "Toulouse, in the south of France, is celebrated for its vermouth heritage and its elderflower groves. Light, floral, and effortlessly elegant — with elderflower's characteristic almond-tinged bitterness running through every sip.",
+        "contains-en": "White vermouth with elderflower liqueur and a French elderflower gin, balanced by a measure of Japanese plum wine. Lactic acid (lactose-free) softens the spirit and lends texture. Garnished with a white viola.",
+        "cardIngredients-en": "white vermouth / elderflower liqueur / gin",
+        "tags-en": "light, sweet, aperitif, gin, on the rocks, signature",
+        "ingredients-en": [
+          "Choya Sararra",
+          "Fiorente Elderflower Liqueur",
+          "Cocchi Americano White",
+          "Normindia Gin",
+          "Lactic acid (lactose-free)"
+        ],
+        "comments-en": []
+      }
+    }
   },
   {
     "id": "0707",
@@ -262,7 +387,31 @@
     "comments": [
       "Идеально подходит под тяжёлые, плотные, мощные сигары."
     ],
-    "reference_info": ""
+    "reference_info": "",
+    "i18n": {
+      "en": {
+        "menu-en": "Bar Menu",
+        "section-en": "🍸 Signature Cocktails",
+        "title-en": "Gold of Piedmont",
+        "description-en": "Piedmont's greatest treasure does not shine — it hides underground. The white truffle is the spiritual core of this cocktail. Hazelnut liqueur adds silky, nutty roundness, grounding the drink in the region's soil and tradition. Earthy, dense, and long-finishing — a digestif built for slow drinking, the Scafa format, and the company of a cigar. A cocktail of standing, not spectacle. Much like Piedmont itself.",
+        "contains-en": "Rum infused with truffle oil, Pedro Ximénez sherry, Frangelico hazelnut liqueur, artichoke vermouth, and a restrained measure of Campari.",
+        "cardIngredients-en": "rum / truffle / hazelnut liqueur / artichoke vermouth / sherry",
+        "tags-en": "bold, sweet, rum, digestif, on the rocks, cigar pairing, signature",
+        "ingredients-en": [
+          "Puntacana Viejo Rum",
+          "Truffle oil",
+          "Campari",
+          "Frangelico",
+          "Pedro Ximénez El Candado",
+          "Cynar",
+          "Salt"
+        ],
+        "allergens-en": ["truffle", "nuts"],
+        "comments-en": [
+          "Pairs beautifully with full-bodied, robust cigars."
+        ]
+      }
+    }
   },
   {
     "id": "0708",
@@ -302,7 +451,29 @@
       "alt": ""
     },
     "comments": [],
-    "reference_info": ""
+    "reference_info": "",
+    "i18n": {
+      "en": {
+        "menu-en": "Bar Menu",
+        "section-en": "🍸 Signature Cocktails",
+        "title-en": "Southern Heat",
+        "description-en": "Somewhere between a Margarita and a Paloma — citrus-driven and fresh, with the characteristic bitter edge of grapefruit and the unapologetic character of tequila.",
+        "contains-en": "Tequila, bergamot liqueur, grapefruit cordial, and fresh lime.",
+        "cardIngredients-en": "tequila / bergamot liqueur / fresh grapefruit / lime",
+        "tags-en": "medium, tart, sweet, tequila, aperitif, neat, twist, signature",
+        "ingredients-en": [
+          "El Tequileño Tequila",
+          "Qualia Bergamot Liqueur",
+          "Fresh grapefruit juice",
+          "Sugar",
+          "Tartaric acid",
+          "Hibiscus color",
+          "Fresh lime juice"
+        ],
+        "allergens-en": ["citrus"],
+        "comments-en": []
+      }
+    }
   },
   {
     "id": "0709",
@@ -338,7 +509,26 @@
       "alt": ""
     },
     "comments": [],
-    "reference_info": ""
+    "reference_info": "",
+    "i18n": {
+      "en": {
+        "menu-en": "Bar Menu",
+        "section-en": "🍸 Signature Cocktails",
+        "title-en": "August in Bologna",
+        "description-en": "Bologna — the university city that gave the spritz its cultural home. August, when its squares fill with students and the aperitivo ritual stretches well past sundown.",
+        "contains-en": "Raspberry-infused Aperol with Passoa mango-passion fruit liqueur, Cava, and soda. A spirited homage to the Aperol Spritz. Garnished with a blood orange from Sicily.",
+        "cardIngredients-en": "Aperol / raspberry / mango-passion fruit liqueur / Cava / soda",
+        "tags-en": "light, sweet, bitter, aperitif, sparkling, on the rocks, twist, signature",
+        "ingredients-en": [
+          "Aperol",
+          "Frozen raspberries",
+          "Sarti Rosa",
+          "Cava",
+          "Soda water"
+        ],
+        "comments-en": []
+      }
+    }
   },
   {
     "id": "0710",
@@ -384,7 +574,34 @@
     "comments": [
       "Дескрипторы (кофе и лавровый лист) подобраны под сигары."
     ],
-    "reference_info": ""
+    "reference_info": "",
+    "i18n": {
+      "en": {
+        "menu-en": "Bar Menu",
+        "section-en": "🍸 Signature Cocktails",
+        "title-en": "Moscow to Milan",
+        "description-en": "A fully reinvented Negroni — and in certain well-travelled business circles, the cocktail most fitting for a working trip. It traces the arc between two cultural poles of Europe: departure from composed, coffee-bitter gravity; arrival in soft, stylish Italian elegance. The coin of orange peel is both a nod to the aperitivo tradition and a symbol of the journey — the sun awaiting at the destination.",
+        "contains-en": "A French gin with delicate apple undertones, rosé vermouth in place of red, and a bitter core of Campari and Select infused with Arabica coffee and bay leaf. Finished with a coin of orange peel.",
+        "cardIngredients-en": "gin / rosé vermouth / Campari / bay leaf / coffee",
+        "tags-en": "bold, bitter, sweet, gin, digestif, on the rocks, twist, cigar pairing, signature",
+        "ingredients-en": [
+          "Select Aperitivo",
+          "Campari",
+          "Bay leaf",
+          "Arabica coffee beans",
+          "Grapefruit zest",
+          "Lemon zest",
+          "Normindia Gin",
+          "Cocchi Americano Rosa",
+          "Doragrossa Rhubarb",
+          "Salt"
+        ],
+        "allergens-en": ["citrus"],
+        "comments-en": [
+          "The coffee and bay leaf notes are specifically chosen to complement a cigar."
+        ]
+      }
+    }
   },
   {
     "id": "0711",
@@ -421,7 +638,27 @@
       "alt": ""
     },
     "comments": [],
-    "reference_info": ""
+    "reference_info": "",
+    "i18n": {
+      "en": {
+        "menu-en": "Bar Menu",
+        "section-en": "🍸 Signature Cocktails",
+        "title-en": "Parisian Sillage",
+        "description-en": "A twist on a cocktail conceived for the launch of the Barneo fragrance. Built not on flavour alone, but on the olfactory logic of Paris — a city where scent has always been a cultural statement. Heavy, dark, trailing — this is a perfume in a glass. Not for everyone, and not for those in a hurry. The Paris evoked here is not the postcard version: it is the Paris of old apartments, private fragrance collections, and evenings that linger in memory long after they end.",
+        "contains-en": "Port infused with patchouli — a South Indian botanical used in perfumery, evoking damp earth, aged wood, and antique interiors — with cherry brandy liqueur and a measure of mezcal for smoke and depth. A weighty, complex composition. Ideal with full-bodied, powerful cigars.",
+        "cardIngredients-en": "port / patchouli / mezcal / cherry brandy",
+        "tags-en": "bold, sweet, port, mezcal, digestif, neat, cigar pairing, signature",
+        "ingredients-en": [
+          "Guerrero Maya Reposado Mezcal",
+          "Bols Cherry Brandy",
+          "Dow's Ruby Port",
+          "Dried patchouli",
+          "Campari",
+          "Cocchi Americano Rosa"
+        ],
+        "comments-en": []
+      }
+    }
   },
   {
     "id": "0712",
@@ -458,7 +695,28 @@
       "alt": ""
     },
     "comments": [],
-    "reference_info": ""
+    "reference_info": "",
+    "i18n": {
+      "en": {
+        "menu-en": "Bar Menu",
+        "section-en": "🍹 Non-Alcoholic Cocktails",
+        "title-en": "Cape Town Nights",
+        "description-en": "A cocktail about contrast — the sharp tropical sun and the cool that rolls in from the Atlantic once the light fades over the southern tip of Africa. Long and refreshing yet warm in character, bringing together tropical fruit, soft vanilla, and a coastal freshness. Made for mood, not concentration — Cape Town, after dark.",
+        "contains-en": "",
+        "cardIngredients-en": "pineapple / vanilla / fresh lemon / soda",
+        "tags-en": "non-alcoholic, light, sweet, tart, on the rocks, signature",
+        "ingredients-en": [
+          "Fresh pineapple",
+          "Madagascar vanilla bean",
+          "Sugar",
+          "Malic acid",
+          "Fresh lemon juice",
+          "Milkis Soda"
+        ],
+        "allergens-en": ["citrus"],
+        "comments-en": []
+      }
+    }
   },
   {
     "id": "0713",
@@ -498,7 +756,31 @@
       "alt": ""
     },
     "comments": [],
-    "reference_info": ""
+    "reference_info": "",
+    "i18n": {
+      "en": {
+        "menu-en": "Bar Menu",
+        "section-en": "🍹 Non-Alcoholic Cocktails",
+        "title-en": "Provençal Dawn",
+        "description-en": "The hour before the tourist wakes — when the night has not yet lifted and the air already carries the scent of wild herbs. Provence at its quietest and most transparent. Bright, aromatic, and gently refreshing — citrus and lavender conjuring stillness, clarity, and the unhurried beginning of a new day. Not a cocktail of boldness. A cocktail of atmosphere.",
+        "contains-en": "",
+        "cardIngredients-en": "fresh grapefruit / fresh lemon / dried lavender / soda",
+        "tags-en": "non-alcoholic, light, tart, sweet, on the rocks, signature",
+        "ingredients-en": [
+          "Fresh grapefruit juice",
+          "Sugar",
+          "Tartaric acid",
+          "Hibiscus color",
+          "Sugar syrup",
+          "Dried lavender",
+          "Malic acid",
+          "Fresh lemon juice",
+          "Soda water"
+        ],
+        "allergens-en": ["citrus"],
+        "comments-en": []
+      }
+    }
   },
   {
     "id": "0714",
@@ -533,7 +815,26 @@
       "alt": ""
     },
     "comments": [],
-    "reference_info": ""
+    "reference_info": "",
+    "i18n": {
+      "en": {
+        "menu-en": "Bar Menu",
+        "section-en": "🍹 Non-Alcoholic Cocktails",
+        "title-en": "Mango-tini",
+        "description-en": "A refreshing fruit-and-tea mocktail with a gentle tropical character. Mango purée and syrup deliver a rich, velvety sweetness, while milk oolong introduces subtle creamy tea notes that round out the body. Fresh lemon provides a delicate acidity, brightening the finish. Served chilled, with a clean and elegant lingering finish.",
+        "contains-en": "",
+        "cardIngredients-en": "mango purée / mango syrup / milk oolong / fresh lemon",
+        "tags-en": "non-alcoholic, light, sweet, tart, on the rocks, signature",
+        "ingredients-en": [
+          "Mango purée",
+          "Mango syrup",
+          "Milk oolong tea",
+          "Fresh lemon juice"
+        ],
+        "allergens-en": ["citrus"],
+        "comments-en": []
+      }
+    }
   },
   {
     "id": "0715",
@@ -576,7 +877,31 @@
     "comments": [
       "Можно приготовить б/а версию без рома."
     ],
-    "reference_info": ""
+    "reference_info": "",
+    "i18n": {
+      "en": {
+        "menu-en": "Bar Menu",
+        "section-en": "♨️ Warming Beverages",
+        "title-en": "Crimson Sbiten",
+        "description-en": "A traditional Eastern European warming drink, reimagined with a vibrant berry-and-honey core and herbaceous spice notes. Raspberry purée provides a rich, sweet-tart foundation; orange and fresh lemon lend citrus brightness; honey softens and rounds the flavour; thyme and cinnamon unfold in a warm aromatic bouquet; and a measure of rum closes the composition with a gently warming finish. Served hot.",
+        "contains-en": "",
+        "cardIngredients-en": "rum / raspberry purée / orange / fresh lemon / honey / spices",
+        "tags-en": "light, sweet, tart, spiced, hot, rum, signature, neat",
+        "ingredients-en": [
+          "Raspberry purée",
+          "Orange",
+          "Fresh lemon juice",
+          "Honey",
+          "Thyme",
+          "Cinnamon",
+          "Rum"
+        ],
+        "allergens-en": ["citrus", "honey"],
+        "comments-en": [
+          "Available without rum as an alcohol-free option."
+        ]
+      }
+    }
   },
   {
     "id": "0716",
@@ -619,7 +944,31 @@
     "comments": [
       "Можно приготовить б/а версию без коньяка."
     ],
-    "reference_info": ""
+    "reference_info": "",
+    "i18n": {
+      "en": {
+        "menu-en": "Bar Menu",
+        "section-en": "♨️ Warming Beverages",
+        "title-en": "Trans-Siberian Express",
+        "description-en": "A signature warming drink with a pronounced northern character and a lively sweet-tart profile. Sea buckthorn anchors the flavour with distinctive richness and gentle astringency; orange and fresh orange juice add juicy citrus brightness; honey softens the acidity and lends velvety roundness; ginger delivers warm spice and heat; and cognac brings the composition to a graceful, noble close. Served hot.",
+        "contains-en": "",
+        "cardIngredients-en": "cognac / sea buckthorn / orange / orange juice / honey",
+        "tags-en": "light, sweet, tart, spiced, hot, signature, neat, cognac",
+        "ingredients-en": [
+          "Sea buckthorn",
+          "Orange",
+          "Orange juice",
+          "Honey",
+          "Fresh lemon juice",
+          "Ginger",
+          "Cognac"
+        ],
+        "allergens-en": ["citrus", "honey"],
+        "comments-en": [
+          "Available without cognac as an alcohol-free option."
+        ]
+      }
+    }
   },
   {
     "id": "0717",
@@ -663,7 +1012,32 @@
     "comments": [
       "Б/а глинтвейн готовится на вишневом соке."
     ],
-    "reference_info": ""
+    "reference_info": "",
+    "i18n": {
+      "en": {
+        "menu-en": "Bar Menu",
+        "section-en": "♨️ Warming Beverages",
+        "title-en": "Mulled Claret",
+        "description-en": "A classic mulled wine on a red wine base — rich with fruit and warming spice. Orange and lemon bring vivid citrus notes and a refreshing acidity; apple softens the body. Cinnamon, cloves, and star anise develop a deep aromatic profile, while honey lends a natural sweetness and a velvety finish. Served hot.",
+        "contains-en": "",
+        "cardIngredients-en": "red wine / orange / lemon / apple / spices",
+        "tags-en": "medium, sweet, tart, spiced, hot, wine, classic, neat",
+        "ingredients-en": [
+          "Red wine",
+          "Orange",
+          "Lemon",
+          "Apple",
+          "Cinnamon",
+          "Cloves",
+          "Star anise",
+          "Honey"
+        ],
+        "allergens-en": ["citrus", "honey"],
+        "comments-en": [
+          "The non-alcoholic version is prepared with cherry juice."
+        ]
+      }
+    }
   },
   {
     "id": "0718",
@@ -705,7 +1079,30 @@
       "alt": ""
     },
     "comments": [],
-    "reference_info": ""
+    "reference_info": "",
+    "i18n": {
+      "en": {
+        "menu-en": "Bar Menu",
+        "section-en": "♨️ Warming Beverages",
+        "title-en": "White Mulled Wine",
+        "description-en": "An aromatic warming drink built on white wine, with a delicate fruit-and-spice bouquet. Ripe pear, apple, and lemon combine to give it a gentle freshness and balanced acidity, while cinnamon, cloves, and star anise emerge as soft, warming background notes that frame the wine rather than overwhelm it. Honey rounds out the body with natural sweetness. Served hot.",
+        "contains-en": "",
+        "cardIngredients-en": "white wine / pear / lemon / apple / spices",
+        "tags-en": "medium, sweet, tart, spiced, hot, wine, neat, classic",
+        "ingredients-en": [
+          "White wine",
+          "Pear",
+          "Lemon",
+          "Apple",
+          "Cinnamon",
+          "Cloves",
+          "Star anise",
+          "Honey"
+        ],
+        "allergens-en": ["citrus", "honey"],
+        "comments-en": []
+      }
+    }
   },
   {
     "id": "0719",
@@ -742,12 +1139,17 @@
     },
     "i18n": {
       "en": {
-        "menu-en": "Bar menu",
-        "section-en": "Beer",
+        "menu-en": "Bar Menu",
+        "section-en": "🍺 Beer",
         "title-en": "Der Hirschbrau Holzar Bier",
         "description-en": "A dark Bavarian Munich Dunkel beer with pronounced caramel and malt notes, balanced bitterness, and rich flavor.",
         "tags-en": "Germany, dark, Dunkel, beer, filtered, passive, lager",
-        "useful phrases & words": []
+        "useful phrases & words": [],
+        "contains-en": "",
+        "cardIngredients-en": "",
+        "comments-en": [],
+        "features-en": "Dark beer with caramel and malt aromas, moderate bitterness, and a balanced body.",
+        "reference_info-en": "Beer is one of the oldest beverages known to humanity, with a history spanning several millennia. In its broadest sense, beer is defined as <strong>a beverage produced by the fermentation of cereal grains.</strong> Modern brewing standards further refine this definition with three essential ingredients—water, malt, and yeast—and two optional ones: hops and various adjuncts. <p>International classification fundamentally divides all beer into top-fermented <strong>Ales</strong> and bottom-fermented <strong>Lagers</strong>.</p><ul><li><strong>Lager.</strong> A type of beer brewed using bottom-fermenting yeast followed by maturation at low temperatures (+8..+14°C). Consequently, lagers tend to have more restrained characteristics compared to ales. Today, this is the most widespread type of beer, accounting for up to 80% of global consumption.</li><li><strong>Ale.</strong> Brewed using top-fermentation, where yeast rises to the surface over several days. The fermentation occurs at higher temperatures (+15..+24°C), allowing the yeast to synthesize a complex array of esters and secondary metabolites that form intricate flavour profiles with berry and fruity undertones.<p>Ale styles include Hefeweizen/Blanche (wheat beer), IPA/APA, Lambic, Stout, Porter, and others.</li></ul>"
       }
     },
     "features": "Темное пиво с карамельными и солодовыми ароматами, умеренной горчинкой и сбалансированным телом.",
@@ -759,7 +1161,7 @@
   {
     "id": "0720",
     "object_type": "bar",
-    "status": "актуально",
+    "status": "в архиве",
     "menu": "Барное меню",
     "section": "🍺 Пиво",
     "title": "Der Hirschbrau Adlerkoenig Urtyp Hell",
@@ -794,12 +1196,20 @@
     },
     "i18n": {
       "en": {
-        "menu-en": "Bar menu",
-        "section-en": "Beer",
+        "menu-en": "Bar Menu",
+        "section-en": "🍺 Beer",
         "title-en": "Der Hirschbrau Adlerkoenig Urtyp Hell",
         "description-en": "A classic German Helles lager with a golden hue, balanced malt sweetness and gentle hop bitterness.",
         "tags-en": "Germany, light, Helles, lager, filtered, passive",
-        "useful phrases & words": []
+        "useful phrases & words": [],
+        "contains-en": "",
+        "cardIngredients-en": "",
+        "comments-en": [
+          "Brewed in accordance with the German Reinheitsgebot — from the finest natural ingredients only.",
+          "\"Adler König\" translates from German as \"king's eagle\" — the noble bird depicted on the label."
+        ],
+        "features-en": "Golden-hued light lager with a balanced profile and a gentle hop note.",
+        "reference_info-en": "Beer is one of the oldest beverages known to humanity, with a history spanning several millennia. In its broadest sense, beer is defined as <strong>a beverage produced by the fermentation of cereal grains.</strong> Modern brewing standards further refine this definition with three essential ingredients—water, malt, and yeast—and two optional ones: hops and various adjuncts. <p>International classification fundamentally divides all beer into top-fermented <strong>Ales</strong> and bottom-fermented <strong>Lagers</strong>.</p><ul><li><strong>Lager.</strong> A type of beer brewed using bottom-fermenting yeast followed by maturation at low temperatures (+8..+14°C). Consequently, lagers tend to have more restrained characteristics compared to ales. Today, this is the most widespread type of beer, accounting for up to 80% of global consumption.</li><li><strong>Ale.</strong> Brewed using top-fermentation, where yeast rises to the surface over several days. The fermentation occurs at higher temperatures (+15..+24°C), allowing the yeast to synthesize a complex array of esters and secondary metabolites that form intricate flavour profiles with berry and fruity undertones.<p>Ale styles include Hefeweizen/Blanche (wheat beer), IPA/APA, Lambic, Stout, Porter, and others.</li></ul>"
       }
     },
     "features": "Светлый лагер с золотистым цветом, сбалансированным вкусом и мягкой хмелевой ноткой.",
@@ -811,7 +1221,7 @@
   {
     "id": "0721",
     "object_type": "bar",
-    "status": "актуально",
+    "status": "в архиве",
     "menu": "Барное меню",
     "section": "🍺 Пиво",
     "title": "Der Hirschbrau Weisser Hirsch",
@@ -841,17 +1251,177 @@
     },
     "i18n": {
       "en": {
-        "menu-en": "Bar menu",
-        "section-en": "Beer",
+        "menu-en": "Bar Menu",
+        "section-en": "🍺 Beer",
         "title-en": "Der Hirschbrau Weisser Hirsch",
         "description-en": "A classic unfiltered wheat beer (Hefeweizen) with banana, spice, and bread notes; refreshing and fruity.",
         "tags-en": "Germany, wheat beer, Weissbier, beer, unfiltered, light, ale",
-        "useful phrases & words": []
+        "useful phrases & words": [],
+        "contains-en": "",
+        "cardIngredients-en": "",
+        "comments-en": [],
+        "features-en": "Unfiltered wheat beer with characteristic fruity and spicy aromatic notes.",
+        "reference_info-en": "Beer is one of the oldest beverages known to humanity, with a history spanning several millennia. In its broadest sense, beer is defined as <strong>a beverage produced by the fermentation of cereal grains.</strong> Modern brewing standards further refine this definition with three essential ingredients—water, malt, and yeast—and two optional ones: hops and various adjuncts. <p>International classification fundamentally divides all beer into top-fermented <strong>Ales</strong> and bottom-fermented <strong>Lagers</strong>.</p><ul><li><strong>Lager.</strong> A type of beer brewed using bottom-fermenting yeast followed by maturation at low temperatures (+8..+14°C). Consequently, lagers tend to have more restrained characteristics compared to ales. Today, this is the most widespread type of beer, accounting for up to 80% of global consumption.</li><li><strong>Ale.</strong> Brewed using top-fermentation, where yeast rises to the surface over several days. The fermentation occurs at higher temperatures (+15..+24°C), allowing the yeast to synthesize a complex array of esters and secondary metabolites that form intricate flavour profiles with berry and fruity undertones.<p>Ale styles include Hefeweizen/Blanche (wheat beer), IPA/APA, Lambic, Stout, Porter, and others.</li></ul>"
       }
     },
     "features": "Нефильтрованное пшеничное пиво с характерным фруктовым и пряным ароматом.",
     "alcoholContent": "5.2 %",
     "category": "wheat beer",
+    "colour": "светлое",
+    "reference_info": "Пиво – это один из самых древних напитков, которые только знает человечество. История пива в мире насчитывает несколько тысячелетий.В самом широком смысле можно дать следущее определение этому напитку и оно будет самым верным: <strong>Пиво – это напиток, полученный путем брожения зерновых.</strong>В то же время современный стандарт пивоварения несколько усложняет это определение, внося в него дополнительные ингридиенты. Три обязательных: вода, солод и пивные дрожжи. И два необязательных: хмель и... разные добавки.<p>Международная классификация базово делит все пиво на пиво верхового брожения - <strong>Эль</strong> и низового брожения - <strong>Лагер</strong>.</p><ul><li><strong>Лагер.</strong> Тип пива, при изготовлении которого используется низовье брожение с последующей ферментацией при низкой температуре. Применяемые при приготовлении штаммы пивных дрожжей оседают на дне бочки и бродят при сравнительно низких температурах — +8..+14. Поэтому лагеры обладают достаточно сдержанными характеристиками, по сравнению с Элями. В настоящее время это наиболее распространённый тип пива, доля которого в мировом потреблении доходит до 80%.</li><li><strong>Эль.</strong> Для приготовления эля используется способ брожения, при котором дрожжи за несколько дней поднимаются на поверхность пива. Процесс брожения поддерживается при высоких температурах +15..+24, благодаря которым дрожжи синтезируют множество сложных эфиров и других вторичных вкусовых и ароматических продуктов и формируются сложные вкусоароматические композиции с ягодными и фруктовыми оттенками.<p>К элям относятся такие стили как: Hefeweizen/Blanche (пшеничное пиво), IPA/APA, Ламбик, Стаут, Портер и др.</li></ul>"
+  },
+  {
+    "id": "0722",
+    "object_type": "bar",
+    "status": "актуально",
+    "menu": "Барное меню",
+    "section": "🍺 Пиво",
+    "title": "Schnitzlbaumer, \"Schnitzei Weisse\" Hell",
+    "description": "Светлый пшеничный эль. Он впечатляет своим фруктовым вкусом и ярко выраженной полнотой. Вкус пива свежий, питкий, игристый, с фруктовыми и дрожжевыми нотками и приятной хмелевой горчинкой. В послевкусии ярко выражены острые нюансы гвоздики. Пиво обладает ярким ароматом с классическими для сорта оттенками фруктов (банана), гвоздики и дрожжей.",
+    "tags": [
+      "Германия",
+      "пшеничное",
+      "светлое",
+      "нефильтрованное"
+    ],
+    "image": {
+      "src": "../images/beer/schnitzlbaumer-schnitzei-weisse-hell.png",
+      "alt": "Schnitzei Weisse Hell"
+    },
+    "origin": "Германия, Бавария.",
+    "producer": "Schnitzlbaumer",
+    "pairings": {
+      "dishes": [
+        "",
+        "",
+        ""
+      ],
+      "notes": [
+        "Пиво очень гастрономично и сочетается практически с любыми блюдами и любыми закусками."
+      ]
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Bar Menu",
+        "section-en": "🍺 Beer",
+        "title-en": "Schnitzlbaumer, \"Schnitzei Weisse\" Hell",
+        "description-en": "Light wheat ale. It impresses with its fruity taste and pronounced fullness. The taste of the beer is fresh, drinkable, sparkling, with fruity and yeast notes and a pleasant hop bitterness. The aftertaste has pronounced spicy notes of cloves. The beer has a bright aroma with classic notes of fruits (banana), cloves and yeast.",
+        "tags-en": "Germany, wheat, light, unfiltered",
+        "audio-en": "../audio/beer/0722.mp3",
+        "contains-en": "",
+        "cardIngredients-en": "",
+        "comments-en": [],
+        "features-en": "Unlike classic barley ales, wheat beer contains at least 50–70% wheat malt. This higher protein content directly influences the structure, resulting in a denser beer with a thick, 'creamy,' and persistent white head. The beer has a characteristic turbidity, while the yeast contributes a 'bready' flavour and a fuller, rounded body.",
+        "reference_info-en": "Beer is one of the oldest beverages known to humanity, with a history spanning several millennia. In its broadest sense, beer is defined as <strong>a beverage produced by the fermentation of cereal grains.</strong> Modern brewing standards further refine this definition with three essential ingredients—water, malt, and yeast—and two optional ones: hops and various adjuncts. <p>International classification fundamentally divides all beer into top-fermented <strong>Ales</strong> and bottom-fermented <strong>Lagers</strong>.</p><ul><li><strong>Lager.</strong> A type of beer brewed using bottom-fermenting yeast followed by maturation at low temperatures (+8..+14°C). Consequently, lagers tend to have more restrained characteristics compared to ales. Today, this is the most widespread type of beer, accounting for up to 80% of global consumption.</li><li><strong>Ale.</strong> Brewed using top-fermentation, where yeast rises to the surface over several days. The fermentation occurs at higher temperatures (+15..+24°C), allowing the yeast to synthesize a complex array of esters and secondary metabolites that form intricate flavour profiles with berry and fruity undertones.<p>Ale styles include Hefeweizen/Blanche (wheat beer), IPA/APA, Lambic, Stout, Porter, and others.</li></ul>"
+      }
+    },
+    "features": "В отличие от классического ячменного эля, в пшеничном пиве не менее 50–70% засыпи составляет пшеница. Пшеничный солод содержит больше белка, чем ячменный, что напрямую влияет на структуру напитка: пиво получается более плотным, с густой, «сливочной» и стойкой белой пеной. Пиво имеет характерную мутность, а дрожжи придают «хлебный» привкус и более полное, округлое тело.",
+    "alcoholContent": "5.5 %",
+    "category": "Эль",
+    "colour": "светлое",
+    "reference_info": "Пиво – это один из самых древних напитков, которые только знает человечество. История пива в мире насчитывает несколько тысячелетий.В самом широком смысле можно дать следущее определение этому напитку и оно будет самым верным: <strong>Пиво – это напиток, полученный путем брожения зерновых.</strong>В то же время современный стандарт пивоварения несколько усложняет это определение, внося в него дополнительные ингридиенты. Три обязательных: вода, солод и пивные дрожжи. И два необязательных: хмель и... разные добавки.<p>Международная классификация базово делит все пиво на пиво верхового брожения - <strong>Эль</strong> и низового брожения - <strong>Лагер</strong>.</p><ul><li><strong>Лагер.</strong> Тип пива, при изготовлении которого используется низовье брожение с последующей ферментацией при низкой температуре. Применяемые при приготовлении штаммы пивных дрожжей оседают на дне бочки и бродят при сравнительно низких температурах — +8..+14. Поэтому лагеры обладают достаточно сдержанными характеристиками, по сравнению с Элями. В настоящее время это наиболее распространённый тип пива, доля которого в мировом потреблении доходит до 80%.</li><li><strong>Эль.</strong> Для приготовления эля используется способ брожения, при котором дрожжи за несколько дней поднимаются на поверхность пива. Процесс брожения поддерживается при высоких температурах +15..+24, благодаря которым дрожжи синтезируют множество сложных эфиров и других вторичных вкусовых и ароматических продуктов и формируются сложные вкусоароматические композиции с ягодными и фруктовыми оттенками.<p>К элям относятся такие стили как: Hefeweizen/Blanche (пшеничное пиво), IPA/APA, Ламбик, Стаут, Портер и др.</li></ul>"
+  },
+  {
+    "id": "0723",
+    "object_type": "bar",
+    "status": "актуально",
+    "menu": "Барное меню",
+    "section": "🍺 Пиво",
+    "title": "Schnitzlbaumer, Lagerbier Hell",
+    "description": "Светлый лагер, при изготовлении которого используется специальный солод и три разных сорта ароматного хмеля. Благодаря такой рецептуре, пивоварам всегда удается достичь гармоничного сочетания тонкой солодовой ноты и деликатных оттенков хмеля. Благодаря высокой степени финального брожения, пиво получается вкусным и мягким, с практически незаметной крепостью.",
+    "tags": [
+      "Германия",
+      "лагер",
+      "светлое",
+      "фильтрованное"
+    ],
+    "image": {
+      "src": "../images/beer/schnitzlbaumer-lagerbier-hell.png",
+      "alt": "Schnitzlbaumer, Lagerbier Hell"
+    },
+    "origin": "Германия, Бавария.",
+    "producer": "Schnitzlbaumer",
+    "pairings": {
+      "dishes": [
+        "",
+        "",
+        ""
+      ],
+      "notes": [
+        ""
+      ]
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Bar Menu",
+        "section-en": "🍺 Beer",
+        "title-en": "Schnitzlbaumer, Lagerbier Hell",
+        "description-en": "A light lager made with special malt and three different types of aromatic hops. Thanks to this recipe, the brewers always manage to achieve a harmonious combination of a delicate malt note and delicate hop nuances. Thanks to the high degree of final fermentation, the beer turns out tasty and mild, with an almost imperceptible strength.",
+        "tags-en": "Germany, lager, light, filtered",
+        "audio-en": "../audio/beer/0723.mp3",
+        "contains-en": "",
+        "cardIngredients-en": "",
+        "comments-en": [],
+        "features-en": "The primary emphasis in this lager is placed on malt and hops in their purest form. Lager: crisp, refreshing, with a focus on cereal or floral nuances. Unlike ale, lager does not possess an intensely pronounced flavour or aroma. Ale: complex, aromatic, with nuances of berries, banana, cloves, or pronounced hop bitterness.",
+        "reference_info-en": "Beer is one of the oldest beverages known to humanity, with a history spanning several millennia. In its broadest sense, beer is defined as <strong>a beverage produced by the fermentation of cereal grains.</strong> Modern brewing standards further refine this definition with three essential ingredients—water, malt, and yeast—and two optional ones: hops and various adjuncts. <p>International classification fundamentally divides all beer into top-fermented <strong>Ales</strong> and bottom-fermented <strong>Lagers</strong>.</p><ul><li><strong>Lager.</strong> A type of beer brewed using bottom-fermenting yeast followed by maturation at low temperatures (+8..+14°C). Consequently, lagers tend to have more restrained characteristics compared to ales. Today, this is the most widespread type of beer, accounting for up to 80% of global consumption.</li><li><strong>Ale.</strong> Brewed using top-fermentation, where yeast rises to the surface over several days. The fermentation occurs at higher temperatures (+15..+24°C), allowing the yeast to synthesize a complex array of esters and secondary metabolites that form intricate flavour profiles with berry and fruity undertones.<p>Ale styles include Hefeweizen/Blanche (wheat beer), IPA/APA, Lambic, Stout, Porter, and others.</li></ul>"
+      }
+    },
+    "features": "Основной акцент в лагере сделан на солоде и хмеле в их чистом виде. Лагер: хрустящий, освежающий, с акцентом на зерновые или цветочные оттенки. В отличии от эля, лагер не имеет ярко выраженного вкуса и аромата. Эль: сложный, ароматный, с нюансами ягод, банана, гвоздики или выраженной хмелевой горечи.",
+    "alcoholContent": "4.9 %",
+    "category": "лагер",
+    "colour": "светлое",
+    "reference_info": "Пиво – это один из самых древних напитков, которые только знает человечество. История пива в мире насчитывает несколько тысячелетий.В самом широком смысле можно дать следущее определение этому напитку и оно будет самым верным: <strong>Пиво – это напиток, полученный путем брожения зерновых.</strong>В то же время современный стандарт пивоварения несколько усложняет это определение, внося в него дополнительные ингридиенты. Три обязательных: вода, солод и пивные дрожжи. И два необязательных: хмель и... разные добавки.<p>Международная классификация базово делит все пиво на пиво верхового брожения - <strong>Эль</strong> и низового брожения - <strong>Лагер</strong>.</p><ul><li><strong>Лагер.</strong> Тип пива, при изготовлении которого используется низовье брожение с последующей ферментацией при низкой температуре. Применяемые при приготовлении штаммы пивных дрожжей оседают на дне бочки и бродят при сравнительно низких температурах — +8..+14. Поэтому лагеры обладают достаточно сдержанными характеристиками, по сравнению с Элями. В настоящее время это наиболее распространённый тип пива, доля которого в мировом потреблении доходит до 80%.</li><li><strong>Эль.</strong> Для приготовления эля используется способ брожения, при котором дрожжи за несколько дней поднимаются на поверхность пива. Процесс брожения поддерживается при высоких температурах +15..+24, благодаря которым дрожжи синтезируют множество сложных эфиров и других вторичных вкусовых и ароматических продуктов и формируются сложные вкусоароматические композиции с ягодными и фруктовыми оттенками.<p>К элям относятся такие стили как: Hefeweizen/Blanche (пшеничное пиво), IPA/APA, Ламбик, Стаут, Портер и др.</li></ul>"
+  },
+  {
+    "id": "0724",
+    "object_type": "bar",
+    "status": "актуально",
+    "menu": "Барное меню",
+    "section": "🍺 Пиво",
+    "title": "Eggenberg Freibier (б/а)",
+    "description": "Безалкогольный Австрийский Pilsner, сваренный на альпийской родниковой воде с добавлением горького баварского и ароматного жатецкого хмеля. Имеет яркую горчинку и продолжительное послевкусие.",
+    "tags": [
+      "Австрия",
+      "лагер",
+      "светлое",
+      "фильтрованное",
+      "пилзнер",
+      "безалкогольное"
+    ],
+    "image": {
+      "src": "../images/beer/eggenberg-freibier.webp",
+      "alt": "Eggenberg Freibier (non-alcoholic)"
+    },
+    "origin": "Австрия",
+    "producer": "Eggenberg",
+    "pairings": {
+      "dishes": [
+        "",
+        "",
+        ""
+      ],
+      "notes": [
+        ""
+      ]
+    },
+    "i18n": {
+      "en": {
+        "menu-en": "Bar Menu",
+        "section-en": "🍺 Beer",
+        "title-en": "Eggenberg Freibier (non-alcoholic)",
+        "description-en": "Non-alcoholic Austrian Pilsner brewed with Alpine spring water and a blend of bitter Bavarian and aromatic Saaz hops. It has a crisp bitterness and a long, clean finish.",
+        "tags-en": "Austria, lager, light, filtered, pilsner, non-alcoholic",
+        "audio-en": "../audio/beer/0724.mp3",
+        "contains-en": "",
+        "cardIngredients-en": "",
+        "comments-en": [],
+        "features-en": "The defining characteristic of a pilsner, distinguishing it from other lagers, is the emphasis on noble hops and an impeccably clean profile. While an ordinary lager might be simple 'malty water,' a pilsner is always a balance between cereal sweetness and pronounced bitterness.",
+        "reference_info-en": "Beer is one of the oldest beverages known to humanity, with a history spanning several millennia. In its broadest sense, beer is defined as <strong>a beverage produced by the fermentation of cereal grains.</strong> Modern brewing standards further refine this definition with three essential ingredients—water, malt, and yeast—and two optional ones: hops and various adjuncts. <p>International classification fundamentally divides all beer into top-fermented <strong>Ales</strong> and bottom-fermented <strong>Lagers</strong>.</p><ul><li><strong>Lager.</strong> A type of beer brewed using bottom-fermenting yeast followed by maturation at low temperatures (+8..+14°C). Consequently, lagers tend to have more restrained characteristics compared to ales. Today, this is the most widespread type of beer, accounting for up to 80% of global consumption.</li><li><strong>Ale.</strong> Brewed using top-fermentation, where yeast rises to the surface over several days. The fermentation occurs at higher temperatures (+15..+24°C), allowing the yeast to synthesize a complex array of esters and secondary metabolites that form intricate flavour profiles with berry and fruity undertones.<p>Ale styles include Hefeweizen/Blanche (wheat beer), IPA/APA, Lambic, Stout, Porter, and others.</li></ul>"
+      }
+    },
+    "features": "Главная особенность пилзнера, которая выделяет его среди других лагеров — это акцент на благородном хмеле и безупречная чистота профиля. Если обычный лагер может быть просто «солодовой водичкой», то пилзнер — это всегда баланс между зерновой сладостью и выраженной горечью.",
+    "alcoholContent": "0.38 %",
+    "category": "Пилзнер",
     "colour": "светлое",
     "reference_info": "Пиво – это один из самых древних напитков, которые только знает человечество. История пива в мире насчитывает несколько тысячелетий.В самом широком смысле можно дать следущее определение этому напитку и оно будет самым верным: <strong>Пиво – это напиток, полученный путем брожения зерновых.</strong>В то же время современный стандарт пивоварения несколько усложняет это определение, внося в него дополнительные ингридиенты. Три обязательных: вода, солод и пивные дрожжи. И два необязательных: хмель и... разные добавки.<p>Международная классификация базово делит все пиво на пиво верхового брожения - <strong>Эль</strong> и низового брожения - <strong>Лагер</strong>.</p><ul><li><strong>Лагер.</strong> Тип пива, при изготовлении которого используется низовье брожение с последующей ферментацией при низкой температуре. Применяемые при приготовлении штаммы пивных дрожжей оседают на дне бочки и бродят при сравнительно низких температурах — +8..+14. Поэтому лагеры обладают достаточно сдержанными характеристиками, по сравнению с Элями. В настоящее время это наиболее распространённый тип пива, доля которого в мировом потреблении доходит до 80%.</li><li><strong>Эль.</strong> Для приготовления эля используется способ брожения, при котором дрожжи за несколько дней поднимаются на поверхность пива. Процесс брожения поддерживается при высоких температурах +15..+24, благодаря которым дрожжи синтезируют множество сложных эфиров и других вторичных вкусовых и ароматических продуктов и формируются сложные вкусоароматические композиции с ягодными и фруктовыми оттенками.<p>К элям относятся такие стили как: Hefeweizen/Blanche (пшеничное пиво), IPA/APA, Ламбик, Стаут, Портер и др.</li></ul>"
   }

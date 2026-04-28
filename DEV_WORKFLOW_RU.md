@@ -89,7 +89,11 @@ npm start
 Когда всё проверено локально:
 
 1) Сделай `git push` в GitHub.  
-2) Запусти деплой:
+2) (Если менял API/БД/деплой/структуру) обнови LLM‑спеку:
+```powershell
+powershell -ExecutionPolicy Bypass -File .\tools\update_knowledge.ps1
+```
+3) Запусти деплой:
 ```
 cd D:\GitHub\sabor-app
 powershell -ExecutionPolicy Bypass -File .\deploy.ps1

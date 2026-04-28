@@ -1,0 +1,98 @@
+# Sabor-App — стек, запуск, конфиги, деплой
+
+## Технологии
+### Frontend
+- React 18 (Create React App / `react-scripts`)
+- Tailwind CSS
+- `react-router-dom` v6
+- `axios` (с `withCredentials: true` для cookie‑сессий)
+- (опционально) Sentry для фронта: DSN подставляется на этапе `npm run build` из `deploy.config.ps1`
+
+### Backend
+- Flask 3
+- SQLite + Flask‑SQLAlchemy
+- Flask‑Login (cookie‑сессия)
+- Flask‑CORS
+- python-dotenv (читает `.env`)
+- sentry-sdk[flask]
+
+### Prod
+- Linux (Beget), Nginx (раздаёт фронт и проксирует API), systemd (`sabor.service`)
+- Код: `/var/www/sabor-app/`
+- Прод‑БД: `/var/lib/sabor-app/database.db`
+
+## Структура репозитория (куда смотреть)
+- `frontend/src/` — SPA
+  - `frontend/src/services/api.js` — клиент к API + fallback меню
+  - `frontend/src/utils/menuDataLoader.js` — загрузчик меню/конфига/вопросов для тренажёра
+- `backend/` — Flask API
+  - `backend/app_factory.py` — создание приложения, регистрация blueprint’ов
+  - `backend/config.py` — конфиги/пути/env vars
+  - `backend/models.py` — ORM‑модели
+  - `backend/routes/` — API
+  - `backend/services/` — бизнес‑логика
+- `data/` — JSON контент (источник правды, см. `data.md`)
+- `deploy.ps1` — деплой (build, upload, migrate, restart)
+- `tools/*.ps1` — локальная автоматизация (sync prod DB, запуск backend и т.д.)
+
+## Запуск локально
+### Быстро (рекомендуется)
+Из корня репозитория:
+- `.\dev.bat`
+
+Что делает:
+1) Скачивает копию прод‑БД в `backend/database.dev.db` (`tools/sync_prod_db.ps1`)
+2) Запускает backend с `SABOR_DB_PATH=backend/database.dev.db` (`tools/run_backend_dev.ps1` → `python backend/wsgi.py`)
+3) Запускает frontend (`cd frontend && npm start`), прокси на `http://127.0.0.1:5000`
+
+Ожидаемые адреса:
+- Frontend: `http://localhost:3000`
+- Backend health: `http://127.0.0.1:5000/api/health`
+
+### Вручную
+- `powershell -ExecutionPolicy Bypass -File .\tools\sync_prod_db.ps1`
+- `powershell -ExecutionPolicy Bypass -File .\tools\run_backend_dev.ps1`
+- `cd frontend; npm start`
+
+## Конфигурация и секреты
+### Backend `.env` (не коммитить)
+Пример: `backend/env.example`.
+Ключевые переменные:
+- `SECRET_KEY`
+- `SABOR_DB_PATH` (или `DB_PATH`) — путь к SQLite
+- `BOOTSTRAP_ADMIN_*` — автосоздание первого админа, если в БД нет админа
+- `CORS_ORIGINS`
+- `TELEGRAM_ENABLED`, `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`
+- `ADMIN_DEPLOY_ENABLED`, `DEPLOY_ADMIN_TOKEN` (если включать админ‑деплой через API)
+
+### Deploy конфиг (не коммитить)
+- `deploy.config.ps1` — локальные настройки доступа/опции (IP/ключи/флаги)
+- Опционально: `FrontendSentryEnabled`, `FrontendSentryDsn`
+
+## Деплой (prod)
+Скрипт: `deploy.ps1` (ключи: `-SkipBuild`, `-SkipMigrate`, `-SkipUpload`, `-DryRun`).
+
+Что делает деплой (главное):
+1) Копирует `data/`, `images/`, `audio/`, `icons/` в `frontend/public/*`
+2) Копирует private‑контент: `content/` → `backend/private/useful_guides`
+3) (Опционально) билд фронта: `npm ci` → `npm run build`
+4) Upload на сервер: JSON + backend‑код + `frontend/build`
+5) Миграция JSON → SQLite на сервере: `backend/migrate_to_db.py --yes`
+6) `systemctl restart sabor.service`
+
+## Острые углы (коротко)
+- `SESSION_COOKIE_SECURE=True` ломает авторизацию по `http://` (нормально для прода; для временного HTTP можно ставить `False` в `.env`).
+- В `backend/routes/feedback.py` базовый домен для ссылок на вложения в Telegram сейчас захардкожен (`https://sabor-de-la-vida.ru`) — при смене домена это надо конфигурировать.
+
+## Правила изменения проекта (чтобы не ломать прод)
+- Если меняете форматы `data/*.json` — обновите `data.md` и проверьте миграцию (`backend/migrate_to_db.py`).
+- Если меняете API routes — обновите `api.md` (и прогоните `python tools/update_knowledge.py`).
+- Не коммитить и не заливать `.env` и `*.db`.
+- Прод‑БД живёт в `/var/lib/sabor-app/`, не в `/var/www/...`.
+
+## Чек‑лист актуализации `.agent/*`
+1) После изменений в `backend/routes/*`: `python tools/update_knowledge.py`
+2) После изменений env vars/конфигов: обновить этот файл
+3) После изменений деплоя/скриптов: обновить этот файл + `DEV_WORKFLOW_RU.md`
+4) После изменений форматов `data/`: обновить `data.md`
+

@@ -25,11 +25,15 @@
     },
     "fest": {
         "items": [
-            "Итальянские каникулы"
+            "Итальянские каникулы",
+            "Фестиваль устриц"
         ],
         "description": "Фестивали",
         "icon": "eco",
-        "image": "/images/covers/italian-holydais-head.webp"
+        "images": {
+            "Итальянские каникулы": "/images/covers/italian-holydais-head.webp",
+            "Фестиваль устриц": "/images/covers/oyster-fest-head.webp"
+        }
     },
     "season": {
         "items": [
@@ -49,7 +53,7 @@
         "items": [
             "Барное меню"
         ],
-        "description": "Коктейли, глинтвейн, горячие напитки",
+        "description": "Коктейли, пиво, глинтвейн, горячие напитки",
         "icon": "local_bar",
         "image": "/images/covers/bar-menu-head.webp"
     },
